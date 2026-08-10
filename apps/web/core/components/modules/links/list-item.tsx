@@ -14,6 +14,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 import type { ILinkDetails } from "@plane/types";
 // plane ui
 import { getIconForLink, copyTextToClipboard, calculateTimeAgo } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // helpers
 //
 // hooks
@@ -31,6 +32,7 @@ export const ModulesLinksListItem = observer(function ModulesLinksListItem(props
   const { handleDeleteLink, handleEditLink, isEditingAllowed, link } = props;
   // store hooks
   const { getUserDetails } = useMember();
+  const { t } = useTranslation();
   // derived values
   const createdByDetails = getUserDetails(link.created_by);
   // platform os
@@ -43,7 +45,7 @@ export const ModulesLinksListItem = observer(function ModulesLinksListItem(props
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Copied to clipboard",
-        message: "The URL has been successfully copied to your clipboard",
+        message: t("toast.url_copied"),
       })
     );
   };

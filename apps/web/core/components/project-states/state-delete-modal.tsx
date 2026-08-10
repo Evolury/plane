@@ -12,6 +12,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IState } from "@plane/types";
 // ui
 import { AlertModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useProjectState } from "@/hooks/store/use-project-state";
 
@@ -25,6 +26,7 @@ export const StateDeleteModal = observer(function StateDeleteModal(props: TState
   const { isOpen, onClose, data } = props;
   // states
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const { t } = useTranslation();
   // router
   const { workspaceSlug } = useParams();
   const { deleteState } = useProjectState();
@@ -47,15 +49,14 @@ export const StateDeleteModal = observer(function StateDeleteModal(props: TState
         if (err.status === 400)
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: "Error!",
-            message:
-              "This state contains some work items within it, please move them to some other state to delete this state.",
+            title: t("toast.error"),
+            message: t("toast.state_has_work_items"),
           });
         else
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: "Error!",
-            message: "State could not be deleted. Please try again.",
+            title: t("toast.error"),
+            message: t("toast.state_delete_failed"),
           });
       })
       .finally(() => {

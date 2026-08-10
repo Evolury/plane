@@ -14,6 +14,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 import type { IState, TStateOperationsCallbacks } from "@plane/types";
 import { AlertModalCore } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { usePlatformOS } from "@/hooks/use-platform-os";
 
@@ -28,6 +29,7 @@ export const StateDelete = observer(function StateDelete(props: TStateDelete) {
   const { totalStates, state, deleteStateCallback } = props;
   // hooks
   const { isMobile } = usePlatformOS();
+  const { t } = useTranslation();
   // states
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -47,15 +49,14 @@ export const StateDelete = observer(function StateDelete(props: TStateDelete) {
       if (errorStatus.status === 400) {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message:
-            "This state contains some work items within it, please move them to some other state to delete this state.",
+          title: t("toast.error"),
+          message: t("toast.state_has_work_items"),
         });
       } else {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "State could not be deleted. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.state_delete_failed"),
         });
       }
       setIsDelete(false);

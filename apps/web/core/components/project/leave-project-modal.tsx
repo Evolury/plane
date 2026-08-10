@@ -13,6 +13,7 @@ import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IProject } from "@plane/types";
 import { Input, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useUserPermissions } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -37,6 +38,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
   const { project, isOpen, onClose } = props;
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   const { workspaceSlug } = useParams();
   // store hooks
   const { leaveProject } = useUserPermissions();
@@ -67,29 +69,29 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
             .catch((_err) => {
               setToast({
                 type: TOAST_TYPE.ERROR,
-                title: "Error!",
-                message: "Something went wrong please try again later.",
+                title: t("toast.error"),
+                message: t("toast.something_went_wrong_later"),
               });
             });
         } else {
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: "Error!",
-            message: "Please confirm leaving the project by typing the 'Leave Project'.",
+            title: t("toast.error"),
+            message: t("toast.confirm_leave_project"),
           });
         }
       } else {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Please enter the project name as shown in the description.",
+          title: t("toast.error"),
+          message: t("toast.enter_project_name"),
         });
       }
     } else {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Please fill all fields.",
+        title: t("toast.error"),
+        message: t("toast.fill_all_fields"),
       });
     }
   };

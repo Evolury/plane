@@ -12,6 +12,7 @@ import { Dialog, Transition } from "@headlessui/react";
 // ui
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useUser } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -25,6 +26,7 @@ export function SwitchAccountModal(props: Props) {
   const { isOpen, onClose } = props;
   // states
   const [switchingAccount, setSwitchingAccount] = useState(false);
+  const { t } = useTranslation();
   // router
   const router = useAppRouter();
   // store hooks
@@ -49,8 +51,8 @@ export function SwitchAccountModal(props: Props) {
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Failed to sign out. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.sign_out_failed"),
         })
       )
       .finally(() => setSwitchingAccount(false));

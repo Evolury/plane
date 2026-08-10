@@ -10,6 +10,7 @@ import { START_OF_THE_WEEK_OPTIONS } from "@plane/constants";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { EStartOfTheWeek } from "@plane/types";
 import { CustomSelect } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // components
 import { SettingsControlItem } from "@/components/settings/control-item";
 // hooks
@@ -23,13 +24,14 @@ export const StartOfWeekPreference = observer(function StartOfWeekPreference(pro
 }) {
   // hooks
   const { data: userProfile, updateUserProfile } = useUserProfile();
+  const { t } = useTranslation();
 
   const handleStartOfWeekChange = async (val: number) => {
     try {
       await updateUserProfile({ start_of_the_week: val });
-      setToast({ type: TOAST_TYPE.SUCCESS, title: "Success", message: "First day of the week updated successfully" });
+      setToast({ type: TOAST_TYPE.SUCCESS, title: t("success"), message: t("toast.first_day_updated") });
     } catch (_error) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Update failed", message: "Please try again later." });
+      setToast({ type: TOAST_TYPE.ERROR, title: "Update failed", message: t("toast.try_again_later") });
     }
   };
 

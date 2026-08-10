@@ -12,6 +12,7 @@ import type { EditorRefApi } from "@plane/editor";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssue, TNameDescriptionLoader } from "@plane/types";
 import { EFileAssetType, EInboxIssueSource, EInboxIssueStatus } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // components
 import { DescriptionVersionsRoot } from "@/components/core/description-versions";
 import { DescriptionInput } from "@/components/editor/rich-text/description-input";
@@ -51,6 +52,7 @@ export const InboxIssueMainContent = observer(function InboxIssueMainContent(pro
   const editorRef = useRef<EditorRefApi>(null);
   // store hooks
   const { data: currentUser } = useUser();
+  const { t } = useTranslation();
   const { getUserDetails } = useMember();
   const { loader } = useProjectInbox();
   const { removeIssue, archiveIssue } = useIssueDetail();
@@ -82,16 +84,16 @@ export const InboxIssueMainContent = observer(function InboxIssueMainContent(pro
         try {
           await removeIssue(workspaceSlug, projectId, _issueId);
           setToast({
-            title: "Success!",
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
-            message: "Work item deleted successfully",
+            message: t("toast.work_item_deleted"),
           });
         } catch (error) {
           console.log("Error in deleting work item:", error);
           setToast({
-            title: "Error!",
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
-            message: "Work item delete failed",
+            message: t("toast.work_item_delete_failed"),
           });
         }
       },
@@ -102,7 +104,7 @@ export const InboxIssueMainContent = observer(function InboxIssueMainContent(pro
           setToast({
             title: "Work item update failed",
             type: TOAST_TYPE.ERROR,
-            message: "Work item update failed",
+            message: t("toast.work_item_update_failed"),
           });
         }
       },

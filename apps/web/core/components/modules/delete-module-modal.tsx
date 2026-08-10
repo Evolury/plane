@@ -52,8 +52,8 @@ export const DeleteModuleModal = observer(function DeleteModuleModal(props: Prop
         handleClose();
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Module deleted successfully.",
+          title: t("toast.success"),
+          message: t("toast.module_deleted"),
         });
       })
       .catch((errors) => {

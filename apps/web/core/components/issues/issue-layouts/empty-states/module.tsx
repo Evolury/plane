@@ -52,15 +52,15 @@ export const ModuleEmptyState = observer(function ModuleEmptyState() {
       .then(() =>
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Work items added to the module successfully.",
+          title: t("toast.success"),
+          message: t("toast.work_items_added_module"),
         })
       )
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Selected work items could not be added to the module. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.work_items_add_module_failed"),
         })
       );
   };

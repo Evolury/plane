@@ -15,6 +15,7 @@ import type { EditorRefApi } from "@plane/editor";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { CustomSelect, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // components
 import { PDFDocument } from "@/components/editor/pdf";
 // hooks
@@ -105,6 +106,7 @@ export function ExportPageModal(props: Props) {
   const { editorRef, isOpen, onClose, pageTitle } = props;
   // states
   const [isExporting, setIsExporting] = useState(false);
+  const { t } = useTranslation();
   // params
   const { workspaceSlug, projectId } = useParams();
   // form info
@@ -186,16 +188,16 @@ export function ExportPageModal(props: Props) {
       }
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Page exported successfully.",
+        title: t("toast.success"),
+        message: t("toast.page_exported"),
       });
       handleClose();
     } catch (error) {
       console.error("Error in exporting page:", error);
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Page could not be exported. Please try again later.",
+        title: t("toast.error"),
+        message: t("toast.page_export_failed"),
       });
     } finally {
       setIsExporting(false);

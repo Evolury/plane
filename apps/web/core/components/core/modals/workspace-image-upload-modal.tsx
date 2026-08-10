@@ -16,6 +16,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { EFileAssetType } from "@plane/types";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 import { getAssetIdFromUrl, getFileURL, checkURLValidity } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
@@ -37,6 +38,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
   // states
   const [image, setImage] = useState<File | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
+  const { t } = useTranslation();
   const [isImageUploading, setIsImageUploading] = useState(false);
   // router
   const { workspaceSlug } = useParams();
@@ -79,7 +81,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
       console.log("error", error);
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
+        title: t("error"),
         message: error.error || "Something went wrong",
       });
     } finally {

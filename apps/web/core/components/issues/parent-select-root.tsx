@@ -67,7 +67,7 @@ export const IssueParentSelectRoot = observer(function IssueParentSelectRoot(pro
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: t("common.error.label"),
+        title: t("toast.error"),
         message: t("common.something_went_wrong"),
       });
     }

@@ -13,6 +13,7 @@ import { CheckIcon, ViewsIcon } from "@plane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TUserProfile } from "@plane/types";
 import { EOnboardingSteps } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useUserProfile } from "@/hooks/store/user";
 // local components
@@ -40,6 +41,7 @@ const defaultValues = {
 export const RoleSetupStep = observer(function RoleSetupStep({ handleStepChange }: Props) {
   // store hooks
   const { data: profile, updateUserProfile } = useUserProfile();
+  const { t } = useTranslation();
   // form info
   const {
     handleSubmit,
@@ -65,14 +67,14 @@ export const RoleSetupStep = observer(function RoleSetupStep({ handleStepChange 
       ]);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success",
-        message: "Profile setup completed!",
+        title: t("success"),
+        message: t("toast.profile_setup_completed"),
       });
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "Profile setup failed. Please try again!",
+        title: t("error"),
+        message: t("toast.profile_setup_failed"),
       });
     }
   };

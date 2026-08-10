@@ -300,8 +300,8 @@
   "disabled_project": {
     "empty_state": {
       "inbox": {
-        "title": "A Admissão não está habilitado para o projeto.",
-        "description": "A Admissão ajuda você a gerenciar as solicitações recebidas para o seu projeto e adicioná-las como itens de trabalho em seu fluxo de trabalho. Habilite a admissão nas configurações do projeto para gerenciar as solicitações.",
+        "title": "O Intake não está habilitado para o projeto.",
+        "description": "O Intake ajuda você a gerenciar as solicitações recebidas para o seu projeto e adicioná-las como itens de trabalho em seu fluxo de trabalho. Habilite o Intake nas configurações do projeto para gerenciar as solicitações.",
         "primary_button": {
           "text": "Gerenciar funcionalidades"
         }
@@ -354,7 +354,7 @@
       "name": "Nome",
       "progress": "Progresso",
       "issues": "Número de itens de trabalho",
-      "due_date": "Data de vencimento",
+      "due_date": "Data de conclusão",
       "created_at": "Data de criação",
       "manual": "Manual"
     }

@@ -19,6 +19,7 @@ import type { TProjectPublishLayouts, TProjectPublishSettings } from "@plane/typ
 import { Loader, ToggleSwitch, CustomSelect, ModalCore, EModalWidth } from "@plane/ui";
 // helpers
 import { copyTextToClipboard } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useProjectPublish } from "@/hooks/store/use-project-publish";
 
@@ -51,6 +52,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
   const { isOpen, onClose, projectId } = props;
   // states
   const [isUnPublishing, setIsUnPublishing] = useState(false);
+  const { t } = useTranslation();
   // router
   const { workspaceSlug } = useParams();
   // store hooks
@@ -100,8 +102,8 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
     await updatePublishSettings(workspaceSlug.toString(), projectId, payload.id, payload).then((res) => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Publish settings updated successfully!",
+        title: t("toast.success"),
+        message: t("toast.publish_settings_updated"),
       });
 
       handleClose();
@@ -118,8 +120,8 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Something went wrong while unpublishing the project.",
+          title: t("toast.error"),
+          message: t("toast.unpublish_failed"),
         })
       )
       .finally(() => setIsUnPublishing(false));
@@ -136,8 +138,8 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
     if (!selectedLayouts || selectedLayouts.length === 0) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Please select at least one view layout to publish the project.",
+        title: t("toast.error"),
+        message: t("toast.select_view_layout"),
       });
       return;
     }
@@ -172,7 +174,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "",
-        message: "Published page link copied successfully.",
+        message: t("toast.published_page_link_copied"),
       })
     );
 

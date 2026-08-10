@@ -11,6 +11,7 @@ import { PlusIcon } from "@plane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssueLink } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // local imports
@@ -35,6 +36,7 @@ export function IssueLinkRoot(props: TIssueLinkRoot) {
   const { workspaceSlug, projectId, issueId, disabled = false } = props;
   // hooks
   const { toggleIssueLinkModal: toggleIssueLinkModalStore, createLink, updateLink, removeLink } = useIssueDetail();
+  const { t } = useTranslation();
   // state
   const [isIssueLinkModal, setIsIssueLinkModal] = useState(false);
   const toggleIssueLinkModal = useCallback(
@@ -52,7 +54,7 @@ export function IssueLinkRoot(props: TIssueLinkRoot) {
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing required fields");
           await createLink(workspaceSlug, projectId, issueId, data);
           setToast({
-            message: "The link has been successfully created",
+            message: t("toast.link_created"),
             type: TOAST_TYPE.SUCCESS,
             title: "Link created",
           });
@@ -71,14 +73,14 @@ export function IssueLinkRoot(props: TIssueLinkRoot) {
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing required fields");
           await updateLink(workspaceSlug, projectId, issueId, linkId, data);
           setToast({
-            message: "The link has been successfully updated",
+            message: t("toast.link_updated"),
             type: TOAST_TYPE.SUCCESS,
             title: "Link updated",
           });
           toggleIssueLinkModal(false);
         } catch (error) {
           setToast({
-            message: "The link could not be updated",
+            message: t("toast.link_update_failed"),
             type: TOAST_TYPE.ERROR,
             title: "Link not updated",
           });
@@ -90,14 +92,14 @@ export function IssueLinkRoot(props: TIssueLinkRoot) {
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing required fields");
           await removeLink(workspaceSlug, projectId, issueId, linkId);
           setToast({
-            message: "The link has been successfully removed",
+            message: t("toast.link_removed"),
             type: TOAST_TYPE.SUCCESS,
             title: "Link removed",
           });
           toggleIssueLinkModal(false);
         } catch {
           setToast({
-            message: "The link could not be removed",
+            message: t("toast.link_remove_failed"),
             type: TOAST_TYPE.ERROR,
             title: "Link not removed",
           });

@@ -44,32 +44,32 @@
     },
     "toasts": {
       "errors": {
-        "wrong_name": "O nome da nota adesiva não pode ter mais de 100 caracteres.",
-        "already_exists": "Já existe uma nota adesiva sem descrição"
+        "wrong_name": "O nome do Sticky não pode ter mais de 100 caracteres.",
+        "already_exists": "Já existe um Sticky sem descrição"
       },
       "created": {
-        "title": "Nota adesiva criada",
-        "message": "A nota adesiva foi criada com sucesso"
+        "title": "Sticky criado",
+        "message": "O Sticky foi criado com sucesso"
       },
       "not_created": {
-        "title": "Nota adesiva não criada",
-        "message": "A nota adesiva não pôde ser criada"
+        "title": "Sticky não criado",
+        "message": "O Sticky não pôde ser criado"
       },
       "updated": {
-        "title": "Nota adesiva atualizada",
-        "message": "A nota adesiva foi atualizada com sucesso"
+        "title": "Sticky atualizado",
+        "message": "O Sticky foi atualizado com sucesso"
       },
       "not_updated": {
-        "title": "Nota adesiva não atualizada",
-        "message": "A nota adesiva não pôde ser atualizada"
+        "title": "Sticky não atualizado",
+        "message": "O Sticky não pôde ser atualizado"
       },
       "removed": {
-        "title": "Nota adesiva removida",
-        "message": "A nota adesiva foi removida com sucesso"
+        "title": "Sticky removido",
+        "message": "O Sticky foi removido com sucesso"
       },
       "not_removed": {
-        "title": "Nota adesiva não removida",
-        "message": "A nota adesiva não pôde ser removida"
+        "title": "Sticky não removido",
+        "message": "O Sticky não pôde ser removido"
       }
     },
     "open_button": "Abrir painel de navegação",

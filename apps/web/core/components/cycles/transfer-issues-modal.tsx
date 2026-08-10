@@ -12,6 +12,7 @@ import { SearchIcon, CycleIcon, TransferIcon, CloseIcon } from "@plane/propel/ic
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { EIssuesStoreType } from "@plane/types";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 import { useCycle } from "@/hooks/store/use-cycle";
 import { useIssues } from "@/hooks/store/use-issues";
 
@@ -25,6 +26,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
   const { isOpen, handleClose, cycleId } = props;
   // states
   const [query, setQuery] = useState("");
+  const { t } = useTranslation();
 
   // store hooks
   const { currentProjectIncompleteCycleIds, getCycleById, fetchActiveCycleProgress } = useCycle();
@@ -41,16 +43,16 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
       .then(async () => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Work items have been transferred successfully",
+          title: t("toast.success"),
+          message: t("toast.work_items_transferred"),
         });
         await getCycleDetails(payload.new_cycle_id);
       })
       .catch(() => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Unable to transfer work items. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.transfer_failed"),
         });
       });
   };
@@ -64,7 +66,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
     await Promise.all(cyclesFetch).catch((error) => {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
+        title: t("error"),
         message: error.error || "Unable to fetch cycle details",
       });
     });

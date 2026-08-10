@@ -32,14 +32,14 @@ export const ProfileSettingsLanguageAndTimezonePreferencesList = observer(
       try {
         await updateCurrentUser({ user_timezone: value });
         setToast({
-          title: "Success!",
-          message: "Timezone updated successfully",
+          title: t("toast.success"),
+          message: t("toast.timezone_updated"),
           type: TOAST_TYPE.SUCCESS,
         });
       } catch (_error) {
         setToast({
-          title: "Error!",
-          message: "Failed to update timezone",
+          title: t("toast.error"),
+          message: t("toast.timezone_update_failed"),
           type: TOAST_TYPE.ERROR,
         });
       }
@@ -49,14 +49,14 @@ export const ProfileSettingsLanguageAndTimezonePreferencesList = observer(
       try {
         await updateUserProfile({ language: value });
         setToast({
-          title: "Success!",
-          message: "Language updated successfully",
+          title: t("toast.success"),
+          message: t("toast.language_updated"),
           type: TOAST_TYPE.SUCCESS,
         });
       } catch (_error) {
         setToast({
-          title: "Error!",
-          message: "Failed to update language",
+          title: t("toast.error"),
+          message: t("toast.language_update_failed"),
           type: TOAST_TYPE.ERROR,
         });
       }

@@ -11,6 +11,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IWorkspaceView } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useGlobalView } from "@/hooks/store/use-global-view";
 import { useWorkItemFilters } from "@/hooks/store/work-item-filters/use-work-item-filters";
@@ -29,6 +30,7 @@ export const CreateUpdateWorkspaceViewModal = observer(function CreateUpdateWork
   const { isOpen, onClose, data, preLoadedData } = props;
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   const { workspaceSlug: routerWorkspaceSlug } = useParams();
   const workspaceSlug = routerWorkspaceSlug ? routerWorkspaceSlug.toString() : undefined;
   // store hooks
@@ -52,16 +54,16 @@ export const CreateUpdateWorkspaceViewModal = observer(function CreateUpdateWork
       const res = await createGlobalView(workspaceSlug, payloadData);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "View created successfully.",
+        title: t("toast.success"),
+        message: t("toast.view_created"),
       });
       router.push(`/${workspaceSlug}/workspace-views/${res.id}`);
       handleClose();
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "View could not be created. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.view_create_failed_alt"),
       });
     }
   };
@@ -81,16 +83,16 @@ export const CreateUpdateWorkspaceViewModal = observer(function CreateUpdateWork
         resetExpression(EIssuesStoreType.GLOBAL, data.id, res.rich_filters);
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "View updated successfully.",
+          title: t("toast.success"),
+          message: t("toast.view_updated"),
         });
         handleClose();
       }
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "View could not be updated. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.view_update_failed_alt"),
       });
     }
   };

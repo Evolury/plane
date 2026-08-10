@@ -13,6 +13,7 @@ import { EIssueGroupByToServerOptions, EUserPermissions, EUserPermissionsLevel }
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TGroupedIssues } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useCalendarView } from "@/hooks/store/use-calendar-view";
 import { useIssues } from "@/hooks/store/use-issues";
@@ -54,6 +55,7 @@ export const BaseCalendarRoot = observer(function BaseCalendarRoot(props: IBaseC
 
   // router
   const { workspaceSlug } = useParams();
+  const { t } = useTranslation();
 
   // hooks
   const fallbackStoreType = useIssueStoreType() as CalendarStoreType;
@@ -121,7 +123,7 @@ export const BaseCalendarRoot = observer(function BaseCalendarRoot(props: IBaseC
       updateIssue
     ).catch((err) => {
       setToast({
-        title: "Error!",
+        title: t("toast.error"),
         type: TOAST_TYPE.ERROR,
         message: err?.detail ?? "Failed to perform this action",
       });

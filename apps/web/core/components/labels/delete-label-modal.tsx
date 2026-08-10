@@ -12,6 +12,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IIssueLabel } from "@plane/types";
 // ui
 import { AlertModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useLabel } from "@/hooks/store/use-label";
 
@@ -25,6 +26,7 @@ export const DeleteLabelModal = observer(function DeleteLabelModal(props: Props)
   const { isOpen, onClose, data } = props;
   // router
   const { workspaceSlug, projectId } = useParams();
+  const { t } = useTranslation();
   // store hooks
   const { deleteLabel } = useLabel();
   // states
@@ -49,7 +51,7 @@ export const DeleteLabelModal = observer(function DeleteLabelModal(props: Props)
         const error = err?.error || "Label could not be deleted. Please try again.";
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
+          title: t("toast.error"),
           message: error,
         });
       });

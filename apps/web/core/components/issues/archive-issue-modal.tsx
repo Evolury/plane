@@ -60,7 +60,7 @@ export function ArchiveIssueModal(props: Props) {
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: t("common.error.label"),
+          title: t("toast.error"),
           message: t("issue.archive.failed.message"),
         })
       )

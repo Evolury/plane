@@ -16,6 +16,7 @@ import type { IProjectView } from "@plane/types";
 import type { TContextMenuItem } from "@plane/ui";
 import { ContextMenu, CustomMenu } from "@plane/ui";
 import { copyUrlToClipboard, cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // helpers
 import { useViewMenuItems } from "@/components/common/quick-actions-helper";
 // hooks
@@ -37,6 +38,7 @@ export const ViewQuickActions = observer(function ViewQuickActions(props: Props)
   const { parentRef, projectId, view, workspaceSlug, customClassName } = props;
   // states
   const [createUpdateViewModal, setCreateUpdateViewModal] = useState(false);
+  const { t } = useTranslation();
   const [deleteViewModal, setDeleteViewModal] = useState(false);
   // store hooks
   const { data } = useUser();
@@ -54,7 +56,7 @@ export const ViewQuickActions = observer(function ViewQuickActions(props: Props)
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Link Copied!",
-        message: "View link copied to clipboard.",
+        message: t("toast.view_link_copied"),
       });
     });
   const handleOpenInNewTab = () => window.open(`/${viewLink}`, "_blank");

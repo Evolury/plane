@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 // ui
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { AlertModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useWebhook } from "@/hooks/store/use-webhook";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -22,6 +23,7 @@ export function DeleteWebhookModal(props: IDeleteWebhook) {
   const { isOpen, onClose } = props;
   // states
   const [isDeleting, setIsDeleting] = useState(false);
+  const { t } = useTranslation();
   // router
   const router = useAppRouter();
   // store hooks
@@ -41,14 +43,14 @@ export function DeleteWebhookModal(props: IDeleteWebhook) {
       router.replace(`/${workspaceSlug}/settings/webhooks/`);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Webhook deleted successfully.",
+        title: t("toast.success"),
+        message: t("toast.webhook_deleted"),
       });
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Webhook could not be deleted. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.webhook_delete_failed"),
       });
     }
     setIsDeleting(false);

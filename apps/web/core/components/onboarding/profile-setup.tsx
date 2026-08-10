@@ -137,8 +137,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
       ]);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success",
-        message: "Profile setup completed!",
+        title: t("success"),
+        message: t("toast.profile_setup_completed"),
       });
       // For Invited Users, they will skip all other steps and finish onboarding.
       if (totalSteps <= 2) {
@@ -147,8 +147,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "Profile setup failed. Please try again!",
+        title: t("error"),
+        message: t("toast.profile_setup_failed"),
       });
     }
   };
@@ -172,8 +172,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "User details update failed. Please try again!",
+        title: t("error"),
+        message: t("toast.user_details_update_failed"),
       });
     }
   };
@@ -190,8 +190,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
       ]);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success",
-        message: "Profile setup completed!",
+        title: t("success"),
+        message: t("toast.profile_setup_completed"),
       });
       // For Invited Users, they will skip all other steps and finish onboarding.
       if (totalSteps <= 2) {
@@ -200,8 +200,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "Profile setup failed. Please try again!",
+        title: t("error"),
+        message: t("toast.profile_setup_failed"),
       });
     }
   };

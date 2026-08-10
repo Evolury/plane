@@ -14,6 +14,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TContextMenuItem } from "@plane/ui";
 import { ContextMenu, CustomMenu } from "@plane/ui";
 import { copyUrlToClipboard, cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { useModuleMenuItems } from "@/components/common/quick-actions-helper";
 import { ArchiveModuleModal, CreateUpdateModuleModal, DeleteModuleModal } from "@/components/modules";
@@ -34,6 +35,7 @@ export const ModuleQuickActions = observer(function ModuleQuickActions(props: Pr
   const { parentRef, moduleId, projectId, workspaceSlug, customClassName } = props;
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   // states
   const [editModal, setEditModal] = useState(false);
   const [archiveModuleModal, setArchiveModuleModal] = useState(false);
@@ -59,7 +61,7 @@ export const ModuleQuickActions = observer(function ModuleQuickActions(props: Pr
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Link Copied!",
-        message: "Module link copied to clipboard.",
+        message: t("toast.module_link_copied"),
       });
     });
   const handleOpenInNewTab = () => window.open(`/${moduleLink}`, "_blank");
@@ -70,14 +72,14 @@ export const ModuleQuickActions = observer(function ModuleQuickActions(props: Pr
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Restore success",
-        message: "Your module can be found in project modules.",
+        message: t("toast.module_in_project"),
       });
       router.push(`/${workspaceSlug}/projects/${projectId}/archives/modules`);
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Module could not be restored. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.module_restore_failed"),
       });
     }
   };

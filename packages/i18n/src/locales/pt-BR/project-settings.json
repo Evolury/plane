@@ -354,11 +354,11 @@
       "intake": {
         "intake_responsibility": "Responsabilidade de recebimento",
         "intake_sources": "Fontes de recebimento",
-        "title": "Recepção",
-        "short_title": "Recepção",
+        "title": "Intake",
+        "short_title": "Intake",
         "description": "Permita que não membros compartilhem bugs, feedback e sugestões; sem interromper seu fluxo de trabalho.",
-        "toggle_title": "Ativar recepção",
-        "toggle_description": "Permitir que membros do projeto criem solicitações de recepção no aplicativo.",
+        "toggle_title": "Ativar o Intake",
+        "toggle_description": "Permitir que membros do projeto criem solicitações no Intake pelo aplicativo.",
         "toggle_tooltip_on": "Peça ao administrador do projeto para ativar.",
         "toggle_tooltip_off": "Peça ao administrador do projeto para desativar.",
         "notify_assignee": {

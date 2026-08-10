@@ -16,6 +16,7 @@ import type { TIssue, ISearchIssueResponse, TIssueGroupByOptions } from "@plane/
 import { CustomMenu } from "@plane/ui";
 // components
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 import { ExistingIssuesListModal } from "@/components/core/modals/existing-issues-list-modal";
 import { MultipleSelectGroupAction } from "@/components/core/multiple-select";
 import { CreateUpdateIssueModal } from "@/components/issues/issue-modal/modal";
@@ -55,6 +56,7 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
   } = props;
   // states
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
   const [openExistingIssueListModal, setOpenExistingIssueListModal] = useState(false);
   // router
   const { workspaceSlug, projectId, moduleId, cycleId } = useParams();
@@ -76,14 +78,14 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
 
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Work items added to the cycle successfully.",
+        title: t("toast.success"),
+        message: t("toast.work_items_added_cycle"),
       });
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Selected work items could not be added to the cycle. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.work_items_add_cycle_failed"),
       });
     }
   };

@@ -8,6 +8,7 @@ import { useRef, useState } from "react";
 // Plane
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IBlockUpdateDependencyData, IGanttBlock } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
 //
@@ -29,6 +30,7 @@ export const useGanttResizable = (
   const currMouseEvent = useRef<MouseEvent | undefined>();
   // states
   const { currentViewData, updateBlockPosition, setIsDragging, getUpdatedPositionAfterDrag } = useTimeLineChartStore();
+  const { t } = useTranslation();
   const [isMoving, setIsMoving] = useState<"left" | "right" | "move" | undefined>();
 
   // handle block resize from the left end
@@ -130,8 +132,8 @@ export const useGanttResizable = (
       } catch {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error",
-          message: "Something went wrong while updating block dates",
+          title: t("error"),
+          message: t("toast.block_dates_failed"),
         });
       }
 

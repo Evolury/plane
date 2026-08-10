@@ -14,6 +14,7 @@ import type { IUser } from "@plane/types";
 // hooks
 // ui
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // helpers
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useMember } from "@/hooks/store/use-member";
@@ -32,6 +33,7 @@ export const IssueReaction = observer(function IssueReaction(props: TIssueReacti
   const { workspaceSlug, projectId, issueId, currentUser, disabled = false, className = "" } = props;
   // state
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const { t } = useTranslation();
   // hooks
   const {
     reaction: { getReactionsByIssueId, reactionsByUser, getReactionById },
@@ -50,15 +52,15 @@ export const IssueReaction = observer(function IssueReaction(props: TIssueReacti
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing fields");
           await createReaction(workspaceSlug, projectId, issueId, reaction);
           setToast({
-            title: "Success!",
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
-            message: "Reaction created successfully",
+            message: t("toast.reaction_created"),
           });
         } catch (_error) {
           setToast({
-            title: "Error!",
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
-            message: "Reaction creation failed",
+            message: t("toast.reaction_create_failed"),
           });
         }
       },
@@ -67,15 +69,15 @@ export const IssueReaction = observer(function IssueReaction(props: TIssueReacti
           if (!workspaceSlug || !projectId || !issueId || !currentUser?.id) throw new Error("Missing fields");
           await removeReaction(workspaceSlug, projectId, issueId, reaction, currentUser.id);
           setToast({
-            title: "Success!",
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
-            message: "Reaction removed successfully",
+            message: t("toast.reaction_removed"),
           });
         } catch (_error) {
           setToast({
-            title: "Error!",
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
-            message: "Reaction remove failed",
+            message: t("toast.reaction_remove_failed"),
           });
         }
       },

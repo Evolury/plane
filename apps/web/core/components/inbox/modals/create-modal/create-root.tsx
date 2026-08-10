@@ -92,8 +92,8 @@ export const InboxIssueCreateRoot = observer(function InboxIssueCreateRoot(props
     } else {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Editor is still processing changes. Please wait before proceeding.",
+        title: t("toast.error"),
+        message: t("toast.editor_processing"),
       });
       event.preventDefault(); // Prevent default action if editor is not ready to discard
     }
@@ -124,8 +124,8 @@ export const InboxIssueCreateRoot = observer(function InboxIssueCreateRoot(props
     if (!descriptionEditorRef.current?.isEditorReadyToDiscard()) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Editor is still processing changes. Please wait before proceeding.",
+        title: t("toast.error"),
+        message: t("toast.editor_processing"),
       });
       return;
     }
@@ -160,7 +160,7 @@ export const InboxIssueCreateRoot = observer(function InboxIssueCreateRoot(props
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: `Success!`,
-          message: "Work item created successfully.",
+          message: t("toast.work_item_created"),
         });
       })
       .catch((error) => {
@@ -168,7 +168,7 @@ export const InboxIssueCreateRoot = observer(function InboxIssueCreateRoot(props
         setToast({
           type: TOAST_TYPE.ERROR,
           title: `Error!`,
-          message: "Some error occurred. Please try again.",
+          message: t("toast.some_error_try_again"),
         });
       });
     setFormSubmitting(false);
@@ -226,8 +226,8 @@ export const InboxIssueCreateRoot = observer(function InboxIssueCreateRoot(props
                   } else {
                     setToast({
                       type: TOAST_TYPE.ERROR,
-                      title: "Error!",
-                      message: "Editor is still processing changes. Please wait before proceeding.",
+                      title: t("toast.error"),
+                      message: t("toast.editor_processing"),
                     });
                   }
                 }}

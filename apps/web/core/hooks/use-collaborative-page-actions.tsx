@@ -9,6 +9,7 @@ import type { TDocumentEventsServer } from "@plane/editor";
 import type { TDocumentEventsClient } from "@plane/editor/lib";
 import { DocumentCollaborativeEvents, getServerEventName } from "@plane/editor/lib";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { useTranslation } from "@plane/i18n";
 // store
 import type { TPageInstance } from "@/store/pages/base-page";
 
@@ -62,6 +63,7 @@ export const useCollaborativePageActions = (props: Props) => {
     }),
     [page]
   );
+  const { t } = useTranslation();
 
   const executeCollaborativeAction = useCallback(
     async (event: CollaborativeActionEvent) => {
@@ -80,7 +82,7 @@ export const useCollaborativePageActions = (props: Props) => {
         if (actionDetails?.errorMessage) {
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: "Error!",
+            title: t("toast.error"),
             message: actionDetails.errorMessage,
           });
         }

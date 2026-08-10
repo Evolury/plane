@@ -14,6 +14,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TUserProfile } from "@plane/types";
 import { EOnboardingSteps } from "@plane/types";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useUserProfile } from "@/hooks/store/user";
 // local imports
@@ -31,6 +32,7 @@ const defaultValues = {
 export const UseCaseSetupStep = observer(function UseCaseSetupStep({ handleStepChange }: Props) {
   // store hooks
   const { data: profile, updateUserProfile } = useUserProfile();
+  const { t } = useTranslation();
   // form info
   const {
     handleSubmit,
@@ -56,14 +58,14 @@ export const UseCaseSetupStep = observer(function UseCaseSetupStep({ handleStepC
       ]);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success",
-        message: "Profile setup completed!",
+        title: t("success"),
+        message: t("toast.profile_setup_completed"),
       });
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "Profile setup failed. Please try again!",
+        title: t("error"),
+        message: t("toast.profile_setup_failed"),
       });
     }
   };

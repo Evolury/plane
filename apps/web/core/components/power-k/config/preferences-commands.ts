@@ -35,7 +35,7 @@ export const usePowerKPreferencesCommands = (): TPowerKCommandConfig[] => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
             title: "Theme updated",
-            message: "Reloading to apply changes...",
+            message: t("toast.reloading_changes"),
           });
           // reload the page after showing the toast
           window.location.reload();

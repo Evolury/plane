@@ -13,6 +13,7 @@ import type { CycleDateCheckData, ICycle, TCycleTabOptions } from "@plane/types"
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // hooks
 import { renderFormattedPayloadDate } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 import { useCycle } from "@/hooks/store/use-cycle";
 import { useProject } from "@/hooks/store/use-project";
 import useKeypress from "@/hooks/use-keypress";
@@ -40,6 +41,7 @@ export function CycleCreateUpdateModal(props: CycleModalProps) {
   const [activeProject, setActiveProject] = useState<string | null>(null);
   // store hooks
   const { workspaceProjectIds } = useProject();
+  const { t } = useTranslation();
   const { createCycle, updateCycleDetails } = useCycle();
   const { isMobile } = usePlatformOS();
 
@@ -63,14 +65,14 @@ export function CycleCreateUpdateModal(props: CycleModalProps) {
 
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Cycle created successfully.",
+          title: t("toast.success"),
+          message: t("toast.cycle_created"),
         });
       })
       .catch((err) => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
+          title: t("toast.error"),
           message: err?.detail ?? "Error in creating cycle. Please try again.",
         });
       });
@@ -84,14 +86,14 @@ export function CycleCreateUpdateModal(props: CycleModalProps) {
       .then((_res) => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Cycle updated successfully.",
+          title: t("toast.success"),
+          message: t("toast.cycle_updated"),
         });
       })
       .catch((err) => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
+          title: t("toast.error"),
           message: err?.detail ?? "Error in updating cycle. Please try again.",
         });
       });
@@ -152,8 +154,8 @@ export function CycleCreateUpdateModal(props: CycleModalProps) {
     } else
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "You already have a cycle on the given dates, if you want to create a draft cycle, remove the dates.",
+        title: t("toast.error"),
+        message: t("toast.cycle_dates_conflict"),
       });
   };
 

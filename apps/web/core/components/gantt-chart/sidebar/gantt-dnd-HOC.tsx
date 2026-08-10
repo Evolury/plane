@@ -12,6 +12,7 @@ import { observer } from "mobx-react";
 import { useOutsideClickDetector } from "@plane/hooks";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { DropIndicator } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 import { HIGHLIGHT_WITH_LINE, highlightIssueOnDrop } from "@/components/issues/issue-layouts/utils";
 
 type Props = {
@@ -26,6 +27,7 @@ export const GanttDnDHOC = observer(function GanttDnDHOC(props: Props) {
   const { id, isLastChild, children, onDrop, isDragEnabled } = props;
   // states
   const [isDragging, setIsDragging] = useState(false);
+  const { t } = useTranslation();
   const [instruction, setInstruction] = useState<"DRAG_OVER" | "DRAG_BELOW" | undefined>(undefined);
   // refs
   const blockRef = useRef<HTMLDivElement | null>(null);
@@ -108,7 +110,7 @@ export const GanttDnDHOC = observer(function GanttDnDHOC(props: Props) {
           setToast({
             title: "Warning!",
             type: TOAST_TYPE.WARNING,
-            message: "Drag and drop is only enabled when sorted by manual",
+            message: t("toast.drag_manual_only"),
           });
         }
       }}

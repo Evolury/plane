@@ -16,6 +16,7 @@ import type { EditorRefApi } from "@plane/editor";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Input } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // components
 import { RichTextEditor } from "@/components/editor/rich-text";
 // services
@@ -57,6 +58,7 @@ export function GptAssistantPopover(props: Props) {
   } = props;
   // states
   const [response, setResponse] = useState("");
+  const { t } = useTranslation();
   const [invalidResponse, setInvalidResponse] = useState(false);
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
@@ -97,7 +99,7 @@ export function GptAssistantPopover(props: Props) {
 
     setToast({
       type: TOAST_TYPE.ERROR,
-      title: "Error!",
+      title: t("toast.error"),
       message: errorMessage,
     });
 
@@ -123,8 +125,8 @@ export function GptAssistantPopover(props: Props) {
   const handleInvalidTask = () => {
     setToast({
       type: TOAST_TYPE.ERROR,
-      title: "Error!",
-      message: "Please enter some task to get AI assistance.",
+      title: t("toast.error"),
+      message: t("toast.enter_task_for_ai"),
     });
   };
 

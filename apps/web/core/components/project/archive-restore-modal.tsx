@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -26,6 +27,7 @@ export function ArchiveRestoreProjectModal(props: Props) {
   const { workspaceSlug, projectId, isOpen, onClose, archive } = props;
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   // states
   const [isLoading, setIsLoading] = useState(false);
   // store hooks
@@ -55,8 +57,8 @@ export function ArchiveRestoreProjectModal(props: Props) {
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Project could not be archived. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.project_archive_failed"),
         })
       )
       .finally(() => setIsLoading(false));
@@ -78,8 +80,8 @@ export function ArchiveRestoreProjectModal(props: Props) {
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Project could not be restored. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.project_restore_failed"),
         })
       )
       .finally(() => setIsLoading(false));

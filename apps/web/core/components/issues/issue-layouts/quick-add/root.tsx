@@ -113,7 +113,7 @@ export const QuickAddIssueRoot = observer(function QuickAddIssueRoot(props: TQui
       setPromiseToast<any>(quickAddPromise, {
         loading: isEpic ? t("epic.adding") : t("issue.adding"),
         success: {
-          title: t("common.success"),
+          title: t("toast.success"),
           message: () => `${isEpic ? t("epic.create.success") : t("issue.create.success")}`,
           actionItems: (data) => (
             // TODO: Translate here
@@ -126,7 +126,7 @@ export const QuickAddIssueRoot = observer(function QuickAddIssueRoot(props: TQui
           ),
         },
         error: {
-          title: t("common.error.label"),
+          title: t("toast.error"),
           message: (err) => err?.message || t("common.error.message"),
         },
       });

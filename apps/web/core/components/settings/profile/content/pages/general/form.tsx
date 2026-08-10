@@ -98,8 +98,8 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Profile picture deleted successfully.",
+          title: t("toast.success"),
+          message: t("toast.profile_picture_deleted"),
         });
         setValue("avatar_url", "");
         return;
@@ -107,8 +107,8 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       .catch(() => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "There was some error in deleting your profile picture. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.profile_picture_delete_failed"),
         });
       })
       .finally(() => {

@@ -85,7 +85,7 @@ export const DeleteIssueModal = observer(function DeleteIssueModal(props: Props)
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
-            title: t("common.success"),
+            title: t("toast.success"),
             message: t("entity.delete.success", {
               entity: isSubIssue ? t("common.sub_work_item") : isEpic ? t("common.epic") : t("common.work_item"),
             }),

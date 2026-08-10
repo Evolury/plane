@@ -57,10 +57,10 @@
       "updated_at": "Atualizado em",
       "id": "ID"
     },
-    "label": "Admissão",
-    "page_label": "{workspace} - Admissão",
+    "label": "Intake",
+    "page_label": "{workspace} - Intake",
     "modal": {
-      "title": "Criar item de trabalho de admissão"
+      "title": "Criar item de trabalho no Intake"
     },
     "tabs": {
       "open": "Aberto",
@@ -77,7 +77,7 @@
       },
       "sidebar_filter": {
         "title": "Nenhum item de trabalho correspondente",
-        "description": "Nenhum item de trabalho corresponde ao filtro aplicado na admissão. Crie um novo item de trabalho."
+        "description": "Nenhum item de trabalho corresponde ao filtro aplicado no Intake. Crie um novo item de trabalho."
       },
       "detail": {
         "title": "Selecione um item de trabalho para visualizar seus detalhes."

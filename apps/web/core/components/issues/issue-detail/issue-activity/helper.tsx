@@ -57,7 +57,7 @@ export const useWorkItemCommentOperations = (
           const commentLink = `${workItemLink}#comment-${id}`;
           copyUrlToClipboard(commentLink).then(() => {
             setToast({
-              title: t("common.success"),
+              title: t("toast.success"),
               type: TOAST_TYPE.SUCCESS,
               message: t("issue.comments.copy_link.success"),
             });
@@ -65,7 +65,7 @@ export const useWorkItemCommentOperations = (
         } catch (error) {
           console.error("Error in copying comment link:", error);
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("issue.comments.copy_link.error"),
           });
@@ -76,14 +76,14 @@ export const useWorkItemCommentOperations = (
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing fields");
           const comment = await createComment(workspaceSlug, projectId, issueId, data);
           setToast({
-            title: t("common.success"),
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
             message: t("issue.comments.create.success"),
           });
           return comment;
         } catch {
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("issue.comments.create.error"),
           });
@@ -94,13 +94,13 @@ export const useWorkItemCommentOperations = (
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing fields");
           await updateComment(workspaceSlug, projectId, issueId, commentId, data);
           setToast({
-            title: t("common.success"),
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
             message: t("issue.comments.update.success"),
           });
         } catch {
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("issue.comments.update.error"),
           });
@@ -111,13 +111,13 @@ export const useWorkItemCommentOperations = (
           if (!workspaceSlug || !projectId || !issueId) throw new Error("Missing fields");
           await removeComment(workspaceSlug, projectId, issueId, commentId);
           setToast({
-            title: t("common.success"),
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
             message: t("issue.comments.remove.success"),
           });
         } catch {
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("issue.comments.remove.error"),
           });
@@ -162,15 +162,15 @@ export const useWorkItemCommentOperations = (
           if (!workspaceSlug || !projectId || !commentId) throw new Error("Missing fields");
           await createCommentReaction(workspaceSlug, projectId, commentId, reaction);
           setToast({
-            title: "Success!",
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
-            message: "Reaction created successfully",
+            message: t("toast.reaction_created"),
           });
         } catch {
           setToast({
-            title: "Error!",
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
-            message: "Reaction creation failed",
+            message: t("toast.reaction_create_failed"),
           });
         }
       },
@@ -179,15 +179,15 @@ export const useWorkItemCommentOperations = (
           if (!workspaceSlug || !projectId || !commentId || !currentUser?.id) throw new Error("Missing fields");
           removeCommentReaction(workspaceSlug, projectId, commentId, reaction, currentUser.id);
           setToast({
-            title: "Success!",
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
-            message: "Reaction removed successfully",
+            message: t("toast.reaction_removed"),
           });
         } catch {
           setToast({
-            title: "Error!",
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
-            message: "Reaction remove failed",
+            message: t("toast.reaction_remove_failed"),
           });
         }
       },

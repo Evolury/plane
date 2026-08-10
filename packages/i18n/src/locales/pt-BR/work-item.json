@@ -408,19 +408,19 @@
     }
   },
   "epic": {
-    "new": "Novo Épico",
-    "label": "{count, plural, one {Épico} other {Épicos}}",
-    "adding": "Adicionando épico",
+    "new": "Novo Epic",
+    "label": "{count, plural, one {Epic} other {Epics}}",
+    "adding": "Adicionando Epic",
     "create": {
-      "success": "Épico criado com sucesso"
+      "success": "Epic criado com sucesso"
     },
     "add": {
-      "label": "Adicionar Épico",
-      "press_enter": "Pressione 'Enter' para adicionar outro épico"
+      "label": "Adicionar Epic",
+      "press_enter": "Pressione 'Enter' para adicionar outro Epic"
     },
     "title": {
-      "label": "Título do Épico",
-      "required": "O título do épico é obrigatório."
+      "label": "Título do Epic",
+      "required": "O título do Epic é obrigatório."
     }
   }
 }

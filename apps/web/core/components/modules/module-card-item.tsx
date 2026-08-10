@@ -25,6 +25,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 import type { IModule } from "@plane/types";
 import { Card, FavoriteStar, LinearProgressIndicator } from "@plane/ui";
 import { getDate, renderFormattedPayloadDate, generateQueryParams } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { DateRangeDropdown } from "@/components/dropdowns/date-range";
 import { ButtonAvatars } from "@/components/dropdowns/member/avatar";
@@ -45,6 +46,7 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
   const { moduleId } = props;
   // refs
   const parentRef = useRef(null);
+  const { t } = useTranslation();
   // router
   const router = useAppRouter();
   const { workspaceSlug, projectId } = useParams();
@@ -126,14 +128,14 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
-          message: "Module updated successfully.",
+          title: t("toast.success"),
+          message: t("toast.module_updated"),
         });
       })
       .catch((err) => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
+          title: t("toast.error"),
           message: err?.detail ?? "Module could not be updated. Please try again.",
         });
       });

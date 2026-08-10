@@ -10,6 +10,7 @@ import { ArrowUpToLine, Clipboard, History } from "lucide-react";
 // plane imports
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { ToggleSwitch } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useAppRouter } from "@/hooks/use-app-router";
 import { usePageFilters } from "@/hooks/use-page-filters";
@@ -33,6 +34,7 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
   const { page, storeType } = props;
   // states
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const { t } = useTranslation();
   // navigation
   const router = useAppRouter();
   // store values
@@ -79,8 +81,8 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
             editorRef.copyMarkdownToClipboard();
             setToast({
               type: TOAST_TYPE.SUCCESS,
-              title: "Success!",
-              message: "Markdown copied to clipboard.",
+              title: t("toast.success"),
+              message: t("toast.markdown_copied"),
             });
           },
           title: "Copy markdown",

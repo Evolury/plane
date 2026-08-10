@@ -10,6 +10,7 @@ import useSWR from "swr";
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IWebhook } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // ui
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
@@ -27,6 +28,7 @@ import { WebhookDetailsWorkspaceSettingsHeader } from "./header";
 function WebhookDetailsPage({ params }: Route.ComponentProps) {
   // states
   const [deleteWebhookModal, setDeleteWebhookModal] = useState(false);
+  const { t } = useTranslation();
   // router
   const { workspaceSlug, webhookId } = params;
   // mobx store
@@ -64,14 +66,14 @@ function WebhookDetailsPage({ params }: Route.ComponentProps) {
       await updateWebhook(workspaceSlug, formData.id, payload);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Webhook updated successfully.",
+        title: t("toast.success"),
+        message: t("toast.webhook_updated"),
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
+        title: t("toast.error"),
         message: error?.error ?? "Something went wrong. Please try again.",
       });
     }

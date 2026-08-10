@@ -11,6 +11,7 @@ import type { IProjectView } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 // ui
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
 import { useProjectView } from "@/hooks/store/use-project-view";
@@ -33,6 +34,7 @@ export const CreateUpdateProjectViewModal = observer(function CreateUpdateProjec
   const { data, isOpen, onClose, preLoadedData, workspaceSlug, projectId } = props;
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   // store hooks
   const { createView, updateView } = useProjectView();
   const {
@@ -51,14 +53,14 @@ export const CreateUpdateProjectViewModal = observer(function CreateUpdateProjec
       router.push(`/${workspaceSlug}/projects/${projectId}/views/${res.id}`);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "View created successfully.",
+        title: t("toast.success"),
+        message: t("toast.view_created"),
       });
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Failed to create view. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.view_create_failed"),
       });
     }
   };
@@ -72,8 +74,8 @@ export const CreateUpdateProjectViewModal = observer(function CreateUpdateProjec
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Failed to update view. Please try again.",
+        title: t("toast.error"),
+        message: t("toast.view_update_failed"),
       });
     }
   };

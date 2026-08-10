@@ -21,6 +21,7 @@ import type { IProject } from "@plane/types";
 import type { TContextMenuItem } from "@plane/ui";
 import { Avatar, AvatarGroup, ContextMenu, FavoriteStar } from "@plane/ui";
 import { copyUrlToClipboard, cn, getFileURL, renderFormattedDate } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 // hooks
 import { useMember } from "@/hooks/store/use-member";
@@ -42,6 +43,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
   const { project } = props;
   // states
   const [deleteProjectModalOpen, setDeleteProjectModal] = useState(false);
+  const { t } = useTranslation();
   const [joinProjectModalOpen, setJoinProjectModal] = useState(false);
   const [restoreProject, setRestoreProject] = useState(false);
   // refs
@@ -117,7 +119,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       setToast({
         type: TOAST_TYPE.INFO,
         title: "Link Copied!",
-        message: "Project link copied to clipboard.",
+        message: t("toast.project_link_copied"),
       })
     );
   const handleOpenInNewTab = () => window.open(`/${projectLink}`, "_blank");

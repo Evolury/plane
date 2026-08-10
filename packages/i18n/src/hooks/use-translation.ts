@@ -42,6 +42,18 @@ export function useTranslation(): TTranslationStore {
   // async loads per component, causing a re-render cascade.
   const { t, i18n } = useI18nextTranslation();
 
+  // Memoized so the returned `t` is referentially stable across renders. Without
+  // this it was a fresh arrow function every render, which made every
+  // useCallback/useMemo/useEffect that translates report `t` as a missing
+  // dependency — and adding it to the deps would then re-run them on every
+  // render. i18next's own `t` is stable and only changes on language change, so
+  // depending on it keeps translations correct when the user switches language.
+  const translate = useCallback(
+    (key: string, params?: Record<string, unknown>) =>
+      coerceToString(key, params === undefined ? t(key) : t(key, params)),
+    [t]
+  );
+
   const changeLanguage = useCallback(
     (lng: TLanguage) => {
       void (async () => {
@@ -59,8 +71,7 @@ export function useTranslation(): TTranslationStore {
   );
 
   return {
-    t: (key: string, params?: Record<string, unknown>) =>
-      coerceToString(key, params === undefined ? t(key) : t(key, params)),
+    t: translate,
     currentLocale: i18n.language as TLanguage,
     changeLanguage,
     languages: SUPPORTED_LANGUAGES,

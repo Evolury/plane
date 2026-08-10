@@ -12,6 +12,7 @@ import { EUserPermissionsLevel } from "@plane/constants";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import type { IProjectView, TWorkItemFilterExpression } from "@plane/types";
 import { EUserProjectRoles, EViewAccess } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // components
 import { removeNillKeys } from "@/components/issues/issue-layouts/utils";
 import { CreateUpdateProjectViewModal } from "@/components/views/modal";
@@ -41,6 +42,7 @@ export const ProjectLevelWorkItemFiltersHOC = observer(function ProjectLevelWork
     props;
   // states
   const [isCreateViewModalOpen, setIsCreateViewModalOpen] = useState(false);
+  const { t } = useTranslation();
   const [createViewPayload, setCreateViewPayload] = useState<Partial<IProjectView> | null>(null);
   // hooks
   const { getProjectById } = useProject();
@@ -141,7 +143,7 @@ export const ProjectLevelWorkItemFiltersHOC = observer(function ProjectLevelWork
         setToast({
           type: TOAST_TYPE.ERROR,
           title: "We couldn't find the view",
-          message: "The view you're trying to update doesn't exist.",
+          message: t("toast.view_not_found"),
         });
 
         return;
@@ -153,15 +155,15 @@ export const ProjectLevelWorkItemFiltersHOC = observer(function ProjectLevelWork
         .then(() => {
           setToast({
             type: TOAST_TYPE.SUCCESS,
-            title: "Success!",
-            message: "Your view has been updated successfully.",
+            title: t("toast.success"),
+            message: t("toast.your_view_updated"),
           });
         })
         .catch(() => {
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: "Error!",
-            message: "Your view could not be updated. Please try again.",
+            title: t("toast.error"),
+            message: t("toast.your_view_update_failed"),
           });
         });
     },

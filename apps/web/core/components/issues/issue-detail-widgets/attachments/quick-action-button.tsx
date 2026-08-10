@@ -12,6 +12,7 @@ import { PlusIcon } from "@plane/propel/icons";
 // plane imports
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssueServiceType } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // plane web hooks
@@ -32,6 +33,7 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
   const { workspaceSlug, projectId, issueId, customButton, disabled = false, issueServiceType } = props;
   // state
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
   // store hooks
   const { setLastWidgetAction, fetchActivities } = useIssueDetail(issueServiceType);
   // file size
@@ -62,8 +64,8 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
           .catch(() => {
             setToast({
               type: TOAST_TYPE.ERROR,
-              title: "Error!",
-              message: "File could not be attached. Try uploading again.",
+              title: t("toast.error"),
+              message: t("toast.file_attach_failed"),
             });
           })
           .finally(() => {
@@ -76,7 +78,7 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
 
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
+        title: t("toast.error"),
         message:
           totalAttachedFiles > 1
             ? "Only one file can be uploaded at a time."

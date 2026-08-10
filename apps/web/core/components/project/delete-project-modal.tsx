@@ -12,6 +12,7 @@ import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IProject } from "@plane/types";
 import { Input, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -31,6 +32,7 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
   const { isOpen, project, onClose } = props;
   // store hooks
   const { deleteProject } = useProject();
+  const { t } = useTranslation();
   // router
   const router = useAppRouter();
   const { workspaceSlug, projectId } = useParams();
@@ -63,14 +65,14 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
       handleClose();
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Success!",
-        message: "Project deleted successfully.",
+        title: t("toast.success"),
+        message: t("toast.project_deleted"),
       });
     } catch (_error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Something went wrong. Please try again later.",
+        title: t("toast.error"),
+        message: t("toast.something_went_wrong_later_alt"),
       });
     }
   };

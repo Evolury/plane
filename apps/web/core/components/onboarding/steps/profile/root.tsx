@@ -15,6 +15,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IUser } from "@plane/types";
 import { EOnboardingSteps } from "@plane/types";
 import { cn, getFileURL, getPasswordStrength, validatePersonName } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { UserImageUploadModal } from "@/components/core/modals/user-image-upload-modal";
 // hooks
@@ -56,6 +57,7 @@ const defaultValues: Partial<TProfileSetupFormValues> = {
 export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepChange }: Props) {
   // states
   const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
+  const { t } = useTranslation();
   // store hooks
   const { data: user, updateCurrentUser } = useUser();
   const { updateUserProfile } = useUserProfile();
@@ -99,8 +101,8 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error",
-        message: "User details update failed. Please try again!",
+        title: t("error"),
+        message: t("toast.user_details_update_failed"),
       });
     }
   };

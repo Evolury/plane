@@ -97,7 +97,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
         } catch (error) {
           console.log("Error in updating issue:", error);
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("entity.update.failed", { entity: t("issue.label") }),
           });
@@ -108,14 +108,14 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           if (is_archived) await removeArchivedIssue(workspaceSlug, projectId, issueId);
           else await removeIssue(workspaceSlug, projectId, issueId);
           setToast({
-            title: t("common.success"),
+            title: t("toast.success"),
             type: TOAST_TYPE.SUCCESS,
             message: t("entity.delete.success", { entity: t("issue.label") }),
           });
         } catch (error) {
           console.log("Error in deleting issue:", error);
           setToast({
-            title: t("common.error.label"),
+            title: t("toast.error"),
             type: TOAST_TYPE.ERROR,
             message: t("entity.delete.failed", { entity: t("issue.label") }),
           });
@@ -134,7 +134,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
         } catch (_error) {
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: t("common.error.label"),
+            title: t("toast.error"),
             message: t("issue.add.cycle.failed"),
           });
         }
@@ -145,7 +145,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
         } catch (_error) {
           setToast({
             type: TOAST_TYPE.ERROR,
-            title: t("common.error.label"),
+            title: t("toast.error"),
             message: t("issue.add.cycle.failed"),
           });
         }
@@ -156,11 +156,11 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           setPromiseToast(removeFromCyclePromise, {
             loading: t("issue.remove.cycle.loading"),
             success: {
-              title: t("common.success"),
+              title: t("toast.success"),
               message: () => t("issue.remove.cycle.success"),
             },
             error: {
-              title: t("common.error.label"),
+              title: t("toast.error"),
               message: () => t("issue.remove.cycle.failed"),
             },
           });
@@ -175,11 +175,11 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           setPromiseToast(removeFromModulePromise, {
             loading: t("issue.remove.module.loading"),
             success: {
-              title: t("common.success"),
+              title: t("toast.success"),
               message: () => t("issue.remove.module.success"),
             },
             error: {
-              title: t("common.error.label"),
+              title: t("toast.error"),
               message: () => t("issue.remove.module.failed"),
             },
           });

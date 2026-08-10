@@ -82,6 +82,7 @@ export interface MenuItemFactoryProps {
 // Common action handlers hook
 export const useIssueActionHandlers = (props: MenuItemFactoryProps) => {
   const { issue, workspaceSlug, projectIdentifier, handleRestore } = props;
+  const { t } = useTranslation();
 
   const workItemLink = useMemo(
     () =>
@@ -100,7 +101,7 @@ export const useIssueActionHandlers = (props: MenuItemFactoryProps) => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Link copied",
-        message: "Work item link copied to clipboard",
+        message: t("toast.work_item_link_copied"),
       })
     );
 
@@ -117,14 +118,14 @@ export const useIssueActionHandlers = (props: MenuItemFactoryProps) => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Restore success",
-          message: "Your work item can be found in project work items.",
+          message: t("toast.work_item_in_project"),
         });
       })
       .catch(() => {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Work item could not be restored. Please try again.",
+          title: t("toast.error"),
+          message: t("toast.work_item_restore_failed"),
         });
       });
   };

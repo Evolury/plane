@@ -24,6 +24,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 // Plane web imports
 import { useTimeLineRelationOptions } from "@/components/relations";
 import type { TIssueRelationTypes } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 import type { TRelationObject } from "../issue-detail-widgets/relations";
 
 type TIssueRelationSelect = {
@@ -39,6 +40,7 @@ export const IssueRelationSelect = observer(function IssueRelationSelect(props: 
   const { className = "", workspaceSlug, projectId, issueId, relationKey, disabled = false } = props;
   // hooks
   const { getProjectById } = useProject();
+  const { t } = useTranslation();
   const {
     createRelation,
     removeRelation,
@@ -55,8 +57,8 @@ export const IssueRelationSelect = observer(function IssueRelationSelect(props: 
     if (data.length === 0) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Please select at least one work item.",
+        title: t("toast.error"),
+        message: t("toast.select_at_least_one_work_item"),
       });
       return;
     }
