@@ -10,6 +10,8 @@ import { Tooltip } from "@plane/propel/tooltip";
 import { cn } from "@plane/utils";
 
 type TPasswordInputProps = {
+  /** rótulos traduzidos; sem eles, o texto em inglês é usado */
+  labels?: { placeholder?: string; showPassword?: string; hidePassword?: string };
   id: string;
   value: string;
   onChange: (value: string) => void;
@@ -21,6 +23,7 @@ type TPasswordInputProps = {
 };
 
 export function PasswordInput({
+  labels,
   id,
   value,
   onChange,
@@ -50,7 +53,7 @@ export function PasswordInput({
         autoComplete={autoComplete}
       />
       {showToggle && (
-        <Tooltip tooltipContent={showPassword ? "Hide password" : "Show password"} position="top">
+        <Tooltip tooltipContent={showPassword ? (labels?.hidePassword ?? "Hide password") : (labels?.showPassword ?? "Show password")} position="top">
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}

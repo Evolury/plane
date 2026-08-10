@@ -1504,7 +1504,14 @@
     "duration_all_time": "Todo o período",
     "duration_due_week": "Vence esta semana",
     "duration_due_month": "Vence este mês",
-    "duration_due_year": "Vence este ano"
+    "duration_due_year": "Vence este ano",
+    "enter_your_password": "Digite sua senha",
+    "hide_password": "Ocultar senha",
+    "show_password": "Mostrar senha",
+    "no_matching_results": "Nenhum resultado correspondente",
+    "open_color_picker": "Abrir seletor de cores",
+    "add_reaction": "Adicionar reação",
+    "contrast_adjust_note": "As cores serão ajustadas para garantir contraste suficiente."
   },
   "activity_log": {
     "prep_in": " em ",

@@ -13,6 +13,8 @@ import { LucideIconsList } from "./lucide-root";
 import { MaterialIconList } from "./material-root";
 
 type IconRootProps = {
+  /** rótulo traduzido; sem ele, o texto em inglês é usado */
+  contrastNote?: string;
   onChange: (value: { name: string; color: string }) => void;
   defaultColor: string;
   searchDisabled?: boolean;
@@ -117,7 +119,7 @@ export function IconRoot(props: IconRootProps) {
         </div>
         <div className="flex h-6 w-full items-center gap-2 py-1 pr-3 pl-4">
           <InfoIcon className="h-3 w-3" />
-          <p className="text-11"> Colors will be adjusted to ensure sufficient contrast.</p>
+          <p className="text-11"> {props.contrastNote ?? "Colors will be adjusted to ensure sufficient contrast."}</p>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-8 justify-items-center gap-1 px-2.5">

@@ -10,6 +10,8 @@ interface ColorPickerProps {
   value: string;
   onChange: (color: string) => void;
   className?: string;
+  /** rótulo acessível traduzido; sem ele, o texto em inglês é usado */
+  openLabel?: string;
 }
 
 export function ColorPicker(props: ColorPickerProps) {
@@ -29,7 +31,7 @@ export function ColorPicker(props: ColorPickerProps) {
       <button
         className={`size-4 cursor-pointer rounded-full conical-gradient ${className}`}
         onClick={handleOnClick}
-        aria-label="Open color picker"
+        aria-label={props.openLabel ?? "Open color picker"}
       />
       <input
         ref={inputRef}

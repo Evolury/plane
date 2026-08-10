@@ -39,6 +39,8 @@ export interface EmojiReactionGroupProps extends React.HTMLAttributes<HTMLDivEle
 }
 
 export interface EmojiReactionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** rótulo traduzido; sem ele, o texto em inglês é usado */
+  addReactionLabel?: string;
   onAddReaction?: () => void;
   className?: string;
 }
@@ -103,11 +105,11 @@ const EmojiReaction = React.forwardRef(function EmojiReaction(
 });
 
 const EmojiReactionButton = React.forwardRef(function EmojiReactionButton(
-  { onAddReaction, className, ...props }: EmojiReactionButtonProps,
+  { onAddReaction, className, addReactionLabel, ...props }: EmojiReactionButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
   return (
-    <Tooltip tooltipContent="Add reaction">
+    <Tooltip tooltipContent={addReactionLabel ?? "Add reaction"}>
       <IconButton
         ref={ref}
         icon={AddReactionIcon}

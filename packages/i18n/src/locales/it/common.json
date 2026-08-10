@@ -1504,7 +1504,14 @@
     "duration_all_time": "All time",
     "duration_due_week": "Due this week",
     "duration_due_month": "Due this month",
-    "duration_due_year": "Due this year"
+    "duration_due_year": "Due this year",
+    "enter_your_password": "Enter your password",
+    "hide_password": "Hide password",
+    "show_password": "Show password",
+    "no_matching_results": "No matching results",
+    "open_color_picker": "Open color picker",
+    "add_reaction": "Add reaction",
+    "contrast_adjust_note": "Colors will be adjusted to ensure sufficient contrast."
   },
   "activity_log": {
     "prep_in": " for ",
