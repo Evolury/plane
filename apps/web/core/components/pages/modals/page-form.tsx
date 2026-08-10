@@ -155,7 +155,7 @@ export function PageForm(props: Props) {
             disabled={isTitleLengthMoreThan255Character}
             tabIndex={getIndex("submit")}
           >
-            {isSubmitting ? "Creating" : "Create Page"}
+            {isSubmitting ? "Creating" : t("ui.create_page_2")}
           </Button>
         </div>
       </div>

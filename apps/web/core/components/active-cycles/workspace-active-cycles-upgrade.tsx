@@ -64,7 +64,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
     key: "stay_ahead_of_blockers",
     title: translate("stay_ahead_of_blockers"),
     description:
-      "Spot challenges from one project to another and see inter-cycle dependencies that aren’t obvious from any other view.",
+      translate("ui.spot_challenges_from_one_project_to_another_and"),
     icon: Microscope,
   },
 ];

@@ -135,7 +135,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.projectName)}
-                placeholder="Enter project name"
+                placeholder={t("ui.enter_project_name")}
                 className="mt-2 w-full"
               />
             )}
@@ -158,7 +158,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.confirmLeave)}
-                placeholder="Enter 'leave project'"
+                placeholder={t("ui.enter_leave_project")}
                 className="mt-2 w-full"
               />
             )}

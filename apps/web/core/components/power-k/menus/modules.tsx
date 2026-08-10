@@ -11,6 +11,7 @@ import { ModuleStatusIcon } from "@plane/propel/icons";
 import type { IModule } from "@plane/types";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   modules: IModule[];
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export const PowerKModulesMenu = observer(function PowerKModulesMenu({ modules, onSelect, value }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={modules}
@@ -28,7 +30,7 @@ export const PowerKModulesMenu = observer(function PowerKModulesMenu({ modules, 
       getLabel={(module) => module.name}
       isSelected={(module) => !!value?.includes(module.id)}
       onSelect={onSelect}
-      emptyText="No modules found"
+      emptyText={t("ui.no_modules_found")}
     />
   );
 });

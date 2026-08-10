@@ -9,10 +9,11 @@ import React from "react";
 import { PageHead } from "@/components/core/page-title";
 import { ProfileIssuesPage } from "@/components/profile/profile-issues";
 import type { Route } from "./+types/page";
+import { translate } from "@plane/i18n";
 
 const ProfilePageHeader = {
   assigned: "Profile - Assigned",
-  created: "Profile - Created",
+  created: translate("ui.profile_created"),
   subscribed: "Profile - Subscribed",
 };
 

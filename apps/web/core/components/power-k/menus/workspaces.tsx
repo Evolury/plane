@@ -11,6 +11,7 @@ import type { IWorkspace } from "@plane/types";
 import { WorkspaceLogo } from "@/components/workspace/logo";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   workspaces: IWorkspace[];
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function PowerKWorkspacesMenu({ workspaces, onSelect }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={workspaces}
@@ -28,7 +30,7 @@ export function PowerKWorkspacesMenu({ workspaces, onSelect }: Props) {
       getValue={(workspace) => workspace.name}
       getLabel={(workspace) => workspace.name}
       onSelect={onSelect}
-      emptyText="No workspaces found"
+      emptyText={t("ui.no_workspaces_found")}
     />
   );
 }

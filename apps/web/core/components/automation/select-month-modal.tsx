@@ -73,7 +73,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                           onChange={onChange}
                           ref={ref}
                           hasError={Boolean(errors.close_in)}
-                          placeholder="Enter Months"
+                          placeholder={t("ui.enter_months")}
                           className="w-full border-subtle"
                           min={1}
                           max={12}
@@ -107,7 +107,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                           onChange={onChange}
                           ref={ref}
                           hasError={Boolean(errors.archive_in)}
-                          placeholder="Enter Months"
+                          placeholder={t("ui.enter_months")}
                           className="w-full border-subtle"
                           min={1}
                           max={12}

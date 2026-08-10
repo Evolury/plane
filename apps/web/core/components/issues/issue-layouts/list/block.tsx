@@ -198,8 +198,8 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
               type: TOAST_TYPE.WARNING,
               title: t("toast.cannot_move_work_item"),
               message: !canEditIssueProperties
-                ? "You are not allowed to move this work item"
-                : "Drag and drop is disabled for the current grouping",
+                ? t("ui.you_are_not_allowed_to_move_this_work_item")
+                : t("ui.drag_and_drop_is_disabled_for_the_current_groupi"),
             });
           }
         }}

@@ -8,6 +8,7 @@ import React from "react";
 import { observer } from "mobx-react";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type TSettingItem = {
   key: string;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const PowerKSettingsMenu = observer(function PowerKSettingsMenu({ settings, onSelect }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={settings}
@@ -30,7 +32,7 @@ export const PowerKSettingsMenu = observer(function PowerKSettingsMenu({ setting
       getValue={(setting) => setting.label}
       getLabel={(setting) => setting.label}
       onSelect={onSelect}
-      emptyText="No settings found"
+      emptyText={t("ui.no_settings_found")}
     />
   );
 });

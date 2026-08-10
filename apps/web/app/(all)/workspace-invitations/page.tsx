@@ -106,7 +106,7 @@ function WorkspaceInvitationPage() {
             <EmptySpace
               title={t("ui.invitation_link_inactive")}
               description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
-              link={{ text: "Or start from an empty project", href: "/" }}
+              link={{ text: t("ui.or_start_from_an_empty_project"), href: "/" }}
             >
               {!currentUser ? (
                 <EmptySpaceItem Icon={User2} title={t("ui.sign_in_to_continue")} href="/" />
@@ -116,7 +116,7 @@ function WorkspaceInvitationPage() {
               <EmptySpaceItem Icon={Star} title={t("home.star_us_on_github")} href="https://github.com/makeplane" />
               <EmptySpaceItem
                 Icon={Share2}
-                title="Join our community of active creators"
+                title={t("ui.join_our_community_of_active_creators")}
                 href="https://forum.plane.so"
               />
             </EmptySpace>

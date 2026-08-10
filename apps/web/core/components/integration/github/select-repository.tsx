@@ -14,6 +14,7 @@ import { CustomSearchSelect } from "@plane/ui";
 // helpers
 import { truncateText } from "@plane/utils";
 import { ProjectService } from "@/services/project";
+import { useTranslation } from "@plane/i18n";
 // types
 
 type Props = {
@@ -27,6 +28,7 @@ type Props = {
 const projectService = new ProjectService();
 
 export function SelectRepository(props: Props) {
+  const { t } = useTranslation();
   const { integration, value, label, onChange, characterLimit = 25 } = props;
   // router
   const { workspaceSlug } = useParams();
@@ -80,7 +82,7 @@ export function SelectRepository(props: Props) {
               onClick={() => setSize(size + 1)}
               disabled={isValidating}
             >
-              {isValidating ? "Loading..." : "Click to load more..."}
+              {isValidating ? "Loading..." : t("ui.click_to_load_more")}
             </button>
           )}
         </>

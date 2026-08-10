@@ -78,7 +78,7 @@ export function WorkspaceDraftIssueDeleteIssueModal(props: Props) {
           onClose();
         })
         .catch((errors) => {
-          const isPermissionError = errors?.error === "Only admin or creator can delete the work item";
+          const isPermissionError = errors?.error === t("ui.only_admin_or_creator_can_delete_the_work_item");
           const currentError = isPermissionError
             ? PROJECT_ERROR_MESSAGES.permissionError
             : PROJECT_ERROR_MESSAGES.issueDeleteError;

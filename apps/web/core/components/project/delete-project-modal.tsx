@@ -133,7 +133,7 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.confirmDelete)}
-                placeholder="Enter 'delete my project'"
+                placeholder={t("ui.enter_delete_my_project")}
                 className="mt-2 w-full"
                 autoComplete="off"
               />

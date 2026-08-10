@@ -57,14 +57,14 @@ export function CreateUpdateModuleLinkModal(props: Props) {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: t("toast.success"),
-          message: "Module link created successfully.",
+          message: t("ui.module_link_created_successfully"),
         });
       } else {
         await updateLink(payload, data.id);
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: t("toast.success"),
-          message: "Module link updated successfully.",
+          message: t("ui.module_link_updated_successfully"),
         });
       }
       onClose();
@@ -143,7 +143,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
             Cancel
           </Button>
           <Button variant="primary" size="lg" type="submit" loading={isSubmitting}>
-            {data ? (isSubmitting ? "Updating link" : t("common.update_link")) : isSubmitting ? "Adding link" : t("add_link")}
+            {data ? (isSubmitting ? t("ui.updating_link") : t("common.update_link")) : isSubmitting ? t("ui.adding_link") : t("add_link")}
           </Button>
         </div>
       </form>

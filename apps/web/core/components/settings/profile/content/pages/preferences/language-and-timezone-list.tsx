@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 // plane imports
-import { SUPPORTED_LANGUAGES, useTranslation } from "@plane/i18n";
+import { translate, SUPPORTED_LANGUAGES, useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { CustomSelect } from "@plane/ui";
 // components
@@ -81,7 +81,7 @@ export const ProfileSettingsLanguageAndTimezonePreferencesList = observer(
           control={
             <CustomSelect
               value={profile?.language}
-              label={profile?.language ? getLanguageLabel(profile?.language) : "Select a language"}
+              label={profile?.language ? getLanguageLabel(profile?.language) : translate("ui.select_a_language")}
               onChange={handleLanguageChange}
               buttonClassName="border border-subtle-1"
               className="rounded-md"

@@ -94,7 +94,7 @@ export function GptAssistantPopover(props: Props) {
     const error = err?.data?.error;
     const errorMessage =
       err?.status === 429
-        ? error || "You have reached the maximum number of requests of 50 requests per month per user."
+        ? error || t("ui.you_have_reached_the_maximum_number_of_requests")
         : error || t("toast.some_error_try_again");
 
     setToast({
@@ -195,7 +195,7 @@ export function GptAssistantPopover(props: Props) {
     ? "Generating response..."
     : response === ""
       ? "Generate response"
-      : "Generate again";
+      : t("ui.generate_again");
 
   return (
     <Popover as="div" className={`relative w-min text-left`}>
@@ -270,7 +270,7 @@ export function GptAssistantPopover(props: Props) {
                 onChange={onChange}
                 ref={ref}
                 placeholder={`${
-                  prompt && prompt !== "" ? "Tell AI what action to perform on this content..." : "Ask AI anything..."
+                  prompt && prompt !== "" ? t("ui.tell_ai_what_action_to_perform_on_this_content") : "Ask AI anything..."
                 }`}
                 className="w-full"
                 autoFocus

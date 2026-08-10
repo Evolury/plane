@@ -54,11 +54,11 @@ export const useCollaborativePageActions = (props: Props) => {
       },
       [DocumentCollaborativeEvents["make-public"].client]: {
         execute: (shouldSync?: boolean) => page.makePublic({ shouldSync }),
-        errorMessage: "Page could not be made public. Please try again later.",
+        errorMessage: t("ui.page_could_not_be_made_public_please_try_again_l"),
       },
       [DocumentCollaborativeEvents["make-private"].client]: {
         execute: (shouldSync?: boolean) => page.makePrivate({ shouldSync }),
-        errorMessage: "Page could not be made private. Please try again later.",
+        errorMessage: t("ui.page_could_not_be_made_private_please_try_again"),
       },
     }),
     [page]

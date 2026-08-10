@@ -21,6 +21,7 @@ import { AI_EDITOR_TASKS, LOADING_TEXTS } from "@plane/constants";
 import type { TTaskPayload } from "@/services/ai.service";
 import { AIService } from "@/services/ai.service";
 import { AskPiMenu } from "./ask-pi-menu";
+import { useTranslation } from "@plane/i18n";
 const aiService = new AIService();
 
 type Props = {
@@ -65,6 +66,7 @@ const TONES_LIST = [
 ];
 
 export function EditorAIMenu(props: Props) {
+  const { t } = useTranslation();
   const { editorRef, isOpen, onClose, workspaceId, workspaceSlug } = props;
   // states
   const [activeTask, setActiveTask] = useState<AI_EDITOR_TASKS | null>(null);
@@ -234,7 +236,7 @@ export function EditorAIMenu(props: Props) {
                       >
                         Replace selection
                       </button>
-                      <Tooltip tooltipContent="Add to next line">
+                      <Tooltip tooltipContent={t("ui.add_to_next_line")}>
                         <button
                           type="button"
                           className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
@@ -265,7 +267,7 @@ export function EditorAIMenu(props: Props) {
                   </div>
                 ) : (
                   <p className="text-13 text-secondary">
-                    {activeTask ? LOADING_TEXTS[activeTask] : "Pi is writing"}...
+                    {activeTask ? LOADING_TEXTS[activeTask] : t("ui.pi_is_writing")}...
                   </p>
                 )}
               </div>

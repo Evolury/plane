@@ -14,6 +14,7 @@ import type { TPlanePlans } from "@/components/workspace/billing/comparison/plan
 import { ComingSoonBadge, PLANE_PLANS, PLANS_LIST } from "@/components/workspace/billing/comparison/plans";
 // local imports
 import { PlanFeatureDetail } from "./feature-detail";
+import { useTranslation } from "@plane/i18n";
 
 type TPlansComparisonBaseProps = {
   planeDetails: React.ReactNode;
@@ -31,6 +32,7 @@ export const shouldRenderPlanDetail = (planKey: TPlanePlans) => {
 };
 
 export const PlansComparisonBase = observer(function PlansComparisonBase(props: TPlansComparisonBaseProps) {
+  const { t } = useTranslation();
   const { planeDetails, isSelfManaged, isCompareAllFeaturesSectionOpen, setIsCompareAllFeaturesSectionOpen } = props;
   // plan details
   const { planDetails, planHighlights, planComparison } = PLANE_PLANS;
@@ -132,7 +134,7 @@ export const PlansComparisonBase = observer(function PlansComparisonBase(props: 
             }}
             appendIcon={isCompareAllFeaturesSectionOpen ? <ArrowUp /> : <ArrowDown />}
           >
-            {isCompareAllFeaturesSectionOpen ? "Collapse comparison" : "Compare all features"}
+            {isCompareAllFeaturesSectionOpen ? "Collapse comparison" : t("ui.compare_all_features")}
           </Button>
         </div>
       </div>

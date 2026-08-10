@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { setPromiseToast, TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // types
@@ -48,11 +48,11 @@ export const useAttachmentOperations = (
           loading: "Uploading attachment...",
           success: {
             title: "Attachment uploaded",
-            message: () => "The attachment has been successfully uploaded",
+            message: () => translate("ui.the_attachment_has_been_successfully_uploaded"),
           },
           error: {
             title: t("toast.attachment_not_uploaded"),
-            message: () => "The attachment could not be uploaded",
+            message: () => translate("ui.the_attachment_could_not_be_uploaded"),
           },
         });
 
@@ -65,7 +65,7 @@ export const useAttachmentOperations = (
           setToast({
             message: t("toast.attachment_removed"),
             type: TOAST_TYPE.SUCCESS,
-            title: "Attachment removed",
+            title: translate("ui.attachment_removed"),
           });
         } catch (_error) {
           setToast({

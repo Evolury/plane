@@ -10,6 +10,7 @@ import { observer } from "mobx-react";
 import { CloseIcon } from "@plane/propel/icons";
 import type { IFilterInstance } from "@plane/shared-state";
 import type { TExternalFilter, TFilterProperty } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 
 interface FilterItemCloseButtonProps<P extends TFilterProperty, E extends TExternalFilter> {
   conditionId: string;
@@ -20,6 +21,7 @@ export const FilterItemCloseButton = observer(function FilterItemCloseButton<
   P extends TFilterProperty,
   E extends TExternalFilter,
 >(props: FilterItemCloseButtonProps<P, E>) {
+  const { t } = useTranslation();
   const { conditionId, filter } = props;
 
   const handleRemoveFilter = () => {
@@ -31,7 +33,7 @@ export const FilterItemCloseButton = observer(function FilterItemCloseButton<
       onClick={handleRemoveFilter}
       className="bg-layer-transparent px-1.5 text-placeholder hover:bg-layer-transparent-hover hover:text-tertiary focus:outline-none"
       type="button"
-      aria-label="Remove filter"
+      aria-label={t("ui.remove_filter")}
     >
       <CloseIcon className="size-3.5" />
     </button>

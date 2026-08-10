@@ -10,7 +10,7 @@ import type { EventToPayloadMap } from "@plane/editor";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 // types
 import type { IUserLite } from "@plane/types";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 // components
 import type { TEditorBodyHandlers } from "@/components/pages/editor/editor-body";
 // hooks
@@ -143,14 +143,14 @@ export const useRealtimePageEvents = ({
 
         error: ({ pageIds, data }: { pageIds: string[]; data: EventToPayloadMap["error"] }) => {
           const errorType = data.error_type;
-          const errorMessage = data.error_message || "An error occurred";
+          const errorMessage = data.error_message || translate("ui.an_error_occurred");
           const errorCode = data.error_code;
 
           if (page.id && pageIds.includes(page.id)) {
             // Show toast notification
             setToast({
               type: TOAST_TYPE.ERROR,
-              title: errorType === "fetch" ? "Failed to load page" : "Failed to save page",
+              title: errorType === "fetch" ? translate("ui.failed_to_load_page") : translate("ui.failed_to_save_page"),
               message: errorMessage,
             });
 

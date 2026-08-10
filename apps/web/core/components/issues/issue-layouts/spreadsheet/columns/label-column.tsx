@@ -12,6 +12,7 @@ import type { TIssue } from "@plane/types";
 import { useLabel } from "@/hooks/store/use-label";
 // components
 import { IssuePropertyLabels } from "../../properties";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   issue: TIssue;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export const SpreadsheetLabelColumn = observer(function SpreadsheetLabelColumn(props: Props) {
+  const { t } = useTranslation();
   const { issue, onChange, disabled, onClose } = props;
   // hooks
   const { labelMap } = useLabel();
@@ -43,7 +45,7 @@ export const SpreadsheetLabelColumn = observer(function SpreadsheetLabelColumn(p
         hideDropdownArrow
         maxRender={1}
         disabled={disabled}
-        placeholderText="Select labels"
+        placeholderText={t("ui.select_labels")}
         onClose={onClose}
         noLabelBorder
         fullWidth

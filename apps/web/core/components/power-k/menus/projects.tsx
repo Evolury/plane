@@ -11,6 +11,7 @@ import { Logo } from "@plane/propel/emoji-icon-picker";
 import type { TPartialProject } from "@plane/types";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   projects: TPartialProject[];
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function PowerKProjectsMenu({ projects, onSelect }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={projects}
@@ -30,7 +32,7 @@ export function PowerKProjectsMenu({ projects, onSelect }: Props) {
       getValue={(project) => project.name}
       getLabel={(project) => project.name}
       onSelect={onSelect}
-      emptyText="No projects found"
+      emptyText={t("ui.no_projects_found")}
     />
   );
 }

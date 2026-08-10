@@ -13,6 +13,7 @@ import { Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
 // local imports
 import { BasePaidPlanCard } from "./base-paid-plan-card";
+import { useTranslation } from "@plane/i18n";
 
 export type TalkToSalesCardProps = {
   planVariant: EProductSubscriptionEnum;
@@ -30,6 +31,7 @@ export type TalkToSalesCardProps = {
 };
 
 export const TalkToSalesCard = observer(function TalkToSalesCard(props: TalkToSalesCardProps) {
+  const { t } = useTranslation();
   const {
     planVariant,
     href,
@@ -61,7 +63,7 @@ export const TalkToSalesCard = observer(function TalkToSalesCard(props: TalkToSa
               <Loader.Item height="36px" width="4rem" />
             </Loader>
           ) : (
-            <>Quote on request</>
+            <>{t("ui.quote_on_request")}</>
           )}
         </div>
         <div className="text-caption-md-medium text-tertiary">per user per month</div>

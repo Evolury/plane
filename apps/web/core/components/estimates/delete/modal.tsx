@@ -46,7 +46,7 @@ export const DeleteEstimateModal = observer(function DeleteEstimateModal(props: 
       setButtonLoader(false);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Estimate deleted",
+        title: t("ui.estimate_deleted"),
         message: t("toast.estimate_removed"),
       });
       handleClose();
@@ -82,7 +82,7 @@ export const DeleteEstimateModal = observer(function DeleteEstimateModal(props: 
             Cancel
           </Button>
           <Button variant="error-fill" size="lg" onClick={handleDeleteEstimate} disabled={buttonLoader}>
-            {buttonLoader ? "Deleting" : "Delete Estimate"}
+            {buttonLoader ? "Deleting" : t("ui.delete_estimate")}
           </Button>
         </div>
       </div>

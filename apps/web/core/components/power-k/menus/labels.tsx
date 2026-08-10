@@ -10,6 +10,7 @@ import { observer } from "mobx-react";
 import type { IIssueLabel } from "@plane/types";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   labels: IIssueLabel[];
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export const PowerKLabelsMenu = observer(function PowerKLabelsMenu({ labels, onSelect, value }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={labels}
@@ -31,7 +33,7 @@ export const PowerKLabelsMenu = observer(function PowerKLabelsMenu({ labels, onS
       getLabel={(label) => label.name}
       isSelected={(label) => !!value?.includes(label.id)}
       onSelect={onSelect}
-      emptyText="No labels found"
+      emptyText={t("ui.no_labels_found")}
     />
   );
 });

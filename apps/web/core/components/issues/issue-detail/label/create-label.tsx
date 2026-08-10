@@ -17,6 +17,7 @@ import { Input } from "@plane/ui";
 // ui
 // types
 import type { TLabelOperations } from "./root";
+import { useTranslation } from "@plane/i18n";
 
 type ILabelCreate = {
   workspaceSlug: string;
@@ -33,6 +34,7 @@ const defaultValues: Partial<IIssueLabel> = {
 };
 
 export function LabelCreate(props: ILabelCreate) {
+  const { t } = useTranslation();
   const { workspaceSlug, projectId, issueId, values, labelOperations, disabled = false } = props;
   // state
   const [isCreateToggle, setIsCreateToggle] = useState(false);
@@ -131,7 +133,7 @@ export function LabelCreate(props: ILabelCreate) {
             control={control}
             name="name"
             rules={{
-              required: "This is required",
+              required: t("ui.this_is_required"),
             }}
             render={({ field: { value, onChange, ref } }) => (
               <Input

@@ -65,7 +65,7 @@ export function JoinProjectModal(props: TJoinProjectModalProps) {
           Cancel
         </Button>
         <Button variant="primary" size="lg" tabIndex={1} type="submit" onClick={handleJoin} loading={isJoiningLoading}>
-          {isJoiningLoading ? "Joining..." : "Join Project"}
+          {isJoiningLoading ? "Joining..." : t("ui.join_project")}
         </Button>
       </div>
     </ModalCore>

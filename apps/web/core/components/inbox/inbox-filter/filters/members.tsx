@@ -104,7 +104,7 @@ export const FilterMember = observer(function FilterMember(props: Props) {
                     className="ml-8 text-11 font-medium text-accent-primary"
                     onClick={handleViewToggle}
                   >
-                    {itemsToRender === sortedOptions.length ? "View less" : "View all"}
+                    {itemsToRender === sortedOptions.length ? t("ui.view_less") : t("ui.view_all")}
                   </button>
                 )}
               </>

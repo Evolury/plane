@@ -66,7 +66,7 @@ export function AskPiMenu(props: Props) {
               >
                 Replace selection
               </button>
-              <Tooltip tooltipContent="Add to next line">
+              <Tooltip tooltipContent={t("ui.add_to_next_line")}>
                 <button
                   type="button"
                   className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
@@ -109,7 +109,7 @@ export function AskPiMenu(props: Props) {
             className="w-full border-none bg-transparent text-13 outline-none placeholder:text-placeholder"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tell AI what to do..."
+            placeholder={t("ui.tell_ai_what_to_do")}
           />
           <span className="grid size-4 flex-shrink-0 place-items-center">
             <CircleArrowUp className="size-4 text-secondary" />

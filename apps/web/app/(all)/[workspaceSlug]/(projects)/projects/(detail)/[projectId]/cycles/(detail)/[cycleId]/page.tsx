@@ -61,7 +61,7 @@ function CycleDetailPage({ params }: Route.ComponentProps) {
           title={t("ui.cycle_does_not_exist")}
           description={t("ui.cycle_not_exist_description")}
           primaryButton={{
-            text: "View other cycles",
+            text: t("ui.view_other_cycles"),
             onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}/cycles`),
           }}
         />

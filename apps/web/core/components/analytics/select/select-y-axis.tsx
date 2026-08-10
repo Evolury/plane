@@ -13,6 +13,7 @@ import type { ChartYAxisMetric } from "@plane/types";
 import { CustomSelect } from "@plane/ui";
 // hooks
 import { useProjectEstimates } from "@/hooks/store/estimates";
+import { useTranslation } from "@plane/i18n";
 // plane web constants
 type Props = {
   value: ChartYAxisMetric;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const SelectYAxis = observer(function SelectYAxis({ value, onChange, hiddenOptions, options }: Props) {
+  const { t } = useTranslation();
   // hooks
   const { projectId } = useParams();
   const { areEstimateEnabledByProjectId, currentActiveEstimateId, estimateById } = useProjectEstimates();
@@ -49,7 +51,7 @@ export const SelectYAxis = observer(function SelectYAxis({ value, onChange, hidd
       label={
         <div className="flex items-center gap-2">
           <ProjectIcon className="h-3 w-3" />
-          <span>{options.find((v) => v.value === value)?.label ?? "Add Metric"}</span>
+          <span>{options.find((v) => v.value === value)?.label ?? t("ui.add_metric")}</span>
         </div>
       }
       onChange={onChange}

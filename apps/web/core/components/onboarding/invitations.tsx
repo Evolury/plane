@@ -106,7 +106,7 @@ export function Invitations(props: Props) {
         onClick={submitInvitations}
         disabled={isJoiningWorkspaces || !invitationsRespond.length}
       >
-        {isJoiningWorkspaces ? <Spinner height="20px" width="20px" /> : "Continue to workspace"}
+        {isJoiningWorkspaces ? <Spinner height="20px" width="20px" /> : t("ui.continue_to_workspace")}
       </Button>
       <div className="mx-auto mt-4 flex items-center sm:w-96">
         <hr className="w-full border-strong" />

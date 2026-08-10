@@ -11,6 +11,7 @@ import { Layers } from "lucide-react";
 import type { IProjectView } from "@plane/types";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   views: IProjectView[];
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export const PowerKViewsMenu = observer(function PowerKViewsMenu({ views, onSelect }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={views}
@@ -26,7 +28,7 @@ export const PowerKViewsMenu = observer(function PowerKViewsMenu({ views, onSele
       getValue={(view) => view.name}
       getLabel={(view) => view.name}
       onSelect={onSelect}
-      emptyText="No views found"
+      emptyText={t("ui.no_views_found")}
     />
   );
 });

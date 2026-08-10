@@ -58,7 +58,7 @@ function ModuleIssuesPage({ params }: Route.ComponentProps) {
           title={t("ui.module_does_not_exist")}
           description={t("ui.module_not_exist_description")}
           primaryButton={{
-            text: "View other modules",
+            text: t("ui.view_other_modules"),
             onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}/modules`),
           }}
         />

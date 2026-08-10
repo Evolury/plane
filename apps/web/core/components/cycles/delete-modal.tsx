@@ -54,7 +54,7 @@ export const CycleDeleteModal = observer(function CycleDeleteModal(props: ICycle
           });
         })
         .catch((errors) => {
-          const isPermissionError = errors?.error === "You don't have the required permissions.";
+          const isPermissionError = errors?.error === t("ui.you_don_t_have_the_required_permissions");
           const currentError = isPermissionError
             ? PROJECT_ERROR_MESSAGES.permissionError
             : PROJECT_ERROR_MESSAGES.cycleDeleteError;

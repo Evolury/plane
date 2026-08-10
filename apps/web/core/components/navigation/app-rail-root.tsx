@@ -68,7 +68,7 @@ export const AppRailRoot = observer(() => {
           <ContextMenu.Content positionerClassName="z-30" className="outline-none">
             <ContextMenu.Item onClick={() => updateDisplayMode("icon_only")}>
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-11">Icon only</span>
+                <span className="text-11">{t("ui.icon_only")}</span>
                 {preferences.displayMode === "icon_only" && <CheckIcon className="size-3.5" />}
               </div>
             </ContextMenu.Item>

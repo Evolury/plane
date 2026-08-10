@@ -71,7 +71,7 @@ export const AddFilterDropdown = observer(function AddFilterDropdown<
     } else {
       setToast({
         title: t("ui.filter_config_error"),
-        message: "This filter is not properly configured and cannot be applied",
+        message: t("ui.this_filter_is_not_properly_configured_and_canno"),
         type: TOAST_TYPE.ERROR,
       });
     }

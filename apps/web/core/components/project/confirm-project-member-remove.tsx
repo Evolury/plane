@@ -16,6 +16,7 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { useUser } from "@/hooks/store/user";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   data: Partial<IUserLite>;
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMemberRemove(props: Props) {
+  const { t } = useTranslation();
   const { data, onSubmit, isOpen, onClose } = props;
   // router
   const { projectId } = useParams();
@@ -61,7 +63,7 @@ export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMember
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
             <h3 className="text-16 leading-6 font-medium text-primary">
-              {isCurrentUser ? "Leave project?" : `Remove ${data?.display_name}?`}
+              {isCurrentUser ? t("ui.leave_project_2") : `Remove ${data?.display_name}?`}
             </h3>
             <div className="mt-2">
               <p className="text-13 text-secondary">

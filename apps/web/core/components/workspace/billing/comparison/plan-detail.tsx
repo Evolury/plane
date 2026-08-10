@@ -38,7 +38,7 @@ export const PlanDetail = observer(function PlanDetail(props: TPlanDetailProps) 
   const isSubscriptionActive = planDetail.isActive;
   // pricing details
   const displayPrice = billingFrequency === "month" ? planDetail.monthlyPrice : planDetail.yearlyPrice;
-  const pricingDescription = isSubscriptionActive ? "a user per month" : "Quote on request";
+  const pricingDescription = isSubscriptionActive ? "a user per month" : t("ui.quote_on_request");
   const pricingSecondaryDescription =
     billingFrequency === "month"
       ? planDetail.monthlyPriceSecondaryDescription

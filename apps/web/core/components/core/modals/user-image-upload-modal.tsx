@@ -127,7 +127,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
                 <div>
                   <UserCirclePropertyIcon className="mx-auto h-16 w-16 text-secondary" />
                   <span className="mt-2 block text-13 font-medium text-secondary">
-                    {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
+                    {isDragActive ? t("ui.drop_image_here_to_upload") : t("ui.drag_drop_image_here")}
                   </span>
                 </div>
               )}
@@ -138,8 +138,8 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
           {fileRejections.length > 0 && (
             <p className="text-13 text-danger-primary">
               {fileRejections[0].errors[0].code === "file-too-large"
-                ? "The image size cannot exceed 5 MB."
-                : "Please upload a file in a valid format."}
+                ? t("ui.the_image_size_cannot_exceed_5_mb")
+                : t("ui.please_upload_a_file_in_a_valid_format")}
             </p>
           )}
         </div>

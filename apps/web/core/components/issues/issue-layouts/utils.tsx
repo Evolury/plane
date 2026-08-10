@@ -72,6 +72,7 @@ import {
   SpreadsheetSubIssueColumn,
   SpreadsheetUpdatedOnColumn,
 } from "@/components/issues/issue-layouts/spreadsheet/columns";
+import { translate } from "@plane/i18n";
 
 export const HIGHLIGHT_CLASS = "highlight";
 export const HIGHLIGHT_WITH_LINE = "highlight-with-line";
@@ -199,7 +200,7 @@ const getCycleColumns = (): IGroupByColumn[] | undefined => {
       icon: <CycleGroupIcon cycleGroup={cycleStatus} className="h-3.5 w-3.5" />,
       payload: { cycle_id: cycle.id },
       isDropDisabled,
-      dropErrorMessage: isDropDisabled ? "Work item cannot be moved to completed cycles" : undefined,
+      dropErrorMessage: isDropDisabled ? translate("ui.work_item_cannot_be_moved_to_completed_cycles") : undefined,
     });
   });
   cycles.push({

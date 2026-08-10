@@ -48,7 +48,7 @@ export const DeleteLabelModal = observer(function DeleteLabelModal(props: Props)
       })
       .catch((err) => {
         setIsDeleteLoading(false);
-        const error = err?.error || "Label could not be deleted. Please try again.";
+        const error = err?.error || t("ui.label_could_not_be_deleted_please_try_again");
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),

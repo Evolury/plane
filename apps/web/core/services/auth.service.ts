@@ -10,6 +10,7 @@ import type { ICsrfTokenData, IEmailCheckData, IEmailCheckResponse } from "@plan
 // helpers
 // services
 import { APIService } from "@/services/api.service";
+import { translate } from "@plane/i18n";
 
 export class AuthService extends APIService {
   constructor() {
@@ -63,7 +64,7 @@ export class AuthService extends APIService {
     await this.requestCSRFToken().then((data) => {
       const csrfToken = data?.csrf_token;
 
-      if (!csrfToken) throw Error("CSRF token not found");
+      if (!csrfToken) throw Error(translate("ui.csrf_token_not_found"));
 
       const form = document.createElement("form");
       const element1 = document.createElement("input");

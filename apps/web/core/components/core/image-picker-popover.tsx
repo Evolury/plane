@@ -142,7 +142,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
           console.error("Error uploading user cover image:", error);
           setIsImageUploading(false);
           setToast({
-            message: error?.error ?? "The image could not be uploaded",
+            message: error?.error ?? t("ui.the_image_could_not_be_uploaded"),
             type: TOAST_TYPE.ERROR,
             title: t("toast.image_not_uploaded"),
           });
@@ -163,7 +163,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
           console.error("Error uploading project cover image:", error);
           setIsImageUploading(false);
           setToast({
-            message: error?.error ?? "The image could not be uploaded",
+            message: error?.error ?? t("ui.the_image_could_not_be_uploaded"),
             type: TOAST_TYPE.ERROR,
             title: t("toast.image_not_uploaded"),
           });
@@ -235,7 +235,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                               value={value}
                               onChange={(e) => setFormData({ ...formData, search: e.target.value })}
                               ref={ref}
-                              placeholder="Search for images"
+                              placeholder={t("ui.search_for_images")}
                               className="w-full text-13"
                             />
                           )}
@@ -327,7 +327,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                         ) : (
                           <div>
                             <span className="mt-2 block text-13 font-medium text-secondary">
-                              {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
+                              {isDragActive ? t("ui.drop_image_here_to_upload") : t("ui.drag_drop_image_here")}
                             </span>
                           </div>
                         )}
@@ -338,8 +338,8 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                     {fileRejections.length > 0 && (
                       <p className="text-13 text-danger-primary">
                         {fileRejections[0].errors[0].code === "file-too-large"
-                          ? "The image size cannot exceed 5 MB."
-                          : "Please upload a file in a valid format."}
+                          ? t("ui.the_image_size_cannot_exceed_5_mb")
+                          : t("ui.please_upload_a_file_in_a_valid_format")}
                       </p>
                     )}
 

@@ -7,6 +7,7 @@
 import { Download } from "lucide-react";
 import type { IExportData } from "@plane/types";
 import { getDate, getFileURL, renderFormattedDate } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 type RowData = IExportData;
 const checkExpiry = (inputDateString: string) => {
@@ -17,6 +18,7 @@ const checkExpiry = (inputDateString: string) => {
   return expiryDate > currentDate;
 };
 export const useExportColumns = () => {
+  const { t } = useTranslation();
   const columns = [
     {
       key: "Exported By",
@@ -47,13 +49,13 @@ export const useExportColumns = () => {
     },
     {
       key: "Exported On",
-      content: "Exported On",
+      content: t("ui.exported_on"),
       tdRender: (rowData: RowData) => <span>{renderFormattedDate(rowData.created_at)}</span>,
     },
 
     {
       key: "Exported projects",
-      content: "Exported projects",
+      content: t("ui.exported_projects"),
       tdRender: (rowData: RowData) => <div className="text-13">{rowData.project.length} project(s)</div>,
     },
     {

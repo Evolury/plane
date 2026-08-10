@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 import useSWR from "swr";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import type { IWorkspaceMemberInvitation } from "@plane/types";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
@@ -27,30 +27,30 @@ type TAuthHeader = {
 const Titles = {
   [EAuthModes.SIGN_IN]: {
     [EAuthSteps.EMAIL]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to Plane.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.welcome_back_to_plane"),
     },
     [EAuthSteps.PASSWORD]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to Plane.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.welcome_back_to_plane"),
     },
     [EAuthSteps.UNIQUE_CODE]: {
-      header: "Work in all dimensions.",
-      subHeader: "Welcome back to Plane.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.welcome_back_to_plane"),
     },
   },
   [EAuthModes.SIGN_UP]: {
     [EAuthSteps.EMAIL]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your Plane account.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.create_your_plane_account"),
     },
     [EAuthSteps.PASSWORD]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your Plane account.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.create_your_plane_account"),
     },
     [EAuthSteps.UNIQUE_CODE]: {
-      header: "Work in all dimensions.",
-      subHeader: "Create your Plane account.",
+      header: translate("ui.work_in_all_dimensions"),
+      subHeader: translate("ui.create_your_plane_account"),
     },
   },
 };

@@ -19,12 +19,14 @@ import type { ICycleIssuesFilter } from "@/store/issue/cycle";
 import type { IModuleIssuesFilter } from "@/store/issue/module";
 import type { IProjectIssuesFilter } from "@/store/issue/project";
 import type { IProjectViewIssuesFilter } from "@/store/issue/project-views";
+import { useTranslation } from "@plane/i18n";
 // helpers
 
 interface Props {
   issuesFilterStore: IProjectIssuesFilter | IModuleIssuesFilter | ICycleIssuesFilter | IProjectViewIssuesFilter;
 }
 export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(props: Props) {
+  const { t } = useTranslation();
   const { issuesFilterStore } = props;
 
   const issueCalendarView = useCalendarView();
@@ -51,14 +53,14 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
   const getWeekLayoutHeader = (): string => {
     const allDaysOfActiveWeek = issueCalendarView.allDaysOfActiveWeek;
 
-    if (!allDaysOfActiveWeek) return "Week view";
+    if (!allDaysOfActiveWeek) return t("ui.week_view");
 
     const daysList = Object.keys(allDaysOfActiveWeek);
 
     const firstDay = getDate(daysList[0]);
     const lastDay = getDate(daysList[daysList.length - 1]);
 
-    if (!firstDay || !lastDay) return "Week view";
+    if (!firstDay || !lastDay) return t("ui.week_view");
 
     if (firstDay.getMonth() === lastDay.getMonth() && firstDay.getFullYear() === lastDay.getFullYear())
       return `${MONTHS_LIST[firstDay.getMonth() + 1].title} ${firstDay.getFullYear()}`;

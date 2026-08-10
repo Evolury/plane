@@ -194,7 +194,7 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
                 {activity.new_value}
               </a>
             ) : (
-              <span className="font-medium text-primary">{activity.old_value || "Unknown cycle"}</span>
+              <span className="font-medium text-primary">{activity.old_value || translate("ui.unknown_cycle")}</span>
             )}
           </>
         ),

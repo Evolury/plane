@@ -11,6 +11,7 @@ import { ContrastIcon } from "@plane/propel/icons";
 import type { ICycle } from "@plane/types";
 // local imports
 import { PowerKMenuBuilder } from "./builder";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   cycles: ICycle[];
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export const PowerKCyclesMenu = observer(function PowerKCyclesMenu({ cycles, onSelect, value }: Props) {
+  const { t } = useTranslation();
   return (
     <PowerKMenuBuilder
       items={cycles}
@@ -28,7 +30,7 @@ export const PowerKCyclesMenu = observer(function PowerKCyclesMenu({ cycles, onS
       getLabel={(cycle) => cycle.name}
       isSelected={(cycle) => value === cycle.id}
       onSelect={onSelect}
-      emptyText="No cycles found"
+      emptyText={t("ui.no_cycles_found")}
     />
   );
 });

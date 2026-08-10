@@ -302,11 +302,11 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     control={control}
                     name="first_name"
                     rules={{
-                      required: "First name is required",
+                      required: t("ui.first_name_is_required"),
                       validate: validatePersonName,
                       maxLength: {
                         value: 50,
-                        message: "First name must be within 50 characters.",
+                        message: t("ui.first_name_must_be_within_50_characters"),
                       },
                     }}
                     render={({ field: { value, onChange, ref } }) => (
@@ -340,11 +340,11 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     control={control}
                     name="last_name"
                     rules={{
-                      required: "Last name is required",
+                      required: t("ui.last_name_is_required"),
                       validate: validatePersonName,
                       maxLength: {
                         value: 50,
-                        message: "Last name must be within 50 characters.",
+                        message: t("ui.last_name_must_be_within_50_characters"),
                       },
                     }}
                     render={({ field: { value, onChange, ref } }) => (
@@ -388,7 +388,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                             onChange={onChange}
                             ref={ref}
                             hasError={Boolean(errors.password)}
-                            placeholder="New password..."
+                            placeholder={t("ui.new_password")}
                             className="w-full border-[0.5px] border-subtle pr-12 placeholder:text-placeholder"
                             onFocus={() => setIsPasswordInputFocused(true)}
                             onBlur={() => setIsPasswordInputFocused(false)}
@@ -507,8 +507,8 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                   control={control}
                   name="use_case"
                   rules={{
-                    required: "Please select at least one option",
-                    validate: (value) => (value && value.length > 0) || "Please select at least one option",
+                    required: t("ui.please_select_at_least_one_option"),
+                    validate: (value) => (value && value.length > 0) || t("ui.please_select_at_least_one_option"),
                   }}
                   render={({ field: { value, onChange } }) => (
                     <div className="flex flex-wrap gap-2 overflow-auto py-2 break-all">

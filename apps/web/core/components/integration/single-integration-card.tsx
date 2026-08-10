@@ -21,7 +21,7 @@ import GithubLogo from "@/app/assets/services/github.png?url";
 import SlackLogo from "@/app/assets/services/slack.png?url";
 // constants
 import { WORKSPACE_INTEGRATIONS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 // hooks
 import { useInstance } from "@/hooks/store/use-instance";
 import { useUserPermissions } from "@/hooks/store/user";
@@ -37,13 +37,13 @@ type Props = {
 const integrationDetails: { [key: string]: any } = {
   github: {
     logo: GithubLogo,
-    installed: "Activate GitHub on individual projects to sync with specific repositories.",
-    notInstalled: "Connect with GitHub with your Plane workspace to sync project work items.",
+    installed: translate("ui.activate_github_on_individual_projects_to_sync_w"),
+    notInstalled: translate("ui.connect_with_github_with_your_plane_workspace_to"),
   },
   slack: {
     logo: SlackLogo,
-    installed: "Activate Slack on individual projects to sync with specific channels.",
-    notInstalled: "Connect with Slack with your Plane workspace to sync project work items.",
+    installed: translate("ui.activate_slack_on_individual_projects_to_sync_wi"),
+    notInstalled: translate("ui.connect_with_slack_with_your_plane_workspace_to"),
   },
 };
 
@@ -93,7 +93,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
 
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Deleted successfully!",
+          title: t("ui.deleted_successfully"),
           message: `${integration.title} integration deleted successfully.`,
         });
       })
@@ -144,7 +144,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
           <Tooltip
             isMobile={isMobile}
             disabled={isUserAdmin}
-            tooltipContent={!isUserAdmin ? "You don't have permission to perform this" : null}
+            tooltipContent={!isUserAdmin ? t("ui.you_don_t_have_permission_to_perform_this") : null}
           >
             <Button
               className={`${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`}
@@ -163,7 +163,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
           <Tooltip
             isMobile={isMobile}
             disabled={isUserAdmin}
-            tooltipContent={!isUserAdmin ? "You don't have permission to perform this" : null}
+            tooltipContent={!isUserAdmin ? t("ui.you_don_t_have_permission_to_perform_this") : null}
           >
             <Button
               className={`${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`}

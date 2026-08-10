@@ -213,7 +213,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
               validate: validatePersonName,
               maxLength: {
                 value: 50,
-                message: "Name must be within 50 characters.",
+                message: t("ui.name_must_be_within_50_characters"),
               },
             }}
             render={({ field: { value, onChange, ref } }) => (
@@ -232,7 +232,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
                     "border-danger-strong": errors.first_name,
                   }
                 )}
-                placeholder="Enter your full name"
+                placeholder={t("ui.enter_your_full_name")}
                 autoComplete="on"
               />
             )}

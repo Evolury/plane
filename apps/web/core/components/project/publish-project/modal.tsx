@@ -327,7 +327,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
               {isProjectPublished ? (
                 isDirty && (
                   <Button variant="primary" size="lg" type="submit" loading={isSubmitting}>
-                    {isSubmitting ? "Updating" : "Update settings"}
+                    {isSubmitting ? "Updating" : t("ui.update_settings")}
                   </Button>
                 )
               ) : (

@@ -41,7 +41,7 @@ function ProjectViewIssuesPage({ params }: Route.ComponentProps) {
         title={t("ui.view_does_not_exist")}
         description={t("ui.view_not_exist_description")}
         primaryButton={{
-          text: "View other views",
+          text: t("ui.view_other_views"),
           onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}/views`),
         }}
       />

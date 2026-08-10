@@ -163,7 +163,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
           | PromiseRejectedResult
           | undefined;
         if (rejectedResult) {
-          throw rejectedResult.reason ?? new Error("Failed to update profile");
+          throw rejectedResult.reason ?? new Error(t("ui.failed_to_update_profile"));
         }
         const values = results.map(
           (result) => (result as PromiseFulfilledResult<IUser | TUserProfile | undefined>).value
@@ -179,11 +179,11 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       loading: "Updating...",
       success: {
         title: t("toast.success"),
-        message: () => `Profile updated successfully.`,
+        message: () => t("ui.profile_updated_successfully"),
       },
       error: {
         title: t("toast.error"),
-        message: () => `There was some error in updating your profile. Please try again.`,
+        message: () => t("ui.there_was_some_error_in_updating_your_profile_pl"),
       },
     });
   };
@@ -275,7 +275,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   control={control}
                   name="first_name"
                   rules={{
-                    required: "Please enter first name",
+                    required: t("ui.please_enter_first_name"),
                     validate: validatePersonName,
                   }}
                   render={({ field: { value, onChange, ref } }) => (
@@ -287,7 +287,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                       onChange={onChange}
                       ref={ref}
                       hasError={Boolean(errors.first_name)}
-                      placeholder="Enter your first name"
+                      placeholder={t("ui.enter_your_first_name")}
                       className={`w-full rounded-md ${errors.first_name ? "border-danger-strong" : ""}`}
                       maxLength={50}
                       autoComplete="on"
@@ -313,7 +313,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                       onChange={onChange}
                       ref={ref}
                       hasError={Boolean(errors.last_name)}
-                      placeholder="Enter your last name"
+                      placeholder={t("ui.enter_your_last_name")}
                       className="w-full rounded-md"
                       maxLength={50}
                       autoComplete="on"
@@ -331,7 +331,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   control={control}
                   name="display_name"
                   rules={{
-                    required: "Display name is required.",
+                    required: t("ui.display_name_is_required"),
                     validate: validateDisplayName,
                   }}
                   render={({ field: { value, onChange, ref } }) => (
@@ -343,7 +343,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                       onChange={onChange}
                       ref={ref}
                       hasError={Boolean(errors?.display_name)}
-                      placeholder="Enter your display name"
+                      placeholder={t("ui.enter_your_display_name")}
                       className={`w-full ${errors?.display_name ? "border-danger-strong" : ""}`}
                       maxLength={50}
                     />
@@ -362,7 +362,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   control={control}
                   name="email"
                   rules={{
-                    required: "Email is required.",
+                    required: t("ui.email_is_required"),
                   }}
                   render={({ field: { value, ref } }) => (
                     <Input

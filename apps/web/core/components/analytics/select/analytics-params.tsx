@@ -18,6 +18,7 @@ import { cn } from "@plane/utils";
 // plane web components
 import { SelectXAxis } from "./select-x-axis";
 import { SelectYAxis } from "./select-y-axis";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   control: Control<IAnalyticsParams, unknown>;
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export const AnalyticsSelectParams = observer(function AnalyticsSelectParams(props: Props) {
+  const { t } = useTranslation();
   const { control, params, classNames, isEpic } = props;
   const xAxisOptions = useMemo(
     () => ANALYTICS_X_AXIS_VALUES.filter((option) => option.value !== params.group_by),
@@ -72,7 +74,7 @@ export const AnalyticsSelectParams = observer(function AnalyticsSelectParams(pro
                 <div className="flex items-center gap-2">
                   <CalendarLayoutIcon className="h-3 w-3" />
                   <span className={cn("text-secondary", value && "text-primary")}>
-                    {xAxisOptions.find((v) => v.value === value)?.label || "Add Property"}
+                    {xAxisOptions.find((v) => v.value === value)?.label || t("ui.add_property")}
                   </span>
                 </div>
               }
@@ -93,7 +95,7 @@ export const AnalyticsSelectParams = observer(function AnalyticsSelectParams(pro
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="h-3 w-3" />
                   <span className={cn("text-secondary", value && "text-primary")}>
-                    {groupByOptions.find((v) => v.value === value)?.label || "Add Property"}
+                    {groupByOptions.find((v) => v.value === value)?.label || t("ui.add_property")}
                   </span>
                 </div>
               }

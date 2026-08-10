@@ -8,7 +8,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { AUTH_TRACKER_ELEMENTS } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { PlaneLockup } from "@plane/propel/icons";
 import { PageHead } from "@/components/core/page-title";
 import { EAuthModes } from "@/helpers/authentication.helper";
@@ -22,9 +22,9 @@ const authContentMap = {
     linkHref: "/sign-up",
   },
   [EAuthModes.SIGN_UP]: {
-    pageTitle: "Sign in",
+    pageTitle: translate("ui.sign_in"),
     text: "auth.common.already_have_an_account",
-    linkText: "Sign in",
+    linkText: translate("ui.sign_in"),
     linkHref: "/sign-in",
   },
 };

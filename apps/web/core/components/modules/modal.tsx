@@ -72,7 +72,7 @@ export const CreateUpdateModuleModal = observer(function CreateUpdateModuleModal
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),
-          message: err?.detail ?? err?.error ?? "Module could not be created. Please try again.",
+          message: err?.detail ?? err?.error ?? t("ui.module_could_not_be_created_please_try_again"),
         });
       });
   };

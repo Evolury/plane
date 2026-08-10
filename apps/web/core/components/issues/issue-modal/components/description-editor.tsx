@@ -122,7 +122,7 @@ export const IssueDescriptionEditor = observer(function IssueDescriptionEditor(p
     aiService
       .createGptTask(workspaceSlug.toString(), {
         prompt: issueName,
-        task: "Generate a proper description for this work item.",
+        task: t("ui.generate_a_proper_description_for_this_work_item"),
       })
       .then((res) => {
         if (res.response === "")
@@ -140,7 +140,7 @@ export const IssueDescriptionEditor = observer(function IssueDescriptionEditor(p
           setToast({
             type: TOAST_TYPE.ERROR,
             title: t("toast.error"),
-            message: error || "You have reached the maximum number of requests of 50 requests per month per user.",
+            message: error || t("ui.you_have_reached_the_maximum_number_of_requests"),
           });
         else
           setToast({

@@ -15,12 +15,14 @@ import { renderFormattedDate, calculateTimeAgo, renderFormattedTime } from "@pla
 import { DeleteApiTokenModal } from "@/components/api-token/delete-token-modal";
 // hooks
 import { usePlatformOS } from "@/hooks/use-platform-os";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   token: IApiToken;
 };
 
 export function ApiTokenListItem(props: Props) {
+  const { t } = useTranslation();
   const { token } = props;
   // states
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -31,7 +33,7 @@ export function ApiTokenListItem(props: Props) {
     <>
       <DeleteApiTokenModal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} tokenId={token.id} />
       <div className="group relative flex flex-col justify-center border-b border-subtle py-3">
-        <Tooltip tooltipContent="Delete token" isMobile={isMobile}>
+        <Tooltip tooltipContent={t("ui.delete_token")} isMobile={isMobile}>
           <button
             onClick={() => setDeleteModalOpen(true)}
             className="absolute right-4 hidden place-items-center group-hover:grid"

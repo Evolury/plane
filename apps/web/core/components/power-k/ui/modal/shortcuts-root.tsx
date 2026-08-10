@@ -14,6 +14,7 @@ import { Input } from "@plane/ui";
 import { usePowerK } from "@/hooks/store/use-power-k";
 // local imports
 import { ShortcutRenderer } from "../renderer/shortcut";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function ShortcutsModal(props: Props) {
+  const { t } = useTranslation();
   const { isOpen, onClose } = props;
   // states
   const [query, setQuery] = useState("");
@@ -78,7 +80,7 @@ export function ShortcutsModal(props: Props) {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search for shortcuts"
+                        placeholder={t("ui.search_for_shortcuts")}
                         className="w-full border-none bg-transparent py-1 text-11 text-secondary outline-none"
                         autoFocus
                         tabIndex={1}

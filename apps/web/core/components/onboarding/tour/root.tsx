@@ -20,7 +20,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useUser } from "@/hooks/store/user";
 // local imports
 import { TourSidebar } from "./sidebar";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 
 export type TOnboardingTourProps = {
   onComplete: () => void;
@@ -48,7 +48,7 @@ const TOUR_STEPS: {
     key: "cycles",
     title: "ui.move_with_cycles",
     description:
-      "Cycles help you and your team to progress faster, similar to the sprints commonly used in agile development.",
+      translate("ui.cycles_help_you_and_your_team_to_progress_faster"),
     image: CyclesTour,
     prevStep: "work-items",
     nextStep: "modules",

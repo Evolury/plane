@@ -11,6 +11,7 @@ import type { EProductSubscriptionEnum, IPaymentProduct, TSubscriptionPrice } fr
 import { Loader } from "@plane/ui";
 // local imports
 import { DiscountInfo } from "./discount-info";
+import { useTranslation } from "@plane/i18n";
 
 export type TCheckoutParams = {
   planVariant: EProductSubscriptionEnum;
@@ -33,6 +34,7 @@ type Props = {
 };
 
 export const PlanCheckoutButton = observer(function PlanCheckoutButton(props: Props) {
+  const { t } = useTranslation();
   const {
     planeName,
     planVariant,
@@ -88,7 +90,7 @@ export const PlanCheckoutButton = observer(function PlanCheckoutButton(props: Pr
             }}
             disabled={!!upgradeLoaderType}
           >
-            {upgradeLoaderType === planVariant ? "Redirecting to Stripe" : (upgradeCTA ?? `Upgrade to ${planeName}`)}
+            {upgradeLoaderType === planVariant ? t("ui.redirecting_to_stripe") : (upgradeCTA ?? `Upgrade to ${planeName}`)}
           </Button>
           {isTrialAllowed && !isSelfHosted && (
             <div className="mt-1 h-3">

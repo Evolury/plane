@@ -20,8 +20,10 @@ import { usePowerK } from "@/hooks/store/use-power-k";
 import { useUser } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
 import { useExpandableSearch } from "@/hooks/use-expandable-search";
+import { useTranslation } from "@plane/i18n";
 
 export const TopNavPowerK = observer(() => {
+  const { t } = useTranslation();
   // router
   const router = useAppRouter();
   const params = useParams();
@@ -235,7 +237,7 @@ export const TopNavPowerK = observer(() => {
             onMouseDown={handleMouseDown}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            placeholder="Search commands..."
+            placeholder={t("ui.search_commands")}
             className="placeholder-text-placeholder min-w-0 flex-1 bg-transparent text-13 text-primary outline-none"
           />
           {searchTerm && (

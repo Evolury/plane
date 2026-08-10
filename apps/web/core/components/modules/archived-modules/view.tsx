@@ -45,8 +45,8 @@ export const ArchivedModulesView = observer(function ArchivedModulesView(props: 
           <h5 className="mt-7 mb-1 text-18 font-medium">{t("ui.no_matching_modules")}</h5>
           <p className="text-14 text-placeholder">
             {archivedModulesSearchQuery.trim() === ""
-              ? "Remove the filters to see all modules"
-              : "Remove the search criteria to see all modules"}
+              ? t("ui.remove_the_filters_to_see_all_modules")
+              : t("ui.remove_the_search_criteria_to_see_all_modules")}
           </p>
         </div>
       </div>

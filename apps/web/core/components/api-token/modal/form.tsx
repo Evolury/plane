@@ -192,7 +192,7 @@ export function CreateApiTokenForm(props: Props) {
                             ? "Custom date"
                             : selectedOption
                               ? selectedOption.label
-                              : "Set expiration date"}
+                              : t("ui.set_expiration_date")}
                         </div>
                       }
                       value={value}
@@ -217,7 +217,7 @@ export function CreateApiTokenForm(props: Props) {
                     minDate={tomorrow}
                     icon={<Calendar className="h-3 w-3" />}
                     buttonVariant="border-with-text"
-                    placeholder="Set date"
+                    placeholder={t("ui.set_date")}
                     disabled={neverExpires}
                   />
                 </div>

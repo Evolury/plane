@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 // helpers
 import { usePlatformOS } from "@plane/hooks";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 interface ResizableSidebarProps {
   showPeek?: boolean;
@@ -49,6 +50,7 @@ export function ResizableSidebar({
   isAnyExtendedSidebarExpanded = false,
   isAnySidebarDropdownOpen = false,
 }: ResizableSidebarProps) {
+  const { t } = useTranslation();
   // states
   const [isResizing, setIsResizing] = useState(false);
   const [isHoveringTrigger, setIsHoveringTrigger] = useState(false);
@@ -235,7 +237,7 @@ export function ResizableSidebar({
         onMouseEnter={handlePeekEnter}
         onMouseLeave={handlePeekLeave}
         role="complementary"
-        aria-label="Sidebar peek view"
+        aria-label={t("ui.sidebar_peek_view")}
       >
         <aside
           className={cn(
