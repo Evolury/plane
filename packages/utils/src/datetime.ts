@@ -607,3 +607,23 @@ export const formatDuration = (seconds: number | undefined | null): string => {
  */
 export const isValidDate = (date: unknown): date is string | Date =>
   (typeof date === "string" || typeof date === "object") && date !== null && !isNaN(Date.parse(date as string));
+
+/**
+ * @returns {string} nome do mês no locale ativo (pt-BR por padrão)
+ * @description Substitui as listas de meses em inglês de @plane/constants. O
+ * date-fns já conhece os nomes traduzidos, então derivá-los evita manter 12
+ * meses × 2 formatos como chaves i18n — e mantém tudo em sincronia com o locale.
+ * @param monthIndex índice 0-11, como Date.getMonth()
+ * @example getMonthName(0) // "janeiro"   getMonthName(0, true) // "jan."
+ */
+export const getMonthName = (monthIndex: number, short = false): string =>
+  format(new Date(2024, monthIndex, 1), short ? "MMM" : "MMMM");
+
+/**
+ * @returns {string} nome do dia da semana no locale ativo
+ * @param dayIndex 0 = domingo, como Date.getDay()
+ * @example getWeekDayName(1) // "segunda-feira"   getWeekDayName(1, true) // "seg."
+ */
+export const getWeekDayName = (dayIndex: number, short = false): string =>
+  // 2024-01-07 é um domingo, então somar o índice cobre a semana inteira
+  format(new Date(2024, 0, 7 + dayIndex), short ? "EEEEEE" : "EEEE");

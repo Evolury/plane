@@ -30,12 +30,14 @@ import type { TEditorCommands } from "@/types";
 // local imports
 import { FloatingMenuRoot } from "../floating-menu/root";
 import { useFloatingMenu } from "../floating-menu/use-floating-menu";
+import { useEditorTranslation } from "@/providers/translation";
 
 type Props = {
   editor: Editor;
 };
 
 export function BubbleMenuNodeSelector(props: Props) {
+  const t = useEditorTranslation();
   const { editor } = props;
   // floating ui
   const { options, getReferenceProps, getFloatingProps } = useFloatingMenu({});
@@ -57,6 +59,7 @@ export function BubbleMenuNodeSelector(props: Props) {
 
   const activeItem = items.filter((item) => item.isActive()).pop() ?? {
     name: "Multiple",
+    i18n_name: "editor.multiple",
   };
 
   return (
@@ -72,7 +75,7 @@ export function BubbleMenuNodeSelector(props: Props) {
       }}
       menuButton={
         <>
-          <span>{activeItem?.name}</span>
+          <span>{activeItem?.i18n_name ? t(activeItem.i18n_name, activeItem.name) : activeItem?.name}</span>
           <ChevronDownIcon className="size-3 shrink-0" />
         </>
       }
@@ -83,7 +86,7 @@ export function BubbleMenuNodeSelector(props: Props) {
       <section className="mt-1 flex max-h-[90vh] w-48 flex-col overflow-y-scroll rounded-md border-[0.5px] border-strong bg-surface-1 px-2 py-2.5 shadow-raised-200">
         {items.map((item) => (
           <button
-            key={item.name}
+            key={item.key}
             type="button"
             onClick={(e) => {
               item.command();
@@ -99,7 +102,7 @@ export function BubbleMenuNodeSelector(props: Props) {
           >
             <div className="flex items-center space-x-2">
               <item.icon className="size-3 flex-shrink-0" />
-              <span>{item.name}</span>
+              <span>{item.i18n_name ? t(item.i18n_name, item.name) : item.name}</span>
             </div>
             {activeItem.name === item.name && <CheckIcon className="size-3 flex-shrink-0 text-tertiary" />}
           </button>

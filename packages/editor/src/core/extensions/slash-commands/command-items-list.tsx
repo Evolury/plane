@@ -67,7 +67,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "text",
             key: "text",
-            title: "Text",
+            title: translate("editor.text", "Text"),
             description: translate("editor.plain_text", "Just start typing with plain text."),
             searchTerms: ["p", "paragraph"],
             icon: <CaseSensitive className="size-3.5" />,
@@ -76,7 +76,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h1",
             key: "h1",
-            title: "Heading 1",
+            title: translate("editor.heading_1", "Heading 1"),
             description: "Big section heading.",
             searchTerms: ["title", "big", "large"],
             icon: <Heading1 className="size-3.5" />,
@@ -85,7 +85,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h2",
             key: "h2",
-            title: "Heading 2",
+            title: translate("editor.heading_2", "Heading 2"),
             description: "Medium section heading.",
             searchTerms: ["subtitle", "medium"],
             icon: <Heading2 className="size-3.5" />,
@@ -94,7 +94,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h3",
             key: "h3",
-            title: "Heading 3",
+            title: translate("editor.heading_3", "Heading 3"),
             description: "Small section heading.",
             searchTerms: ["subtitle", "small"],
             icon: <Heading3 className="size-3.5" />,
@@ -103,7 +103,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h4",
             key: "h4",
-            title: "Heading 4",
+            title: translate("editor.heading_4", "Heading 4"),
             description: "Small section heading.",
             searchTerms: ["subtitle", "small"],
             icon: <Heading4 className="size-3.5" />,
@@ -112,7 +112,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h5",
             key: "h5",
-            title: "Heading 5",
+            title: translate("editor.heading_5", "Heading 5"),
             description: "Small section heading.",
             searchTerms: ["subtitle", "small"],
             icon: <Heading5 className="size-3.5" />,
@@ -121,7 +121,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "h6",
             key: "h6",
-            title: "Heading 6",
+            title: translate("editor.heading_6", "Heading 6"),
             description: "Small section heading.",
             searchTerms: ["subtitle", "small"],
             icon: <Heading6 className="size-3.5" />,
@@ -131,7 +131,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "numbered-list",
             key: "numbered-list",
-            title: "Numbered list",
+            title: translate("editor.numbered_list", "Numbered list"),
             description: translate("editor.numbered_list", "Create a numbered list."),
             searchTerms: ["ordered"],
             icon: <ListOrdered className="size-3.5" />,
@@ -140,7 +140,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "bulleted-list",
             key: "bulleted-list",
-            title: "Bulleted list",
+            title: translate("editor.bulleted_list", "Bulleted list"),
             description: translate("editor.bulleted_list", "Create a bulleted list."),
             searchTerms: ["unordered", "point"],
             icon: <List className="size-3.5" />,
@@ -158,7 +158,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "table",
             key: "table",
-            title: "Table",
+            title: translate("editor.table", "Table"),
             description: translate("editor.create_table", "Create a table"),
             searchTerms: ["table", "cell", "db", "data", "tabular"],
             icon: <Table className="size-3.5" />,
@@ -167,7 +167,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "quote",
             key: "quote",
-            title: "Quote",
+            title: translate("editor.quote", "Quote"),
             description: translate("editor.quote", "Capture a quote."),
             searchTerms: ["blockquote"],
             icon: <TextQuote className="size-3.5" />,
@@ -176,7 +176,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "code",
             key: "code",
-            title: "Code",
+            title: translate("editor.code", "Code"),
             description: translate("editor.code_block", "Capture a code snippet."),
             searchTerms: ["codeblock"],
             icon: <Code2 className="size-3.5" />,
@@ -185,7 +185,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "callout",
             key: "callout",
-            title: "Callout",
+            title: translate("editor.callout", "Callout"),
             icon: <MessageSquareText className="size-3.5" />,
             description: "Insert callout",
             searchTerms: ["callout", "comment", "message", "info", "alert"],
@@ -194,7 +194,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "divider",
             key: "divider",
-            title: "Divider",
+            title: translate("editor.divider", "Divider"),
             description: "Visually divide blocks.",
             searchTerms: ["line", "divider", "horizontal", "rule", "separate"],
             icon: <MinusSquare className="size-3.5" />,
@@ -203,7 +203,7 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "emoji",
             key: "emoji",
-            title: "Emoji",
+            title: translate("editor.emoji", "Emoji"),
             description: translate("editor.insert_emoji", "Insert an emoji"),
             searchTerms: ["emoji", "icons", "reaction", "emoticon", "emotags"],
             icon: <Smile className="size-3.5" />,
@@ -215,12 +215,12 @@ export const getSlashCommandFilteredSections =
       },
       {
         key: "text-colors",
-        title: "Colors",
+        title: translate("editor.colors", "Colors"),
         items: [
           {
             commandKey: "text-color",
             key: "text-color-default",
-            title: "Default",
+            title: translate("editor.default", "Default"),
             description: "Change text color",
             searchTerms: ["color", "text", "default"],
             icon: <ALargeSmall className="size-3.5 text-primary" />,
@@ -251,12 +251,12 @@ export const getSlashCommandFilteredSections =
       },
       {
         key: "background-colors",
-        title: "Background colors",
+        title: translate("editor.background_colors", "Background colors"),
         items: [
           {
             commandKey: "background-color",
             key: "background-color-default",
-            title: "Default background",
+            title: translate("editor.default_background", "Default background"),
             description: "Change background color",
             searchTerms: ["color", "bg", "background", "default"],
             icon: <ALargeSmall className="size-3.5" />,
@@ -294,7 +294,7 @@ export const getSlashCommandFilteredSections =
       internalAdditionalOptions.push({
         commandKey: "image",
         key: "image",
-        title: "Image",
+        title: translate("editor.image", "Image"),
         icon: <ImageIcon className="size-3.5" />,
         description: translate("editor.insert_image", "Insert an image"),
         searchTerms: ["img", "photo", "picture", "media", "upload"],

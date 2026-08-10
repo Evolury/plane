@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 import { EStartOfTheWeek } from "@plane/types";
-import { getOrderedDays } from "@plane/utils";
+import { getOrderedDays, getWeekDayName } from "@plane/utils";
 import { DAYS_LIST } from "@plane/constants";
 // helpers
 // hooks
@@ -40,8 +40,8 @@ export const CalendarWeekHeader = observer(function CalendarWeekHeader(props: Pr
           return null;
 
         return (
-          <div key={day.shortTitle} className="flex h-11 items-center justify-center bg-layer-1 px-4 md:justify-end">
-            {day.shortTitle}
+          <div key={getWeekDayName(day.value, true)} className="flex h-11 items-center justify-center bg-layer-1 px-4 md:justify-end">
+            {getWeekDayName(day.value, true)}
           </div>
         );
       })}

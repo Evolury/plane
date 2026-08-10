@@ -42,6 +42,8 @@ export type ToolbarMenuItem<T extends TEditorCommands = TEditorCommands> = {
   itemKey: T;
   renderKey: string;
   name: string;
+  /** chave i18n; `name` é o fallback em inglês */
+  i18n_name?: string;
   icon: LucideIcon;
   shortcut?: string[];
   editors: TEditorTypes[];
@@ -49,13 +51,20 @@ export type ToolbarMenuItem<T extends TEditorCommands = TEditorCommands> = {
 };
 
 export const TYPOGRAPHY_ITEMS: ToolbarMenuItem<"text" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6">[] = [
-  { itemKey: "text", renderKey: "text", name: "Text", icon: CaseSensitive, editors: ["document"] },
-  { itemKey: "h1", renderKey: "h1", name: "Heading 1", icon: Heading1, editors: ["document"] },
-  { itemKey: "h2", renderKey: "h2", name: "Heading 2", icon: Heading2, editors: ["document"] },
-  { itemKey: "h3", renderKey: "h3", name: "Heading 3", icon: Heading3, editors: ["document"] },
-  { itemKey: "h4", renderKey: "h4", name: "Heading 4", icon: Heading4, editors: ["document"] },
-  { itemKey: "h5", renderKey: "h5", name: "Heading 5", icon: Heading5, editors: ["document"] },
-  { itemKey: "h6", renderKey: "h6", name: "Heading 6", icon: Heading6, editors: ["document"] },
+  { itemKey: "text", renderKey: "text", name: "Text",
+      i18n_name: "editor.text", icon: CaseSensitive, editors: ["document"] },
+  { itemKey: "h1", renderKey: "h1", name: "Heading 1",
+      i18n_name: "editor.heading_1", icon: Heading1, editors: ["document"] },
+  { itemKey: "h2", renderKey: "h2", name: "Heading 2",
+      i18n_name: "editor.heading_2", icon: Heading2, editors: ["document"] },
+  { itemKey: "h3", renderKey: "h3", name: "Heading 3",
+      i18n_name: "editor.heading_3", icon: Heading3, editors: ["document"] },
+  { itemKey: "h4", renderKey: "h4", name: "Heading 4",
+      i18n_name: "editor.heading_4", icon: Heading4, editors: ["document"] },
+  { itemKey: "h5", renderKey: "h5", name: "Heading 5",
+      i18n_name: "editor.heading_5", icon: Heading5, editors: ["document"] },
+  { itemKey: "h6", renderKey: "h6", name: "Heading 6",
+      i18n_name: "editor.heading_6", icon: Heading6, editors: ["document"] },
 ];
 
 export const TEXT_ALIGNMENT_ITEMS: ToolbarMenuItem<"text-align">[] = [
@@ -99,6 +108,7 @@ const BASIC_MARK_ITEMS: ToolbarMenuItem<"bold" | "italic" | "underline" | "strik
     itemKey: "bold",
     renderKey: "bold",
     name: "Bold",
+      i18n_name: "editor.bold",
     icon: Bold,
     shortcut: ["Cmd", "B"],
     editors: ["lite", "document"],
@@ -107,6 +117,7 @@ const BASIC_MARK_ITEMS: ToolbarMenuItem<"bold" | "italic" | "underline" | "strik
     itemKey: "italic",
     renderKey: "italic",
     name: "Italic",
+      i18n_name: "editor.italic",
     icon: Italic,
     shortcut: ["Cmd", "I"],
     editors: ["lite", "document"],
@@ -115,6 +126,7 @@ const BASIC_MARK_ITEMS: ToolbarMenuItem<"bold" | "italic" | "underline" | "strik
     itemKey: "underline",
     renderKey: "underline",
     name: "Underline",
+      i18n_name: "editor.underline",
     icon: Underline,
     shortcut: ["Cmd", "U"],
     editors: ["lite", "document"],
@@ -123,6 +135,7 @@ const BASIC_MARK_ITEMS: ToolbarMenuItem<"bold" | "italic" | "underline" | "strik
     itemKey: "strikethrough",
     renderKey: "strikethrough",
     name: "Strikethrough",
+      i18n_name: "editor.strikethrough",
     icon: Strikethrough,
     shortcut: ["Cmd", "Shift", "S"],
     editors: ["lite", "document"],
@@ -134,6 +147,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
     itemKey: "bulleted-list",
     renderKey: "bulleted-list",
     name: "Bulleted list",
+      i18n_name: "editor.bulleted_list",
     icon: List,
     shortcut: ["Cmd", "Shift", "7"],
     editors: ["lite", "document"],
@@ -142,6 +156,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
     itemKey: "numbered-list",
     renderKey: "numbered-list",
     name: "Numbered list",
+      i18n_name: "editor.numbered_list",
     icon: ListOrdered,
     shortcut: ["Cmd", "Shift", "8"],
     editors: ["lite", "document"],
@@ -150,6 +165,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
     itemKey: "to-do-list",
     renderKey: "to-do-list",
     name: "To-do list",
+      i18n_name: "editor.to_do_list",
     icon: ListTodo,
     shortcut: ["Cmd", "Shift", "9"],
     editors: ["lite", "document"],
@@ -157,13 +173,17 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
 ];
 
 export const USER_ACTION_ITEMS: ToolbarMenuItem<"quote" | "code">[] = [
-  { itemKey: "quote", renderKey: "quote", name: "Quote", icon: TextQuote, editors: ["lite", "document"] },
-  { itemKey: "code", renderKey: "code", name: "Code", icon: Code2, editors: ["lite", "document"] },
+  { itemKey: "quote", renderKey: "quote", name: "Quote",
+      i18n_name: "editor.quote", icon: TextQuote, editors: ["lite", "document"] },
+  { itemKey: "code", renderKey: "code", name: "Code",
+      i18n_name: "editor.code", icon: Code2, editors: ["lite", "document"] },
 ];
 
 export const COMPLEX_ITEMS: ToolbarMenuItem<"table" | "image">[] = [
-  { itemKey: "table", renderKey: "table", name: "Table", icon: Table, editors: ["document"] },
-  { itemKey: "image", renderKey: "image", name: "Image", icon: Image, editors: ["lite", "document"] },
+  { itemKey: "table", renderKey: "table", name: "Table",
+      i18n_name: "editor.table", icon: Table, editors: ["document"] },
+  { itemKey: "image", renderKey: "image", name: "Image",
+      i18n_name: "editor.image", icon: Image, editors: ["lite", "document"] },
 ];
 
 export const IMAGE_ITEM = COMPLEX_ITEMS.find((item): item is ToolbarMenuItem<"image"> => item.itemKey === "image")!;

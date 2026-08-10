@@ -12,8 +12,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@plane/propel/icons";
 //hooks
 // icons
 // constants
-import { getDate } from "@plane/utils";
-import { MONTHS_LIST } from "@plane/constants";
+import { getDate, getMonthName } from "@plane/utils";
 import { useCalendarView } from "@/hooks/store/use-calendar-view";
 import type { ICycleIssuesFilter } from "@/store/issue/cycle";
 import type { IModuleIssuesFilter } from "@/store/issue/module";
@@ -63,15 +62,15 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
     if (!firstDay || !lastDay) return t("ui.week_view");
 
     if (firstDay.getMonth() === lastDay.getMonth() && firstDay.getFullYear() === lastDay.getFullYear())
-      return `${MONTHS_LIST[firstDay.getMonth() + 1].title} ${firstDay.getFullYear()}`;
+      return `${getMonthName(firstDay.getMonth())} ${firstDay.getFullYear()}`;
 
     if (firstDay.getFullYear() !== lastDay.getFullYear()) {
-      return `${MONTHS_LIST[firstDay.getMonth() + 1].shortTitle} ${firstDay.getFullYear()} - ${
-        MONTHS_LIST[lastDay.getMonth() + 1].shortTitle
+      return `${getMonthName(firstDay.getMonth(), true)} ${firstDay.getFullYear()} - ${
+        getMonthName(lastDay.getMonth(), true)
       } ${lastDay.getFullYear()}`;
     } else
-      return `${MONTHS_LIST[firstDay.getMonth() + 1].shortTitle} - ${
-        MONTHS_LIST[lastDay.getMonth() + 1].shortTitle
+      return `${getMonthName(firstDay.getMonth(), true)} - ${
+        getMonthName(lastDay.getMonth(), true)
       } ${lastDay.getFullYear()}`;
   };
 
@@ -91,7 +90,7 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
           disabled={calendarLayout === "week"}
         >
           {calendarLayout === "month"
-            ? `${MONTHS_LIST[activeMonthDate.getMonth() + 1].title} ${activeMonthDate.getFullYear()}`
+            ? `${getMonthName(activeMonthDate.getMonth())} ${activeMonthDate.getFullYear()}`
             : getWeekLayoutHeader()}
         </button>
       </Popover.Button>
@@ -135,9 +134,10 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
               </button>
             </div>
             <div className="grid grid-cols-4 items-stretch justify-items-stretch gap-4 pt-3">
-              {Object.values(MONTHS_LIST).map((month, index) => (
+              {/* os nomes vêm do date-fns no locale ativo, então basta iterar os 12 meses */}
+              {Array.from({ length: 12 }, (_, index) => (
                 <button
-                  key={month.shortTitle}
+                  key={getMonthName(index, true)}
                   type="button"
                   className="rounded-sm py-0.5 text-11 hover:bg-layer-1"
                   onClick={() => {
@@ -145,7 +145,7 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
                     handleDateChange(newDate);
                   }}
                 >
-                  {month.shortTitle}
+                  {getMonthName(index, true)}
                 </button>
               ))}
             </div>
