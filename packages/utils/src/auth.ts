@@ -54,30 +54,33 @@ export type PasswordCriteria = {
 /**
  * Get password criteria for validation display
  */
+// `label` guarda a CHAVE i18n, nao o texto: @plane/utils e um pacote-folha e
+// nao deve arrastar o i18next para todos os seus consumidores. Quem renderiza
+// traduz — mesmo padrao de project-navigation e user-menu.
 export const getPasswordCriteria = (password: string): PasswordCriteria[] => [
   {
     key: "length",
-    label: "Min 8 characters",
+    label: "auth_error.min_8_characters",
     isValid: password.length >= 8,
   },
   {
     key: "uppercase",
-    label: "Min 1 upper-case letter",
+    label: "auth_error.min_1_upper_case_letter",
     isValid: /[A-Z]/.test(password),
   },
   {
     key: "lowercase",
-    label: "Min 1 lower-case letter",
+    label: "auth_error.min_1_lower_case_letter",
     isValid: /[a-z]/.test(password),
   },
   {
     key: "number",
-    label: "Min 1 number",
+    label: "auth_error.min_1_number",
     isValid: /[0-9]/.test(password),
   },
   {
     key: "special",
-    label: "Min 1 special character",
+    label: "auth_error.min_1_special_character",
     isValid: /[!@#$%^&*()\-_+=\[\]{}|;:'",.<>?/]/.test(password),
   },
 ];

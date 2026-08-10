@@ -15,6 +15,7 @@ import { Input, Spinner, PasswordStrengthIndicator } from "@plane/ui";
 import { getPasswordStrength } from "@plane/utils";
 // types
 import { EAuthModes, EAuthSteps } from "@/types/auth";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   email: string;
@@ -50,6 +51,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
     password: false,
     retypePassword: false,
   });
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
   const [isRetryPasswordInputFocused, setIsRetryPasswordInputFocused] = useState(false);
@@ -74,7 +76,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
   const passwordSupport = passwordFormData.password.length > 0 &&
     mode === EAuthModes.SIGN_UP &&
     getPasswordStrength(passwordFormData.password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (
-      <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} />
+      <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} translateLabel={t} />
     );
 
   const isButtonDisabled = useMemo(

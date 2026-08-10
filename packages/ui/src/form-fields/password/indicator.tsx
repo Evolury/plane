@@ -14,12 +14,19 @@ export interface PasswordStrengthIndicatorProps {
   password: string;
   showCriteria?: boolean;
   isFocused?: boolean;
+  /**
+   * Traduz o rotulo de cada criterio. `getPasswordCriteria` devolve chaves i18n,
+   * nao texto: nenhum pacote compartilhado depende de @plane/i18n, entao quem
+   * traduz e o app. Sem esta prop o rotulo cai no proprio texto recebido.
+   */
+  translateLabel?: (key: string) => string;
 }
 
 export function PasswordStrengthIndicator({
   password,
   showCriteria = true,
   isFocused = false,
+  translateLabel,
 }: PasswordStrengthIndicatorProps) {
   const strength = getPasswordStrength(password);
   const criteria = getPasswordCriteria(password);
@@ -70,7 +77,7 @@ export function PasswordStrengthIndicator({
                   "text-primary": !criterion.isValid,
                 })}
               >
-                {criterion.label}
+                {translateLabel ? translateLabel(criterion.label) : criterion.label}
               </span>
             </div>
           ))}
