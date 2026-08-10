@@ -166,19 +166,21 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const stateFilterConfig = useMemo(
     () =>
       getStateFilterConfig<TWorkItemFilterProperty>("state_id")({
+        label: t("state"),
         isEnabled: isFilterEnabled("state_id") && workItemStates !== undefined,
         filterIcon: StatePropertyIcon,
         getOptionIcon: (state) => <StateGroupIcon stateGroup={state.group} color={state.color} />,
         states: workItemStates ?? [],
         ...operatorConfigs,
       }),
-    [isFilterEnabled, workItemStates, operatorConfigs]
+    [isFilterEnabled, workItemStates, operatorConfigs, t]
   );
 
   // label filter config
   const labelFilterConfig = useMemo(
     () =>
       getLabelFilterConfig<TWorkItemFilterProperty>("label_id")({
+        label: t("common.label"),
         isEnabled: isFilterEnabled("label_id") && workItemLabels !== undefined,
         filterIcon: LabelPropertyIcon,
         labels: workItemLabels ?? [],
@@ -187,39 +189,42 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ),
         ...operatorConfigs,
       }),
-    [isFilterEnabled, workItemLabels, operatorConfigs]
+    [isFilterEnabled, workItemLabels, operatorConfigs, t]
   );
 
   // cycle filter config
   const cycleFilterConfig = useMemo(
     () =>
       getCycleFilterConfig<TWorkItemFilterProperty>("cycle_id")({
+        label: t("common.cycle"),
         isEnabled: isFilterEnabled("cycle_id") && project?.cycle_view === true && cycles !== undefined,
         filterIcon: CycleIcon,
         getOptionIcon: (cycleGroup) => <CycleGroupIcon cycleGroup={cycleGroup} className="h-3.5 w-3.5 flex-shrink-0" />,
         cycles: cycles ?? [],
         ...operatorConfigs,
       }),
-    [isFilterEnabled, project?.cycle_view, cycles, operatorConfigs]
+    [isFilterEnabled, project?.cycle_view, cycles, operatorConfigs, t]
   );
 
   // module filter config
   const moduleFilterConfig = useMemo(
     () =>
       getModuleFilterConfig<TWorkItemFilterProperty>("module_id")({
+        label: t("common.module"),
         isEnabled: isFilterEnabled("module_id") && project?.module_view === true && modules !== undefined,
         filterIcon: ModuleIcon,
         getOptionIcon: () => <ModuleIcon className="h-3 w-3 flex-shrink-0" />,
         modules: modules ?? [],
         ...operatorConfigs,
       }),
-    [isFilterEnabled, project?.module_view, modules, operatorConfigs]
+    [isFilterEnabled, project?.module_view, modules, operatorConfigs, t]
   );
 
   // assignee filter config
   const assigneeFilterConfig = useMemo(
     () =>
       getAssigneeFilterConfig<TWorkItemFilterProperty>("assignee_id")({
+        label: t("assignees"),
         isEnabled: isFilterEnabled("assignee_id") && members !== undefined,
         filterIcon: MembersPropertyIcon,
         members: members ?? [],
@@ -233,13 +238,14 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ),
         ...operatorConfigs,
       }),
-    [isFilterEnabled, members, operatorConfigs]
+    [isFilterEnabled, members, operatorConfigs, t]
   );
 
   // mention filter config
   const mentionFilterConfig = useMemo(
     () =>
       getMentionFilterConfig<TWorkItemFilterProperty>("mention_id")({
+        label: t("mentions"),
         isEnabled: isFilterEnabled("mention_id") && members !== undefined,
         filterIcon: AtSign,
         members: members ?? [],
@@ -253,7 +259,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ),
         ...operatorConfigs,
       }),
-    [isFilterEnabled, members, operatorConfigs]
+    [isFilterEnabled, members, operatorConfigs, t]
   );
 
   // created by filter config
@@ -281,6 +287,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const subscriberFilterConfig = useMemo(
     () =>
       getSubscriberFilterConfig<TWorkItemFilterProperty>("subscriber_id")({
+        label: t("ui.filter_subscriber"),
         isEnabled: isFilterEnabled("subscriber_id") && members !== undefined,
         filterIcon: MembersPropertyIcon,
         members: members ?? [],
@@ -294,41 +301,44 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ),
         ...operatorConfigs,
       }),
-    [isFilterEnabled, members, operatorConfigs]
+    [isFilterEnabled, members, operatorConfigs, t]
   );
 
   // priority filter config
   const priorityFilterConfig = useMemo(
     () =>
       getPriorityFilterConfig<TWorkItemFilterProperty>("priority")({
+        label: t("priority"),
         isEnabled: isFilterEnabled("priority"),
         filterIcon: PriorityPropertyIcon,
         getOptionIcon: (priority) => <PriorityIcon priority={priority} />,
         ...operatorConfigs,
       }),
-    [isFilterEnabled, operatorConfigs]
+    [isFilterEnabled, operatorConfigs, t]
   );
 
   // start date filter config
   const startDateFilterConfig = useMemo(
     () =>
       getStartDateFilterConfig<TWorkItemFilterProperty>("start_date")({
+        label: t("start_date"),
         isEnabled: true,
         filterIcon: StartDatePropertyIcon,
         ...operatorConfigs,
       }),
-    [operatorConfigs]
+    [operatorConfigs, t]
   );
 
   // target date filter config
   const targetDateFilterConfig = useMemo(
     () =>
       getTargetDateFilterConfig<TWorkItemFilterProperty>("target_date")({
+        label: t("target_date"),
         isEnabled: true,
         filterIcon: DueDatePropertyIcon,
         ...operatorConfigs,
       }),
-    [operatorConfigs]
+    [operatorConfigs, t]
   );
 
   // created at filter config
@@ -359,13 +369,14 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const projectFilterConfig = useMemo(
     () =>
       getProjectFilterConfig<TWorkItemFilterProperty>("project_id")({
+        label: t("projects"),
         isEnabled: isFilterEnabled("project_id") && projects !== undefined,
         filterIcon: Briefcase,
         projects: projects,
         getOptionIcon: (project) => <Logo logo={project.logo_props} size={12} />,
         ...operatorConfigs,
       }),
-    [isFilterEnabled, projects, operatorConfigs]
+    [isFilterEnabled, projects, operatorConfigs, t]
   );
 
   return {

@@ -1525,7 +1525,8 @@
     "operator_is_any_of": "is any of",
     "image_to_base64_failed": "Failed to convert image to base64.",
     "image_read_failed": "Failed to read the image file.",
-    "no_matches_found_ui": "No matches found"
+    "no_matches_found_ui": "No matches found",
+    "filter_subscriber": "Subscriber"
   },
   "activity_log": {
     "prep_in": " for ",

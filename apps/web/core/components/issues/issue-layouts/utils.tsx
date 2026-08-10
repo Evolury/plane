@@ -261,7 +261,7 @@ const getStateGroupColumns = (): IGroupByColumn[] => {
   // map state groups to group by columns
   return Object.values(stateGroups).map((stateGroup) => ({
     id: stateGroup.key,
-    name: stateGroup.label,
+    name: translate(stateGroup.i18n_label),
     icon: (
       <div className="size-4 rounded-full">
         <StateGroupIcon stateGroup={stateGroup.key} size={EIconSize.LG} />
@@ -276,7 +276,7 @@ const getPriorityColumns = (): IGroupByColumn[] => {
   // map priorities to group by columns
   return priorities.map((priority) => ({
     id: priority.key,
-    name: priority.title,
+    name: translate(priority.i18n_title),
     icon: <PriorityIcon priority={priority?.key} />,
     payload: { priority: priority.key },
   }));

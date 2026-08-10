@@ -1525,7 +1525,8 @@
     "operator_is_any_of": "é algum de",
     "image_to_base64_failed": "Não foi possível converter a imagem para base64.",
     "image_read_failed": "Não foi possível ler o arquivo de imagem.",
-    "no_matches_found_ui": "Nenhuma correspondência encontrada"
+    "no_matches_found_ui": "Nenhuma correspondência encontrada",
+    "filter_subscriber": "Inscrito"
   },
   "activity_log": {
     "prep_in": " em ",
