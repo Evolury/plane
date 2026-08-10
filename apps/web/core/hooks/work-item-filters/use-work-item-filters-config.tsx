@@ -159,7 +159,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         getOptionIcon: (stateGroupKey) => <StateGroupIcon stateGroup={stateGroupKey} />,
         ...operatorConfigs,
       }),
-    [isFilterEnabled, operatorConfigs]
+    [isFilterEnabled, operatorConfigs, t]
   );
 
   // state filter config
@@ -274,7 +274,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ),
         ...operatorConfigs,
       }),
-    [isFilterEnabled, members, operatorConfigs]
+    [isFilterEnabled, members, operatorConfigs, t]
   );
 
   // subscriber filter config
@@ -340,7 +340,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         filterIcon: CalendarLayoutIcon,
         ...operatorConfigs,
       }),
-    [operatorConfigs]
+    [operatorConfigs, t]
   );
 
   // updated at filter config
@@ -352,7 +352,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         filterIcon: CalendarLayoutIcon,
         ...operatorConfigs,
       }),
-    [operatorConfigs]
+    [operatorConfigs, t]
   );
 
   // project filter config
