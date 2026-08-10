@@ -116,7 +116,7 @@ export function WorkItemSelectionPage(props: Props) {
                 })
               );
             }}
-            emptyText="Search for issue id or issue title"
+            emptyText={t("ui.search_work_item_placeholder")}
           />
         ) : (
           <div className="px-3 py-8 text-center text-13 text-tertiary">{t("ui.search_work_item_placeholder")}</div>

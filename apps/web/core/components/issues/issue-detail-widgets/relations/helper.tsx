@@ -6,7 +6,7 @@
 
 import { useMemo } from "react";
 // plane imports
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssue, TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
@@ -26,7 +26,7 @@ export const useRelationOperations = (
   const { updateIssue, removeIssue } = useIssueDetail(issueServiceType);
   const { t } = useTranslation();
   // derived values
-  const entityName = issueServiceType === EIssueServiceType.ISSUES ? "Work item" : "Epic";
+  const entityName = issueServiceType === EIssueServiceType.ISSUES ? translate("common.work_item") : "Epic";
 
   const issueOperations: TRelationIssueOperations = useMemo(
     () => ({

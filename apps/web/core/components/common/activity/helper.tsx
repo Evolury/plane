@@ -128,7 +128,7 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
                 set the start date to <span className="font-medium text-primary">{newValue}</span>
               </>
             ) : (
-              "removed the start date"
+              translate("activity_log.removed_start_date")
             )}
           </>
         ),
@@ -230,7 +230,7 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
         message: (
           <>
             {newValue ? "created" : translate("activity_log.removed")} the project page{" "}
-            <span className="font-medium text-primary">{newValue || oldValue || "Untitled page"}</span>
+            <span className="font-medium text-primary">{newValue || oldValue || translate("templates.settings.form.page.name.placeholder")}</span>
           </>
         ),
       };

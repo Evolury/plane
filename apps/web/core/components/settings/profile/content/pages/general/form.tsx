@@ -75,7 +75,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       last_name: user.last_name || "",
       display_name: user.display_name || "",
       email: user.email || "",
-      role: profile.role || "Product / Project Manager",
+      role: profile.role || t("user_roles.product_or_project_manager"),
       language: profile.language || "en",
       user_timezone: user.user_timezone || "Asia/Kolkata",
     },
@@ -140,7 +140,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("toast.error"),
-        message: error instanceof Error ? error.message : "Failed to process cover image",
+        message: error instanceof Error ? error.message : t("toast.cover_image_process_failed"),
       });
       setIsLoading(false);
       return;
@@ -372,7 +372,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                       value={value}
                       ref={ref}
                       hasError={Boolean(errors.email)}
-                      placeholder="Enter your email"
+                      placeholder={t("account_settings.profile.change_email_modal.form.email.placeholder")}
                       className={`w-full cursor-not-allowed rounded-md !bg-surface-2 ${
                         errors.email ? "border-danger-strong" : ""
                       }`}

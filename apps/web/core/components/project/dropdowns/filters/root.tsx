@@ -18,6 +18,7 @@ import { FilterAccess } from "./access";
 import { FilterCreatedDate } from "./created-at";
 import { FilterLead } from "./lead";
 import { FilterMembers } from "./members";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   displayFilters: TProjectDisplayFilters;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export const ProjectFiltersSelection = observer(function ProjectFiltersSelection(props: Props) {
+  const { t } = useTranslation();
   const { displayFilters, filters, handleFiltersUpdate, handleDisplayFiltersUpdate, memberIds } = props;
   // states
   const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
@@ -63,7 +65,7 @@ export const ProjectFiltersSelection = observer(function ProjectFiltersSelection
                 my_projects: !displayFilters.my_projects,
               })
             }
-            title="My projects"
+            title={t("workspace_projects.scope.my_projects")}
           />
         </div>
 

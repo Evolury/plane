@@ -17,6 +17,7 @@ import { cn, EHeaderVariant, Header, Loader } from "@plane/ui";
 import type { TAddFilterButtonProps } from "./add-filters/button";
 import { AddFilterButton } from "./add-filters/button";
 import { FilterItem } from "./filter-item/root";
+import { useTranslation } from "@plane/i18n";
 
 export type TFiltersRowProps<K extends TFilterProperty, E extends TExternalFilter> = {
   buttonConfig?: TAddFilterButtonProps<K, E>["buttonConfig"];
@@ -33,6 +34,7 @@ export type TFiltersRowProps<K extends TFilterProperty, E extends TExternalFilte
 export const FiltersRow = observer(function FiltersRow<K extends TFilterProperty, E extends TExternalFilter>(
   props: TFiltersRowProps<K, E>
 ) {
+  const { t } = useTranslation();
   const {
     buttonConfig,
     disabledAllOperations: disabledAllOperationsProp = false,
@@ -96,7 +98,7 @@ export const FiltersRow = observer(function FiltersRow<K extends TFilterProperty
           onClick={filter.clearFilters}
           data-ph-element={trackerElements?.clearFilter}
         >
-          {filter.clearFilterOptions?.label ?? "Clear all"}
+          {filter.clearFilterOptions?.label ?? t("common.clear_all")}
         </Button>
       </ElementTransition>
       <ElementTransition show={filter.canSaveView}>

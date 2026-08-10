@@ -16,8 +16,10 @@ import { InboxIssueAppliedFiltersMember } from "./member";
 import { InboxIssueAppliedFiltersPriority } from "./priority";
 import { InboxIssueAppliedFiltersState } from "./state";
 import { InboxIssueAppliedFiltersStatus } from "./status";
+import { useTranslation } from "@plane/i18n";
 
 export const InboxIssueAppliedFilters = observer(function InboxIssueAppliedFilters() {
+  const { t } = useTranslation();
   const { getAppliedFiltersCount } = useProjectInbox();
 
   if (getAppliedFiltersCount === 0) return <></>;
@@ -36,7 +38,7 @@ export const InboxIssueAppliedFilters = observer(function InboxIssueAppliedFilte
       {/* label */}
       <InboxIssueAppliedFiltersLabel />
       {/* created_at */}
-      <InboxIssueAppliedFiltersDate filterKey="created_at" label="Created date" />
+      <InboxIssueAppliedFiltersDate filterKey="created_at" label={t("workspace_projects.sort.created_at")} />
       {/* updated_at */}
       <InboxIssueAppliedFiltersDate filterKey="updated_at" label="Updated date" />
     </Header>

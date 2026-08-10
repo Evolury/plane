@@ -9,6 +9,7 @@ import { TwitterPicker } from "react-color";
 import { Button } from "@plane/propel/button";
 import type { IState } from "@plane/types";
 import { Popover, Input, TextArea } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 type TStateForm = {
   data: Partial<IState>;
@@ -30,6 +31,7 @@ function PopoverButton({ color }: { color?: string }) {
 }
 
 export function StateForm(props: TStateForm) {
+  const { t } = useTranslation();
   const { data, onSubmit, onCancel, buttonDisabled, buttonTitle } = props;
   // states
   const [formData, setFromData] = useState<Partial<IState> | undefined>(undefined);
@@ -90,7 +92,7 @@ export function StateForm(props: TStateForm) {
         <TextArea
           id="description"
           name="description"
-          placeholder="Describe this state for your members."
+          placeholder={t("project_settings.states.describe_this_state_for_your_members")}
           value={formData?.description}
           onChange={(e) => handleFormData("description", e.target.value)}
           hasError={(errors && Boolean(errors.description)) || false}

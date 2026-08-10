@@ -445,7 +445,7 @@ const activityDetails: {
       else if (activity.verb === translate("activity_log.updated"))
         return (
           <>
-            <span className="flex-shrink-0 whitespace-nowrap">set the cycle to </span>
+            <span className="flex-shrink-0 whitespace-nowrap">{translate("activity_log.set_cycle")} </span>
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/cycles/${activity.new_identifier}`}
               target="_blank"

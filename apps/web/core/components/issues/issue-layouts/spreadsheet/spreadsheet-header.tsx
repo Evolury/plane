@@ -16,6 +16,7 @@ import { MultipleSelectGroupAction } from "@/components/core/multiple-select";
 // hooks
 import type { TSelectionHelper } from "@/hooks/use-multiple-select";
 import { SpreadsheetHeaderColumn } from "./spreadsheet-header-column";
+import { useTranslation } from "@plane/i18n";
 
 interface Props {
   displayProperties: IIssueDisplayProperties;
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export const SpreadsheetHeader = observer(function SpreadsheetHeader(props: Props) {
+  const { t } = useTranslation();
   const {
     displayProperties,
     displayFilters,
@@ -71,7 +73,7 @@ export const SpreadsheetHeader = observer(function SpreadsheetHeader(props: Prop
                   />
                 </div>
               )}
-              <span className="text-13 font-medium">{`${isEpic ? "Epics" : "Work items"}`}</span>
+              <span className="text-13 font-medium">{`${isEpic ? "Epics" : t("issues")}`}</span>
             </div>
           </div>
         </th>

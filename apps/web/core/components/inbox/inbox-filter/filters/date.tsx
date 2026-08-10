@@ -66,11 +66,11 @@ export const FilterDate = observer(function FilterDate(props: Props) {
           handleClose={() => setIsDateFilterModalOpen(false)}
           isOpen={isDateFilterModalOpen}
           onSelect={(val) => handleInboxIssueFilters(filterKey, val)}
-          title="Created date"
+          title={t("workspace_projects.sort.created_at")}
         />
       )}
       <FilterHeader
-        title={`${label || "Created date"}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
+        title={`${label || t("workspace_projects.sort.created_at")}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
         isPreviewEnabled={previewEnabled}
         handleIsPreviewEnabled={() => setPreviewEnabled(!previewEnabled)}
       />

@@ -113,7 +113,7 @@ function WorkspaceInvitationPage() {
               ) : (
                 <EmptySpaceItem Icon={Boxes} title={t("ui.continue_to_home")} href="/" />
               )}
-              <EmptySpaceItem Icon={Star} title="Star us on GitHub" href="https://github.com/makeplane" />
+              <EmptySpaceItem Icon={Star} title={t("home.star_us_on_github")} href="https://github.com/makeplane" />
               <EmptySpaceItem
                 Icon={Share2}
                 title="Join our community of active creators"

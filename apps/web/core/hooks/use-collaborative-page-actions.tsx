@@ -38,19 +38,19 @@ export const useCollaborativePageActions = (props: Props) => {
     () => ({
       [DocumentCollaborativeEvents.lock.client]: {
         execute: (shouldSync?: boolean, recursive?: boolean) => page.lock({ shouldSync, recursive }),
-        errorMessage: "Page could not be locked. Please try again later.",
+        errorMessage: t("toast.page_lock_failed"),
       },
       [DocumentCollaborativeEvents.unlock.client]: {
         execute: (shouldSync?: boolean, recursive?: boolean) => page.unlock({ shouldSync, recursive }),
-        errorMessage: "Page could not be unlocked. Please try again later.",
+        errorMessage: t("toast.page_unlock_failed"),
       },
       [DocumentCollaborativeEvents.archive.client]: {
         execute: (shouldSync?: boolean) => page.archive({ shouldSync }),
-        errorMessage: "Page could not be archived. Please try again later.",
+        errorMessage: t("toast.page_archive_failed"),
       },
       [DocumentCollaborativeEvents.unarchive.client]: {
         execute: (shouldSync?: boolean) => page.restore({ shouldSync }),
-        errorMessage: "Page could not be restored. Please try again later.",
+        errorMessage: t("toast.page_restore_failed"),
       },
       [DocumentCollaborativeEvents["make-public"].client]: {
         execute: (shouldSync?: boolean) => page.makePublic({ shouldSync }),

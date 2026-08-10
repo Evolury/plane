@@ -8,7 +8,7 @@ import { observer } from "mobx-react";
 import { AlertOctagon, BarChart4, CircleDashed, Folder, Microscope } from "lucide-react";
 // plane imports
 import { MARKETING_PRICING_PAGE_LINK } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { getButtonStyling } from "@plane/propel/button";
 import { SearchIcon } from "@plane/propel/icons";
 import { ContentWrapper } from "@plane/ui";
@@ -30,7 +30,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
     key: "10000_feet_view",
     title: "10000_feet_view",
     description:
-      "Zoom out to see running cycles across all your projects at once instead of going from Cycle to Cycle in each project.",
+      translate("10000_feet_view_description"),
     icon: Folder,
   },
   {
@@ -44,7 +44,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
     key: "compare_burndowns",
     title: "Compare burndowns.",
     description:
-      "Monitor how each of your teams are performing with a peek into each cycle’s burndown report.",
+      translate("ui.active_cycles_monitor"),
     icon: BarChart4,
   },
   {
@@ -57,12 +57,12 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "zoom_into_cycles_that_need_attention",
     title: "Zoom into cycles that need attention. ",
-    description: "Investigate the state of any cycle that doesn’t conform to expectations in one click.",
+    description: translate("ui.active_cycles_investigate"),
     icon: SearchIcon,
   },
   {
     key: "stay_ahead_of_blockers",
-    title: "Stay ahead of blockers.",
+    title: translate("stay_ahead_of_blockers"),
     description:
       "Spot challenges from one project to another and see inter-cycle dependencies that aren’t obvious from any other view.",
     icon: Microscope,

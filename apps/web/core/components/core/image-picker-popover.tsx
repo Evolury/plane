@@ -362,7 +362,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                         disabled={!image}
                         loading={isImageUploading}
                       >
-                        {isImageUploading ? "Uploading" : "Upload & Save"}
+                        {isImageUploading ? "Uploading" : t("workspace_settings.settings.applications.upload_and_save")}
                       </Button>
                     </div>
                   </div>

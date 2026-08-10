@@ -136,7 +136,7 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),
-          message: err?.detail ?? "Module could not be updated. Please try again.",
+          message: err?.detail ?? t("toast.module_update_failed"),
         });
       });
   };

@@ -110,7 +110,7 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.projectName)}
-                placeholder="Project name"
+                placeholder={t("project_name")}
                 className="mt-2 w-full"
                 autoComplete="off"
               />
@@ -145,7 +145,7 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
             Cancel
           </Button>
           <Button variant="error-fill" size="lg" type="submit" disabled={!canDelete} loading={isSubmitting}>
-            {isSubmitting ? "Deleting" : "Delete project"}
+            {isSubmitting ? "Deleting" : t("project_settings.general.delete_project.title")}
           </Button>
         </div>
       </form>

@@ -17,8 +17,10 @@ import { FilterLabels } from "./labels";
 import { FilterMember } from "./members";
 import { FilterPriority } from "./priority";
 import { FilterStatus } from "./status";
+import { useTranslation } from "@plane/i18n";
 
 export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelection() {
+  const { t } = useTranslation();
   // hooks
   const { isMobile } = usePlatformOS();
   const {
@@ -82,7 +84,7 @@ export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelec
         </div>
         {/* Created at */}
         <div className="py-2">
-          <FilterDate filterKey="created_at" label="Created date" searchQuery={filtersSearchQuery} />
+          <FilterDate filterKey="created_at" label={t("workspace_projects.sort.created_at")} searchQuery={filtersSearchQuery} />
         </div>
         {/* Updated at */}
         <div className="py-2">

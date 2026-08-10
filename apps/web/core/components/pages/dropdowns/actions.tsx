@@ -96,7 +96,7 @@ export const PageActions = observer(function PageActions(props: Props) {
           action: () => {
             pageOperations.toggleAccess();
           },
-          title: access === EPageAccess.PUBLIC ? "Make private" : "Make public",
+          title: access === EPageAccess.PUBLIC ? t("power_k.contextual_actions.page.make_private") : t("power_k.contextual_actions.page.make_public"),
           icon: access === EPageAccess.PUBLIC ? LockIcon : GlobeIcon,
           shouldRender: canCurrentUserChangeAccess && !archived_at,
         },

@@ -10,8 +10,10 @@ import { useTheme } from "next-themes";
 import { Lightbulb } from "lucide-react";
 // images
 import latestFeatures from "@/app/assets/onboarding/onboarding-pages.webp?url";
+import { useTranslation } from "@plane/i18n";
 
 export function LatestFeatureBlock() {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
 
   return (
@@ -21,7 +23,7 @@ export function LatestFeatureBlock() {
         <p className="text-left text-13 text-primary">
           Pages gets a facelift! Write anything and use Galileo to help you start.{" "}
           <Link href="https://plane.so/changelog" target="_blank" rel="noopener noreferrer">
-            <span className="text-13 font-medium underline hover:cursor-pointer">Learn more</span>
+            <span className="text-13 font-medium underline hover:cursor-pointer">{t("wiki.upgrade_flow.learn_more_button.text")}</span>
           </Link>
         </p>
       </div>

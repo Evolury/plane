@@ -60,7 +60,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
 
     if (data) {
       if (data.projectName === project?.name) {
-        if (data.confirmLeave === "Leave Project") {
+        if (data.confirmLeave === t("ui.leave_project")) {
           router.push(`/${workspaceSlug}/projects`);
           return leaveProject(workspaceSlug.toString(), project.id)
             .then(() => {
@@ -124,7 +124,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
             control={control}
             name="projectName"
             rules={{
-              required: "Label title is required",
+              required: t("project_settings.labels.label_title_is_required"),
             }}
             render={({ field: { value, onChange, ref } }) => (
               <Input
@@ -169,7 +169,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
             Cancel
           </Button>
           <Button variant="error-fill" size="lg" type="submit" loading={isSubmitting}>
-            {isSubmitting ? "Leaving..." : "Leave Project"}
+            {isSubmitting ? "Leaving..." : t("ui.leave_project")}
           </Button>
         </div>
       </form>

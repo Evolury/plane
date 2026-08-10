@@ -84,7 +84,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
         <div className="flex items-center justify-between px-5">
           <div className="flex items-center gap-1">
             <TransferIcon className="w-5 fill-primary" />
-            <h4 className="text-18 font-medium text-primary">Transfer work items</h4>
+            <h4 className="text-18 font-medium text-primary">{t("product_tour.cycle.step_four.title")}</h4>
           </div>
           <button onClick={handleClose}>
             <CloseIcon className="h-4 w-4" />

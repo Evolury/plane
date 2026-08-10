@@ -22,6 +22,7 @@ import { useProjectInbox } from "@/hooks/store/use-project-inbox";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local imports
 import { InboxIssueStatus } from "../inbox-issue-status";
+import { useTranslation } from "@plane/i18n";
 
 type InboxIssueListItemProps = {
   workspaceSlug: string;
@@ -32,6 +33,7 @@ type InboxIssueListItemProps = {
 };
 
 export const InboxIssueListItem = observer(function InboxIssueListItem(props: InboxIssueListItemProps) {
+  const { t } = useTranslation();
   const { workspaceSlug, projectId, inboxIssueId, projectIdentifier, setIsMobileSidebar } = props;
   // router
   const searchParams = useSearchParams();
@@ -82,7 +84,7 @@ export const InboxIssueListItem = observer(function InboxIssueListItem(props: In
           <div className="flex items-center justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <Tooltip
-                tooltipHeading="Created on"
+                tooltipHeading={t("common.created_on")}
                 tooltipContent={`${renderFormattedDate(issue.created_at ?? "")}`}
                 isMobile={isMobile}
               >

@@ -13,6 +13,7 @@ import { CustomSearchSelect } from "@plane/ui";
 import { cn } from "@plane/utils";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   value: string[] | undefined;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export const ProjectSelect = observer(function ProjectSelect(props: Props) {
+  const { t } = useTranslation();
   const { value, onChange, projectIds } = props;
   const { getProjectById } = useProject();
 
@@ -59,7 +61,7 @@ export const ProjectSelect = observer(function ProjectSelect(props: Props) {
                   ?.filter((p) => value.includes(p))
                   .map((p) => getProjectById(p)?.name)
                   .join(", ")
-              : "All projects"}
+              : t("automations.global_automations.project_select.all_projects.label")}
           <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
         </div>
       }

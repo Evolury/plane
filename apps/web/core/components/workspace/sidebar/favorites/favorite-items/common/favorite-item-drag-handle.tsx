@@ -13,6 +13,7 @@ import { DragHandle } from "@plane/ui";
 import { cn } from "@plane/utils";
 // hooks
 import { usePlatformOS } from "@/hooks/use-platform-os";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   sort_order: number | null;
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export const FavoriteItemDragHandle = observer(function FavoriteItemDragHandle(props: Props) {
+  const { t } = useTranslation();
   const { sort_order, isDragging } = props;
   // store hooks
   const { isMobile } = usePlatformOS();
@@ -27,7 +29,7 @@ export const FavoriteItemDragHandle = observer(function FavoriteItemDragHandle(p
   return (
     <Tooltip
       isMobile={isMobile}
-      tooltipContent={sort_order === null ? "Join the project to rearrange" : "Drag to rearrange"}
+      tooltipContent={sort_order === null ? t("join_the_project_to_rearrange") : t("drag_to_rearrange")}
       position="top-end"
       disabled={isDragging}
     >

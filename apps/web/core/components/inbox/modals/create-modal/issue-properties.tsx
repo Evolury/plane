@@ -187,7 +187,7 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
                   <span className="whitespace-nowrap">
                     {selectedParentIssue
                       ? `${selectedParentIssue.project__identifier}-${selectedParentIssue.sequence_id}`
-                      : `Add parent`}
+                      : t("add_parent")}
                   </span>
                 </button>
               }

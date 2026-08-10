@@ -27,7 +27,7 @@ function ProjectSettingsPage() {
   const resolvedPath = resolvedTheme === "dark" ? ProjectDarkEmptyState : ProjectLightEmptyState;
   return (
     <div className="mx-auto flex h-full max-w-[480px] flex-col items-center justify-center gap-4">
-      <img src={resolvedPath} alt="No projects yet" />
+      <img src={resolvedPath} alt={t("ui.no_projects_yet")} />
       <div className="text-16 font-semibold text-tertiary">{t("ui.no_projects_yet")}</div>
       <div className="text-center text-13 text-tertiary">
         Projects act as the foundation for goal-driven work. They let you manage your teams, tasks, and everything you

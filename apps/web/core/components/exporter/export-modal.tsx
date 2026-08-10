@@ -136,7 +136,7 @@ export const Exporter = observer(function Exporter(props: Props) {
                       return projectDetails?.identifier;
                     })
                     .join(", ")
-                : "All projects"
+                : t("automations.global_automations.project_select.all_projects.label")
             }
             onOpen={() => setIsSelectOpen(true)}
             onClose={() => setIsSelectOpen(false)}

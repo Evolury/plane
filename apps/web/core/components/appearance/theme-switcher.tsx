@@ -64,11 +64,11 @@ export const ThemeSwitcher = observer(function ThemeSwitcher(props: {
           loading: "Updating theme...",
           success: {
             title: "Theme updated",
-            message: () => "Reloading to apply changes...",
+            message: () => t("toast.reloading_changes"),
           },
           error: {
             title: t("toast.error"),
-            message: () => "Failed to update theme. Please try again.",
+            message: () => t("power_k.preferences_actions.toast.theme.error"),
           },
         });
         // Wait for the promise to resolve, then reload after showing toast

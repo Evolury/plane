@@ -21,10 +21,12 @@ import { useProject } from "@/hooks/store/use-project";
 import { ProjectBreadcrumb } from "@/components/breadcrumbs/project";
 // services
 import { IssueService } from "@/services/issue";
+import { useTranslation } from "@plane/i18n";
 
 const issueService = new IssueService();
 
 export const ProjectArchivedIssueDetailsHeader = observer(function ProjectArchivedIssueDetailsHeader() {
+  const { t } = useTranslation();
   // router
   const { workspaceSlug, projectId, archivedIssueId } = useParams();
   // store hooks
@@ -55,7 +57,7 @@ export const ProjectArchivedIssueDetailsHeader = observer(function ProjectArchiv
             component={
               <BreadcrumbLink
                 href={`/${workspaceSlug}/projects/${projectId}/archives/issues`}
-                label="Work items"
+                label={t("issues")}
                 icon={<WorkItemsIcon className="h-4 w-4 text-tertiary" />}
               />
             }

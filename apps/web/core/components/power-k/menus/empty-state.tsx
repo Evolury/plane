@@ -5,11 +5,19 @@
  */
 
 import React from "react";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   emptyText?: string;
 };
 
-export function PowerKMenuEmptyState({ emptyText = "No results found" }: Props) {
-  return <div className="px-3 py-8 text-center text-13 text-tertiary">{emptyText}</div>;
+export function PowerKMenuEmptyState({ emptyText }: Props) {
+  const { t } = useTranslation();
+  // O padrão fica no corpo, não no parâmetro: um valor padrão de parâmetro é
+  // avaliado antes das declarações do corpo e não enxergaria o `t` do hook.
+  return (
+    <div className="px-3 py-8 text-center text-13 text-tertiary">
+      {emptyText ?? t("power_k.search_menu.no_results")}
+    </div>
+  );
 }

@@ -11,6 +11,7 @@ import { useParams, usePathname } from "next/navigation";
 import type { IProject } from "@plane/types";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
+import { translate } from "@plane/i18n";
 
 const ARCHIVES_TAB_LIST: {
   key: string;
@@ -19,7 +20,7 @@ const ARCHIVES_TAB_LIST: {
 }[] = [
   {
     key: "issues",
-    label: "Work items",
+    label: translate("issues"),
     shouldRender: () => true,
   },
   {

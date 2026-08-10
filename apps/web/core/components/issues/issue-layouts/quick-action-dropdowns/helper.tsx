@@ -210,7 +210,7 @@ export const useMenuItemFactory = (props: MenuItemFactoryProps) => {
     key: "remove-from-cycle",
     title: t("ui.remove_from_cycle"),
     icon: XCircle,
-    action: () => handleOptionalAction(handleRemoveFromView, "Remove from cycle"),
+    action: () => handleOptionalAction(handleRemoveFromView, t("ui.remove_from_cycle")),
     shouldRender: isEditingAllowed,
   });
 
@@ -218,7 +218,7 @@ export const useMenuItemFactory = (props: MenuItemFactoryProps) => {
     key: "remove-from-module",
     title: t("ui.remove_from_module"),
     icon: XCircle,
-    action: () => handleOptionalAction(handleRemoveFromView, "Remove from module"),
+    action: () => handleOptionalAction(handleRemoveFromView, t("ui.remove_from_module")),
     shouldRender: isEditingAllowed,
   });
 

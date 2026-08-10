@@ -10,11 +10,13 @@ import { IntakeIcon } from "@plane/propel/icons";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
 import { IssueActivityBlockComponent } from "./";
+import { useTranslation } from "@plane/i18n";
 // icons
 
 type TIssueInboxActivity = { activityId: string; ends: "top" | "bottom" | undefined };
 
 export const IssueInboxActivity = observer(function IssueInboxActivity(props: TIssueInboxActivity) {
+  const { t } = useTranslation();
   const { activityId, ends } = props;
   // hooks
   const {
@@ -26,15 +28,15 @@ export const IssueInboxActivity = observer(function IssueInboxActivity(props: TI
   const getInboxActivityMessage = () => {
     switch (activity?.verb) {
       case "-1":
-        return "declined this work item from intake.";
+        return t("activity_log.declined_this_work_item_from_intake");
       case "0":
-        return "snoozed this work item.";
+        return t("activity_log.snoozed_this_work_item");
       case "1":
-        return "accepted this work item from intake.";
+        return t("activity_log.accepted_this_work_item_from_intake");
       case "2":
-        return "declined this work item from intake by marking a duplicate work item.";
+        return t("activity_log.declined_this_work_item_from_intake_by_marking_a");
       default:
-        return "updated intake work item status.";
+        return t("activity_log.updated_intake_work_item_status");
     }
   };
 

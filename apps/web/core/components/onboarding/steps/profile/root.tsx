@@ -209,7 +209,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
             control={control}
             name="first_name"
             rules={{
-              required: "Name is required",
+              required: t("name_is_required"),
               validate: validatePersonName,
               maxLength: {
                 value: 50,

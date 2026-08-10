@@ -69,7 +69,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("toast.error"),
-        message: error?.toString() ?? "Something went wrong. Please try again.",
+        message: error?.toString() ?? t("something_went_wrong_please_try_again"),
       });
       throw new Error("Error in uploading file.");
     } finally {
@@ -153,7 +153,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
               Cancel
             </Button>
             <Button variant="primary" size="lg" onClick={handleSubmit} disabled={!image} loading={isImageUploading}>
-              {isImageUploading ? "Uploading" : "Upload & Save"}
+              {isImageUploading ? "Uploading" : t("workspace_settings.settings.applications.upload_and_save")}
             </Button>
           </div>
         </div>

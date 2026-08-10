@@ -72,7 +72,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("toast.error"),
-        message: error?.data?.error ?? "Some error occurred. Please try again.",
+        message: error?.data?.error ?? t("toast.some_error_try_again"),
       });
     }
   };
@@ -98,7 +98,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
                 control={control}
                 name="url"
                 rules={{
-                  required: "URL is required",
+                  required: t("workspace_settings.settings.webhooks.modal.error"),
                 }}
                 render={({ field: { value, onChange, ref } }) => (
                   <Input
@@ -108,7 +108,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
                     onChange={onChange}
                     ref={ref}
                     hasError={Boolean(errors.url)}
-                    placeholder="Type or paste a URL"
+                    placeholder={t("common.type_or_paste_a_url")}
                     className="w-full"
                   />
                 )}
@@ -130,7 +130,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
                     onChange={onChange}
                     ref={ref}
                     hasError={Boolean(errors.title)}
-                    placeholder="What you'd like to see this link as"
+                    placeholder={t("common.link_title_placeholder")}
                     className="w-full"
                   />
                 )}
@@ -143,7 +143,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
             Cancel
           </Button>
           <Button variant="primary" size="lg" type="submit" loading={isSubmitting}>
-            {data ? (isSubmitting ? "Updating link" : "Update link") : isSubmitting ? "Adding link" : "Add link"}
+            {data ? (isSubmitting ? "Updating link" : t("common.update_link")) : isSubmitting ? "Adding link" : t("add_link")}
           </Button>
         </div>
       </form>

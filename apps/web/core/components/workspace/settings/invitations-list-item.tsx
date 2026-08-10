@@ -68,7 +68,7 @@ export const WorkspaceInvitationsListItem = observer(function WorkspaceInvitatio
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("toast.error"),
-        message: error?.error || "Something went wrong. Please try again.",
+        message: error?.error || t("something_went_wrong_please_try_again"),
       });
     }
   };

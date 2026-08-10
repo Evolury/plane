@@ -18,6 +18,7 @@ import { generateWorkItemLink } from "@plane/utils";
 // components
 import type { TPowerKSearchResultsKeys } from "@/components/power-k/core/types";
 import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifier";
+import { translate } from "@plane/i18n";
 
 export type TPowerKSearchResultGroupDetails = {
   icon?: React.ComponentType<{ className?: string }>;
@@ -59,7 +60,7 @@ export const POWER_K_SEARCH_RESULTS_GROUPS_MAP: Record<TPowerKSearchResultsKeys,
         projectIdentifier: workItem.project__identifier,
         sequenceId: workItem?.sequence_id,
       }),
-    title: "Work items",
+    title: translate("issues"),
   },
   issue_view: {
     icon: Layers,

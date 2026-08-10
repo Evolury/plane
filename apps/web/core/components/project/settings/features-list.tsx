@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 // plane imports
-import { useTranslation } from "@plane/i18n";
+import { translate, useTranslation } from "@plane/i18n";
 import { setPromiseToast } from "@plane/propel/toast";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { IProject } from "@plane/types";
@@ -32,7 +32,7 @@ const PROJECT_FEATURES_LIST = {
     key: "cycles",
     property: "cycle_view",
     title: "Cycles",
-    description: "Timebox work as you see fit per project and change frequency from one period to the next.",
+    description: translate("ui.cycles_description"),
     icon: <CycleIcon className="h-5 w-5 flex-shrink-0 rotate-180 text-tertiary" />,
     isPro: false,
     isEnabled: true,
@@ -41,7 +41,7 @@ const PROJECT_FEATURES_LIST = {
     key: "modules",
     property: "module_view",
     title: "Modules",
-    description: "Group work into sub-project-like set-ups with their own leads and assignees.",
+    description: translate("ui.modules_description"),
     icon: <ModuleIcon width={20} height={20} className="flex-shrink-0 text-tertiary" />,
     isPro: false,
     isEnabled: true,
@@ -50,7 +50,7 @@ const PROJECT_FEATURES_LIST = {
     key: "views",
     property: "issue_views_view",
     title: "Views",
-    description: "Save sorts, filters, and display options for later or share them.",
+    description: translate("ui.views_description"),
     icon: <ViewsIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,
     isEnabled: true,
@@ -59,7 +59,7 @@ const PROJECT_FEATURES_LIST = {
     key: "pages",
     property: "page_view",
     title: "Pages",
-    description: "Write anything like you write anything.",
+    description: translate("ui.write_anything"),
     icon: <PageIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,
     isEnabled: true,
@@ -68,7 +68,7 @@ const PROJECT_FEATURES_LIST = {
     key: "intake",
     property: "inbox_view",
     title: "Intake",
-    description: "Consider and discuss work items before you add them to your project.",
+    description: translate("ui.intake_description"),
     icon: <IntakeIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,
     isEnabled: true,
@@ -93,14 +93,14 @@ export const ProjectFeaturesList = observer(function ProjectFeaturesList(props: 
     const updateProjectPromise = updateProject(workspaceSlug, projectId, settingsPayload);
 
     setPromiseToast(updateProjectPromise, {
-      loading: "Updating project feature...",
+      loading: t("project_settings.features.toasts.loading"),
       success: {
         title: t("toast.success"),
-        message: () => "Project feature updated successfully.",
+        message: () => t("project_settings.features.toasts.success"),
       },
       error: {
         title: t("toast.error"),
-        message: () => "Something went wrong while updating project feature. Please try again.",
+        message: () => t("project_settings.features.toasts.error"),
       },
     });
     void updateProjectPromise.then(() => {

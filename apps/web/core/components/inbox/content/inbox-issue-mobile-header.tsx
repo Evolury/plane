@@ -30,6 +30,7 @@ import type { IInboxIssueStore } from "@/store/inbox/inbox-issue.store";
 
 // local imports
 import { InboxIssueStatus } from "../inbox-issue-status";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   workspaceSlug: string;
@@ -56,6 +57,7 @@ type Props = {
 };
 
 export const InboxIssueActionsMobileHeader = observer(function InboxIssueActionsMobileHeader(props: Props) {
+  const { t } = useTranslation();
   const {
     inboxIssue,
     isSubmitting,
@@ -161,7 +163,7 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
                   handleActionWithPermission(
                     isProjectAdmin,
                     handleIssueSnoozeAction,
-                    "Only project admins can snooze/Un-snooze work items"
+                    t("inbox_issue.errors.snooze_permission")
                   )
                 }
               >
@@ -193,7 +195,7 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setAcceptIssueModal(true),
-                    "Only project admins can accept work items"
+                    t("inbox_issue.errors.accept_permission")
                   )
                 }
               >
@@ -209,7 +211,7 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setDeclineIssueModal(true),
-                    "Only project admins can deny work items"
+                    t("inbox_issue.errors.decline_permission")
                   )
                 }
               >

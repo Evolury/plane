@@ -55,7 +55,7 @@ export const PagesListHeader = observer(function PagesListHeader() {
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),
-          message: err?.data?.error || "Page could not be created. Please try again.",
+          message: err?.data?.error || t("wiki_collections.toasts.create_page_error"),
         });
       })
       .finally(() => setIsCreatingPage(false));
@@ -82,7 +82,7 @@ export const PagesListHeader = observer(function PagesListHeader() {
       {canCurrentUserCreatePage && (
         <Header.RightItem>
           <Button variant="primary" size="lg" onClick={handleCreatePage} loading={isCreatingPage}>
-            {isCreatingPage ? "Adding" : "Add page"}
+            {isCreatingPage ? "Adding" : t("wiki_collections.header.add_page")}
           </Button>
         </Header.RightItem>
       )}

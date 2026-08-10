@@ -146,7 +146,7 @@ export const IssueDescriptionEditor = observer(function IssueDescriptionEditor(p
           setToast({
             type: TOAST_TYPE.ERROR,
             title: t("toast.error"),
-            message: error || "Some error occurred. Please try again.",
+            message: error || t("toast.some_error_try_again"),
           });
       })
       .finally(() => setIAmFeelingLucky(false));

@@ -12,12 +12,14 @@ import { IconButton } from "@plane/propel/icon-button";
 import { usePageOperations } from "@/hooks/use-page-operations";
 // store
 import type { TPageInstance } from "@/store/pages/base-page";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   page: TPageInstance;
 };
 
 export const PageFavoriteControl = observer(function PageFavoriteControl({ page }: Props) {
+  const { t } = useTranslation();
   // derived values
   const { is_favorite, canCurrentUserFavoritePage } = page;
   // page operations
@@ -35,7 +37,7 @@ export const PageFavoriteControl = observer(function PageFavoriteControl({ page 
       onClick={() => {
         pageOperations.toggleFavorite();
       }}
-      aria-label={is_favorite ? "Remove favorite" : "Add to favorites"}
+      aria-label={is_favorite ? "Remove favorite" : t("add_to_favorites")}
       className={
         is_favorite ? "[&_svg]:fill-(--color-label-yellow-icon) [&_svg]:stroke-(--color-label-yellow-icon)" : ""
       }

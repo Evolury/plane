@@ -102,7 +102,7 @@ export const RoleSetupStep = observer(function RoleSetupStep({ handleStepChange 
           control={control}
           name="role"
           rules={{
-            required: "This field is required",
+            required: t("common.errors.required"),
           }}
           render={({ field: { value, onChange } }) => (
             <div className="flex flex-col gap-3">

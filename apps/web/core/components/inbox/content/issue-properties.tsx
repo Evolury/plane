@@ -28,6 +28,7 @@ import { IssueLabel } from "@/components/issues/issue-detail/label";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   workspaceSlug: string;
@@ -40,6 +41,7 @@ type Props = {
 };
 
 export const InboxIssueContentProperties = observer(function InboxIssueContentProperties(props: Props) {
+  const { t } = useTranslation();
   const { workspaceSlug, projectId, issue, issueOperations, isEditable, duplicateIssueDetails, isIntakeAccepted } =
     props;
 
@@ -100,7 +102,7 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
                 }
                 disabled={!isEditable}
                 projectId={projectId?.toString() ?? ""}
-                placeholder="Add assignees"
+                placeholder={t("issue.add.assignee")}
                 multiple
                 buttonVariant={
                   (issue?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "transparent-with-text"
@@ -144,7 +146,7 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
                 <span>Due date</span>
               </div>
               <DateDropdown
-                placeholder="Add due date"
+                placeholder={t("issue.add.due_date")}
                 value={issue.target_date || null}
                 onChange={(val) =>
                   issue?.id &&
@@ -189,7 +191,7 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
               <div className="flex min-h-8 gap-2">
                 <div className="flex w-2/5 flex-shrink-0 gap-1 pt-2 text-13 text-tertiary">
                   <DuplicatePropertyIcon className="h-4 w-4 flex-shrink-0" />
-                  <span>Duplicate of</span>
+                  <span>{t("issue.relation.duplicate")}</span>
                 </div>
 
                 <ControlLink

@@ -72,7 +72,7 @@ export function TabNavigationOverflowMenu({ overflowItems, isActive, tabPreferen
                     <Pin className="size-3" />
                   </button>
                 )}
-                <Tooltip tooltipContent={isDefault ? "Clear default" : "Set as default"}>
+                <Tooltip tooltipContent={isDefault ? "Clear default" : t("work_item_types.settings.set_as_default")}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -85,7 +85,7 @@ export function TabNavigationOverflowMenu({ overflowItems, isActive, tabPreferen
                         visible: isDefault,
                       }
                     )}
-                    title={isDefault ? "Clear default" : "Set as default"}
+                    title={isDefault ? "Clear default" : t("work_item_types.settings.set_as_default")}
                   >
                     <SetAsDefaultIcon className="size-3" />
                   </button>

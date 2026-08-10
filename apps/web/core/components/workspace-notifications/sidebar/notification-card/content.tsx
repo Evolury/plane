@@ -89,7 +89,7 @@ export const BASE_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {
     showConnector: false,
   }),
   archived_at: ({ newValue }) => ({
-    action: newValue === "restore" ? "restored the work item" : "archived the work item",
+    action: newValue === "restore" ? translate("activity_log.restored_work_item") : translate("activity_log.archived_work_item"),
     value: null,
     showConnector: false,
   }),

@@ -92,7 +92,7 @@ export const usePowerKWorkItemContextBasedCommands = (): TPowerKCommandConfig[] 
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),
-          message: `${isEpic ? "Epic" : "Work item"} could not be updated. Please try again.`,
+          message: `${isEpic ? "Epic" : t("common.work_item")} could not be updated. Please try again.`,
         });
       });
     },
@@ -322,7 +322,7 @@ export const usePowerKWorkItemContextBasedCommands = (): TPowerKCommandConfig[] 
           setToast({
             type: TOAST_TYPE.ERROR,
             title: t("toast.error"),
-            message: `${entityDetails.is_epic ? "Epic" : "Work item"} could not be updated. Please try again.`,
+            message: `${entityDetails.is_epic ? "Epic" : t("common.work_item")} could not be updated. Please try again.`,
           });
         }
       },
@@ -354,7 +354,7 @@ export const usePowerKWorkItemContextBasedCommands = (): TPowerKCommandConfig[] 
           setToast({
             type: TOAST_TYPE.ERROR,
             title: t("toast.error"),
-            message: `${entityDetails.is_epic ? "Epic" : "Work item"} could not be updated. Please try again.`,
+            message: `${entityDetails.is_epic ? "Epic" : t("common.work_item")} could not be updated. Please try again.`,
           });
         }
       },

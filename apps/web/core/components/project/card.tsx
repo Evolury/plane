@@ -91,7 +91,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       },
       error: {
         title: t("toast.error"),
-        message: () => "Couldn't add the project to favorites. Please try again.",
+        message: () => t("couldnt_add_the_project_to_favorites"),
       },
     });
   };
@@ -108,7 +108,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       },
       error: {
         title: t("toast.error"),
-        message: () => "Couldn't remove the project from favorites. Please try again.",
+        message: () => t("failed_to_remove_project_from_favorites"),
       },
     });
   };

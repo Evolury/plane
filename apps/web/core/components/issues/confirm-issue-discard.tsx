@@ -59,7 +59,7 @@ export function ConfirmIssueDiscard(props: Props) {
             Cancel
           </Button>
           <Button variant="primary" onClick={handleDeletion} loading={isLoading}>
-            {isLoading ? "Saving" : "Save to Drafts"}
+            {isLoading ? "Saving" : t("save_to_drafts")}
           </Button>
         </div>
       </div>

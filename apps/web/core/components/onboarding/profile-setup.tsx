@@ -472,7 +472,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                   control={control}
                   name="role"
                   rules={{
-                    required: "This field is required",
+                    required: t("common.errors.required"),
                   }}
                   render={({ field: { value, onChange } }) => (
                     <div className="flex flex-wrap gap-2 overflow-auto py-2 break-all">

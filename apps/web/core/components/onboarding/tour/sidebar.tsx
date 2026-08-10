@@ -9,6 +9,7 @@ import { CycleIcon, ModuleIcon, PageIcon, ViewsIcon, WorkItemsIcon } from "@plan
 import type { ISvgIcons } from "@plane/propel/icons";
 // types
 import type { TTourSteps } from "./root";
+import { translate } from "@plane/i18n";
 
 const sidebarOptions: {
   key: TTourSteps;
@@ -17,7 +18,7 @@ const sidebarOptions: {
 }[] = [
   {
     key: "work-items",
-    label: "Work items",
+    label: translate("issues"),
     Icon: WorkItemsIcon,
   },
   {

@@ -10,6 +10,7 @@ import { CustomSearchSelect } from "@plane/ui";
 import { cn } from "@plane/utils";
 // hooks
 import useTimezone from "@/hooks/use-timezone";
+import { useTranslation } from "@plane/i18n";
 
 type TTimezoneSelect = {
   value: string | undefined;
@@ -23,12 +24,13 @@ type TTimezoneSelect = {
 };
 
 export const TimezoneSelect = observer(function TimezoneSelect(props: TTimezoneSelect) {
+  const { t } = useTranslation();
   // props
   const {
     value,
     onChange,
     error = false,
-    label = "Select a timezone",
+    label = t("automations.trigger.schedule.timezone_placeholder"),
     buttonClassName = "",
     className = "",
     optionsClassName = "",
