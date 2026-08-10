@@ -72,7 +72,10 @@ export const GROUPED_WORKSPACE_SETTINGS: Record<WORKSPACE_SETTINGS_CATEGORY, TWo
   [WORKSPACE_SETTINGS_CATEGORY.ADMINISTRATION]: [
     WORKSPACE_SETTINGS["general"],
     WORKSPACE_SETTINGS["members"],
-    WORKSPACE_SETTINGS["billing-and-plans"],
+    // Evolury: "Faturamento e planos" oculto do menu. A entrada em
+    // WORKSPACE_SETTINGS permanece para não quebrar WORKSPACE_SETTINGS_ACCESS,
+    // que deriva as permissões de rota do mesmo objeto — removê-la de lá
+    // deixaria /settings/billing sem regra de acesso.
     WORKSPACE_SETTINGS["export"],
   ],
   [WORKSPACE_SETTINGS_CATEGORY.FEATURES]: [],
