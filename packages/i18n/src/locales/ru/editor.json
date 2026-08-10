@@ -122,6 +122,9 @@
     "table": "Table",
     "link": "Link",
     "text_align": "Text align",
-    "multiple": "Multiple"
+    "multiple": "Multiple",
+    "menu_bulleted_list": "Bulleted list",
+    "menu_numbered_list": "Numbered list",
+    "menu_quote": "Quote"
   }
 }

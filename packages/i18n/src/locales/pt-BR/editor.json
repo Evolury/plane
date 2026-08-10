@@ -122,6 +122,9 @@
     "table": "Tabela",
     "link": "Link",
     "text_align": "Alinhamento do texto",
-    "multiple": "Vários"
+    "multiple": "Vários",
+    "menu_bulleted_list": "Lista com marcadores",
+    "menu_numbered_list": "Lista numerada",
+    "menu_quote": "Citação"
   }
 }

@@ -152,7 +152,7 @@ export const StrikeThroughItem = (editor: Editor): EditorMenuItem<"strikethrough
 export const BulletListItem = (editor: Editor): EditorMenuItem<"bulleted-list"> => ({
   key: "bulleted-list",
   name: "Bulleted list",
-      i18n_name: "editor.bulleted_list",
+      i18n_name: "editor.menu_bulleted_list",
   isActive: () => editor?.isActive(CORE_EXTENSIONS.BULLET_LIST),
   command: () => toggleBulletList(editor),
   icon: ListIcon,
@@ -161,7 +161,7 @@ export const BulletListItem = (editor: Editor): EditorMenuItem<"bulleted-list"> 
 export const NumberedListItem = (editor: Editor): EditorMenuItem<"numbered-list"> => ({
   key: "numbered-list",
   name: "Numbered list",
-      i18n_name: "editor.numbered_list",
+      i18n_name: "editor.menu_numbered_list",
   isActive: () => editor?.isActive(CORE_EXTENSIONS.ORDERED_LIST),
   command: () => toggleOrderedList(editor),
   icon: ListOrderedIcon,
@@ -179,7 +179,7 @@ export const TodoListItem = (editor: Editor): EditorMenuItem<"to-do-list"> => ({
 export const QuoteItem = (editor: Editor): EditorMenuItem<"quote"> => ({
   key: "quote",
   name: "Quote",
-      i18n_name: "editor.quote",
+      i18n_name: "editor.menu_quote",
   isActive: () => editor?.isActive(CORE_EXTENSIONS.BLOCKQUOTE),
   command: () => toggleBlockquote(editor),
   icon: TextQuote,

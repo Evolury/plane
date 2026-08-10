@@ -147,7 +147,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
     itemKey: "bulleted-list",
     renderKey: "bulleted-list",
     name: "Bulleted list",
-      i18n_name: "editor.bulleted_list",
+      i18n_name: "editor.menu_bulleted_list",
     icon: List,
     shortcut: ["Cmd", "Shift", "7"],
     editors: ["lite", "document"],
@@ -156,7 +156,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
     itemKey: "numbered-list",
     renderKey: "numbered-list",
     name: "Numbered list",
-      i18n_name: "editor.numbered_list",
+      i18n_name: "editor.menu_numbered_list",
     icon: ListOrdered,
     shortcut: ["Cmd", "Shift", "8"],
     editors: ["lite", "document"],
@@ -174,7 +174,7 @@ const LIST_ITEMS: ToolbarMenuItem<"bulleted-list" | "numbered-list" | "to-do-lis
 
 export const USER_ACTION_ITEMS: ToolbarMenuItem<"quote" | "code">[] = [
   { itemKey: "quote", renderKey: "quote", name: "Quote",
-      i18n_name: "editor.quote", icon: TextQuote, editors: ["lite", "document"] },
+      i18n_name: "editor.menu_quote", icon: TextQuote, editors: ["lite", "document"] },
   { itemKey: "code", renderKey: "code", name: "Code",
       i18n_name: "editor.code", icon: Code2, editors: ["lite", "document"] },
 ];
