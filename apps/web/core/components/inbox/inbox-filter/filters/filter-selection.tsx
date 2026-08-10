@@ -73,7 +73,7 @@ export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelec
         <div className="py-2">
           <FilterMember
             filterKey="created_by"
-            label="Created By"
+            label={t("ui.created_by")}
             searchQuery={filtersSearchQuery}
             memberIds={projectMemberIds ?? []}
           />
@@ -88,7 +88,7 @@ export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelec
         </div>
         {/* Updated at */}
         <div className="py-2">
-          <FilterDate filterKey="updated_at" label="Last updated date" searchQuery={filtersSearchQuery} />
+          <FilterDate filterKey="updated_at" label={t("ui.last_updated_date")} searchQuery={filtersSearchQuery} />
         </div>
       </div>
     </div>

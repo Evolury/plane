@@ -1468,7 +1468,10 @@
     "you_can_continue_making_changes_they_will_be_syn": "You can continue making changes. They will be synced when you are back online.",
     "you_don_t_have_permission_to_perform_this": "You don't have permission to perform this",
     "you_don_t_have_the_required_permissions": "You don't have the required permissions.",
-    "you_have_reached_the_maximum_number_of_requests": "You have reached the maximum number of requests of 50 requests per month per user."
+    "you_have_reached_the_maximum_number_of_requests": "You have reached the maximum number of requests of 50 requests per month per user.",
+    "zero_work_item": "0 Work item",
+    "zero_work_items": "0 work items",
+    "activity_to_the_cycle": "to the cycle"
   },
   "activity_log": {
     "prep_in": " for ",

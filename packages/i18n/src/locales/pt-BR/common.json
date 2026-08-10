@@ -1468,7 +1468,10 @@
     "you_can_continue_making_changes_they_will_be_syn": "Você pode continuar editando. As alterações serão sincronizadas quando você voltar a ficar online.",
     "you_don_t_have_permission_to_perform_this": "Você não tem permissão para fazer isso",
     "you_don_t_have_the_required_permissions": "Você não tem as permissões necessárias.",
-    "you_have_reached_the_maximum_number_of_requests": "Você atingiu o limite de 50 solicitações por mês por usuário."
+    "you_have_reached_the_maximum_number_of_requests": "Você atingiu o limite de 50 solicitações por mês por usuário.",
+    "zero_work_item": "0 item de trabalho",
+    "zero_work_items": "0 itens de trabalho",
+    "activity_to_the_cycle": "ao ciclo"
   },
   "activity_log": {
     "prep_in": " em ",

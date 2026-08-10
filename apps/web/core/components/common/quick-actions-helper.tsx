@@ -91,6 +91,7 @@ export const useCycleMenuItems = (props: UseCycleMenuItemsProps): MenuResult => 
 };
 
 export const useModuleMenuItems = (props: UseModuleMenuItemsProps): MenuResult => {
+  const { t } = useTranslation();
   const factory = useQuickActionsFactory();
   const { moduleDetails, isEditingAllowed, ...handlers } = props;
 
@@ -106,7 +107,7 @@ export const useModuleMenuItems = (props: UseModuleMenuItemsProps): MenuResult =
     factory.createArchiveMenuItem(handlers.handleArchive, {
       shouldRender: isEditingAllowed && !isArchived,
       disabled: !isInArchivableGroup,
-      description: isInArchivableGroup ? undefined : "Only completed or cancelled modules can be archived",
+      description: isInArchivableGroup ? undefined : t("ui.only_completed_or_cancelled_modules_can_be_archi"),
     }),
     factory.createRestoreMenuItem(handlers.handleRestore, isEditingAllowed && isArchived),
     factory.createDeleteMenuItem(handlers.handleDelete, isEditingAllowed && !isArchived),

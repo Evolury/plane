@@ -118,14 +118,14 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
             variant="secondary"
             size="lg"
             icon={ChevronUpIcon}
-            aria-label="Previous work item"
+            aria-label={t("ui.previous_work_item")}
             onClick={() => handleInboxIssueNavigation("prev")}
           />
           <IconButton
             variant="secondary"
             size="lg"
             icon={ChevronDownIcon}
-            aria-label="Next work item"
+            aria-label={t("ui.next_work_item")}
             onClick={() => handleInboxIssueNavigation("next")}
           />
         </div>
@@ -179,7 +179,7 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
                   handleActionWithPermission(
                     isProjectAdmin,
                     () => setSelectDuplicateIssue(true),
-                    "Only project admins can mark work items as duplicate"
+                    t("ui.only_project_admins_can_mark_work_items_as_dupli")
                   )
                 }
               >

@@ -162,7 +162,7 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            added a new assignee <UserLink activity={activity} />
+            {translate("activity_log.added_assignee")}<UserLink activity={activity} />
             {showIssue && (
               <>
                 {" "}
@@ -174,7 +174,7 @@ const activityDetails: {
       else
         return (
           <>
-            removed the assignee <UserLink activity={activity} />
+            {translate("activity_log.removed_assignee")}<UserLink activity={activity} />
             {showIssue && (
               <>
                 {" "}
@@ -292,7 +292,7 @@ const activityDetails: {
       else
         return (
           <>
-            deleted <IssueLink activity={activity} />
+            {translate("activity_log.deleted")} <IssueLink activity={activity} />
           </>
         );
     },
@@ -315,7 +315,7 @@ const activityDetails: {
       else
         return (
           <>
-            deleted <IssueLink activity={activity} />
+            {translate("activity_log.deleted")} <IssueLink activity={activity} />
           </>
         );
     },
@@ -430,7 +430,7 @@ const activityDetails: {
           <>
             <span className="flex-shrink-0">
               added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
-              <span className="whitespace-nowrap">to the cycle</span>{" "}
+              <span className="whitespace-nowrap">{translate("ui.activity_to_the_cycle")}</span>{" "}
             </span>
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/cycles/${activity.new_identifier}`}
@@ -459,7 +459,7 @@ const activityDetails: {
       else
         return (
           <>
-            removed <IssueLink activity={activity} /> from the cycle{" "}
+            {translate("activity_log.removed")} <IssueLink activity={activity} /> from the cycle{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/cycles/${activity.old_identifier}`}
               target="_blank"
@@ -506,7 +506,7 @@ const activityDetails: {
       else
         return (
           <>
-            removed <IssueLink activity={activity} /> from the module{" "}
+            {translate("activity_log.removed")} <IssueLink activity={activity} /> from the module{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.old_identifier}`}
               target="_blank"
@@ -539,7 +539,7 @@ const activityDetails: {
       if (!activity.new_value)
         return (
           <>
-            removed the parent <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>
+            {translate("activity_log.removed_parent")}<span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>
             {showIssue && (
               <>
                 {" "}
@@ -551,7 +551,7 @@ const activityDetails: {
       else
         return (
           <>
-            set the parent to <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>
+            {translate("activity_log.set_parent")}<span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>
             {showIssue && (
               <>
                 {" "}
@@ -659,7 +659,7 @@ const activityDetails: {
   state: {
     message: (activity, showIssue) => (
       <>
-        set the state to <span className="font-medium break-all text-primary">{activity.new_value}</span>
+        {translate("activity_log.set_state")}<span className="font-medium break-all text-primary">{activity.new_value}</span>
         {showIssue && (
           <>
             {" "}
@@ -743,7 +743,7 @@ const activityDetails: {
             <IssueLink activity={activity} />
           </>
         )}
-        {activity.verb === "2" && ` from intake by marking a duplicate work item.`}
+        {activity.verb === "2" && ` ${translate("activity_log.from_intake_by_marking_a_duplicate_work_item")}`}
       </>
     ),
     icon: <IntakeIcon className="size-3 text-secondary" aria-hidden="true" />,

@@ -27,7 +27,7 @@ export const CalendarQuickAddIssueForm = observer(function CalendarQuickAddIssue
         <input
           type="text"
           autoComplete="off"
-          placeholder={isEpic ? "Epic Title" : "Work item Title"}
+          placeholder={isEpic ? "Epic Title" : t("ui.work_item_title")}
           {...register("name", {
             required: `${isEpic ? "Epic" : t("common.work_item")} title is required.`,
           })}

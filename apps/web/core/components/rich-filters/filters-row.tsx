@@ -108,7 +108,7 @@ export const FiltersRow = observer(function FiltersRow<K extends TFilterProperty
           onClick={filter.saveView}
           data-ph-element={trackerElements?.saveView}
         >
-          {filter.saveViewOptions?.label ?? "Save view"}
+          {filter.saveViewOptions?.label ?? t("ui.save_view")}
         </Button>
       </ElementTransition>
       <ElementTransition show={filter.canUpdateView}>
@@ -120,7 +120,7 @@ export const FiltersRow = observer(function FiltersRow<K extends TFilterProperty
           disabled={isUpdating}
           data-ph-element={trackerElements?.updateView}
         >
-          {isUpdating ? "Confirming" : (filter.updateViewOptions?.label ?? "Update view")}
+          {isUpdating ? "Confirming" : (filter.updateViewOptions?.label ?? t("ui.update_view"))}
         </Button>
       </ElementTransition>
     </>
