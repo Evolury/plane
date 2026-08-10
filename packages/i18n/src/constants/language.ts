@@ -6,7 +6,10 @@
 
 import type { TLanguage, ILanguageOption } from "../types";
 
-export const FALLBACK_LANGUAGE: TLanguage = "en";
+// Evolury: pt-BR em vez de "en" (upstream). Define o idioma antes do login e
+// enquanto o perfil não foi carregado. Pareado com o default de
+// Profile.language no backend — mudar só um faz a UI trocar de idioma no login.
+export const FALLBACK_LANGUAGE: TLanguage = "pt-BR";
 
 export const SUPPORTED_LANGUAGES: ILanguageOption[] = [
   { label: "English", value: "en" },

@@ -248,7 +248,9 @@ class Profile(TimeAuditModel):
     mobile_onboarding_step = models.JSONField(default=get_mobile_default_onboarding)
     mobile_timezone_auto_set = models.BooleanField(default=False)
     # language
-    language = models.CharField(max_length=255, default="en")
+    # Evolury: pt-BR em vez de "en" (upstream). Pareado com FALLBACK_LANGUAGE em
+    # packages/i18n — o perfil sobrepõe o fallback do front assim que carrega.
+    language = models.CharField(max_length=255, default="pt-BR")
     start_of_the_week = models.PositiveSmallIntegerField(choices=START_OF_THE_WEEK_CHOICES, default=SUNDAY)
     goals = models.JSONField(default=dict)
     background_color = models.CharField(max_length=255, default=get_random_color)
