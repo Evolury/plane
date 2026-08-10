@@ -20,10 +20,12 @@ export enum EDurationFilters {
 export const DURATION_FILTER_OPTIONS: {
   key: EDurationFilters;
   label: string;
+  i18n_label?: string;
 }[] = [
   {
     key: EDurationFilters.NONE,
     label: "All time",
+    i18n_label: "ui.duration_all_time",
   },
   {
     key: EDurationFilters.TODAY,
@@ -32,14 +34,17 @@ export const DURATION_FILTER_OPTIONS: {
   {
     key: EDurationFilters.THIS_WEEK,
     label: "Due this week",
+    i18n_label: "ui.duration_due_week",
   },
   {
     key: EDurationFilters.THIS_MONTH,
     label: "Due this month",
+    i18n_label: "ui.duration_due_month",
   },
   {
     key: EDurationFilters.THIS_YEAR,
     label: "Due this year",
+    i18n_label: "ui.duration_due_year",
   },
   {
     key: EDurationFilters.CUSTOM,

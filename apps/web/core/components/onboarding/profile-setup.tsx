@@ -303,7 +303,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     name="first_name"
                     rules={{
                       required: t("ui.first_name_is_required"),
-                      validate: validatePersonName,
+                      validate: (value) => validatePersonName(value, t),
                       maxLength: {
                         value: 50,
                         message: t("ui.first_name_must_be_within_50_characters"),
@@ -341,7 +341,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     name="last_name"
                     rules={{
                       required: t("ui.last_name_is_required"),
-                      validate: validatePersonName,
+                      validate: (value) => validatePersonName(value, t),
                       maxLength: {
                         value: 50,
                         message: t("ui.last_name_must_be_within_50_characters"),

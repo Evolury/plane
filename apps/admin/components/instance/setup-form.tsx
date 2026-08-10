@@ -176,7 +176,7 @@ export function InstanceSetupForm() {
                   placeholder="Wilber"
                   value={formData.first_name}
                   onChange={(e) => {
-                    const validation = validatePersonName(e.target.value);
+                    const validation = validatePersonName(e.target.value, t);
                     if (validation === true || e.target.value === "") {
                       handleFormChange("first_name", e.target.value);
                     }
@@ -199,7 +199,7 @@ export function InstanceSetupForm() {
                   placeholder="Wright"
                   value={formData.last_name}
                   onChange={(e) => {
-                    const validation = validatePersonName(e.target.value);
+                    const validation = validatePersonName(e.target.value, t);
                     if (validation === true || e.target.value === "") {
                       handleFormChange("last_name", e.target.value);
                     }
@@ -244,7 +244,7 @@ export function InstanceSetupForm() {
                 placeholder={t("templates.settings.form.publish.company_name.label")}
                 value={formData.company_name}
                 onChange={(e) => {
-                  const validation = validateCompanyName(e.target.value, false);
+                  const validation = validateCompanyName(e.target.value, false, t);
                   if (validation === true || e.target.value === "") {
                     handleFormChange("company_name", e.target.value);
                   }

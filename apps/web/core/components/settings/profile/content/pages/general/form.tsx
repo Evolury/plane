@@ -276,7 +276,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   name="first_name"
                   rules={{
                     required: t("ui.please_enter_first_name"),
-                    validate: validatePersonName,
+                    validate: (value) => validatePersonName(value, t),
                   }}
                   render={({ field: { value, onChange, ref } }) => (
                     <Input
@@ -302,7 +302,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   control={control}
                   name="last_name"
                   rules={{
-                    validate: validatePersonName,
+                    validate: (value) => validatePersonName(value, t),
                   }}
                   render={({ field: { value, onChange, ref } }) => (
                     <Input
@@ -332,7 +332,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                   name="display_name"
                   rules={{
                     required: t("ui.display_name_is_required"),
-                    validate: validateDisplayName,
+                    validate: (value) => validateDisplayName(value, t),
                   }}
                   render={({ field: { value, onChange, ref } }) => (
                     <Input

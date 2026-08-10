@@ -105,7 +105,7 @@ export function WorkspaceCreateForm() {
               control={control}
               name="name"
               rules={{
-                validate: (value) => validateWorkspaceName(value, true),
+                validate: (value) => validateWorkspaceName(value, true, t),
               }}
               render={({ field: { value, ref, onChange } }) => (
                 <Input
@@ -137,7 +137,7 @@ export function WorkspaceCreateForm() {
               control={control}
               name="slug"
               rules={{
-                validate: (value) => validateSlug(value),
+                validate: (value) => validateSlug(value, t),
               }}
               render={({ field: { onChange, value, ref } }) => (
                 <Input

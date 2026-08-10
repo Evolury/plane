@@ -1496,7 +1496,15 @@
     "password_enter": "Digite sua senha",
     "password_too_short": "A senha é muito curta",
     "password_weak": "A senha é fraca",
-    "password_strong": "A senha é forte"
+    "password_strong": "A senha é forte",
+    "axis_state_name": "Nome do estado",
+    "axis_state_group": "Grupo de estados",
+    "axis_created_date": "Data de criação",
+    "axis_work_item": "Item de trabalho",
+    "duration_all_time": "Todo o período",
+    "duration_due_week": "Vence esta semana",
+    "duration_due_month": "Vence este mês",
+    "duration_due_year": "Vence este ano"
   },
   "activity_log": {
     "prep_in": " em ",
@@ -1566,5 +1574,29 @@
     "updated": "atualizado",
     "updated_intake_work_item_status": "atualizou o status do item de trabalho no Intake.",
     "updated_the_project_description": "atualizou a descrição do projeto"
+  },
+  "validation": {
+    "name_required": "O nome é obrigatório",
+    "name_max": "O nome deve ter no máximo 50 caracteres",
+    "name_special": "O nome não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
+    "name_allowed": "O nome só pode conter letras, espaços, hífens e apóstrofos",
+    "display_required": "O nome de exibição é obrigatório",
+    "display_max": "O nome de exibição deve ter no máximo 50 caracteres",
+    "display_special": "O nome de exibição não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
+    "display_allowed": "O nome de exibição só pode conter letras, números, pontos, hífens e sublinhados",
+    "company_required": "O nome da empresa é obrigatório",
+    "company_max": "O nome da empresa deve ter no máximo 80 caracteres",
+    "company_special": "O nome da empresa não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
+    "company_allowed": "O nome da empresa só pode conter letras, números, espaços, hífens e sublinhados",
+    "company_alnum": "O nome da empresa precisa ter pelo menos uma letra ou número",
+    "workspace_required": "O nome do espaço de trabalho é obrigatório",
+    "workspace_max": "O nome do espaço de trabalho deve ter no máximo 80 caracteres",
+    "workspace_special": "O nome do espaço de trabalho não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
+    "workspace_allowed": "O nome do espaço de trabalho só pode conter letras, números, espaços, hífens e sublinhados",
+    "workspace_alnum": "O nome do espaço de trabalho precisa ter pelo menos uma letra ou número",
+    "slug_required": "A URL é obrigatória",
+    "slug_max": "A URL deve ter no máximo 48 caracteres",
+    "slug_special": "A URL não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
+    "slug_allowed": "A URL só pode conter letras, números, hífens e sublinhados"
   }
 }

@@ -195,7 +195,7 @@ export const WorkspaceDetails = observer(function WorkspaceDetails() {
                 control={control}
                 name="name"
                 rules={{
-                  validate: (value) => validateWorkspaceName(value, true),
+                  validate: (value) => validateWorkspaceName(value, true, t),
                 }}
                 render={({ field: { value, onChange, ref } }) => (
                   <Input

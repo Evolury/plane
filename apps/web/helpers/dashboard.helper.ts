@@ -11,6 +11,7 @@ import { DURATION_FILTER_OPTIONS, EDurationFilters } from "@plane/constants";
 import type { TIssuesListTypes } from "@plane/types";
 // constants
 import { renderFormattedDate, renderFormattedPayloadDate } from "@plane/utils";
+import { translate } from "@plane/i18n";
 
 // -------------------- DEPRECATED --------------------
 
@@ -88,7 +89,10 @@ export const getTabKey = (duration: EDurationFilters, tab: TIssuesListTypes | un
  * @param customDates
  */
 export const getDurationFilterDropdownLabel = (duration: EDurationFilters, customDates: string[]): string => {
-  if (duration !== "custom") return DURATION_FILTER_OPTIONS.find((option) => option.key === duration)?.label ?? "";
+  if (duration !== "custom") {
+    const option = DURATION_FILTER_OPTIONS.find((o) => o.key === duration);
+    return option?.i18n_label ? translate(option.i18n_label) : (option?.label ?? "");
+  }
   else {
     const afterDate = customDates.find((date) => date.includes("after"))?.split(";")[0];
     const beforeDate = customDates.find((date) => date.includes("before"))?.split(";")[0];

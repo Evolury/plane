@@ -1496,7 +1496,15 @@
     "password_enter": "Please enter your password",
     "password_too_short": "Password is too short",
     "password_weak": "Password is weak",
-    "password_strong": "Password is strong"
+    "password_strong": "Password is strong",
+    "axis_state_name": "State name",
+    "axis_state_group": "State group",
+    "axis_created_date": "Created date",
+    "axis_work_item": "Work item",
+    "duration_all_time": "All time",
+    "duration_due_week": "Due this week",
+    "duration_due_month": "Due this month",
+    "duration_due_year": "Due this year"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1566,5 +1574,29 @@
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
     "updated_the_project_description": "updated the project description"
+  },
+  "validation": {
+    "name_required": "Name is required",
+    "name_max": "Name must be 50 characters or less",
+    "name_special": "Names cannot contain special characters like < > ' \\\" { } [ ] * ^ ! # %",
+    "name_allowed": "Names can only contain letters, spaces, hyphens, and apostrophes",
+    "display_required": "Display name is required",
+    "display_max": "Display name must be 50 characters or less",
+    "display_special": "Display name cannot contain special characters like < > ' \\\" { } [ ] * ^ ! # %",
+    "display_allowed": "Display name can only contain letters, numbers, periods, hyphens, and underscores",
+    "company_required": "Company name is required",
+    "company_max": "Company name must be 80 characters or less",
+    "company_special": "Company name cannot contain special characters like < > ' \\\" { } [ ] * ^ ! # %",
+    "company_allowed": "Company name can only contain letters, numbers, spaces, hyphens, and underscores",
+    "company_alnum": "Company name must contain at least one letter or number",
+    "workspace_required": "Workspace name is required",
+    "workspace_max": "Workspace name must be 80 characters or less",
+    "workspace_special": "Workspace name cannot contain special characters like < > ' \\\" { } [ ] * ^ ! # %",
+    "workspace_allowed": "Workspace name can only contain letters, numbers, spaces, hyphens, and underscores",
+    "workspace_alnum": "Workspace name must contain at least one letter or number",
+    "slug_required": "Slug is required",
+    "slug_max": "Slug must be 48 characters or less",
+    "slug_special": "Slug cannot contain special characters like < > ' \\\" { } [ ] * ^ ! # %",
+    "slug_allowed": "Slug can only contain letters, numbers, hyphens, and underscores"
   }
 }
