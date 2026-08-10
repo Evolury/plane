@@ -12,6 +12,7 @@ import maintenanceModeDarkModeImage from "@/app/assets/instance/maintenance-mode
 import maintenanceModeLightModeImage from "@/app/assets/instance/maintenance-mode-light.svg?url";
 // layouts
 import DefaultLayout from "@/layouts/default-layout";
+import { useTranslation } from "@plane/i18n";
 
 const linkMap = [
   {
@@ -21,7 +22,7 @@ const linkMap = [
   },
   {
     key: "status",
-    label: "Status Page",
+    label: "ui.status_page",
     value: "https://status.plane.so/",
   },
   {
@@ -39,6 +40,7 @@ interface ProdErrorComponentProps {
 export function ProdErrorComponent({ onGoHome }: ProdErrorComponentProps) {
   // hooks
   const { resolvedTheme } = useTheme();
+  const { t } = useTranslation();
 
   // derived values
   const maintenanceModeImage = resolvedTheme === "dark" ? maintenanceModeDarkModeImage : maintenanceModeLightModeImage;
@@ -73,7 +75,7 @@ export function ProdErrorComponent({ onGoHome }: ProdErrorComponentProps) {
                   rel="noopener noreferrer"
                   className="text-13 text-accent-primary hover:underline"
                 >
-                  {link.label}
+                  {t(link.label)}
                 </a>
               </div>
             ))}

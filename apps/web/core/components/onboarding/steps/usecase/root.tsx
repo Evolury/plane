@@ -88,7 +88,7 @@ export const UseCaseSetupStep = observer(function UseCaseSetupStep({ handleStepC
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       {/* Header */}
-      <CommonOnboardingHeader title={t("ui.what_brings_you")} description="Tell us your goals and team size." />
+      <CommonOnboardingHeader title={t("ui.what_brings_you")} description={t("ui.tell_goals_team_size")} />
 
       {/* Use Case Selection */}
       <div className="flex flex-col gap-3">

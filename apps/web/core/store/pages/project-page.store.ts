@@ -21,6 +21,7 @@ import { ProjectPageService } from "@/services/page";
 import type { CoreRootStore } from "../root.store";
 import type { TProjectPage } from "./project-page";
 import { ProjectPage } from "./project-page";
+import { translate } from "@plane/i18n";
 
 type TLoader = "init-loader" | "mutation-loader" | undefined;
 
@@ -239,8 +240,8 @@ export class ProjectPageStore implements IProjectPageStore {
       runInAction(() => {
         this.loader = undefined;
         this.error = {
-          title: "Failed",
-          description: "Failed to fetch the pages, Please try again later.",
+          title: translate("toast.failed"),
+          description: translate("toast.pages_fetch_failed"),
         };
       });
       throw error;
@@ -282,8 +283,8 @@ export class ProjectPageStore implements IProjectPageStore {
       runInAction(() => {
         this.loader = undefined;
         this.error = {
-          title: "Failed",
-          description: "Failed to fetch the page, Please try again later.",
+          title: translate("toast.failed"),
+          description: translate("toast.page_fetch_failed"),
         };
       });
       throw error;
@@ -315,8 +316,8 @@ export class ProjectPageStore implements IProjectPageStore {
       runInAction(() => {
         this.loader = undefined;
         this.error = {
-          title: "Failed",
-          description: "Failed to create a page, Please try again later.",
+          title: translate("toast.failed"),
+          description: translate("toast.page_create_failed"),
         };
       });
       throw error;
@@ -341,8 +342,8 @@ export class ProjectPageStore implements IProjectPageStore {
       runInAction(() => {
         this.loader = undefined;
         this.error = {
-          title: "Failed",
-          description: "Failed to delete a page, Please try again later.",
+          title: translate("toast.failed"),
+          description: translate("toast.page_delete_failed_alt"),
         };
       });
       throw error;

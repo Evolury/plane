@@ -88,11 +88,11 @@ const CONTENT_VARIETY: {
 }[] = [
   {
     key: "everything",
-    label: "Everything",
+    label: "ui.everything",
   },
   {
     key: "no-assets",
-    label: "No images",
+    label: "ui.no_images",
   },
 ];
 
@@ -240,7 +240,7 @@ export function ExportPageModal(props: Props) {
                 name="content_variety"
                 render={({ field: { onChange, value } }) => (
                   <CustomSelect
-                    label={CONTENT_VARIETY.find((variety) => variety.key === value)?.label}
+                    label={t(CONTENT_VARIETY.find((variety) => variety.key === value)?.label ?? "")}
                     buttonClassName="border-none"
                     value={value}
                     onChange={(val: TContentVariety) => onChange(val)}
@@ -249,7 +249,7 @@ export function ExportPageModal(props: Props) {
                   >
                     {CONTENT_VARIETY.map((variety) => (
                       <CustomSelect.Option key={variety.key} value={variety.key}>
-                        {variety.label}
+                        {t(variety.label)}
                       </CustomSelect.Option>
                     ))}
                   </CustomSelect>

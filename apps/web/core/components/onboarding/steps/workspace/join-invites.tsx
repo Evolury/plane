@@ -69,7 +69,7 @@ export function WorkspaceJoinInvitesStep(props: Props) {
 
   return invitations && invitations.length > 0 ? (
     <div className="flex flex-col gap-10">
-      <CommonOnboardingHeader title={t("ui.join_or_create_workspace")} description="All your work — unified." />
+      <CommonOnboardingHeader title={t("ui.join_or_create_workspace")} description={t("ui.all_work_unified")} />
       <div className="flex flex-col gap-3">
         {invitations &&
           invitations.length > 0 &&

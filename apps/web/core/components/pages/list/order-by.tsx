@@ -11,6 +11,7 @@ import { getButtonStyling } from "@plane/propel/button";
 import { CheckIcon } from "@plane/propel/icons";
 import type { TPageFiltersSortBy, TPageFiltersSortKey } from "@plane/types";
 import { CustomMenu } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   onChange: (value: { key?: TPageFiltersSortKey; order?: TPageFiltersSortBy }) => void;
@@ -22,12 +23,13 @@ const PAGE_SORTING_KEY_OPTIONS: {
   key: TPageFiltersSortKey;
   label: string;
 }[] = [
-  { key: "name", label: "Name" },
-  { key: "created_at", label: "Date created" },
-  { key: "updated_at", label: "Date modified" },
+  { key: "name", label: "ui.sort_name" },
+  { key: "created_at", label: "ui.sort_created_at" },
+  { key: "updated_at", label: "ui.sort_updated_at" },
 ];
 
 export function PageOrderByDropdown(props: Props) {
+  const { t } = useTranslation();
   const { onChange, sortBy, sortKey } = props;
 
   const orderByDetails = PAGE_SORTING_KEY_OPTIONS.find((option) => sortKey === option.key);
@@ -38,7 +40,7 @@ export function PageOrderByDropdown(props: Props) {
       customButton={
         <div className={getButtonStyling("secondary", "lg")}>
           {!isDescending ? <ArrowUpWideNarrow className="size-3" /> : <ArrowDownWideNarrow className="size-3" />}
-          {orderByDetails?.label}
+          {orderByDetails?.label ? t(orderByDetails.label) : ""}
         </div>
       }
       placement="bottom-end"
@@ -55,7 +57,7 @@ export function PageOrderByDropdown(props: Props) {
             })
           }
         >
-          {option.label}
+          {t(option.label)}
           {sortKey === option.key && <CheckIcon className="h-3 w-3" />}
         </CustomMenu.MenuItem>
       ))}

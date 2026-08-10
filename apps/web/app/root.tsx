@@ -32,8 +32,11 @@ import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
+import { translate } from "@plane/i18n";
 
-const APP_TITLE = "Plane | Simple, extensible, open-source project management tool.";
+// Funcao, nao constante: no escopo de modulo o translate() rodaria antes de o
+// i18n inicializar e devolveria a chave crua. `meta` e chamada em tempo de render.
+const appTitle = () => translate("ui.plane_meta_title");
 
 export const links: LinksFunction = () => [
   { rel: "icon", type: "image/png", sizes: "32x32", href: favicon32 },
@@ -95,18 +98,18 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export const meta: Route.MetaFunction = () => [
-  { title: APP_TITLE },
+  { title: appTitle() },
   { name: "description", content: SITE_DESCRIPTION },
-  { property: "og:title", content: APP_TITLE },
+  { property: "og:title", content: appTitle() },
   {
     property: "og:description",
-    content: "Open-source project management tool to manage work items, cycles, and product roadmaps easily",
+    content: translate("ui.plane_meta_description"),
   },
   { property: "og:url", content: "https://app.plane.so/" },
   { property: "og:image", content: ogImage },
   { property: "og:image:width", content: "1200" },
   { property: "og:image:height", content: "630" },
-  { property: "og:image:alt", content: "Plane - Modern project management" },
+  { property: "og:image:alt", content: translate("ui.plane_modern_pm") },
   {
     name: "keywords",
     content:
@@ -117,7 +120,7 @@ export const meta: Route.MetaFunction = () => [
   { name: "twitter:image", content: ogImage },
   { name: "twitter:image:width", content: "1200" },
   { name: "twitter:image:height", content: "630" },
-  { name: "twitter:image:alt", content: "Plane - Modern project management" },
+  { name: "twitter:image:alt", content: translate("ui.plane_modern_pm") },
 ];
 
 export default function Root() {

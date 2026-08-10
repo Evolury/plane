@@ -11,9 +11,10 @@ import { Button } from "@plane/propel/button";
 import Image404 from "@/app/assets/404.svg?url";
 // types
 import type { Route } from "./+types/not-found";
+import { translate } from "@plane/i18n";
 
 export const meta: Route.MetaFunction = () => [
-  { title: "404 - Page Not Found" },
+  { title: translate("ui.not_found_404") },
   { name: "robots", content: "noindex, nofollow" },
 ];
 

@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 // plane imports
 import { SUPPORT_EMAIL } from "@plane/constants";
+import { translate } from "@plane/i18n";
 
 export enum EPageTypes {
   PUBLIC = "PUBLIC",
@@ -369,7 +370,7 @@ const errorCodeMessages: {
   },
   [EAuthenticationErrorCodes.ADMIN_USER_DEACTIVATED]: {
     title: `Admin user deactivated`,
-    message: () => <div>Your account is deactivated</div>,
+    message: () => <div>{translate("ui.account_deactivated")}</div>,
   },
   [EAuthenticationErrorCodes.RATE_LIMIT_EXCEEDED]: {
     title: "",

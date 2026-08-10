@@ -28,14 +28,14 @@ import { useUser } from "@/hooks/store/user";
 export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "10000_feet_view",
-    title: "10,000-feet view of all active cycles.",
+    title: "10000_feet_view",
     description:
       "Zoom out to see running cycles across all your projects at once instead of going from Cycle to Cycle in each project.",
     icon: Folder,
   },
   {
     key: "get_snapshot_of_each_active_cycle",
-    title: "Get a snapshot of each active cycle.",
+    title: "get_snapshot_of_each_active_cycle",
     description:
       "Track high-level metrics for all active cycles, see their state of progress, and get a sense of scope against deadlines.",
     icon: CircleDashed,
@@ -43,7 +43,8 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "compare_burndowns",
     title: "Compare burndowns.",
-    description: "Monitor how each of your teams are performing with a peek into each cycle’s burndown report.",
+    description:
+      "Monitor how each of your teams are performing with a peek into each cycle’s burndown report.",
     icon: BarChart4,
   },
   {

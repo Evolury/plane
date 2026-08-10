@@ -94,7 +94,7 @@ export const RoleSetupStep = observer(function RoleSetupStep({ handleStepChange 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       {/* Header */}
-      <CommonOnboardingHeader title={t("ui.whats_your_role")} description="Let's set up Plane for how you work." />
+      <CommonOnboardingHeader title={t("ui.whats_your_role")} description={t("ui.setup_how_you_work")} />
       {/* Role Selection */}
       <div className="flex flex-col gap-3">
         <p className="text-body-sm-semibold text-placeholder">{t("ui.select_one")}</p>

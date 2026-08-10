@@ -538,7 +538,21 @@
     "page_version_restored": "Versão da página restaurada.",
     "version_load_failed": "Não foi possível carregar a versão. Tente novamente.",
     "work_item_id_copied": "ID do item de trabalho copiado para a área de transferência",
-    "syncing_changes": "Suas alterações estão sendo sincronizadas com o servidor. Você pode continuar editando."
+    "syncing_changes": "Suas alterações estão sendo sincronizadas com o servidor. Você pode continuar editando.",
+    "estimate_create_failed": "Não foi possível criar a estimativa.",
+    "estimate_delete_failed_alt": "Não foi possível excluir a estimativa.",
+    "estimates_fetch_failed": "Não foi possível carregar as estimativas.",
+    "intake_fetch_failed": "Não foi possível carregar os itens do Intake. Tente novamente mais tarde.",
+    "intake_paginated_fetch_failed": "Não foi possível carregar mais itens do Intake. Tente novamente mais tarde.",
+    "current_user_fetch_failed": "Não foi possível carregar os dados do usuário.",
+    "instance_fetch_failed": "Não foi possível carregar as informações da instância.",
+    "user_profile_fetch_failed": "Não foi possível carregar o perfil do usuário.",
+    "user_settings_fetch_failed": "Não foi possível carregar as configurações do usuário.",
+    "onboarding_finish_failed": "Não foi possível concluir a introdução.",
+    "current_user_update_failed": "Não foi possível atualizar os dados do usuário.",
+    "user_profile_update_failed": "Não foi possível atualizar o perfil do usuário.",
+    "tour_flag_update_failed": "Não foi possível salvar o progresso da introdução.",
+    "theme_update_failed": "Não foi possível atualizar o tema."
   },
   "links": {
     "toasts": {
@@ -1251,7 +1265,16 @@
     "delete_lower": "excluir",
     "edit_lower": "editar",
     "more": "Mais",
-    "hide": "Ocultar"
+    "hide": "Ocultar",
+    "webhook_event_comment": "Comentário publicado, atualizado ou excluído",
+    "all_work_unified": "Todo o seu trabalho — reunido.",
+    "setup_how_you_work": "Vamos configurar o Plane do jeito que você trabalha.",
+    "tell_goals_team_size": "Conte seus objetivos e o tamanho da equipe.",
+    "how_you_appear": "É assim que você vai aparecer no Plane.",
+    "everything": "Tudo",
+    "sort_name": "Nome",
+    "sort_created_at": "Data de criação",
+    "sort_updated_at": "Data de modificação"
   },
   "activity_log": {
     "prep_in": " em ",

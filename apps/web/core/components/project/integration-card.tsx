@@ -27,11 +27,11 @@ type Props = {
 const integrationDetails: { [key: string]: any } = {
   github: {
     logo: GithubLogo,
-    description: "Select GitHub repository to enable sync.",
+    description: "ui.select_github_repo",
   },
   slack: {
     logo: SlackLogo,
-    description: "Get regular updates and control which notification you want to receive.",
+    description: "ui.notifications_description",
   },
 };
 
@@ -99,7 +99,7 @@ export function IntegrationCard({ integration }: Props) {
             <div>
               <h3 className="flex items-center gap-4 text-13 font-medium">{integration.integration_detail.title}</h3>
               <p className="text-13 tracking-tight text-secondary">
-                {integrationDetails[integration.integration_detail.provider].description}
+                {t(integrationDetails[integration.integration_detail.provider].description)}
               </p>
             </div>
           </div>

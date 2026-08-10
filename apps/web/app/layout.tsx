@@ -23,9 +23,10 @@ import icon512 from "@/app/assets/icons/icon-512x512.png?url";
 
 // local
 import { AppProvider } from "./provider";
+import { translate } from "@plane/i18n";
 
 export const meta = () => [
-  { title: "Plane | Simple, extensible, open-source project management tool." },
+  { title: translate("ui.plane_meta_title") },
   { name: "description", content: SITE_DESCRIPTION },
   {
     name: "keywords",
@@ -37,22 +38,22 @@ export const meta = () => [
     content:
       "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
   },
-  { property: "og:title", content: "Plane | Simple, extensible, open-source project management tool." },
+  { property: "og:title", content: translate("ui.plane_meta_title") },
   {
     property: "og:description",
-    content: "Open-source project management tool to manage work items, cycles, and product roadmaps easily",
+    content: translate("ui.plane_meta_description"),
   },
   { property: "og:url", content: "https://app.plane.so/" },
   { property: "og:image", content: "https://app.plane.so/og-image.png" },
   { property: "og:image:width", content: "1200" },
   { property: "og:image:height", content: "630" },
-  { property: "og:image:alt", content: "Plane - Modern project management" },
+  { property: "og:image:alt", content: translate("ui.plane_modern_pm") },
   { name: "twitter:site", content: "@planepowers" },
   { name: "twitter:card", content: "summary_large_image" },
   { name: "twitter:image", content: "https://app.plane.so/og-image.png" },
   { name: "twitter:image:width", content: "1200" },
   { name: "twitter:image:height", content: "630" },
-  { name: "twitter:image:alt", content: "Plane - Modern project management" },
+  { name: "twitter:image:alt", content: translate("ui.plane_modern_pm") },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

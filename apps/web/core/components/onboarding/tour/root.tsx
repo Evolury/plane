@@ -20,6 +20,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useUser } from "@/hooks/store/user";
 // local imports
 import { TourSidebar } from "./sidebar";
+import { useTranslation } from "@plane/i18n";
 
 export type TOnboardingTourProps = {
   onComplete: () => void;
@@ -37,7 +38,7 @@ const TOUR_STEPS: {
 }[] = [
   {
     key: "work-items",
-    title: "Plan with work items",
+    title: "ui.plan_with_work_items",
     description:
       "The work item is the building block of the Plane. Most concepts in Plane are either associated with work items and their properties.",
     image: IssuesTour,
@@ -45,7 +46,7 @@ const TOUR_STEPS: {
   },
   {
     key: "cycles",
-    title: "Move with cycles",
+    title: "ui.move_with_cycles",
     description:
       "Cycles help you and your team to progress faster, similar to the sprints commonly used in agile development.",
     image: CyclesTour,
@@ -55,7 +56,7 @@ const TOUR_STEPS: {
   {
     key: "modules",
     title: "Break into modules",
-    description: "Modules break your big thing into Projects or Features, to help you organize better.",
+    description: "ui.modules_description_long",
     image: ModulesTour,
     prevStep: "cycles",
     nextStep: "views",
@@ -71,8 +72,8 @@ const TOUR_STEPS: {
   },
   {
     key: "pages",
-    title: "Document with pages",
-    description: "Use Pages to quickly jot down work items when you're in a meeting or starting a day.",
+    title: "ui.document_with_pages",
+    description: "ui.pages_quick_note",
     image: PagesTour,
     prevStep: "views",
   },
@@ -84,6 +85,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
   const [step, setStep] = useState<TTourSteps>("welcome");
   // store hooks
   const { toggleCreateProjectModal } = useCommandPalette();
+  const { t } = useTranslation();
   const { data: currentUser } = useUser();
 
   const currentStepIndex = TOUR_STEPS.findIndex((tourStep) => tourStep.key === step);
@@ -145,11 +147,11 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                 currentStepIndex % 2 === 0 ? "justify-end" : "justify-start"
               }`}
             >
-              <img src={currentStep?.image} className="h-full w-full object-cover" alt={currentStep?.title} />
+              <img src={currentStep?.image} className="h-full w-full object-cover" alt={currentStep?.title ? t(currentStep.title) : ""} />
             </div>
             <div className="flex h-1/2 flex-col overflow-y-auto p-4 sm:h-2/5">
-              <h3 className="font-semibold sm:text-18">{currentStep?.title}</h3>
-              <p className="mt-3 text-13 text-secondary">{currentStep?.description}</p>
+              <h3 className="font-semibold sm:text-18">{currentStep?.title ? t(currentStep.title) : ""}</h3>
+              <p className="mt-3 text-13 text-secondary">{currentStep?.description ? t(currentStep.description) : ""}</p>
               <div className="mt-3 flex h-full items-end justify-between gap-4">
                 <div className="flex items-center gap-4">
                   {currentStep?.prevStep && (

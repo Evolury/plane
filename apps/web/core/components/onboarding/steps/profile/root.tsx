@@ -149,7 +149,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       {/* Header */}
-      <CommonOnboardingHeader title={t("ui.create_your_profile")} description="This is how you will appear in Plane." />
+      <CommonOnboardingHeader title={t("ui.create_your_profile")} description={t("ui.how_you_appear")} />
 
       {/* Profile Picture Section */}
       <Controller

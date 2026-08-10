@@ -28,13 +28,13 @@ type Props = {
 
 const PROJECT_ROLE_OPTIONS: IRoleOption[] = [
   { value: String(EUserProjectRoles.ADMIN), label: "Admin" },
-  { value: String(EUserProjectRoles.MEMBER), label: "Member" },
+  { value: String(EUserProjectRoles.MEMBER), label: "common.member" },
   { value: String(EUserProjectRoles.GUEST), label: "Guest" },
 ];
 
 const WORKSPACE_ROLE_OPTIONS: IRoleOption[] = [
   { value: String(EUserWorkspaceRoles.ADMIN), label: "Admin" },
-  { value: String(EUserWorkspaceRoles.MEMBER), label: "Member" },
+  { value: String(EUserWorkspaceRoles.MEMBER), label: "common.member" },
   { value: String(EUserWorkspaceRoles.GUEST), label: "Guest" },
   { value: "suspended", label: "Suspended" },
 ];

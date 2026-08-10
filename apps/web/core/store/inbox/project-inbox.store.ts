@@ -26,6 +26,7 @@ import { InboxIssueService } from "@/services/inbox";
 import type { IInboxIssueStore } from "@/store/inbox/inbox-issue.store";
 import { InboxIssueStore } from "@/store/inbox/inbox-issue.store";
 import type { CoreRootStore } from "../root.store";
+import { translate } from "@plane/i18n";
 
 type TLoader =
   | "init-loading"
@@ -364,7 +365,7 @@ export class ProjectInboxStore implements IProjectInboxStore {
       console.error("Error fetching the intake issues", error);
       this.loader = undefined;
       this.error = {
-        message: "Error fetching the intake work items please try again later.",
+        message: translate("toast.intake_fetch_failed"),
         status: "init-error",
       };
       throw error;
@@ -404,7 +405,7 @@ export class ProjectInboxStore implements IProjectInboxStore {
     } catch (error) {
       console.error("Error fetching the intake issues", error);
       this.error = {
-        message: "Error fetching the paginated intake work items please try again later.",
+        message: translate("toast.intake_paginated_fetch_failed"),
         status: "pagination-error",
       };
       throw error;

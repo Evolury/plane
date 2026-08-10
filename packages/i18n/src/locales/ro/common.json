@@ -538,7 +538,21 @@
     "page_version_restored": "Page version restored.",
     "version_load_failed": "The version could not be loaded, please try again.",
     "work_item_id_copied": "Work item ID copied to clipboard",
-    "syncing_changes": "Your changes are being synced with the server. You can continue making changes."
+    "syncing_changes": "Your changes are being synced with the server. You can continue making changes.",
+    "estimate_create_failed": "Error creating estimate",
+    "estimate_delete_failed_alt": "Error deleting estimate",
+    "estimates_fetch_failed": "Error fetching estimates",
+    "intake_fetch_failed": "Error fetching the intake work items please try again later.",
+    "intake_paginated_fetch_failed": "Error fetching the paginated intake work items please try again later.",
+    "current_user_fetch_failed": "Failed to fetch current user",
+    "instance_fetch_failed": "Failed to fetch instance info",
+    "user_profile_fetch_failed": "Failed to fetch user profile",
+    "user_settings_fetch_failed": "Failed to fetch user settings",
+    "onboarding_finish_failed": "Failed to finish user onboarding",
+    "current_user_update_failed": "Failed to update current user",
+    "user_profile_update_failed": "Failed to update user profile",
+    "tour_flag_update_failed": "Failed to update user profile is_tour_completed",
+    "theme_update_failed": "Failed to update user profile theme"
   },
   "links": {
     "toasts": {
@@ -1251,7 +1265,16 @@
     "delete_lower": "delete",
     "edit_lower": "edit",
     "more": "More",
-    "hide": "Hide"
+    "hide": "Hide",
+    "webhook_event_comment": "Comment posted, updated, or deleted",
+    "all_work_unified": "All your work — unified.",
+    "setup_how_you_work": "Let's set up Plane for how you work.",
+    "tell_goals_team_size": "Tell us your goals and team size.",
+    "how_you_appear": "This is how you will appear in Plane.",
+    "everything": "Everything",
+    "sort_name": "Name",
+    "sort_created_at": "Date created",
+    "sort_updated_at": "Date modified"
   },
   "activity_log": {
     "prep_in": " for ",
