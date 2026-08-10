@@ -15,6 +15,7 @@ import { useEditor } from "@/hooks/use-editor";
 // types
 import type { IEditorProps } from "@/types";
 import { EditorContentWrapper } from "./editor-content";
+import { EditorTranslationProvider } from "@/providers/translation";
 
 type Props = IEditorProps & {
   children?: (editor: Editor) => React.ReactNode;
@@ -33,6 +34,7 @@ export function EditorWrapper(props: Props) {
     editorProps,
     extendedEditorProps,
     extensions,
+    translate,
     getEditorMetaData,
     id,
     initialValue,
@@ -88,7 +90,8 @@ export function EditorWrapper(props: Props) {
   if (!editor) return null;
 
   return (
-    <EditorContainer
+    <EditorTranslationProvider translate={translate}>
+      <EditorContainer
       displayConfig={displayConfig}
       editor={editor}
       editorContainerClassName={editorContainerClassName}
@@ -99,6 +102,7 @@ export function EditorWrapper(props: Props) {
       <div className="flex flex-col">
         <EditorContentWrapper editor={editor} id={id} tabIndex={tabIndex} />
       </div>
-    </EditorContainer>
+      </EditorContainer>
+    </EditorTranslationProvider>
   );
 }

@@ -61,5 +61,34 @@
       "use_this": "Usar este",
       "refine": "Refinar"
     }
+  },
+  "editor": {
+    "add_image": "Adicionar uma imagem",
+    "code_block": "Insira um trecho de código.",
+    "quote": "Insira uma citação.",
+    "close_image_viewer": "Fechar visualizador de imagem",
+    "copy_code": "Copiar código",
+    "bulleted_list": "Crie uma lista com marcadores.",
+    "numbered_list": "Crie uma lista numerada.",
+    "create_table": "Criar uma tabela",
+    "todo_list": "Crie uma lista de tarefas.",
+    "drop_image_here": "Solte a imagem aqui",
+    "link_text": "Digite o texto a exibir",
+    "link_url": "Digite ou cole um link",
+    "image_load_error": "Erro ao carregar a imagem",
+    "fit_to_width": "Ajustar à largura",
+    "insert_emoji": "Inserir um emoji",
+    "insert_image": "Inserir uma imagem",
+    "invalid_file_type": "Tipo de arquivo inválido.",
+    "plain_text": "Comece a escrever em texto simples.",
+    "no_emojis": "Nenhum emoji encontrado",
+    "no_file_selected": "Nenhum arquivo selecionado. Escolha um arquivo para enviar.",
+    "no_results": "Nenhum resultado",
+    "open_image_new_tab": "Abrir imagem em nova aba",
+    "slash_placeholder": "Digite '/' para ver os comandos...",
+    "todo_list_title": "Lista de tarefas",
+    "view_image_fullscreen": "Ver imagem em tela cheia",
+    "view_fullscreen": "Ver em tela cheia",
+    "zoom_in": "Ampliar"
   }
 }

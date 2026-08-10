@@ -18,6 +18,7 @@ import { useMember } from "@/hooks/store/use-member";
 import { useParseEditorContent } from "@/hooks/use-parse-editor-content";
 // plane web hooks
 import { useEditorFlagging } from "@/hooks/use-editor-flagging";
+import { useTranslation } from "@plane/i18n";
 
 type RichTextEditorWrapperProps = MakeOptional<
   Omit<IRichTextEditorProps, "fileHandler" | "mentionHandler" | "extendedEditorProps">,
@@ -43,6 +44,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
   props: RichTextEditorWrapperProps,
   ref: React.ForwardedRef<EditorRefApi>
 ) {
+  const { t } = useTranslation();
   const {
     containerClassName,
     editable,
@@ -73,6 +75,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
 
   return (
     <RichTextEditorWithRef
+      translate={t}
       ref={ref}
       disabledExtensions={[...richTextEditorExtensions.disabled, ...(additionalDisabledExtensions ?? [])]}
       editable={editable}

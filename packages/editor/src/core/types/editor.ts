@@ -179,6 +179,11 @@ export type IEditorProps = {
   placeholder?: string | ((isFocused: boolean, value: string) => string);
   showPlaceholderOnEmpty?: boolean;
   tabIndex?: number;
+  /**
+   * Traduz uma chave i18n. O @plane/editor não depende de @plane/i18n, então
+   * quem injeta é o app. Opcional: sem ela, o editor exibe o texto em inglês.
+   */
+  translate?: (key: string) => string;
   value?: string | null;
   extendedEditorProps: IEditorPropsExtended;
   workItemIdentifier?: string | null;

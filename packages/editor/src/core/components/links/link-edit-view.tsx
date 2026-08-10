@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { LinkViewProps, LinkViews } from "@/components/links";
 // helpers
 import { isValidHttpUrl } from "@/helpers/common";
+import { useEditorTranslation } from "@/providers/translation";
 
 type InputViewProps = {
   label: string;
@@ -42,6 +43,7 @@ type LinkEditViewProps = {
 };
 
 export function LinkEditView({ viewProps }: LinkEditViewProps) {
+  const t = useEditorTranslation();
   const { editor, from, to, url: initialUrl, text: initialText, closeLinkView } = viewProps;
 
   // State
@@ -145,7 +147,7 @@ export function LinkEditView({ viewProps }: LinkEditViewProps) {
       tabIndex={0}
     >
       <InputView label="URL" placeholder="Enter or paste URL" value={localUrl} onChange={setLocalUrl} autoFocus />
-      <InputView label="Text" placeholder="Enter Text to display" value={localText} onChange={handleTextChange} />
+      <InputView label="Text" placeholder={t("editor.link_text", "Enter Text to display")} value={localText} onChange={handleTextChange} />
       <div className="bg-strong mb-1 h-[1px] w-full gap-2" />
       <div className="flex items-center gap-2 text-13 text-secondary">
         <Link2Off size={14} className="inline-block" />

@@ -61,5 +61,34 @@
       "use_this": "Użyj tego",
       "refine": "Udoskonal"
     }
+  },
+  "editor": {
+    "add_image": "Add an image",
+    "code_block": "Capture a code snippet.",
+    "quote": "Capture a quote.",
+    "close_image_viewer": "Close image viewer",
+    "copy_code": "Copy code",
+    "bulleted_list": "Create a bulleted list.",
+    "numbered_list": "Create a numbered list.",
+    "create_table": "Create a table",
+    "todo_list": "Create a to-do list.",
+    "drop_image_here": "Drop image here",
+    "link_text": "Enter Text to display",
+    "link_url": "Enter or paste a link",
+    "image_load_error": "Error loading image",
+    "fit_to_width": "Fit to width",
+    "insert_emoji": "Insert an emoji",
+    "insert_image": "Insert an image",
+    "invalid_file_type": "Invalid file type.",
+    "plain_text": "Just start typing with plain text.",
+    "no_emojis": "No emojis found",
+    "no_file_selected": "No file selected. Please select a file to upload.",
+    "no_results": "No results",
+    "open_image_new_tab": "Open image in new tab",
+    "slash_placeholder": "Press '/' for commands...",
+    "todo_list_title": "To-do list",
+    "view_image_fullscreen": "View image in full screen",
+    "view_fullscreen": "View in full screen",
+    "zoom_in": "Zoom in"
   }
 }

@@ -35,6 +35,7 @@ function RichTextEditor(props: IRichTextEditorProps) {
         dragDropEnabled: !!dragDropEnabled,
       }),
       ...RichTextEditorAdditionalExtensions({
+        translate: props.translate,
         disabledExtensions,
         fileHandler,
         flaggedExtensions,

@@ -10,6 +10,7 @@ import ReactDOM from "react-dom";
 import { NewTabIcon, PlusIcon, CloseIcon } from "@plane/propel/icons";
 // plane imports
 import { cn } from "@plane/utils";
+import { useEditorTranslation } from "@/providers/translation";
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2;
@@ -27,6 +28,7 @@ type Props = {
 };
 
 function ImageFullScreenModalWithoutPortal(props: Props) {
+  const t = useEditorTranslation();
   const { aspectRatio, isFullScreenEnabled, isTouchDevice, downloadSrc, src, toggleFullScreenMode, width } = props;
   // refs
   const dragStart = useRef({ x: 0, y: 0 });
@@ -217,7 +219,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
           type="button"
           onClick={handleClose}
           className="absolute top-10 right-10 grid size-8 place-items-center"
-          aria-label="Close image viewer"
+          aria-label={t("editor.close_image_viewer", "Close image viewer")}
         >
           <CloseIcon className="size-8 text-white/60 transition-colors hover:text-white" />
         </button>
@@ -266,7 +268,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
               }}
               className="grid size-6 place-items-center text-white/60 transition-colors duration-200 hover:text-white disabled:text-white/30"
               disabled={magnification >= MAX_ZOOM}
-              aria-label="Zoom in"
+              aria-label={t("editor.zoom_in", "Zoom in")}
             >
               <PlusIcon className="size-4" />
             </button>
@@ -286,7 +288,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
               type="button"
               onClick={() => window.open(src, "_blank")}
               className="grid size-8 flex-shrink-0 place-items-center text-white/60 transition-colors duration-200 hover:text-white"
-              aria-label="Open image in new tab"
+              aria-label={t("editor.open_image_new_tab", "Open image in new tab")}
             >
               <NewTabIcon className="size-4" />
             </button>

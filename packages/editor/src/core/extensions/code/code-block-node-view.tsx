@@ -18,6 +18,7 @@ import { cn } from "@plane/utils";
 // types
 import type { TCodeBlockAttributes } from "./types";
 import { ECodeBlockAttributeNames } from "./types";
+import { useEditorTranslation } from "@/providers/translation";
 
 // we just have ts support for now
 const lowlight = createLowlight(common);
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export function CodeBlockComponent({ node }: Props) {
+  const t = useEditorTranslation();
   const [copied, setCopied] = useState(false);
   // derived values
   const attrs = node.attrs as TCodeBlockAttributes;
@@ -46,7 +48,7 @@ export function CodeBlockComponent({ node }: Props) {
 
   return (
     <NodeViewWrapper key={attrs[ECodeBlockAttributeNames.ID]} className="code-block group/code relative">
-      <Tooltip tooltipContent="Copy code">
+      <Tooltip tooltipContent={t("editor.copy_code", "Copy code")}>
         <button
           type="button"
           className={cn(

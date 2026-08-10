@@ -20,6 +20,7 @@ import { useParseEditorContent } from "@/hooks/use-parse-editor-content";
 // plane web hooks
 import { useEditorFlagging } from "@/hooks/use-editor-flagging";
 import { StickyEditorToolbar } from "./toolbar";
+import { useTranslation } from "@plane/i18n";
 
 interface StickyEditorWrapperProps extends Omit<
   Omit<ILiteTextEditorProps, "extendedEditorProps">,
@@ -46,6 +47,7 @@ export const StickyEditor = React.forwardRef(function StickyEditor(
   props: StickyEditorWrapperProps,
   ref: React.ForwardedRef<EditorRefApi>
 ) {
+  const { t } = useTranslation();
   const {
     containerClassName,
     workspaceSlug,
@@ -87,6 +89,7 @@ export const StickyEditor = React.forwardRef(function StickyEditor(
       onBlur={() => !showToolbarInitially && setIsFocused(false)}
     >
       <LiteTextEditorWithRef
+        translate={t}
         ref={ref}
         disabledExtensions={[...liteTextEditorExtensions.disabled, "enter-key"]}
         flaggedExtensions={liteTextEditorExtensions.flagged}

@@ -16,6 +16,7 @@ import { cn } from "@plane/utils";
 import { DROPDOWN_NAVIGATION_KEYS, getNextValidIndex } from "@/helpers/tippy";
 // types
 import type { TMentionHandler, TMentionSection, TMentionSuggestion } from "@/types";
+import { useEditorTranslation } from "@/providers/translation";
 
 export type MentionsListDropdownProps = SuggestionProps<TMentionSection, TMentionSuggestion> &
   Pick<TMentionHandler, "searchCallback"> & {
@@ -23,6 +24,7 @@ export type MentionsListDropdownProps = SuggestionProps<TMentionSection, TMentio
   };
 
 export const MentionsListDropdown = forwardRef(function MentionsListDropdown(props: MentionsListDropdownProps, ref) {
+  const t = useEditorTranslation();
   const { command, query, searchCallback, onClose } = props;
   // states
   const [sections, setSections] = useState<TMentionSection[]>([]);
@@ -200,7 +202,7 @@ export const MentionsListDropdown = forwardRef(function MentionsListDropdown(pro
             </div>
           ))
         ) : (
-          <div className="text-center text-13 text-placeholder">No results</div>
+          <div className="text-center text-13 text-placeholder">{t("editor.no_results", "No results")}</div>
         )}
       </div>
     </>

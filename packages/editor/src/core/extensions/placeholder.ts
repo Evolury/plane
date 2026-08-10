@@ -9,6 +9,7 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import { CORE_EXTENSIONS } from "@/constants/extension";
 // types
 import type { IEditorProps } from "@/types";
+import { useEditorTranslation } from "@/providers/translation";
 
 type TArgs = {
   placeholder: IEditorProps["placeholder"];
@@ -16,6 +17,7 @@ type TArgs = {
 };
 
 export const CustomPlaceholderExtension = (args: TArgs) => {
+  const t = useEditorTranslation();
   const { placeholder, showPlaceholderOnEmpty = false } = args;
 
   return Placeholder.configure({
@@ -48,7 +50,7 @@ export const CustomPlaceholderExtension = (args: TArgs) => {
         else return placeholder(editor.isFocused, editor.getHTML());
       }
 
-      return "Press '/' for commands...";
+      return t("editor.slash_placeholder", "Press '/' for commands...");
     },
     includeChildren: true,
   });

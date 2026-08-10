@@ -10,6 +10,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 // plane imports
 import { useOutsideClickDetector } from "@plane/hooks";
 import { cn } from "@plane/utils";
+import { useEditorTranslation } from "@/providers/translation";
 
 export type EmojiItem = {
   name: string;
@@ -31,6 +32,7 @@ export const EmojisListDropdown = forwardRef(function EmojisListDropdown(
   props: EmojisListDropdownProps,
   ref: React.ForwardedRef<EmojiListRef>
 ) {
+  const t = useEditorTranslation();
   const { items, command, query, onClose, forceOpen = false } = props;
   // states
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -172,7 +174,7 @@ export const EmojisListDropdown = forwardRef(function EmojisListDropdown(
             );
           })
         ) : (
-          <div className="py-2 text-center text-13 text-placeholder">No emojis found</div>
+          <div className="py-2 text-center text-13 text-placeholder">{t("editor.no_emojis", "No emojis found")}</div>
         )}
       </div>
     </>

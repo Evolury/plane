@@ -17,12 +17,14 @@ import { isValidHttpUrl } from "@/helpers/common";
 import { setLinkEditor, unsetLinkEditor } from "@/helpers/editor-commands";
 import { FloatingMenuRoot } from "../floating-menu/root";
 import { useFloatingMenu } from "../floating-menu/use-floating-menu";
+import { useEditorTranslation } from "@/providers/translation";
 
 type Props = {
   editor: Editor;
 };
 
 export function BubbleMenuLinkSelector(props: Props) {
+  const t = useEditorTranslation();
   const { editor } = props;
   // states
   const [error, setError] = useState(false);
@@ -78,7 +80,7 @@ export function BubbleMenuLinkSelector(props: Props) {
           <input
             ref={inputRef}
             type="url"
-            placeholder="Enter or paste a link"
+            placeholder={t("editor.link_url", "Enter or paste a link")}
             onClick={(e) => e.stopPropagation()}
             className="flex-1 rounded-sm border-r-[0.5px] border-strong bg-surface-1 px-1.5 py-2 text-11 outline-none placeholder:text-placeholder"
             defaultValue={editor.getAttributes("link").href || ""}

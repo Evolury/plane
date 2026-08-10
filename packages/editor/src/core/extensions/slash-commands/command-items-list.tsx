@@ -58,6 +58,8 @@ export const getSlashCommandFilteredSections =
   (args: TExtensionProps) =>
   ({ query }: { query: string }): TSlashCommandSection[] => {
     const { additionalOptions: externalAdditionalOptions, disabledExtensions, flaggedExtensions } = args;
+    // Sem `translate` (app que não injeta), cai no texto em inglês do 2º argumento.
+    const translate = args.translate ? (key: string, fallback: string) => args.translate?.(key) || fallback : (_key: string, fallback: string) => fallback;
     const SLASH_COMMAND_SECTIONS: TSlashCommandSection[] = [
       {
         key: "general",
@@ -66,7 +68,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "text",
             key: "text",
             title: "Text",
-            description: "Just start typing with plain text.",
+            description: translate("editor.plain_text", "Just start typing with plain text."),
             searchTerms: ["p", "paragraph"],
             icon: <CaseSensitive className="size-3.5" />,
             command: ({ editor, range }) => setText(editor, range),
@@ -130,7 +132,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "numbered-list",
             key: "numbered-list",
             title: "Numbered list",
-            description: "Create a numbered list.",
+            description: translate("editor.numbered_list", "Create a numbered list."),
             searchTerms: ["ordered"],
             icon: <ListOrdered className="size-3.5" />,
             command: ({ editor, range }) => toggleOrderedList(editor, range),
@@ -139,7 +141,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "bulleted-list",
             key: "bulleted-list",
             title: "Bulleted list",
-            description: "Create a bulleted list.",
+            description: translate("editor.bulleted_list", "Create a bulleted list."),
             searchTerms: ["unordered", "point"],
             icon: <List className="size-3.5" />,
             command: ({ editor, range }) => toggleBulletList(editor, range),
@@ -147,8 +149,8 @@ export const getSlashCommandFilteredSections =
           {
             commandKey: "to-do-list",
             key: "to-do-list",
-            title: "To-do list",
-            description: "Create a to-do list.",
+            title: translate("editor.todo_list_title", "To-do list"),
+            description: translate("editor.todo_list", "Create a to-do list."),
             searchTerms: ["todo", "task", "list", "check", "checkbox"],
             icon: <ListTodo className="size-3.5" />,
             command: ({ editor, range }) => toggleTaskList(editor, range),
@@ -157,7 +159,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "table",
             key: "table",
             title: "Table",
-            description: "Create a table",
+            description: translate("editor.create_table", "Create a table"),
             searchTerms: ["table", "cell", "db", "data", "tabular"],
             icon: <Table className="size-3.5" />,
             command: ({ editor, range }) => insertTableCommand(editor, range),
@@ -166,7 +168,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "quote",
             key: "quote",
             title: "Quote",
-            description: "Capture a quote.",
+            description: translate("editor.quote", "Capture a quote."),
             searchTerms: ["blockquote"],
             icon: <TextQuote className="size-3.5" />,
             command: ({ editor, range }) => toggleBlockquote(editor, range),
@@ -175,7 +177,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "code",
             key: "code",
             title: "Code",
-            description: "Capture a code snippet.",
+            description: translate("editor.code_block", "Capture a code snippet."),
             searchTerms: ["codeblock"],
             icon: <Code2 className="size-3.5" />,
             command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
@@ -202,7 +204,7 @@ export const getSlashCommandFilteredSections =
             commandKey: "emoji",
             key: "emoji",
             title: "Emoji",
-            description: "Insert an emoji",
+            description: translate("editor.insert_emoji", "Insert an emoji"),
             searchTerms: ["emoji", "icons", "reaction", "emoticon", "emotags"],
             icon: <Smile className="size-3.5" />,
             command: ({ editor, range }) => {
@@ -294,7 +296,7 @@ export const getSlashCommandFilteredSections =
         key: "image",
         title: "Image",
         icon: <ImageIcon className="size-3.5" />,
-        description: "Insert an image",
+        description: translate("editor.insert_image", "Insert an image"),
         searchTerms: ["img", "photo", "picture", "media", "upload"],
         command: ({ editor, range }: CommandProps) => insertImage({ editor, event: "insert", range }),
         section: "general",

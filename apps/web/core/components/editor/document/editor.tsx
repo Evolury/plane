@@ -17,6 +17,7 @@ import { useParseEditorContent } from "@/hooks/use-parse-editor-content";
 import { useEditorFlagging } from "@/hooks/use-editor-flagging";
 // local imports
 import { EditorMentionsRoot } from "../embeds/mentions";
+import { useTranslation } from "@plane/i18n";
 
 type DocumentEditorWrapperProps = MakeOptional<
   Omit<IDocumentEditorProps, "fileHandler" | "mentionHandler" | "user" | "extendedEditorProps">,
@@ -42,6 +43,7 @@ export const DocumentEditor = forwardRef(function DocumentEditor(
   props: DocumentEditorWrapperProps,
   ref: React.ForwardedRef<EditorRefApi>
 ) {
+  const { t } = useTranslation();
   const {
     containerClassName,
     editable,
@@ -74,6 +76,7 @@ export const DocumentEditor = forwardRef(function DocumentEditor(
 
   return (
     <DocumentEditorWithRef
+      translate={t}
       ref={ref}
       disabledExtensions={[...documentEditorExtensions.disabled, ...(additionalDisabledExtensions ?? [])]}
       editable={editable}

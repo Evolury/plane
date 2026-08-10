@@ -20,6 +20,7 @@ import { useUploader, useDropZone, uploadFirstFileAndInsertRemaining } from "@/h
 import { ECustomImageStatus } from "../types";
 import { getImageComponentImageFileMap } from "../utils";
 import type { CustomImageNodeViewProps } from "./node-view";
+import { useEditorTranslation } from "@/providers/translation";
 
 type CustomImageUploaderProps = CustomImageNodeViewProps & {
   failedToLoadImage: boolean;
@@ -30,6 +31,7 @@ type CustomImageUploaderProps = CustomImageNodeViewProps & {
 };
 
 export function CustomImageUploader(props: CustomImageUploaderProps) {
+  const t = useEditorTranslation();
   const {
     editor,
     extension,
@@ -184,7 +186,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
   const getDisplayMessage = useCallback(() => {
     const isUploading = isImageBeingUploaded;
     if (isErrorState) {
-      return "Error loading image";
+      return t("editor.image_load_error", "Error loading image");
     }
 
     if (isUploading) {
@@ -192,10 +194,10 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     }
 
     if (draggedInside && editor.isEditable) {
-      return "Drop image here";
+      return t("editor.drop_image_here", "Drop image here");
     }
 
-    return "Add an image";
+    return t("editor.add_image", "Add an image");
   }, [draggedInside, editor.isEditable, isErrorState, isImageBeingUploaded]);
 
   const handleRetryClick = useCallback(

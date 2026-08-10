@@ -54,6 +54,7 @@ function DocumentEditor(props: IDocumentEditorProps) {
       }),
       HeadingListExtension,
       ...DocumentEditorAdditionalExtensions({
+        translate: props.translate,
         disabledExtensions,
         extendedEditorProps,
         flaggedExtensions,
