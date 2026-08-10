@@ -20,10 +20,12 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceGoogleConfigForm } from "./form";
+import { useTranslation } from "@plane/i18n";
 
 const InstanceGoogleAuthenticationPage = observer(function InstanceGoogleAuthenticationPage(
   _props: Route.ComponentProps
 ) {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig, updateInstanceConfigurations } = useInstance();
   // state
@@ -45,12 +47,12 @@ const InstanceGoogleAuthenticationPage = observer(function InstanceGoogleAuthent
     setPromiseToast(updateConfigPromise, {
       loading: "Saving Configuration",
       success: {
-        title: "Configuration saved",
+        title: t("instance_admin.configuration_saved"),
         message: () => `Google authentication is now ${value === "1" ? "active" : "disabled"}.`,
       },
       error: {
         title: "Error",
-        message: () => "Failed to save configuration",
+        message: () => t("instance_admin.failed_to_save_configuration"),
       },
     });
 

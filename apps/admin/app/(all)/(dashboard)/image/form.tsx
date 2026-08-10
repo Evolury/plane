@@ -12,6 +12,7 @@ import type { IFormattedInstanceConfiguration, TInstanceImageConfigurationKeys }
 import { ControllerInput } from "@/components/common/controller-input";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 type IInstanceImageConfigForm = {
   config: IFormattedInstanceConfiguration;
@@ -20,6 +21,7 @@ type IInstanceImageConfigForm = {
 type ImageConfigFormValues = Record<TInstanceImageConfigurationKeys, string>;
 
 export function InstanceImageConfigForm(props: IInstanceImageConfigForm) {
+  const { t } = useTranslation();
   const { config } = props;
   // store hooks
   const { updateInstanceConfigurations } = useInstance();
@@ -42,7 +44,7 @@ export function InstanceImageConfigForm(props: IInstanceImageConfigForm) {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Success",
-          message: "Image Configuration Settings updated successfully",
+          message: t("instance_admin.image_configuration_settings_updated_successfull"),
         })
       )
       .catch((err) => console.error(err));
@@ -55,7 +57,7 @@ export function InstanceImageConfigForm(props: IInstanceImageConfigForm) {
           control={control}
           type="password"
           name="UNSPLASH_ACCESS_KEY"
-          label="Access key from your Unsplash account"
+          label={t("instance_admin.access_key_from_your_unsplash_account")}
           description={
             <>
               You will find your access key in your Unsplash developer console.&nbsp;
@@ -78,7 +80,7 @@ export function InstanceImageConfigForm(props: IInstanceImageConfigForm) {
 
       <div>
         <Button variant="primary" size="lg" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>
-          {isSubmitting ? "Saving" : "Save changes"}
+          {isSubmitting ? "Saving" : t("save_changes")}
         </Button>
       </div>
     </div>

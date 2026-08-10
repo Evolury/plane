@@ -9,6 +9,7 @@ import { Image, BrainCog, Cog, Mail } from "lucide-react";
 import { LockIcon, WorkspaceIcon } from "@plane/propel/icons";
 // types
 import type { TSidebarMenuItem } from "./types";
+import { translate } from "@plane/i18n";
 
 export type TCoreSidebarMenuKey = "general" | "email" | "workspace" | "authentication" | "ai" | "image";
 
@@ -16,19 +17,19 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
   general: {
     Icon: Cog,
     name: "General",
-    description: "Identify your instances and get key details.",
+    description: translate("instance_admin.identify_your_instances_and_get_key_details"),
     href: `/general/`,
   },
   email: {
     Icon: Mail,
     name: "Email",
-    description: "Configure your SMTP controls.",
+    description: translate("instance_admin.configure_your_smtp_controls"),
     href: `/email/`,
   },
   workspace: {
     Icon: WorkspaceIcon,
     name: "Workspaces",
-    description: "Manage all workspaces on this instance.",
+    description: translate("instance_admin.manage_all_workspaces_on_this_instance"),
     href: `/workspace/`,
   },
   authentication: {
@@ -40,7 +41,7 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
   ai: {
     Icon: BrainCog,
     name: "Artificial intelligence",
-    description: "Configure your OpenAI creds.",
+    description: translate("instance_admin.configure_your_openai_creds"),
     href: `/ai/`,
   },
   image: {

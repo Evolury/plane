@@ -24,6 +24,7 @@ import type { TCopyField } from "@/components/common/copy-field";
 import { CopyField } from "@/components/common/copy-field";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   config: IFormattedInstanceConfiguration;
@@ -37,6 +38,7 @@ const GITEA_FORM_SWITCH_FIELD: TControllerSwitchFormField<GiteaConfigFormValues>
 };
 
 export function InstanceGiteaConfigForm(props: Props) {
+  const { t } = useTranslation();
   const { config } = props;
   // states
   const [isDiscardChangesModalOpen, setIsDiscardChangesModalOpen] = useState(false);
@@ -65,7 +67,7 @@ export function InstanceGiteaConfigForm(props: Props) {
       type: "text",
       label: "Gitea Host",
       description: (
-        <>Use the URL of your Gitea instance. For the official Gitea instance, use &quot;https://gitea.com&quot;.</>
+        <>{t("instance_admin.use_the_url_of_your_gitea_instance_for_the_offic")}</>
       ),
       placeholder: "https://gitea.com",
       error: Boolean(errors.GITEA_HOST),
@@ -129,7 +131,7 @@ export function InstanceGiteaConfigForm(props: Props) {
             target="_blank"
             className="text-accent-primary hover:underline"
             rel="noreferrer"
-            aria-label="Gitea OAuth application settings"
+            aria-label={t("instance_admin.gitea_oauth_application_settings")}
           >
             here.
           </a>
@@ -146,7 +148,7 @@ export function InstanceGiteaConfigForm(props: Props) {
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: "Done!",
-        message: "Your Gitea authentication is configured. You should test it now.",
+        message: t("instance_admin.your_gitea_authentication_is_configured_you_shou"),
       });
       reset({
         GITEA_HOST: response.find((item) => item.key === "GITEA_HOST")?.value,
@@ -176,7 +178,7 @@ export function InstanceGiteaConfigForm(props: Props) {
       <div className="flex flex-col gap-8">
         <div className="grid w-full grid-cols-2 gap-x-12 gap-y-8">
           <div className="col-span-2 flex flex-col gap-y-4 pt-1 md:col-span-1">
-            <div className="pt-2.5 text-18 font-medium">Gitea-provided details for Plane</div>
+            <div className="pt-2.5 text-18 font-medium">{t("instance_admin.gitea_provided_details_for_plane")}</div>
             {GITEA_FORM_FIELDS.map((field) => (
               <ControllerInput
                 key={field.key}
@@ -200,7 +202,7 @@ export function InstanceGiteaConfigForm(props: Props) {
                   loading={isSubmitting}
                   disabled={!isDirty}
                 >
-                  {isSubmitting ? "Saving" : "Save changes"}
+                  {isSubmitting ? "Saving" : t("save_changes")}
                 </Button>
                 <Link href="/authentication" className={getButtonStyling("secondary", "lg")} onClick={handleGoBack}>
                   Go back
@@ -210,7 +212,7 @@ export function InstanceGiteaConfigForm(props: Props) {
           </div>
           <div className="col-span-2 md:col-span-1">
             <div className="flex flex-col gap-y-4 rounded-lg bg-layer-1 px-6 pt-1.5 pb-4">
-              <div className="pt-2 text-18 font-medium">Plane-provided details for Gitea</div>
+              <div className="pt-2 text-18 font-medium">{t("instance_admin.plane_provided_details_for_gitea")}</div>
               {GITEA_SERVICE_FIELD.map((field) => (
                 <CopyField key={field.key} label={field.label} url={field.url} description={field.description} />
               ))}

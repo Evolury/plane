@@ -24,10 +24,12 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceGithubConfigForm } from "./form";
+import { useTranslation } from "@plane/i18n";
 
 const InstanceGithubAuthenticationPage = observer(function InstanceGithubAuthenticationPage(
   _props: Route.ComponentProps
 ) {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig, updateInstanceConfigurations } = useInstance();
   // state
@@ -51,12 +53,12 @@ const InstanceGithubAuthenticationPage = observer(function InstanceGithubAuthent
     setPromiseToast(updateConfigPromise, {
       loading: "Saving Configuration",
       success: {
-        title: "Configuration saved",
+        title: t("instance_admin.configuration_saved"),
         message: () => `GitHub authentication is now ${value === "1" ? "active" : "disabled"}.`,
       },
       error: {
         title: "Error",
-        message: () => "Failed to save configuration",
+        message: () => t("instance_admin.failed_to_save_configuration"),
       },
     });
 
@@ -77,7 +79,7 @@ const InstanceGithubAuthenticationPage = observer(function InstanceGithubAuthent
       customHeader={
         <AuthenticationMethodCard
           name="GitHub"
-          description="Allow members to login or sign up to plane with their GitHub accounts."
+          description={t("instance_admin.allow_members_to_login_or_sign_up_to_plane_with")}
           icon={
             <img
               src={resolveGeneralTheme(resolvedTheme) === "dark" ? githubDarkModeImage : githubLightModeImage}

@@ -20,6 +20,7 @@ import type {
 } from "@plane/types";
 // root store
 import type { RootStore } from "@/store/root.store";
+import { translate } from "@plane/i18n";
 
 export interface IInstanceStore {
   // issues
@@ -117,7 +118,7 @@ export class InstanceStore implements IInstanceStore {
     } catch (error) {
       console.error("Error fetching the instance info");
       this.isLoading = false;
-      this.error = { message: "Failed to fetch the instance info" };
+      this.error = { message: translate("instance_admin.failed_to_fetch_the_instance_info") };
       this.instanceStatus = {
         status: EInstanceStatus.ERROR,
       };

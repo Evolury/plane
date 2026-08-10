@@ -6,6 +6,7 @@
 
 import { ThemeProvider } from "next-themes";
 import { SWRConfig } from "swr";
+import { TranslationProvider } from "@plane/i18n";
 import { AppProgressBar } from "@/lib/b-progress";
 // local imports
 import { ToastWithTheme } from "./toast";
@@ -27,13 +28,18 @@ export function CoreProviders({ children }: { children: React.ReactNode }) {
     <ThemeProvider themes={["light", "dark"]} defaultTheme="system" enableSystem>
       <AppProgressBar />
       <ToastWithTheme />
-      <SWRConfig value={DEFAULT_SWR_CONFIG}>
-        <StoreProvider>
-          <InstanceProvider>
-            <UserProvider>{children}</UserProvider>
-          </InstanceProvider>
-        </StoreProvider>
-      </SWRConfig>
+      {/* Evolury: o /god-mode não tinha i18n. O TranslationProvider entra aqui,
+          acima das stores, para que qualquer componente do admin possa usar
+          useTranslation — mesma posição relativa do apps/web. */}
+      <TranslationProvider>
+        <SWRConfig value={DEFAULT_SWR_CONFIG}>
+          <StoreProvider>
+            <InstanceProvider>
+              <UserProvider>{children}</UserProvider>
+            </InstanceProvider>
+          </StoreProvider>
+        </SWRConfig>
+      </TranslationProvider>
     </ThemeProvider>
   );
 }

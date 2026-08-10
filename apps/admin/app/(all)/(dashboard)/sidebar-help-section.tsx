@@ -16,6 +16,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 import { cn } from "@plane/utils";
 // hooks
 import { useInstance, useTheme } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 // assets
 
 const helpOptions = [
@@ -37,6 +38,7 @@ const helpOptions = [
 ];
 
 export const AdminSidebarHelpSection = observer(function AdminSidebarHelpSection() {
+  const { t } = useTranslation();
   // states
   const [isNeedHelpOpen, setIsNeedHelpOpen] = useState(false);
   // store
@@ -57,13 +59,13 @@ export const AdminSidebarHelpSection = observer(function AdminSidebarHelpSection
       )}
     >
       <div className={`flex items-center gap-1 ${isSidebarCollapsed ? "flex-col justify-center" : "w-full"}`}>
-        <Tooltip tooltipContent="Redirect to Plane" position="right" className="ml-4" disabled={!isSidebarCollapsed}>
+        <Tooltip tooltipContent={t("instance_admin.redirect_to_plane")} position="right" className="ml-4" disabled={!isSidebarCollapsed}>
           <a
             href={redirectionLink}
             className={`relative flex items-center gap-1 rounded-sm bg-layer-1 px-2 py-1 text-body-xs-medium whitespace-nowrap text-secondary`}
           >
             <NewTabIcon width={14} height={14} />
-            {!isSidebarCollapsed && "Redirect to Plane"}
+            {!isSidebarCollapsed && t("instance_admin.redirect_to_plane")}
           </a>
         </Tooltip>
         <Tooltip tooltipContent="Help" position={isSidebarCollapsed ? "right" : "top"} className="ml-4">

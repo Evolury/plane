@@ -15,8 +15,10 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceAIForm } from "./form";
+import { translate, useTranslation } from "@plane/i18n";
 
 const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentProps) {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig } = useInstance();
 
@@ -25,8 +27,8 @@ const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentP
   return (
     <PageWrapper
       header={{
-        title: "AI features for all your workspaces",
-        description: "Configure your AI API credentials so Plane AI features are turned on for all your workspaces.",
+        title: t("instance_admin.ai_features_for_all_your_workspaces"),
+        description: t("instance_admin.configure_your_ai_api_credentials_so_plane_ai_fe"),
       }}
     >
       {formattedConfig ? (
@@ -45,6 +47,6 @@ const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentP
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Artificial Intelligence Settings - God Mode" }];
+export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.artificial_intelligence_settings_god_mode") }];
 
 export default InstanceAIPage;

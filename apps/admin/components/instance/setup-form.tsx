@@ -18,6 +18,7 @@ import { getPasswordStrength, validatePersonName, validateCompanyName } from "@p
 import { AuthHeader } from "@/app/(all)/(home)/auth-header";
 import { Banner } from "../common/banner";
 import { FormHeader } from "./form-header";
+import { useTranslation } from "@plane/i18n";
 
 // service initialization
 const authService = new AuthService();
@@ -58,6 +59,7 @@ const defaultFromData: TFormData = {
 };
 
 export function InstanceSetupForm() {
+  const { t } = useTranslation();
   // search params
   const searchParams = useSearchParams();
   const firstNameParam = searchParams?.get("first_name") || undefined;
@@ -142,8 +144,8 @@ export function InstanceSetupForm() {
       <div className="mt-10 flex w-full flex-grow flex-col items-center justify-center py-6">
         <div className="relative flex w-full max-w-[22.5rem] flex-col gap-6">
           <FormHeader
-            heading="Setup your Plane Instance"
-            subHeading="Post setup you will be able to manage this Plane instance."
+            heading={t("instance_admin.setup_your_plane_instance")}
+            subHeading={t("instance_admin.post_setup_you_will_be_able_to_manage_this_plane")}
           />
           {errorData.type &&
             errorData?.message &&
@@ -239,7 +241,7 @@ export function InstanceSetupForm() {
                 name="company_name"
                 type="text"
                 inputSize="md"
-                placeholder="Company name"
+                placeholder={t("templates.settings.form.publish.company_name.label")}
                 value={formData.company_name}
                 onChange={(e) => {
                   const validation = validateCompanyName(e.target.value, false);
@@ -262,7 +264,7 @@ export function InstanceSetupForm() {
                   name="password"
                   type={showPassword.password ? "text" : "password"}
                   inputSize="md"
-                  placeholder="New password"
+                  placeholder={t("auth.common.password.new_password.label")}
                   value={formData.password}
                   onChange={(e) => handleFormChange("password", e.target.value)}
                   hasError={errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD ? true : false}
@@ -273,7 +275,7 @@ export function InstanceSetupForm() {
                 {showPassword.password ? (
                   <button
                     type="button"
-                    aria-label="Hide password"
+                    aria-label={t("aria_labels.auth_forms.hide_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => handleShowPassword("password")}
                   >
@@ -282,7 +284,7 @@ export function InstanceSetupForm() {
                 ) : (
                   <button
                     type="button"
-                    aria-label="Show password"
+                    aria-label={t("aria_labels.auth_forms.show_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => handleShowPassword("password")}
                   >
@@ -317,7 +319,7 @@ export function InstanceSetupForm() {
                 {showPassword.retypePassword ? (
                   <button
                     type="button"
-                    aria-label="Hide password"
+                    aria-label={t("aria_labels.auth_forms.hide_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => handleShowPassword("retypePassword")}
                   >
@@ -326,7 +328,7 @@ export function InstanceSetupForm() {
                 ) : (
                   <button
                     type="button"
-                    aria-label="Show password"
+                    aria-label={t("aria_labels.auth_forms.show_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => handleShowPassword("retypePassword")}
                   >

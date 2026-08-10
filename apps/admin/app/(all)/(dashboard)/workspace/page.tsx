@@ -22,8 +22,10 @@ import { WorkspaceListItem } from "@/components/workspace/list-item";
 import { useInstance, useWorkspace } from "@/hooks/store";
 // types
 import type { Route } from "./+types/page";
+import { useTranslation } from "@plane/i18n";
 
 const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props: Route.ComponentProps) {
+  const { t } = useTranslation();
   // states
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   // store
@@ -56,11 +58,11 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
       loading: "Saving configuration",
       success: {
         title: "Success",
-        message: () => "Configuration saved successfully",
+        message: () => t("instance_admin.configuration_saved_successfully"),
       },
       error: {
         title: "Error",
-        message: () => "Failed to save configuration",
+        message: () => t("instance_admin.failed_to_save_configuration"),
       },
     });
 
@@ -77,8 +79,8 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
   return (
     <PageWrapper
       header={{
-        title: "Workspaces on this instance",
-        description: "See all workspaces and control who can create them.",
+        title: t("instance_admin.workspaces_on_this_instance"),
+        description: t("instance_admin.see_all_workspaces_and_control_who_can_create_th"),
       }}
     >
       <div className="space-y-3">
@@ -86,7 +88,7 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
           <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
             <div className="flex grow items-center gap-4">
               <div className="grow">
-                <div className="pb-1 text-16 font-medium">Prevent anyone else from creating a workspace.</div>
+                <div className="pb-1 text-16 font-medium">{t("instance_admin.prevent_anyone_else_from_creating_a_workspace")}</div>
                 <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
                   Toggling this on will let only you create workspaces. You will have to invite users to new workspaces.
                 </div>

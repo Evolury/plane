@@ -21,8 +21,10 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceGiteaConfigForm } from "./form";
+import { useTranslation } from "@plane/i18n";
 
 const InstanceGiteaAuthenticationPage = observer(function InstanceGiteaAuthenticationPage() {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig, updateInstanceConfigurations } = useInstance();
   // state
@@ -43,12 +45,12 @@ const InstanceGiteaAuthenticationPage = observer(function InstanceGiteaAuthentic
     setPromiseToast(updateConfigPromise, {
       loading: "Saving Configuration",
       success: {
-        title: "Configuration saved",
+        title: t("instance_admin.configuration_saved"),
         message: () => `Gitea authentication is now ${value === "1" ? "active" : "disabled"}.`,
       },
       error: {
         title: "Error",
-        message: () => "Failed to save configuration",
+        message: () => t("instance_admin.failed_to_save_configuration"),
       },
     });
 
@@ -69,7 +71,7 @@ const InstanceGiteaAuthenticationPage = observer(function InstanceGiteaAuthentic
       customHeader={
         <AuthenticationMethodCard
           name="Gitea"
-          description="Allow members to login or sign up to plane with their Gitea accounts."
+          description={t("instance_admin.allow_members_to_login_or_sign_up_to_plane_with_3")}
           icon={<img src={giteaLogo} height={24} width={24} alt="Gitea Logo" />}
           config={
             <ToggleSwitch

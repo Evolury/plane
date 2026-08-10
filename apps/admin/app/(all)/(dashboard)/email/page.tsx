@@ -17,8 +17,10 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceEmailForm } from "./email-config-form";
+import { translate, useTranslation } from "@plane/i18n";
 
 const InstanceEmailPage = observer(function InstanceEmailPage(_props: Route.ComponentProps) {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig, disableEmail } = useInstance();
 
@@ -34,14 +36,14 @@ const InstanceEmailPage = observer(function InstanceEmailPage(_props: Route.Comp
         await disableEmail();
         setIsSMTPEnabled(false);
         setToast({
-          title: "Email feature disabled",
-          message: "Email feature has been disabled",
+          title: t("instance_admin.email_feature_disabled"),
+          message: t("instance_admin.email_feature_has_been_disabled"),
           type: TOAST_TYPE.SUCCESS,
         });
       } catch (_error) {
         setToast({
-          title: "Error disabling email",
-          message: "Failed to disable email feature. Please try again.",
+          title: t("instance_admin.error_disabling_email"),
+          message: t("instance_admin.failed_to_disable_email_feature_please_try_again"),
           type: TOAST_TYPE.ERROR,
         });
       } finally {
@@ -60,13 +62,13 @@ const InstanceEmailPage = observer(function InstanceEmailPage(_props: Route.Comp
   return (
     <PageWrapper
       header={{
-        title: "Secure emails from your own instance",
+        title: t("instance_admin.secure_emails_from_your_own_instance"),
         description: (
           <>
             Plane can send useful emails to you and your users from your own instance without talking to the Internet.
             <div className="text-13 font-regular text-tertiary">
               Set it up below and please test your settings before you save them.&nbsp;
-              <span className="text-danger-primary">Misconfigs can lead to email bounces and errors.</span>
+              <span className="text-danger-primary">{t("instance_admin.misconfigs_can_lead_to_email_bounces_and_errors")}</span>
             </div>
           </>
         ),
@@ -98,6 +100,6 @@ const InstanceEmailPage = observer(function InstanceEmailPage(_props: Route.Comp
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Email Settings - God Mode" }];
+export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.email_settings_god_mode") }];
 
 export default InstanceEmailPage;

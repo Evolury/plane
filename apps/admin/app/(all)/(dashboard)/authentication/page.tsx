@@ -23,8 +23,10 @@ import { useAuthenticationModes } from "@/hooks/oauth";
 import { useInstance } from "@/hooks/store";
 // types
 import type { Route } from "./+types/page";
+import { translate, useTranslation } from "@plane/i18n";
 
 const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(_props: Route.ComponentProps) {
+  const { t } = useTranslation();
   // theme
   const { resolvedTheme: resolvedThemeAdmin } = useTheme();
   const resolvedTheme = resolveGeneralTheme(resolvedThemeAdmin);
@@ -55,9 +57,9 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
           if (!canDisable) {
             setToast({
               type: TOAST_TYPE.ERROR,
-              title: "Cannot disable authentication",
+              title: t("instance_admin.cannot_disable_authentication"),
               message:
-                "At least one authentication method must remain enabled. Please enable another method before disabling this one.",
+                t("instance_admin.at_least_one_authentication_method_must_remain_e"),
             });
             return;
           }
@@ -77,11 +79,11 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
         loading: "Saving configuration",
         success: {
           title: "Success",
-          message: () => "Configuration saved successfully",
+          message: () => t("instance_admin.configuration_saved_successfully"),
         },
         error: {
           title: "Error",
-          message: () => "Failed to save configuration",
+          message: () => t("instance_admin.failed_to_save_configuration"),
         },
       });
 
@@ -113,8 +115,8 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
   return (
     <PageWrapper
       header={{
-        title: "Manage authentication modes for your instance",
-        description: "Configure authentication modes for your team and restrict sign-ups to be invite only.",
+        title: t("instance_admin.manage_authentication_modes_for_your_instance"),
+        description: t("instance_admin.configure_authentication_modes_for_your_team_and"),
       }}
     >
       {formattedConfig ? (
@@ -122,7 +124,7 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
           <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
             <div className="flex grow items-center gap-4">
               <div className="grow">
-                <div className="pb-1 text-16 font-medium">Allow anyone to sign up even without an invite</div>
+                <div className="pb-1 text-16 font-medium">{t("instance_admin.allow_anyone_to_sign_up_even_without_an_invite")}</div>
                 <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
                   Toggling this off will only let users sign up when they are invited.
                 </div>
@@ -171,6 +173,6 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Authentication Settings - Plane Web" }];
+export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.authentication_settings_plane_web") }];
 
 export default InstanceAuthenticationPage;

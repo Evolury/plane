@@ -20,6 +20,7 @@ import { FormHeader } from "@/components/instance/form-header";
 import { AuthBanner } from "./auth-banner";
 import { AuthHeader } from "./auth-header";
 import { authErrorHandler } from "./auth-helpers";
+import { useTranslation } from "@plane/i18n";
 
 // service initialization
 const authService = new AuthService();
@@ -50,6 +51,7 @@ const defaultFromData: TFormData = {
 };
 
 export function InstanceSignInForm() {
+  const { t } = useTranslation();
   // search params
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || undefined;
@@ -114,8 +116,8 @@ export function InstanceSignInForm() {
       <div className="mt-10 flex w-full flex-grow flex-col items-center justify-center py-6">
         <div className="relative flex w-full max-w-[22.5rem] flex-col gap-6">
           <FormHeader
-            heading="Manage your Plane instance"
-            subHeading="Configure instance-wide settings to secure your instance"
+            heading={t("instance_admin.manage_your_plane_instance")}
+            subHeading={t("instance_admin.configure_instance_wide_settings_to_secure_your")}
           />
           <form
             className="space-y-4"
@@ -160,7 +162,7 @@ export function InstanceSignInForm() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   inputSize="md"
-                  placeholder="Enter your password"
+                  placeholder={t("instance_admin.enter_your_password")}
                   value={formData.password}
                   onChange={(e) => handleFormChange("password", e.target.value)}
                   autoComplete="off"
@@ -168,7 +170,7 @@ export function InstanceSignInForm() {
                 {showPassword ? (
                   <button
                     type="button"
-                    aria-label="Hide password"
+                    aria-label={t("aria_labels.auth_forms.hide_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => setShowPassword(false)}
                   >
@@ -177,7 +179,7 @@ export function InstanceSignInForm() {
                 ) : (
                   <button
                     type="button"
-                    aria-label="Show password"
+                    aria-label={t("aria_labels.auth_forms.show_password")}
                     className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
                     onClick={() => setShowPassword(true)}
                   >
@@ -188,7 +190,7 @@ export function InstanceSignInForm() {
             </div>
             <div className="py-2">
               <Button type="submit" size="xl" className="w-full" disabled={isButtonDisabled}>
-                {isSubmitting ? <Spinner height="20px" width="20px" /> : "Sign in"}
+                {isSubmitting ? <Spinner height="20px" width="20px" /> : t("ui.sign_in")}
               </Button>
             </div>
           </form>

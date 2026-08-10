@@ -20,10 +20,12 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceGitlabConfigForm } from "./form";
+import { useTranslation } from "@plane/i18n";
 
 const InstanceGitlabAuthenticationPage = observer(function InstanceGitlabAuthenticationPage(
   _props: Route.ComponentProps
 ) {
+  const { t } = useTranslation();
   // store
   const { fetchInstanceConfigurations, formattedConfig, updateInstanceConfigurations } = useInstance();
   // state
@@ -45,12 +47,12 @@ const InstanceGitlabAuthenticationPage = observer(function InstanceGitlabAuthent
     setPromiseToast(updateConfigPromise, {
       loading: "Saving Configuration",
       success: {
-        title: "Configuration saved",
+        title: t("instance_admin.configuration_saved"),
         message: () => `GitLab authentication is now ${value === "1" ? "active" : "disabled"}.`,
       },
       error: {
         title: "Error",
-        message: () => "Failed to save configuration",
+        message: () => t("instance_admin.failed_to_save_configuration"),
       },
     });
 
@@ -68,7 +70,7 @@ const InstanceGitlabAuthenticationPage = observer(function InstanceGitlabAuthent
       customHeader={
         <AuthenticationMethodCard
           name="GitLab"
-          description="Allow members to login or sign up to plane with their GitLab accounts."
+          description={t("instance_admin.allow_members_to_login_or_sign_up_to_plane_with_2")}
           icon={<img src={GitlabLogo} height={24} width={24} alt="GitLab Logo" />}
           config={
             <ToggleSwitch

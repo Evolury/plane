@@ -12,6 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 // plane internal packages
 import { Input } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   control: Control<any>;
@@ -35,6 +36,7 @@ export type TControllerInputFormField = {
 };
 
 export function ControllerInput(props: Props) {
+  const { t } = useTranslation();
   const { name, control, type, label, description, placeholder, error, required } = props;
   // states
   const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +69,7 @@ export function ControllerInput(props: Props) {
           (showPassword ? (
             <button
               type="button"
-              aria-label="Hide password"
+              aria-label={t("aria_labels.auth_forms.hide_password")}
               className="absolute top-2.5 right-3 flex items-center justify-center text-placeholder"
               onClick={() => setShowPassword(false)}
             >
@@ -76,7 +78,7 @@ export function ControllerInput(props: Props) {
           ) : (
             <button
               type="button"
-              aria-label="Show password"
+              aria-label={t("aria_labels.auth_forms.show_password")}
               className="absolute top-2.5 right-3 flex items-center justify-center text-placeholder"
               onClick={() => setShowPassword(true)}
             >

@@ -11,6 +11,7 @@ import { Button } from "@plane/propel/button";
 import { InstanceService } from "@plane/services";
 // ui
 import { Input } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   isOpen: boolean;
@@ -26,6 +27,7 @@ enum ESendEmailSteps {
 const instanceService = new InstanceService();
 
 export function SendTestEmailModal(props: Props) {
+  const { t } = useTranslation();
   const { isOpen, handleClose } = props;
 
   // state
@@ -58,7 +60,7 @@ export function SendTestEmailModal(props: Props) {
         setSendEmailStep(ESendEmailSteps.SUCCESS);
       })
       .catch((error) => {
-        setError(error?.error || "Failed to send email");
+        setError(error?.error || t("instance_admin.failed_to_send_email"));
         setSendEmailStep(ESendEmailSteps.FAILED);
       })
       .finally(() => {
@@ -94,9 +96,9 @@ export function SendTestEmailModal(props: Props) {
               <Dialog.Panel className="relative w-full transform rounded-lg bg-surface-1 p-5 px-4 text-left shadow-raised-200 transition-all sm:max-w-xl">
                 <h3 className="text-16 leading-6 font-medium text-primary">
                   {sendEmailStep === ESendEmailSteps.SEND_EMAIL
-                    ? "Send test email"
+                    ? t("instance_admin.send_test_email")
                     : sendEmailStep === ESendEmailSteps.SUCCESS
-                      ? "Email send"
+                      ? t("instance_admin.email_send")
                       : "Failed"}{" "}
                 </h3>
                 <div className="pt-6 pb-2">
@@ -106,7 +108,7 @@ export function SendTestEmailModal(props: Props) {
                       type="email"
                       value={receiverEmail}
                       onChange={(e) => setReceiverEmail(e.target.value)}
-                      placeholder="Receiver email"
+                      placeholder={t("instance_admin.receiver_email")}
                       className="w-full resize-none text-16"
                       tabIndex={0}
                     />
@@ -117,7 +119,7 @@ export function SendTestEmailModal(props: Props) {
                         We have sent the test email to {receiverEmail}. Please check your spam folder if you cannot find
                         it.
                       </p>
-                      <p>If you still cannot find it, recheck your SMTP configuration and trigger a new test email.</p>
+                      <p>{t("instance_admin.if_you_still_cannot_find_it_recheck_your_smtp_co")}</p>
                     </div>
                   )}
                   {sendEmailStep === ESendEmailSteps.FAILED && <div className="text-13">{error}</div>}
@@ -127,7 +129,7 @@ export function SendTestEmailModal(props: Props) {
                     </Button>
                     {sendEmailStep === ESendEmailSteps.SEND_EMAIL && (
                       <Button variant="primary" size="lg" loading={isLoading} onClick={handleSubmit} tabIndex={0}>
-                        {isLoading ? "Sending email" : "Send email"}
+                        {isLoading ? t("instance_admin.sending_email") : t("instance_admin.send_email")}
                       </Button>
                     )}
                   </div>

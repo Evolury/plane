@@ -19,6 +19,7 @@ import { ControllerInput } from "@/components/common/controller-input";
 import { useInstance } from "@/hooks/store";
 // local components
 import { SendTestEmailModal } from "./test-email-modal";
+import { translate, useTranslation } from "@plane/i18n";
 
 type IInstanceEmailForm = {
   config: IFormattedInstanceConfiguration;
@@ -31,10 +32,11 @@ type TEmailSecurityKeys = "EMAIL_USE_TLS" | "EMAIL_USE_SSL" | "NONE";
 const EMAIL_SECURITY_OPTIONS: { [key in TEmailSecurityKeys]: string } = {
   EMAIL_USE_TLS: "TLS",
   EMAIL_USE_SSL: "SSL",
-  NONE: "No email security",
+  NONE: translate("instance_admin.no_email_security"),
 };
 
 export function InstanceEmailForm(props: IInstanceEmailForm) {
+  const { t } = useTranslation();
   const { config } = props;
   // states
   const [isSendTestEmailModalOpen, setIsSendTestEmailModalOpen] = useState(false);
@@ -79,7 +81,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
     {
       key: "EMAIL_FROM",
       type: "text",
-      label: "Sender's email address",
+      label: t("instance_admin.sender_s_email_address"),
       description:
         "This is the email address your users will see when getting emails from this instance. You will need to verify this address.",
       placeholder: "no-reply@projectplane.so",
@@ -115,7 +117,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Success",
-          message: "Email Settings updated successfully",
+          message: t("instance_admin.email_settings_updated_successfully"),
         })
       )
       .catch((err) => console.error(err));
@@ -163,7 +165,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
             />
           ))}
           <div className="flex flex-col gap-1">
-            <h4 className="text-13 text-tertiary">Email security</h4>
+            <h4 className="text-13 text-tertiary">{t("instance_admin.email_security")}</h4>
             <CustomSelect
               value={emailSecurityKey}
               label={EMAIL_SECURITY_OPTIONS[emailSecurityKey]}
@@ -215,7 +217,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
           loading={isSubmitting}
           disabled={!isValid || !isDirty}
         >
-          {isSubmitting ? "Saving" : "Save changes"}
+          {isSubmitting ? "Saving" : t("save_changes")}
         </Button>
         <Button
           variant="secondary"

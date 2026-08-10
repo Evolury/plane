@@ -14,6 +14,7 @@ import type { TControllerInputFormField } from "@/components/common/controller-i
 import { ControllerInput } from "@/components/common/controller-input";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 type IInstanceAIForm = {
   config: IFormattedInstanceConfiguration;
@@ -22,6 +23,7 @@ type IInstanceAIForm = {
 type AIFormValues = Record<TInstanceAIConfigurationKeys, string>;
 
 export function InstanceAIForm(props: IInstanceAIForm) {
+  const { t } = useTranslation();
   const { config } = props;
   // store
   const { updateInstanceConfigurations } = useInstance();
@@ -72,7 +74,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
             target="_blank"
             className="text-accent-primary hover:underline"
             rel="noreferrer"
-            aria-label="OpenAI API keys page"
+            aria-label={t("instance_admin.openai_api_keys_page")}
           >
             here.
           </a>
@@ -92,7 +94,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Success",
-          message: "AI Settings updated successfully",
+          message: t("instance_admin.ai_settings_updated_successfully"),
         })
       )
       .catch((err) => console.error(err));
@@ -103,7 +105,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
       <div className="space-y-3">
         <div>
           <div className="pb-1 text-18 font-medium text-primary">OpenAI</div>
-          <div className="text-13 font-regular text-tertiary">If you use ChatGPT, this is for you.</div>
+          <div className="text-13 font-regular text-tertiary">{t("instance_admin.if_you_use_chatgpt_this_is_for_you")}</div>
         </div>
         <div className="grid-col grid w-full grid-cols-1 items-center justify-between gap-x-12 gap-y-8 lg:grid-cols-3">
           {aiFormFields.map((field) => (
@@ -124,7 +126,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
 
       <div className="flex flex-col items-start gap-4">
         <Button variant="primary" size="lg" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>
-          {isSubmitting ? "Saving" : "Save changes"}
+          {isSubmitting ? "Saving" : t("save_changes")}
         </Button>
 
         <div className="relative inline-flex items-center gap-1.5 rounded-sm border border-accent-subtle bg-accent-subtle px-4 py-2 text-caption-sm-regular text-accent-secondary">

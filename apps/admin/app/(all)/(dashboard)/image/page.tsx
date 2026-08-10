@@ -15,8 +15,10 @@ import { useInstance } from "@/hooks/store";
 import type { Route } from "./+types/page";
 // local
 import { InstanceImageConfigForm } from "./form";
+import { translate, useTranslation } from "@plane/i18n";
 
 const InstanceImagePage = observer(function InstanceImagePage(_props: Route.ComponentProps) {
+  const { t } = useTranslation();
   // store
   const { formattedConfig, fetchInstanceConfigurations } = useInstance();
 
@@ -26,7 +28,7 @@ const InstanceImagePage = observer(function InstanceImagePage(_props: Route.Comp
     <PageWrapper
       header={{
         title: "Third-party image libraries",
-        description: "Let your users search and choose images from third-party libraries",
+        description: t("instance_admin.let_your_users_search_and_choose_images_from_thi"),
       }}
     >
       {formattedConfig ? (
@@ -41,6 +43,6 @@ const InstanceImagePage = observer(function InstanceImagePage(_props: Route.Comp
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: "Images Settings - God Mode" }];
+export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.images_settings_god_mode") }];
 
 export default InstanceImagePage;

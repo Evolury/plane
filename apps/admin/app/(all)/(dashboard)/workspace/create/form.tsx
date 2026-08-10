@@ -19,10 +19,12 @@ import { validateSlug, validateWorkspaceName } from "@plane/utils";
 import { CustomSelect, Input } from "@plane/ui";
 // hooks
 import { useWorkspace } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 const instanceWorkspaceService = new InstanceWorkspaceService();
 
 export function WorkspaceCreateForm() {
+  const { t } = useTranslation();
   // router
   const router = useRouter();
   // states
@@ -63,7 +65,7 @@ export function WorkspaceCreateForm() {
               setToast({
                 type: TOAST_TYPE.SUCCESS,
                 title: "Success!",
-                message: "Workspace created successfully.",
+                message: t("instance_admin.workspace_created_successfully"),
               });
               router.push(`/workspace`);
             })
@@ -71,7 +73,7 @@ export function WorkspaceCreateForm() {
               setToast({
                 type: TOAST_TYPE.ERROR,
                 title: "Error!",
-                message: "Workspace could not be created. Please try again.",
+                message: t("workspace_creation.toast.error.message"),
               });
             });
         } else setSlugError(true);
@@ -80,7 +82,7 @@ export function WorkspaceCreateForm() {
         setToast({
           type: TOAST_TYPE.ERROR,
           title: "Error!",
-          message: "Some error occurred while creating workspace. Please try again.",
+          message: t("instance_admin.some_error_occurred_while_creating_workspace_ple"),
         });
       });
   };
@@ -97,7 +99,7 @@ export function WorkspaceCreateForm() {
     <div className="space-y-8">
       <div className="grid-col grid w-full max-w-4xl grid-cols-1 items-start justify-between gap-x-10 gap-y-6 lg:grid-cols-2">
         <div className="flex flex-col gap-1">
-          <h4 className="text-13 text-tertiary">Name your workspace</h4>
+          <h4 className="text-13 text-tertiary">{t("workspace_creation.form.name.label")}</h4>
           <div className="flex flex-col gap-1">
             <Controller
               control={control}
@@ -119,7 +121,7 @@ export function WorkspaceCreateForm() {
                   }}
                   ref={ref}
                   hasError={Boolean(errors.name)}
-                  placeholder="Something familiar and recognizable is always best."
+                  placeholder={t("workspace_creation.form.name.placeholder")}
                   className="w-full"
                 />
               )}
@@ -128,7 +130,7 @@ export function WorkspaceCreateForm() {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <h4 className="text-13 text-tertiary">Set your workspace&apos;s URL</h4>
+          <h4 className="text-13 text-tertiary">{t("instance_admin.set_your_workspace_apos_s_url")}</h4>
           <div className="flex w-full items-center gap-0.5 rounded-md border-[0.5px] border-subtle px-3">
             <span className="text-13 whitespace-nowrap text-secondary">{workspaceBaseURL}</span>
             <Controller
@@ -155,26 +157,26 @@ export function WorkspaceCreateForm() {
               )}
             />
           </div>
-          {slugError && <p className="text-13 text-danger-primary">This URL is taken. Try something else.</p>}
+          {slugError && <p className="text-13 text-danger-primary">{t("instance_admin.this_url_is_taken_try_something_else")}</p>}
           {invalidSlug && (
             <p className="text-13 text-danger-primary">{`URLs can contain only ( - ), ( _ ) and alphanumeric characters.`}</p>
           )}
           {errors.slug && <span className="text-11 text-danger-primary">{errors.slug.message}</span>}
         </div>
         <div className="flex flex-col gap-1">
-          <h4 className="text-13 text-tertiary">How many people will use this workspace?</h4>
+          <h4 className="text-13 text-tertiary">{t("workspace_creation.form.organization_size.label")}</h4>
           <div className="w-full">
             <Controller
               name="organization_size"
               control={control}
-              rules={{ required: "This is a required field." }}
+              rules={{ required: t("instance_admin.this_is_a_required_field") }}
               render={({ field: { value, onChange } }) => (
                 <CustomSelect
                   value={value}
                   onChange={onChange}
                   label={
                     ORGANIZATION_SIZE.find((c) => c === value) ?? (
-                      <span className="text-placeholder">Select a range</span>
+                      <span className="text-placeholder">{t("workspace_creation.form.organization_size.placeholder")}</span>
                     )
                   }
                   buttonClassName="!border-[0.5px] !border-subtle !shadow-none"
@@ -202,7 +204,7 @@ export function WorkspaceCreateForm() {
           disabled={!isValid}
           loading={isSubmitting}
         >
-          {isSubmitting ? "Creating workspace" : "Create workspace"}
+          {isSubmitting ? "Creating workspace" : t("create_workspace")}
         </Button>
         <Link className={getButtonStyling("secondary", "lg")} href="/workspace">
           Go back

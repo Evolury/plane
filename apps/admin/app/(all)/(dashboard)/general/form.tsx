@@ -16,6 +16,7 @@ import { Input, ToggleSwitch } from "@plane/ui";
 import { ControllerInput } from "@/components/common/controller-input";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 export interface IGeneralConfigurationForm {
   instance: IInstance;
@@ -23,6 +24,7 @@ export interface IGeneralConfigurationForm {
 }
 
 export const GeneralConfigurationForm = observer(function GeneralConfigurationForm(props: IGeneralConfigurationForm) {
+  const { t } = useTranslation();
   const { instance, instanceAdmins } = props;
   // hooks
   const { updateInstanceInfo } = useInstance();
@@ -47,7 +49,7 @@ export const GeneralConfigurationForm = observer(function GeneralConfigurationFo
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: "Success",
-          message: "Settings updated successfully",
+          message: t("instance_admin.settings_updated_successfully"),
         })
       )
       .catch((err) => console.error(err));
@@ -63,8 +65,8 @@ export const GeneralConfigurationForm = observer(function GeneralConfigurationFo
             name="instance_name"
             control={control}
             type="text"
-            label="Name of instance"
-            placeholder="Instance name"
+            label={t("instance_admin.name_of_instance")}
+            placeholder={t("instance_admin.instance_name")}
             error={Boolean(errors.instance_name)}
             required
           />
@@ -76,7 +78,7 @@ export const GeneralConfigurationForm = observer(function GeneralConfigurationFo
               name="email"
               type="email"
               value={instanceAdmins[0]?.user_detail?.email ?? ""}
-              placeholder="Admin email"
+              placeholder={t("instance_admin.admin_email")}
               className="w-full cursor-not-allowed !text-placeholder"
               autoComplete="on"
               disabled
@@ -143,7 +145,7 @@ export const GeneralConfigurationForm = observer(function GeneralConfigurationFo
           }}
           loading={isSubmitting}
         >
-          {isSubmitting ? "Saving" : "Save changes"}
+          {isSubmitting ? "Saving" : t("save_changes")}
         </Button>
       </div>
     </div>
