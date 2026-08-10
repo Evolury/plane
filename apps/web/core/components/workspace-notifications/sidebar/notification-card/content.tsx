@@ -21,6 +21,7 @@ import {
   renderAdditionalValue,
   shouldShowConnector,
 } from "../../notification-card/content";
+import { translate } from "@plane/i18n";
 
 // Types
 export type TNotificationFieldData = {
@@ -47,43 +48,43 @@ export const BASE_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {
   duplicate: ({ verb }) => ({
     action:
       verb === "created"
-        ? "marked that this work item is a duplicate of"
-        : "marked that this work item is not a duplicate",
+        ? translate("activity_log.marked_that_this_work_item_is_a_duplicate_of")
+        : translate("activity_log.marked_that_this_work_item_is_not_a_duplicate"),
     value: null,
     showConnector: false,
   }),
   assignees: ({ newValue, oldValue }) => ({
-    action: newValue !== "" ? "added assignee" : "removed assignee",
+    action: newValue !== "" ? translate("activity_log.added_assignee") : translate("activity_log.removed_assignee"),
     value: newValue !== "" ? newValue : oldValue,
     showConnector: false,
   }),
   start_date: ({ newValue }) => ({
-    action: newValue !== "" ? "set start date" : "removed the start date",
+    action: newValue !== "" ? translate("activity_log.set_start_date") : "removed the start date",
     value: renderFormattedDate(newValue),
     showConnector: false,
   }),
   target_date: ({ newValue }) => ({
-    action: newValue !== "" ? "set due date" : "removed the due date",
+    action: newValue !== "" ? translate("activity_log.set_due_date") : "removed the due date",
     value: renderFormattedDate(newValue),
     showConnector: false,
   }),
   labels: ({ newValue, oldValue }) => ({
-    action: newValue !== "" ? "added label" : "removed label",
+    action: newValue !== "" ? translate("activity_log.added_label") : translate("activity_log.removed_label"),
     value: newValue !== "" ? newValue : oldValue,
     showConnector: false,
   }),
   parent: ({ newValue, oldValue }) => ({
-    action: newValue !== "" ? "added parent" : "removed parent",
+    action: newValue !== "" ? translate("activity_log.added_parent") : translate("activity_log.removed_parent"),
     value: newValue !== "" ? newValue : oldValue,
     showConnector: false,
   }),
   relates_to: () => ({
-    action: "marked that this work item is related to",
+    action: translate("activity_log.marked_that_this_work_item_is_related_to"),
     value: null,
     showConnector: true,
   }),
   comment: ({ newValue }, renderCommentBox?: boolean) => ({
-    action: "commented",
+    action: translate("activity_log.commented"),
     value: renderCommentBox ? null : sanitizeCommentForNotification(newValue),
     showConnector: false,
   }),
@@ -207,7 +208,7 @@ export function NotificationContent({
     <>
       {renderTriggerName()}
       <span className="text-tertiary">{renderAction()} </span>
-      {verb !== "deleted" && (
+      {verb !== translate("activity_log.deleted") && (
         <>
           {showConnector && <span className="text-tertiary">to </span>}
           <span className="font-medium text-primary">{renderValue()}</span>

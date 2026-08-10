@@ -39,6 +39,7 @@ import { renderFormattedDate, generateWorkItemLink, capitalizeFirstLetter } from
 // helpers
 import { useLabel } from "@/hooks/store/use-label";
 import { usePlatformOS } from "@/hooks/use-platform-os";
+import { translate } from "@plane/i18n";
 // types
 
 export function IssueLink({ activity }: { activity: IIssueActivity }) {
@@ -56,7 +57,7 @@ export function IssueLink({ activity }: { activity: IIssueActivity }) {
 
   return (
     <Tooltip
-      tooltipContent={activity?.issue_detail ? activity.issue_detail.name : "This work item has been deleted"}
+      tooltipContent={activity?.issue_detail ? activity.issue_detail.name : translate("activity_log.this_work_item_has_been_deleted")}
       isMobile={isMobile}
     >
       {activity?.issue_detail ? (
@@ -118,20 +119,20 @@ const LabelPill = observer(function LabelPill({ labelId, workspaceSlug }: { labe
 
 const inboxActivityMessage = {
   declined: {
-    showIssue: "declined work item",
-    noIssue: "declined this work item from intake.",
+    showIssue: translate("activity_log.declined_work_item"),
+    noIssue: translate("activity_log.declined_this_work_item_from_intake"),
   },
   snoozed: {
-    showIssue: "snoozed work item",
-    noIssue: "snoozed this work item.",
+    showIssue: translate("activity_log.snoozed_work_item"),
+    noIssue: translate("activity_log.snoozed_this_work_item"),
   },
   accepted: {
-    showIssue: "accepted work item",
-    noIssue: "accepted this work item from intake.",
+    showIssue: translate("activity_log.accepted_work_item"),
+    noIssue: translate("activity_log.accepted_this_work_item_from_intake"),
   },
   markedDuplicate: {
-    showIssue: "declined work item",
-    noIssue: "declined this work item from intake by marking a duplicate work item.",
+    showIssue: translate("activity_log.declined_work_item"),
+    noIssue: translate("activity_log.declined_this_work_item_from_intake_by_marking_a"),
   },
 };
 
@@ -146,7 +147,7 @@ const getInboxUserActivityMessage = (activity: IIssueActivity, showIssue: boolea
     case "2":
       return showIssue ? inboxActivityMessage.markedDuplicate.showIssue : inboxActivityMessage.markedDuplicate.noIssue;
     default:
-      return "updated intake work item status.";
+      return translate("activity_log.updated_intake_work_item_status");
   }
 };
 
@@ -379,7 +380,7 @@ const activityDetails: {
             )}
           </>
         );
-      else if (activity.verb === "updated")
+      else if (activity.verb === translate("activity_log.updated"))
         return (
           <>
             updated the{" "}
@@ -428,7 +429,7 @@ const activityDetails: {
         return (
           <>
             <span className="flex-shrink-0">
-              added {showIssue ? <IssueLink activity={activity} /> : "this work item"}{" "}
+              added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
               <span className="whitespace-nowrap">to the cycle</span>{" "}
             </span>
             <a
@@ -441,7 +442,7 @@ const activityDetails: {
             </a>
           </>
         );
-      else if (activity.verb === "updated")
+      else if (activity.verb === translate("activity_log.updated"))
         return (
           <>
             <span className="flex-shrink-0 whitespace-nowrap">set the cycle to </span>
@@ -477,7 +478,7 @@ const activityDetails: {
       if (activity.verb === "created")
         return (
           <>
-            added {showIssue ? <IssueLink activity={activity} /> : "this work item"} to the module{" "}
+            added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} to the module{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.new_identifier}`}
               target="_blank"
@@ -488,7 +489,7 @@ const activityDetails: {
             </a>
           </>
         );
-      else if (activity.verb === "updated")
+      else if (activity.verb === translate("activity_log.updated"))
         return (
           <>
             set the module to{" "}
@@ -584,7 +585,7 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked that {showIssue ? <IssueLink activity={activity} /> : "this work item"} relates to{" "}
+            marked that {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} relates to{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
@@ -603,7 +604,7 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : "this work item"} is blocking work item{" "}
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is blocking work item{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
@@ -622,14 +623,14 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : "this work item"} is being blocked by{" "}
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is being blocked by{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : "this work item"} being blocked by work item{" "}
+            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} being blocked by work item{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
@@ -641,14 +642,14 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : "this work item"} as duplicate of{" "}
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as duplicate of{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : "this work item"} as a duplicate of{" "}
+            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as a duplicate of{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );

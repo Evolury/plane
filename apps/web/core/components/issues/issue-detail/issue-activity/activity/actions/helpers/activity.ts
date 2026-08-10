@@ -5,12 +5,13 @@
  */
 
 import type { TIssueActivity } from "@plane/types";
+import { translate } from "@plane/i18n";
 
 export const getRelationActivityContent = (activity: TIssueActivity | undefined): string | undefined => {
   if (!activity) return;
 
   switch (activity.field) {
-    case "blocking":
+    case translate("activity_log.blocking"):
       return activity.old_value === ""
         ? `marked this work item is blocking work item `
         : `removed the blocking work item `;
