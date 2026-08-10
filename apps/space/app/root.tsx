@@ -21,11 +21,12 @@ import { AppProviders } from "./providers";
 // fonts
 import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+import { translate } from "@plane/i18n";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
 
 const APP_TITLE = "Plane Publish | Make your Plane boards public with one-click";
-const APP_DESCRIPTION = "Plane Publish is a customer feedback management tool built on top of plane.so";
+const APP_DESCRIPTION = translate("ui.plane_publish_is_a_customer_feedback_management");
 
 export const links: Route.LinksFunction = () => [
   { rel: "apple-touch-icon", sizes: "180x180", href: appleTouchIcon },

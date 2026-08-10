@@ -18,6 +18,7 @@ import { useIssueDetails } from "@/hooks/store/use-issue-details";
 import useClipboardWritePermission from "@/hooks/use-clipboard-write-permission";
 // types
 import type { IIssue, IPeekMode } from "@/types/issue";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   handleClose: () => void;
@@ -43,6 +44,7 @@ const PEEK_MODES: {
 ];
 
 export const PeekOverviewHeader = observer(function PeekOverviewHeader(props: Props) {
+  const { t } = useTranslation();
   const { handleClose } = props;
 
   const { peekMode, setPeekMode } = useIssueDetails();
@@ -54,8 +56,8 @@ export const PeekOverviewHeader = observer(function PeekOverviewHeader(props: Pr
     copyTextToClipboard(urlToCopy).then(() => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Link copied!",
-        message: "Work item link copied to clipboard.",
+        title: t("common.link_copied"),
+        message: t("ui.work_item_link_copied_to_clipboard"),
       });
     });
   };

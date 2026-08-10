@@ -21,10 +21,12 @@ import { getFileURL } from "@plane/utils";
 import { queryParamGenerator } from "@/helpers/query-param-generator";
 // hooks
 import { useUser } from "@/hooks/store/use-user";
+import { useTranslation } from "@plane/i18n";
 
 const authService = new AuthService();
 
 export const UserAvatar = observer(function UserAvatar() {
+  const { t } = useTranslation();
   const pathName = usePathname();
   const searchParams = useSearchParams();
   // query params
@@ -119,7 +121,7 @@ export const UserAvatar = observer(function UserAvatar() {
       ) : (
         <div className="flex-shrink-0">
           <Link to={`/?next_path=${pathName}?${queryParam}`}>
-            <Button variant="secondary">Sign in</Button>
+            <Button variant="secondary">{t("ui.sign_in")}</Button>
           </Link>
         </div>
       )}

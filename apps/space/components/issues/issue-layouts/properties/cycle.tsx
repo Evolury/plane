@@ -12,6 +12,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 import { cn } from "@plane/utils";
 //hooks
 import { useCycle } from "@/hooks/store/use-cycle";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   cycleId: string | undefined;
@@ -19,12 +20,13 @@ type Props = {
 };
 
 export const IssueBlockCycle = observer(function IssueBlockCycle({ cycleId, shouldShowBorder = true }: Props) {
+  const { t } = useTranslation();
   const { getCycleById } = useCycle();
 
   const cycle = getCycleById(cycleId);
 
   return (
-    <Tooltip tooltipHeading="Cycle" tooltipContent={cycle?.name ?? "No Cycle"}>
+    <Tooltip tooltipHeading="Cycle" tooltipContent={cycle?.name ?? t("ui.no_cycle")}>
       <div
         className={cn(
           "flex h-full w-full items-center justify-between gap-1 rounded-sm px-2.5 py-1 text-11 duration-300 focus:outline-none",
@@ -33,7 +35,7 @@ export const IssueBlockCycle = observer(function IssueBlockCycle({ cycleId, shou
       >
         <div className="flex w-full items-center gap-1.5 text-11">
           <CycleIcon className="h-3 w-3 flex-shrink-0" />
-          <div className="max-w-40 truncate">{cycle?.name ?? "No Cycle"}</div>
+          <div className="max-w-40 truncate">{cycle?.name ?? t("ui.no_cycle")}</div>
         </div>
       </div>
     </Tooltip>

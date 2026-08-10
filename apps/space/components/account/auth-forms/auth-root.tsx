@@ -26,10 +26,12 @@ import { AuthHeader } from "./auth-header";
 import { AuthEmailForm } from "./email";
 import { AuthPasswordForm } from "./password";
 import { AuthUniqueCodeForm } from "./unique-code";
+import { useTranslation } from "@plane/i18n";
 
 const authService = new SitesAuthService();
 
 export const AuthRoot = observer(function AuthRoot() {
+  const { t } = useTranslation();
   // router params
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || undefined;
@@ -84,7 +86,7 @@ export const AuthRoot = observer(function AuthRoot() {
   const isSMTPConfigured = config?.is_smtp_configured || false;
   const isMagicLoginEnabled = config?.is_magic_login_enabled || false;
   const isEmailPasswordEnabled = config?.is_email_password_enabled || false;
-  const oAuthActionText = authMode === EAuthModes.SIGN_UP ? "Sign up" : "Sign in";
+  const oAuthActionText = authMode === EAuthModes.SIGN_UP ? "Sign up" : t("ui.sign_in");
   const { isOAuthEnabled, oAuthOptions } = useOAuthConfig(oAuthActionText);
 
   // submit handler- email verification

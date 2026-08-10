@@ -15,6 +15,7 @@ import { useStates } from "@/hooks/store/use-state";
 // local imports
 import { FilterHeader } from "./helpers/filter-header";
 import { FilterOption } from "./helpers/filter-option";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   appliedFilters: string[] | null;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export const FilterState = observer(function FilterState(props: Props) {
+  const { t } = useTranslation();
   const { appliedFilters, handleUpdate, searchQuery } = props;
 
   const { sortedStates: states } = useStates();
@@ -68,12 +70,12 @@ export const FilterState = observer(function FilterState(props: Props) {
                     className="ml-8 text-11 font-medium text-accent-primary"
                     onClick={handleViewToggle}
                   >
-                    {itemsToRender === filteredOptions.length ? "View less" : "View all"}
+                    {itemsToRender === filteredOptions.length ? t("ui.view_less") : t("ui.view_all")}
                   </button>
                 )}
               </>
             ) : (
-              <p className="text-11 text-placeholder italic">No matches found</p>
+              <p className="text-11 text-placeholder italic">{t("common.search.no_matches_found")}</p>
             )
           ) : (
             <Loader className="space-y-2">

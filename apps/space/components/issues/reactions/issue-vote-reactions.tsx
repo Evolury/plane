@@ -17,6 +17,7 @@ import { queryParamGenerator } from "@/helpers/query-param-generator";
 import { useIssueDetails } from "@/hooks/store/use-issue-details";
 import { useUser } from "@/hooks/store/use-user";
 import useIsInIframe from "@/hooks/use-is-in-iframe";
+import { useTranslation } from "@plane/i18n";
 
 type TIssueVotes = {
   anchor: string;
@@ -25,6 +26,7 @@ type TIssueVotes = {
 };
 
 export const IssueVotes = observer(function IssueVotes(props: TIssueVotes) {
+  const { t } = useTranslation();
   const { anchor, issueIdFromProps, size = "md" } = props;
   // states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,7 +94,7 @@ export const IssueVotes = observer(function IssueVotes(props: TIssueVotes) {
                 {allUpVotes.length > VOTES_LIMIT && " and " + (allUpVotes.length - VOTES_LIMIT) + " more"}
               </>
             ) : (
-              "No upvotes yet"
+              t("ui.no_upvotes_yet")
             )}
           </div>
         }
@@ -133,7 +135,7 @@ export const IssueVotes = observer(function IssueVotes(props: TIssueVotes) {
                 {allDownVotes.length > VOTES_LIMIT && " and " + (allDownVotes.length - VOTES_LIMIT) + " more"}
               </>
             ) : (
-              "No downvotes yet"
+              t("ui.no_downvotes_yet")
             )}
           </div>
         }

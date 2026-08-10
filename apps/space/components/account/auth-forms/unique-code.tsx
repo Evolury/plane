@@ -15,6 +15,7 @@ import { Input, Spinner } from "@plane/ui";
 import useTimer from "@/hooks/use-timer";
 // types
 import { EAuthModes } from "@/types/auth";
+import { useTranslation } from "@plane/i18n";
 
 // services
 const authService = new AuthService();
@@ -38,6 +39,7 @@ const defaultValues: TUniqueCodeFormValues = {
 };
 
 export function AuthUniqueCodeForm(props: TAuthUniqueCodeForm) {
+  const { t } = useTranslation();
   const { mode, email, nextPath, handleEmailClear, generateEmailUniqueCode } = props;
   // derived values
   const defaultResetTimerValue = 5;
@@ -141,7 +143,7 @@ export function AuthUniqueCodeForm(props: TAuthUniqueCodeForm) {
             {resendTimerCode > 0
               ? `Resend in ${resendTimerCode}s`
               : isRequestingNewCode
-                ? "Requesting new code"
+                ? t("auth.common.unique_code.requesting_new_code")
                 : "Resend"}
           </button>
         </div>

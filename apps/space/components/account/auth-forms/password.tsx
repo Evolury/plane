@@ -149,7 +149,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
 
       <div className="space-y-1">
         <label className="text-13 font-medium text-tertiary" htmlFor="password">
-          {mode === EAuthModes.SIGN_IN ? "Password" : "Set a password"}
+          {mode === EAuthModes.SIGN_IN ? "Password" : t("auth.common.password.set_password")}
         </label>
         <div className="relative flex items-center rounded-md bg-surface-1">
           <Input
@@ -157,7 +157,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
             name="password"
             value={passwordFormData.password}
             onChange={(e) => handleFormChange("password", e.target.value)}
-            placeholder="Enter password"
+            placeholder={t("auth.common.password.placeholder")}
             className="h-10 w-full border border-subtle !bg-surface-1 pr-12 disable-autofill-style placeholder:text-placeholder"
             onFocus={() => setIsPasswordInputFocused(true)}
             onBlur={() => setIsPasswordInputFocused(false)}
@@ -223,7 +223,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
               ) : isSMTPConfigured ? (
                 "Continue"
               ) : (
-                "Go to workspace"
+                t("common.go_to_workspace")
               )}
             </Button>
             {isSMTPConfigured && (
@@ -240,7 +240,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
           </>
         ) : (
           <Button type="submit" variant="primary" className="w-full" size="xl" disabled={isButtonDisabled}>
-            {isSubmitting ? <Spinner height="20px" width="20px" /> : "Create account"}
+            {isSubmitting ? <Spinner height="20px" width="20px" /> : t("ui.create_account")}
           </Button>
         )}
       </div>

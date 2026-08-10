@@ -18,6 +18,7 @@ import { LiteTextEditor } from "@/components/editor/lite-text-editor";
 import { usePublish } from "@/hooks/store/publish";
 import { useIssueDetails } from "@/hooks/store/use-issue-details";
 import { useUser } from "@/hooks/store/use-user";
+import { useTranslation } from "@plane/i18n";
 // services
 const fileService = new SitesFileService();
 
@@ -31,6 +32,7 @@ type Props = {
 };
 
 export const AddComment = observer(function AddComment(props: Props) {
+  const { t } = useTranslation();
   const { anchor } = props;
   // states
   const [uploadedAssetIds, setUploadAssetIds] = useState<string[]>([]);
@@ -67,7 +69,7 @@ export const AddComment = observer(function AddComment(props: Props) {
         setToast({
           type: TOAST_TYPE.ERROR,
           title: "Error!",
-          message: "Comment could not be posted. Please try again.",
+          message: t("ui.comment_could_not_be_posted_please_try_again"),
         })
       );
   };
@@ -96,7 +98,7 @@ export const AddComment = observer(function AddComment(props: Props) {
               }
               onChange={(comment_json, comment_html) => onChange(comment_html)}
               isSubmitting={isSubmitting}
-              placeholder="Add comment..."
+              placeholder={t("ui.add_comment")}
               uploadFile={async (blockId, file) => {
                 const { asset_id } = await uploadCommentAsset(file, anchor);
                 setUploadAssetIds((prev) => [...prev, asset_id]);

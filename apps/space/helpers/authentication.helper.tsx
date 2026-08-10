@@ -399,7 +399,7 @@ export const authErrorHandler = (errorCode: EAuthenticationErrorCodes, email?: s
       type: EErrorAlertType.BANNER_ALERT,
       code: errorCode,
       title: errorCodeMessages[errorCode]?.title || "Error",
-      message: errorCodeMessages[errorCode]?.message(email) || "Something went wrong. Please try again.",
+      message: errorCodeMessages[errorCode]?.message(email) || translate("something_went_wrong_please_try_again"),
     };
 
   return undefined;

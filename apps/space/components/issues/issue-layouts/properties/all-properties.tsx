@@ -24,6 +24,7 @@ import { IssueBlockMembers } from "./member";
 import { IssueBlockModules } from "./modules";
 import { IssueBlockPriority } from "./priority";
 import { IssueBlockState } from "./state";
+import { useTranslation } from "@plane/i18n";
 
 export interface IIssueProperties {
   issue: IIssue;
@@ -32,6 +33,7 @@ export interface IIssueProperties {
 }
 
 export const IssueProperties = observer(function IssueProperties(props: IIssueProperties) {
+  const { t } = useTranslation();
   const { issue, displayProperties, className } = props;
 
   if (!displayProperties || !issue.project_id) return null;
@@ -138,7 +140,7 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
         displayPropertyKey="sub_issue_count"
         shouldRenderProperty={(properties) => !!properties.sub_issue_count && !!issue.sub_issues_count}
       >
-        <Tooltip tooltipHeading="Sub-work items" tooltipContent={`${issue.sub_issues_count}`}>
+        <Tooltip tooltipHeading={t("common.sub_work_items")} tooltipContent={`${issue.sub_issues_count}`}>
           <div
             className={cn(
               "flex h-5 flex-shrink-0 items-center justify-center gap-2 overflow-hidden rounded-sm border-[0.5px] border-strong px-2.5 py-1",

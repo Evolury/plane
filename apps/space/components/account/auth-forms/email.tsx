@@ -17,6 +17,7 @@ import { Input, Spinner } from "@plane/ui";
 // helpers
 import { cn } from "@plane/utils";
 import { checkEmailValidity } from "@/helpers/string.helper";
+import { useTranslation } from "@plane/i18n";
 
 type TAuthEmailForm = {
   defaultEmail: string;
@@ -24,13 +25,14 @@ type TAuthEmailForm = {
 };
 
 export const AuthEmailForm = observer(function AuthEmailForm(props: TAuthEmailForm) {
+  const { t } = useTranslation();
   const { onSubmit, defaultEmail } = props;
   // states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState(defaultEmail);
 
   const emailError = useMemo(
-    () => (email && !checkEmailValidity(email) ? { email: "Email is invalid" } : undefined),
+    () => (email && !checkEmailValidity(email) ? { email: t("auth.common.email.errors.invalid") } : undefined),
     [email]
   );
 
@@ -82,7 +84,7 @@ export const AuthEmailForm = observer(function AuthEmailForm(props: TAuthEmailFo
           {email.length > 0 && (
             <button
               type="button"
-              aria-label="Clear email"
+              aria-label={t("aria_labels.auth_forms.clear_email")}
               onClick={() => {
                 setEmail("");
                 inputRef.current?.focus();

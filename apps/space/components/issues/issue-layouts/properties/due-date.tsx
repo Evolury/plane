@@ -13,6 +13,7 @@ import { renderFormattedDate } from "@/helpers/date-time.helper";
 import { shouldHighlightIssueDueDate } from "@/helpers/issue.helper";
 // hooks
 import { useStates } from "@/hooks/store/use-state";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   due_date: string | undefined;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const IssueBlockDate = observer(function IssueBlockDate(props: Props) {
+  const { t } = useTranslation();
   const { due_date, stateId, shouldHighLight = true, shouldShowBorder = true } = props;
   const { getStateById } = useStates();
 
@@ -38,7 +40,7 @@ export const IssueBlockDate = observer(function IssueBlockDate(props: Props) {
         })}
       >
         <DueDatePropertyIcon className="size-3 flex-shrink-0" />
-        {formattedDate ? formattedDate : "No Date"}
+        {formattedDate ? formattedDate : t("ui.no_date")}
       </div>
     </Tooltip>
   );

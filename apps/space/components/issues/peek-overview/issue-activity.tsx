@@ -20,6 +20,7 @@ import { useUser } from "@/hooks/store/use-user";
 import useIsInIframe from "@/hooks/use-is-in-iframe";
 // types
 import type { IIssue } from "@/types/issue";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   anchor: string;
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export const PeekOverviewIssueActivity = observer(function PeekOverviewIssueActivity(props: Props) {
+  const { t } = useTranslation();
   const { anchor } = props;
   // router
   const pathname = usePathname();
@@ -63,7 +65,7 @@ export const PeekOverviewIssueActivity = observer(function PeekOverviewIssueActi
                 Sign in to add your comment
               </p>
               <Link to={`/?next_path=${pathname}`}>
-                <Button variant="primary">Sign in</Button>
+                <Button variant="primary">{t("ui.sign_in")}</Button>
               </Link>
             </div>
           ))}
