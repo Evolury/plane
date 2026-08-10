@@ -10,11 +10,13 @@ import { MessageSquare } from "lucide-react";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
 import { IssueActivityBlockComponent, IssueLink } from "./";
+import { useTranslation } from "@plane/i18n";
 
 type TIssueLinkActivity = { activityId: string; showIssue?: boolean; ends: "top" | "bottom" | undefined };
 
 export const IssueLinkActivity = observer(function IssueLinkActivity(props: TIssueLinkActivity) {
   const { activityId, showIssue = false, ends } = props;
+  const { t } = useTranslation();
   // hooks
   const {
     activity: { getActivityById },
@@ -32,7 +34,7 @@ export const IssueLinkActivity = observer(function IssueLinkActivity(props: TIss
       <>
         {activity.verb === "created" ? (
           <>
-            <span>added </span>
+            <span>{t("activity_log.added")} </span>
             <a
               href={`${activity.new_value}`}
               target="_blank"
@@ -44,7 +46,7 @@ export const IssueLinkActivity = observer(function IssueLinkActivity(props: TIss
           </>
         ) : activity.verb === "updated" ? (
           <>
-            <span>updated the </span>
+            <span>{t("activity_log.updated_the")} </span>
             <a
               href={`${activity.old_value}`}
               target="_blank"
@@ -56,7 +58,7 @@ export const IssueLinkActivity = observer(function IssueLinkActivity(props: TIss
           </>
         ) : (
           <>
-            <span>removed this </span>
+            <span>{t("activity_log.removed_this")} </span>
             <a
               href={`${activity.old_value}`}
               target="_blank"
@@ -67,7 +69,7 @@ export const IssueLinkActivity = observer(function IssueLinkActivity(props: TIss
             </a>
           </>
         )}
-        {showIssue && (activity.verb === "created" ? ` to ` : ` from `)}
+        {showIssue && (activity.verb === "created" ? t("activity_log.prep_in") : t("activity_log.prep_from"))}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>
     </IssueActivityBlockComponent>

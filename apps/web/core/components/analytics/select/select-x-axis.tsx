@@ -7,6 +7,7 @@
 // plane package imports
 import type { ChartXAxisProperty } from "@plane/types";
 import { CustomSelect } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   value?: ChartXAxisProperty;
@@ -19,10 +20,11 @@ type Props = {
 };
 
 export function SelectXAxis(props: Props) {
+  const { t } = useTranslation();
   const { value, onChange, options, hiddenOptions, allowNoValue, label } = props;
   return (
     <CustomSelect value={value} label={label} onChange={onChange} maxHeight="lg">
-      {allowNoValue && <CustomSelect.Option value={null}>No value</CustomSelect.Option>}
+      {allowNoValue && <CustomSelect.Option value={null}>{t("ui.no_value")}</CustomSelect.Option>}
       {options.map((item) => {
         if (hiddenOptions?.includes(item.value)) return null;
         return (

@@ -18,6 +18,7 @@ import {
 import { EProductSubscriptionEnum } from "@plane/types";
 import { EModalWidth, ModalCore } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { FreePlanCard, PlanUpgradeCard } from "@/components/license";
 import type { TCheckoutParams } from "@/components/license/modal/card/checkout-button";
@@ -32,6 +33,7 @@ export type PaidPlanUpgradeModalProps = {
 };
 
 export const PaidPlanUpgradeModal = observer(function PaidPlanUpgradeModal(props: PaidPlanUpgradeModalProps) {
+  const { t } = useTranslation();
   const { isOpen, handleClose } = props;
   // derived values
   const isSelfHosted = true;
@@ -54,7 +56,7 @@ export const PaidPlanUpgradeModal = observer(function PaidPlanUpgradeModal(props
         <div className="grid h-full grid-cols-12 gap-6">
           {/* Free Plan Section */}
           <div className={cn(COMMON_CARD_CLASSNAME)}>
-            <div className="flex text-24 leading-8 font-bold">Upgrade to a paid plan and unlock missing features.</div>
+            <div className="flex text-24 leading-8 font-bold">{t("ui.upgrade_unlock")}</div>
             <div className="mt-4 mb-2">
               <p className="mb-4 pr-8 text-13 text-primary">
                 Dashboards, Workflows, Approvals, Time Management, and other superpowers are just a click away. Upgrade

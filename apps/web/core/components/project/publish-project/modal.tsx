@@ -182,7 +182,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
     <ModalCore isOpen={isOpen} handleClose={handleClose} width={EModalWidth.XXL}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="flex items-center justify-between gap-2 p-5">
-          <h5 className="text-18 font-medium text-secondary">Publish project</h5>
+          <h5 className="text-18 font-medium text-secondary">{t("publish_project")}</h5>
           {isProjectPublished && (
             <Button
               variant="error-fill"
@@ -317,7 +317,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
         <div className="relative mt-4 flex items-center justify-between border-t border-subtle px-5 py-4">
           <div className="flex items-center gap-1 text-13 text-placeholder">
             <GlobeIcon className="size-3.5" />
-            <div className="text-13">Anyone with the link can access</div>
+            <div className="text-13">{t("ui.anyone_with_link")}</div>
           </div>
           {!fetchSettingsLoader && (
             <div className="relative flex items-center gap-2">

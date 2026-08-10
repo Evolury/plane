@@ -7,16 +7,18 @@
 import Link from "next/link";
 // ui
 import { Button } from "@plane/propel/button";
+import { useTranslation } from "@plane/i18n";
 // layouts
 import DefaultLayout from "@/layouts/default-layout";
 
 export function NotAWorkspaceMember() {
+  const { t } = useTranslation();
   return (
     <DefaultLayout>
       <div className="grid h-full place-items-center p-4">
         <div className="space-y-8 text-center">
           <div className="space-y-2">
-            <h3 className="text-16 font-semibold">Not Authorized!</h3>
+            <h3 className="text-16 font-semibold">{t("ui.not_authorized")}</h3>
             <p className="mx-auto w-1/2 text-13 text-secondary">
               You{"'"}re not a member of this workspace. Please contact the workspace admin to get an invitation or
               check your pending invitations.
@@ -30,7 +32,7 @@ export function NotAWorkspaceMember() {
             </Link>
             <Link href="/create-workspace">
               <span>
-                <Button variant="primary">Create new workspace</Button>
+                <Button variant="primary">{t("ui.create_new_workspace")}</Button>
               </span>
             </Link>
           </div>

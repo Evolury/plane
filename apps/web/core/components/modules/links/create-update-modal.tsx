@@ -12,6 +12,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ILinkDetails, ModuleLink } from "@plane/types";
 // plane ui
 import { Input, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   createLink: (formData: ModuleLink) => Promise<void>;
@@ -27,6 +28,7 @@ const defaultValues: ModuleLink = {
 };
 
 export function CreateUpdateModuleLinkModal(props: Props) {
+  const { t } = useTranslation();
   const { isOpen, handleClose, createLink, updateLink, data } = props;
   // form info
   const {
@@ -54,14 +56,14 @@ export function CreateUpdateModuleLinkModal(props: Props) {
         await createLink(payload);
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
+          title: t("toast.success"),
           message: "Module link created successfully.",
         });
       } else {
         await updateLink(payload, data.id);
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Success!",
+          title: t("toast.success"),
           message: "Module link updated successfully.",
         });
       }
@@ -69,7 +71,7 @@ export function CreateUpdateModuleLinkModal(props: Props) {
     } catch (error: any) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
+        title: t("toast.error"),
         message: error?.data?.error ?? "Some error occurred. Please try again.",
       });
     }

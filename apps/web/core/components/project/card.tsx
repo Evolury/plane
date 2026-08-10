@@ -301,7 +301,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
                     </AvatarGroup>
                   </div>
                 ) : (
-                  <span className="text-13 text-placeholder italic">No Member Yet</span>
+                  <span className="text-13 text-placeholder italic">{t("ui.no_member_yet")}</span>
                 )}
               </Tooltip>
               {isArchived && <div className="text-11 font-medium text-placeholder">Archived</div>}

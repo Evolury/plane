@@ -6,6 +6,7 @@
 
 import { observer } from "mobx-react";
 import { ParentPropertyIcon } from "@plane/propel/icons";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
@@ -15,6 +16,7 @@ type TIssueParentActivity = { activityId: string; showIssue?: boolean; ends: "to
 
 export const IssueParentActivity = observer(function IssueParentActivity(props: TIssueParentActivity) {
   const { activityId, showIssue = true, ends } = props;
+  const { t } = useTranslation();
   // hooks
   const {
     activity: { getActivityById },
@@ -30,13 +32,13 @@ export const IssueParentActivity = observer(function IssueParentActivity(props: 
       ends={ends}
     >
       <>
-        {activity.new_value ? `set the parent to ` : `removed the parent `}
+        {activity.new_value ? t("activity_log.set_parent") : t("activity_log.removed_parent")}
         {activity.new_value ? (
           <span className="font-medium text-primary">{activity.new_value}</span>
         ) : (
           <span className="font-medium text-primary">{activity.old_value}</span>
         )}
-        {showIssue && (activity.new_value ? ` for ` : ` from `)}
+        {showIssue && (activity.new_value ? t("activity_log.prep_in") : t("activity_log.prep_from"))}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>
     </IssueActivityBlockComponent>

@@ -12,6 +12,7 @@ import type { IFilterInstance } from "@plane/shared-state";
 import type { TExternalFilter, TFilterProperty, TSupportedOperators } from "@plane/types";
 import { CustomSearchSelect } from "@plane/ui";
 import { getOperatorForPayload } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 export type TAddFilterDropdownProps<P extends TFilterProperty, E extends TExternalFilter> = {
   customButton: React.ReactNode;
@@ -28,6 +29,7 @@ export const AddFilterDropdown = observer(function AddFilterDropdown<
   P extends TFilterProperty,
   E extends TExternalFilter,
 >(props: TAddFilterDropdownProps<P, E>) {
+  const { t } = useTranslation();
   const { filter, customButton, buttonConfig } = props;
   const { className, defaultOpen = false, isDisabled = false } = buttonConfig || {};
 
@@ -54,7 +56,7 @@ export const AddFilterDropdown = observer(function AddFilterDropdown<
     ? [
         {
           value: "all_filters_applied",
-          content: <div className="text-placeholder italic">All filters applied</div>,
+          content: <div className="text-placeholder italic">{t("ui.all_filters_applied")}</div>,
           query: "all filters applied",
           disabled: true,
         },
@@ -68,7 +70,7 @@ export const AddFilterDropdown = observer(function AddFilterDropdown<
       props.handleFilterSelect(property, operator, isNegation);
     } else {
       setToast({
-        title: "Filter configuration error",
+        title: t("ui.filter_config_error"),
         message: "This filter is not properly configured and cannot be applied",
         type: TOAST_TYPE.ERROR,
       });

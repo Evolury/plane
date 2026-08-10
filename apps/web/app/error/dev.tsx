@@ -10,6 +10,7 @@ import { Banner } from "@plane/propel/banner";
 import { Button } from "@plane/propel/button";
 import { Card, ECardVariant } from "@plane/propel/card";
 import { InfoFillIcon } from "@plane/propel/icons";
+import { useTranslation } from "@plane/i18n";
 
 interface ErrorActionsProps {
   onGoHome: () => void;
@@ -38,6 +39,7 @@ interface DevErrorComponentProps {
 }
 
 export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorComponentProps) {
+  const { t } = useTranslation();
   if (isRouteErrorResponse(error)) {
     return (
       <div className="flex min-h-screen items-start justify-center bg-surface-2 p-6 transition-none">
@@ -45,7 +47,7 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
           <Banner
             variant="error"
             icon={<InfoFillIcon className="size-5" />}
-            title="Route Error Response"
+            title={t("ui.route_error_response")}
             animationDuration={0}
           />
 
@@ -59,7 +61,7 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-13 font-medium tracking-wide text-tertiary uppercase">Error Data</h3>
+                <h3 className="text-13 font-medium tracking-wide text-tertiary uppercase">{t("ui.error_data")}</h3>
                 <div className="rounded-md bg-layer-1 p-4">
                   <p className="font-code text-13 text-secondary">{error.data}</p>
                 </div>
@@ -80,7 +82,7 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
           <Banner
             variant="error"
             icon={<InfoFillIcon className="size-5" />}
-            title="Runtime Error"
+            title={t("ui.runtime_error")}
             animationDuration={0}
           />
           <Card variant={ECardVariant.WITH_SHADOW} className="!p-6 transition-none">
@@ -135,14 +137,14 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
         <Banner
           variant="error"
           icon={<InfoFillIcon className="size-5" />}
-          title="Unknown Error"
+          title={t("ui.unknown_error")}
           animationDuration={0}
         />
 
         <Card variant={ECardVariant.WITH_SHADOW} className="!p-6">
           <div className="space-y-4">
             <div>
-              <h2 className="mb-2 text-20 font-semibold text-primary">Unknown Error</h2>
+              <h2 className="mb-2 text-20 font-semibold text-primary">{t("ui.unknown_error")}</h2>
               <div className="bg-subtle-1 h-px w-full" />
             </div>
 

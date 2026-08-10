@@ -10,11 +10,13 @@ import { AlignLeft } from "lucide-react";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // components
 import { IssueActivityBlockComponent, IssueLink } from "./";
+import { useTranslation } from "@plane/i18n";
 
 type TIssueDescriptionActivity = { activityId: string; showIssue?: boolean; ends: "top" | "bottom" | undefined };
 
 export const IssueDescriptionActivity = observer(function IssueDescriptionActivity(props: TIssueDescriptionActivity) {
   const { activityId, showIssue = true, ends } = props;
+  const { t } = useTranslation();
   // hooks
   const {
     activity: { getActivityById },
@@ -31,7 +33,7 @@ export const IssueDescriptionActivity = observer(function IssueDescriptionActivi
     >
       <>
         updated the description
-        {showIssue ? ` of ` : ``}
+        {showIssue ? t("activity_log.prep_from") : ``}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>
     </IssueActivityBlockComponent>

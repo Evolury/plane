@@ -6,8 +6,10 @@
 
 // components
 import { Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 export function ProjectDetailsFormLoader() {
+  const { t } = useTranslation();
   return (
     <>
       <div className="relative mt-6 h-44 w-full">
@@ -31,7 +33,7 @@ export function ProjectDetailsFormLoader() {
       </div>
       <div className="my-8 flex flex-col gap-8">
         <div className="flex flex-col gap-1">
-          <h4 className="text-13">Project name</h4>
+          <h4 className="text-13">{t("project_name")}</h4>
           <Loader>
             <Loader.Item height="46px" width="100%" />
           </Loader>
