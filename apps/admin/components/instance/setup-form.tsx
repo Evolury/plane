@@ -295,7 +295,7 @@ export function InstanceSetupForm() {
               {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
                 <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
               )}
-              <PasswordStrengthIndicator password={formData.password} isFocused={isPasswordInputFocused} />
+              <PasswordStrengthIndicator translateLabel={t} password={formData.password} isFocused={isPasswordInputFocused} />
             </div>
 
             <div className="w-full space-y-1">

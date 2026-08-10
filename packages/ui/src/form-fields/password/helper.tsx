@@ -10,6 +10,8 @@ export interface StrengthInfo {
   message: string;
   textColor: string;
   activeFragments: number;
+  /** chave i18n; o texto de `message` fica como fallback em inglês */
+  messageKey: string;
 }
 
 /**
@@ -20,30 +22,35 @@ export const getStrengthInfo = (strength: E_PASSWORD_STRENGTH): StrengthInfo => 
     case E_PASSWORD_STRENGTH.EMPTY:
       return {
         message: "Please enter your password",
+        messageKey: "ui.password_enter",
         textColor: "text-primary",
         activeFragments: 0,
       };
     case E_PASSWORD_STRENGTH.LENGTH_NOT_VALID:
       return {
         message: "Password is too short",
+        messageKey: "ui.password_too_short",
         textColor: "text-danger-primary",
         activeFragments: 1,
       };
     case E_PASSWORD_STRENGTH.STRENGTH_NOT_VALID:
       return {
         message: "Password is weak",
+        messageKey: "ui.password_weak",
         textColor: "text-orange-500",
         activeFragments: 2,
       };
     case E_PASSWORD_STRENGTH.STRENGTH_VALID:
       return {
         message: "Password is strong",
+        messageKey: "ui.password_strong",
         textColor: "text-success-primary",
         activeFragments: 3,
       };
     default:
       return {
         message: "Please enter your password",
+        messageKey: "ui.password_enter",
         textColor: "text-primary",
         activeFragments: 0,
       };

@@ -28,6 +28,13 @@ export function PasswordStrengthIndicator({
   isFocused = false,
   translateLabel,
 }: PasswordStrengthIndicatorProps) {
+  // O t() do app devolve a própria chave quando ela não existe; nesse caso o
+  // texto em inglês é melhor do que exibir "ui.password_weak" na tela.
+  const translateStrength = (key: string, fallback: string) => {
+    if (!translateLabel) return fallback;
+    const translated = translateLabel(key);
+    return !translated || translated === key ? fallback : translated;
+  };
   const strength = getPasswordStrength(password);
   const criteria = getPasswordCriteria(password);
   const strengthInfo = getStrengthInfo(strength);
@@ -55,7 +62,7 @@ export function PasswordStrengthIndicator({
         </div>
 
         {/* Strength Message */}
-        {password && <p className={cn("!text-13 font-medium", strengthInfo.textColor)}>{strengthInfo.message}</p>}
+        {password && <p className={cn("!text-13 font-medium", strengthInfo.textColor)}>{translateStrength(strengthInfo.messageKey, strengthInfo.message)}</p>}
       </div>
 
       {/* Criteria list */}

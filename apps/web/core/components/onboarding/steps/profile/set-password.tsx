@@ -107,7 +107,7 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
             placeholder={t("auth.common.password.set_password")}
             className="transition-all duration-200"
           />
-          {passwordState.password.length > 0 && <PasswordStrengthIndicator password={passwordState.password} />}
+          {passwordState.password.length > 0 && <PasswordStrengthIndicator translateLabel={t} password={passwordState.password} />}
         </div>
 
         <div className="flex flex-col gap-2 pb-2">

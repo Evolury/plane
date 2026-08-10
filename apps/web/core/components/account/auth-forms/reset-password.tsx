@@ -159,7 +159,7 @@ export const ResetPasswordForm = observer(function ResetPasswordForm() {
               />
             )}
           </div>
-          <PasswordStrengthIndicator password={resetFormData.password} isFocused={isPasswordInputFocused} />
+          <PasswordStrengthIndicator translateLabel={t} password={resetFormData.password} isFocused={isPasswordInputFocused} />
         </div>
         <div className="space-y-1">
           <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">

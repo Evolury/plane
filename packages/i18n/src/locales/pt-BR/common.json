@@ -1492,7 +1492,11 @@
     "use_plane_to_add_your_valuable_inputs_to_feature": "Use o Plane para dar suas contribuições aos recursos.",
     "user_already_logged_in": "Usuário já está conectado",
     "view_comment_and_do_more": "Visualize, comente e faça mais",
-    "work_item_link_copied_to_clipboard": "Link do item de trabalho copiado para a área de transferência."
+    "work_item_link_copied_to_clipboard": "Link do item de trabalho copiado para a área de transferência.",
+    "password_enter": "Digite sua senha",
+    "password_too_short": "A senha é muito curta",
+    "password_weak": "A senha é fraca",
+    "password_strong": "A senha é forte"
   },
   "activity_log": {
     "prep_in": " em ",
