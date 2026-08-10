@@ -294,10 +294,11 @@ export const WORKSPACE_DEFAULT_SEARCH_RESULT: IWorkspaceSearchResults = {
   },
 };
 
+/** `value` é o dado gravado; `i18n_label` é o que a tela exibe. */
 export const USE_CASES = [
-  "Plan and track product roadmaps",
-  "Manage engineering sprints",
-  "Coordinate cross-functional projects",
-  "Replace our current tool",
-  "Just exploring",
+  { value: "Plan and track product roadmaps", i18n_label: "ui.usecase_roadmaps" },
+  { value: "Manage engineering sprints", i18n_label: "ui.usecase_sprints" },
+  { value: "Coordinate cross-functional projects", i18n_label: "ui.usecase_cross_functional" },
+  { value: "Replace our current tool", i18n_label: "ui.usecase_replace_tool" },
+  { value: "Just exploring", i18n_label: "ui.usecase_exploring" },
 ];

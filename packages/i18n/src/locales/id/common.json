@@ -1511,7 +1511,21 @@
     "no_matching_results": "No matching results",
     "open_color_picker": "Open color picker",
     "add_reaction": "Add reaction",
-    "contrast_adjust_note": "Colors will be adjusted to ensure sufficient contrast."
+    "contrast_adjust_note": "Colors will be adjusted to ensure sufficient contrast.",
+    "filter_state_group": "State Group",
+    "filter_created_by": "Created by",
+    "filter_created_at": "Created at",
+    "filter_updated_at": "Updated at",
+    "usecase_roadmaps": "Plan and track product roadmaps",
+    "usecase_sprints": "Manage engineering sprints",
+    "usecase_cross_functional": "Coordinate cross-functional projects",
+    "usecase_replace_tool": "Replace our current tool",
+    "usecase_exploring": "Just exploring",
+    "ai_generating": "Pi is generating response",
+    "operator_is_any_of": "is any of",
+    "image_to_base64_failed": "Failed to convert image to base64.",
+    "image_read_failed": "Failed to read the image file.",
+    "no_matches_found_ui": "No matches found"
   },
   "activity_log": {
     "prep_in": " for ",

@@ -104,20 +104,20 @@ export const UseCaseSetupStep = observer(function UseCaseSetupStep({ handleStepC
           render={({ field: { value, onChange } }) => (
             <div className="flex flex-col gap-3">
               {USE_CASES.map((useCase) => {
-                const isSelected = value?.includes(useCase) || false;
+                const isSelected = value?.includes(useCase.value) || false;
                 return (
                   <button
-                    key={useCase}
+                    key={useCase.value}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       const currentValue = value || [];
                       if (isSelected) {
                         // Remove from array
-                        onChange(currentValue.filter((item) => item !== useCase));
+                        onChange(currentValue.filter((item) => item !== useCase.value));
                       } else {
                         // Add to array
-                        onChange([...currentValue, useCase]);
+                        onChange([...currentValue, useCase.value]);
                       }
                     }}
                     className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-all duration-200 ${
@@ -140,7 +140,7 @@ export const UseCaseSetupStep = observer(function UseCaseSetupStep({ handleStepC
                       />
                     </span>
 
-                    <span className="text-body-sm-regular">{useCase}</span>
+                    <span className="text-body-sm-regular">{t(useCase.i18n_label)}</span>
                   </button>
                 );
               })}

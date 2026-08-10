@@ -1511,7 +1511,21 @@
     "no_matching_results": "Nenhum resultado correspondente",
     "open_color_picker": "Abrir seletor de cores",
     "add_reaction": "Adicionar reação",
-    "contrast_adjust_note": "As cores serão ajustadas para garantir contraste suficiente."
+    "contrast_adjust_note": "As cores serão ajustadas para garantir contraste suficiente.",
+    "filter_state_group": "Grupo de estados",
+    "filter_created_by": "Criado por",
+    "filter_created_at": "Criado em",
+    "filter_updated_at": "Atualizado em",
+    "usecase_roadmaps": "Planejar e acompanhar roadmaps de produto",
+    "usecase_sprints": "Gerenciar sprints de engenharia",
+    "usecase_cross_functional": "Coordenar projetos multidisciplinares",
+    "usecase_replace_tool": "Substituir nossa ferramenta atual",
+    "usecase_exploring": "Só explorando",
+    "ai_generating": "Plane AI está gerando a resposta",
+    "operator_is_any_of": "é algum de",
+    "image_to_base64_failed": "Não foi possível converter a imagem para base64.",
+    "image_read_failed": "Não foi possível ler o arquivo de imagem.",
+    "no_matches_found_ui": "Nenhuma correspondência encontrada"
   },
   "activity_log": {
     "prep_in": " em ",

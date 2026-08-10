@@ -36,6 +36,12 @@ export type TCreateFilterConfigParams = Omit<TBaseFilterFieldConfig, "isOperator
   allowedOperators: Set<TSupportedOperators>;
   rightContent?: React.ReactNode; // content to display on the right side of the filter option in the dropdown
   tooltipContent?: React.ReactNode; // content to display when hovering over the applied filter item in the filter list
+  /**
+   * Rótulo já traduzido. As fábricas definem um label em inglês e espalham
+   * `...params` logo depois, então informar este campo sobrescreve o padrão —
+   * é assim que o app traduz sem que @plane/utils dependa de @plane/i18n.
+   */
+  label?: string;
 };
 
 /**

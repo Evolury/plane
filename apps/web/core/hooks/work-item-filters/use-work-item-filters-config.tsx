@@ -62,6 +62,7 @@ import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 // plane web imports
 import { useFiltersOperatorConfigs } from "@/hooks/rich-filters/use-filters-operator-configs";
+import { useTranslation } from "@plane/i18n";
 
 export type TWorkItemFiltersEntityProps = {
   workspaceSlug: string;
@@ -89,6 +90,7 @@ export type TWorkItemFiltersConfig = {
 };
 
 export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps): TWorkItemFiltersConfig => {
+  const { t } = useTranslation();
   const { allowedFilters, cycleIds, labelIds, memberIds, moduleIds, projectId, projectIds, stateIds, workspaceSlug } =
     props;
   // store hooks
@@ -151,6 +153,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const stateGroupFilterConfig = useMemo(
     () =>
       getStateGroupFilterConfig<TWorkItemFilterProperty>("state_group")({
+        label: t("ui.filter_state_group"),
         isEnabled: isFilterEnabled("state_group"),
         filterIcon: StatePropertyIcon,
         getOptionIcon: (stateGroupKey) => <StateGroupIcon stateGroup={stateGroupKey} />,
@@ -257,6 +260,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const createdByFilterConfig = useMemo(
     () =>
       getCreatedByFilterConfig<TWorkItemFilterProperty>("created_by_id")({
+        label: t("ui.filter_created_by"),
         isEnabled: isFilterEnabled("created_by_id") && members !== undefined,
         filterIcon: UserCirclePropertyIcon,
         members: members ?? [],
@@ -331,6 +335,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const createdAtFilterConfig = useMemo(
     () =>
       getCreatedAtFilterConfig<TWorkItemFilterProperty>("created_at")({
+        label: t("ui.filter_created_at"),
         isEnabled: true,
         filterIcon: CalendarLayoutIcon,
         ...operatorConfigs,
@@ -342,6 +347,7 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   const updatedAtFilterConfig = useMemo(
     () =>
       getUpdatedAtFilterConfig<TWorkItemFilterProperty>("updated_at")({
+        label: t("ui.filter_updated_at"),
         isEnabled: true,
         filterIcon: CalendarLayoutIcon,
         ...operatorConfigs,
