@@ -37,8 +37,10 @@ import { useUserPermissions } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
+import { useTranslation } from "@plane/i18n";
 
 export const ProjectViewIssuesHeader = observer(function ProjectViewIssuesHeader() {
+  const { t } = useTranslation();
   // refs
   const parentRef = useRef(null);
   // router
@@ -205,7 +207,7 @@ export const ProjectViewIssuesHeader = observer(function ProjectViewIssuesHeader
             }}
             data-ph-element={WORK_ITEM_TRACKER_ELEMENTS.HEADER_ADD_BUTTON.PROJECT_VIEW}
           >
-            Add work item
+            {t("add_work_item")}
           </Button>
         )}
         <div className="hidden md:block">

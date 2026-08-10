@@ -24,6 +24,7 @@ import { usePublish } from "@/hooks/store/publish";
 import { useIssueDetails } from "@/hooks/store/use-issue-details";
 import { useUser } from "@/hooks/store/use-user";
 import useIsInIframe from "@/hooks/use-is-in-iframe";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   anchor: string;
@@ -31,6 +32,7 @@ type Props = {
 };
 
 export const CommentCard = observer(function CommentCard(props: Props) {
+  const { t } = useTranslation();
   const { anchor, comment } = props;
   // store hooks
   const { peekId, deleteIssueComment, updateIssueComment, uploadCommentAsset } = useIssueDetails();
@@ -199,7 +201,7 @@ export const CommentCard = observer(function CommentCard(props: Props) {
                         active ? "bg-layer-transparent-hover" : ""
                       }`}
                     >
-                      Edit
+                      {t("edit")}
                     </button>
                   </div>
                 )}
@@ -214,7 +216,7 @@ export const CommentCard = observer(function CommentCard(props: Props) {
                         active ? "bg-layer-transparent-hover" : ""
                       }`}
                     >
-                      Delete
+                      {t("delete")}
                     </button>
                   </div>
                 )}

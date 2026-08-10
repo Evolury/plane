@@ -113,7 +113,7 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
         <div className="flex flex-col gap-2 pb-2">
           {/* Confirm password label */}
           <div className="transform text-13 font-medium text-tertiary transition-all delay-75 duration-300 ease-in-out">
-            Confirm password
+            {t("auth.common.password.confirm_password.label")}
           </div>
 
           {/* Confirm password input */}

@@ -187,7 +187,7 @@ export function GptAssistantPopover(props: Props) {
         onClose();
       }}
     >
-      Use this response
+      {t("ui.use_this_response")}
     </Button>
   );
 
@@ -290,7 +290,7 @@ export function GptAssistantPopover(props: Props) {
             )}
             <div className="flex items-center gap-2">
               <Button variant="secondary" onClick={onClose}>
-                Close
+                {t("close")}
               </Button>
               <Button variant="primary" onClick={handleSubmit(handleAIResponse)} loading={isSubmitting}>
                 {generateResponseButtonText}

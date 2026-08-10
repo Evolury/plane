@@ -78,7 +78,7 @@ function ArchivedIssueDetailsPage({ params }: Route.ComponentProps) {
                 variant="secondary"
                 onClick={() => router.push(`/${workspaceSlug}/projects/${projectId}/archives/issues/`)}
               >
-                Go to archives
+                {t("ui.go_to_archives")}
               </Button>
             }
             className="border-b border-subtle"

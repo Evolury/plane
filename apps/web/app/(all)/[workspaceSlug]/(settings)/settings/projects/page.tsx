@@ -35,13 +35,13 @@ function ProjectSettingsPage() {
       </div>
       <div className="flex gap-2">
         <Link href="https://plane.so/" target="_blank" className={cn(getButtonStyling("secondary", "base"))}>
-          Learn more about projects
+          {t("ui.learn_more_about_projects")}
         </Link>
         <Button
           onClick={() => toggleCreateProjectModal(true)}
           data-ph-element={PROJECT_TRACKER_ELEMENTS.EMPTY_STATE_CREATE_PROJECT_BUTTON}
         >
-          Start your first project
+          {t("workspace_projects.empty_state.general.primary_button.text")}
         </Button>
       </div>
     </div>

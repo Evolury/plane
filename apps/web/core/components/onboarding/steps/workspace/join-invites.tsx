@@ -117,7 +117,7 @@ export function WorkspaceJoinInvitesStep(props: Props) {
           onClick={handleCurrentViewChange}
           disabled={isJoiningWorkspaces}
         >
-          Create new workspace
+          {t("ui.create_new_workspace")}
         </Button>
       </div>
     </div>

@@ -86,7 +86,7 @@ export function InstanceGiteaConfigForm(props: Props) {
             className="text-accent-primary hover:underline"
             rel="noreferrer"
           >
-            Gitea OAuth application settings.
+            {t("ui.gitea_oauth_application_settings")}
           </a>
         </>
       ),
@@ -107,7 +107,7 @@ export function InstanceGiteaConfigForm(props: Props) {
             className="text-accent-primary hover:underline"
             rel="noreferrer"
           >
-            Gitea OAuth application settings.
+            {t("ui.gitea_oauth_application_settings")}
           </a>
         </>
       ),
@@ -205,7 +205,7 @@ export function InstanceGiteaConfigForm(props: Props) {
                   {isSubmitting ? "Saving" : t("save_changes")}
                 </Button>
                 <Link href="/authentication" className={getButtonStyling("secondary", "lg")} onClick={handleGoBack}>
-                  Go back
+                  {t("common.go_back")}
                 </Link>
               </div>
             </div>

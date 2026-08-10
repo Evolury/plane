@@ -37,7 +37,7 @@ function PageNotFound() {
           <Link href="/">
             <span className="flex justify-center">
               <Button variant="secondary" size="lg">
-                Go to Home
+                {t("ui.go_to_home")}
               </Button>
             </span>
           </Link>

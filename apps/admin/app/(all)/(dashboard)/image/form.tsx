@@ -68,7 +68,7 @@ export function InstanceImageConfigForm(props: IInstanceImageConfigForm) {
                 rel="noreferrer"
                 aria-label="Unsplash developer account documentation"
               >
-                Learn more.
+                {t("ui.learn_more")}
               </a>
             </>
           }

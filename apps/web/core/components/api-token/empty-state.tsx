@@ -30,7 +30,7 @@ export function ApiTokenEmptyState(props: Props) {
           Create API tokens for safe and easy data sharing with external apps, maintaining control and security.
         </p>
         <Button className="flex items-center gap-1.5" onClick={onClick}>
-          Add token
+          {t("ui.add_token")}
         </Button>
       </div>
     </div>

@@ -230,7 +230,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                       className="h-8 rounded-sm bg-layer-3 px-3 py-2 text-11 font-medium hover:bg-layer-3-hover"
                       onClick={handleCopyLink}
                     >
-                      Copy link
+                      {t("copy_link")}
                     </button>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                     <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent-primary opacity-75" />
                     <span className="relative inline-flex size-1.5 rounded-full bg-accent-primary" />
                   </span>
-                  This project is now live on web
+                  {t("ui.this_project_is_now_live_on_web")}
                 </p>
               </>
             )}
@@ -322,7 +322,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
           {!fetchSettingsLoader && (
             <div className="relative flex items-center gap-2">
               <Button variant="secondary" size="lg" onClick={handleClose}>
-                Cancel
+                {t("cancel")}
               </Button>
               {isProjectPublished ? (
                 isDirty && (

@@ -76,7 +76,7 @@ export function InstanceGithubConfigForm(props: Props) {
             className="text-accent-primary hover:underline"
             rel="noreferrer"
           >
-            GitHub OAuth application settings.
+            {t("ui.github_oauth_application_settings")}
           </a>
         </>
       ),
@@ -97,7 +97,7 @@ export function InstanceGithubConfigForm(props: Props) {
             className="text-accent-primary hover:underline"
             rel="noreferrer"
           >
-            GitHub OAuth application settings.
+            {t("ui.github_oauth_application_settings")}
           </a>
         </>
       ),
@@ -226,7 +226,7 @@ export function InstanceGithubConfigForm(props: Props) {
                   {isSubmitting ? "Saving" : t("save_changes")}
                 </Button>
                 <Link href="/authentication" className={getButtonStyling("secondary", "lg")} onClick={handleGoBack}>
-                  Go back
+                  {t("common.go_back")}
                 </Link>
               </div>
             </div>

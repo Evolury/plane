@@ -361,7 +361,7 @@ export function InstanceSetupForm() {
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:text-blue-600 flex-shrink-0 text-13 font-medium"
                 >
-                  See More
+                  {t("ui.see_more")}
                 </a>
               </label>
             </div>

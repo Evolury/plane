@@ -133,7 +133,7 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
               </div>
               <div className="flex items-center gap-2">
                 <Link href="/workspace/create" className={getButtonStyling("primary", "base")}>
-                  Create workspace
+                  {t("create_workspace")}
                 </Link>
               </div>
             </div>

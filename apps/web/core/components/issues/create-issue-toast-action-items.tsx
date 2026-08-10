@@ -12,6 +12,7 @@ import { copyUrlToClipboard, generateWorkItemLink } from "@plane/utils";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProject } from "@/hooks/store/use-project";
+import { useTranslation } from "@plane/i18n";
 
 type TCreateIssueToastActionItems = {
   workspaceSlug: string;
@@ -23,6 +24,7 @@ type TCreateIssueToastActionItems = {
 export const CreateIssueToastActionItems = observer(function CreateIssueToastActionItems(
   props: TCreateIssueToastActionItems
 ) {
+  const { t } = useTranslation();
   const { workspaceSlug, issueId, isEpic = false } = props;
   // state
   const [copied, setCopied] = useState(false);
@@ -80,7 +82,7 @@ export const CreateIssueToastActionItems = observer(function CreateIssueToastAct
             className="hidden cursor-pointer rounded-sm px-2 py-1 text-tertiary group-hover:flex hover:bg-surface-2 hover:text-secondary"
             onClick={copyToClipboard}
           >
-            Copy link
+            {t("copy_link")}
           </button>
         </>
       )}

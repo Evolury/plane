@@ -14,6 +14,7 @@ import { cn } from "@plane/utils";
 import type { TPageInstance } from "@/store/pages/base-page";
 // local imports
 import { PageEditorHeaderLogoPicker } from "./logo-picker";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   page: TPageInstance;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export const PageEditorHeaderRoot = observer(function PageEditorHeaderRoot(props: Props) {
+  const { t } = useTranslation();
   const { page } = props;
   // states
   const [isLogoPickerOpen, setIsLogoPickerOpen] = useState(false);
@@ -54,7 +56,7 @@ export const PageEditorHeaderRoot = observer(function PageEditorHeaderRoot(props
                   )}
                 >
                   <SmilePlus className="size-4 flex-shrink-0" />
-                  Icon
+                  {t("ui.icon")}
                 </button>
               }
               onChange={updatePageLogo}

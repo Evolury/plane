@@ -6,8 +6,10 @@
 
 // ui
 import { Button } from "@plane/propel/button";
+import { useTranslation } from "@plane/i18n";
 
 function ErrorPage() {
+  const { t } = useTranslation();
   const handleRetry = () => {
     window.location.reload();
   };
@@ -25,17 +27,17 @@ function ErrorPage() {
             </a>{" "}
             or on our{" "}
             <a href="https://forum.plane.so" target="_blank" className="text-accent-primary" rel="noopener noreferrer">
-              Forum
+              {t("forum")}
             </a>
             .
           </p>
         </div>
         <div className="flex items-center justify-center gap-2">
           <Button variant="primary" size="lg" onClick={handleRetry}>
-            Refresh
+            {t("refresh")}
           </Button>
           {/* <Button variant="secondary" size="lg" onClick={() => {}}>
-            Sign out
+            {t("sign_out")}
           </Button> */}
         </div>
       </div>

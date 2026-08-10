@@ -25,6 +25,7 @@ import type { IIssueLabelStore } from "@/store/label.store";
 import type { IIssueMemberStore } from "@/store/members.store";
 import type { IIssueModuleStore } from "@/store/module.store";
 import type { IStateStore } from "@/store/state.store";
+import { translate } from "@plane/i18n";
 
 export const HIGHLIGHT_CLASS = "highlight";
 export const HIGHLIGHT_WITH_LINE = "highlight-with-line";
@@ -133,7 +134,7 @@ const getPriorityColumns = () => {
 
   return priorities.map((priority) => ({
     id: priority.key,
-    name: priority.title,
+    name: translate(priority.i18n_title),
     icon: <PriorityIcon priority={priority?.key} />,
     payload: { priority: priority.key },
   }));

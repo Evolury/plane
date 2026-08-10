@@ -62,7 +62,7 @@ export const PeekOverviewIssueActivity = observer(function PeekOverviewIssueActi
             <div className="mt-4 flex items-center justify-between gap-2 rounded-sm border border-strong bg-layer-2 px-2 py-2.5">
               <p className="flex items-center gap-2 overflow-hidden text-13 break-words text-secondary">
                 <Lock className="size-3 shrink-0" />
-                Sign in to add your comment
+                {t("ui.sign_in_to_add_your_comment")}
               </p>
               <Link to={`/?next_path=${pathname}`}>
                 <Button variant="primary">{t("ui.sign_in")}</Button>

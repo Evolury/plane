@@ -207,7 +207,7 @@ export function WorkspaceCreateForm() {
           {isSubmitting ? "Creating workspace" : t("create_workspace")}
         </Button>
         <Link className={getButtonStyling("secondary", "lg")} href="/workspace">
-          Go back
+          {t("common.go_back")}
         </Link>
       </div>
     </div>

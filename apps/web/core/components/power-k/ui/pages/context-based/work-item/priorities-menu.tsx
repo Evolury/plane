@@ -12,6 +12,7 @@ import { PriorityIcon } from "@plane/propel/icons";
 import type { TIssue, TIssuePriorities } from "@plane/types";
 // local imports
 import { PowerKModalCommandItem } from "../../../modal/command-item";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   handleSelect: (priority: TIssuePriorities) => void;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export const PowerKWorkItemPrioritiesMenu = observer(function PowerKWorkItemPrioritiesMenu(props: Props) {
+  const { t } = useTranslation();
   const { handleSelect, workItemDetails } = props;
 
   return (
@@ -27,7 +29,7 @@ export const PowerKWorkItemPrioritiesMenu = observer(function PowerKWorkItemPrio
         <PowerKModalCommandItem
           key={priority.key}
           iconNode={<PriorityIcon priority={priority.key} />}
-          label={priority.title}
+          label={t(priority.i18n_title)}
           isSelected={priority.key === workItemDetails.priority}
           onSelect={() => handleSelect(priority.key)}
         />

@@ -79,7 +79,7 @@ export const DeleteEstimateModal = observer(function DeleteEstimateModal(props: 
 
         <div className="relative flex items-center justify-end gap-3 border-t border-subtle px-5 pt-5">
           <Button variant="secondary" size="lg" onClick={handleClose} disabled={buttonLoader}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button variant="error-fill" size="lg" onClick={handleDeleteEstimate} disabled={buttonLoader}>
             {buttonLoader ? "Deleting" : t("ui.delete_estimate")}

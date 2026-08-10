@@ -16,8 +16,10 @@ import { StickySearch } from "@/components/stickies/modal/search";
 import { useStickyOperations } from "@/components/stickies/sticky/use-operations";
 // hooks
 import { useSticky } from "@/hooks/use-stickies";
+import { useTranslation } from "@plane/i18n";
 
 export const WorkspaceStickyHeader = observer(function WorkspaceStickyHeader() {
+  const { t } = useTranslation();
   const { workspaceSlug } = useParams();
   // hooks
   const { creatingSticky, toggleShowNewSticky } = useSticky();
@@ -52,7 +54,7 @@ export const WorkspaceStickyHeader = observer(function WorkspaceStickyHeader() {
             }}
             loading={creatingSticky}
           >
-            Add sticky
+            {t("stickies.add")}
           </Button>
         </Header.RightItem>
       </Header>

@@ -130,7 +130,7 @@ export const ModuleIssuesMobileHeader = observer(function ModuleIssuesMobileHead
           onClick={() => setAnalyticsModal(true)}
           className="flex flex-grow justify-center border-l border-subtle text-13 text-secondary"
         >
-          Analytics
+          {t("analytics")}
         </button>
       </div>
     </div>

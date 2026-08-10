@@ -171,7 +171,7 @@ function PageDetailsPage({ params }: Route.ComponentProps) {
           href={`/${workspaceSlug}/projects/${projectId}/pages`}
           className={cn(getButtonStyling("secondary", "base"), "mt-5")}
         >
-          View other Pages
+          {t("ui.view_other_pages")}
         </Link>
       </div>
     );

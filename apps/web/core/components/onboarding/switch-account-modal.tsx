@@ -94,7 +94,7 @@ export function SwitchAccountModal(props: Props) {
                     </div>
                     <div className="flex flex-col gap-y-6 py-3">
                       <Dialog.Title as="h3" className="text-20 leading-6 font-medium text-primary">
-                        Switch account
+                        {t("ui.switch_account")}
                       </Dialog.Title>
                       {userData?.email && (
                         <div className="text-14 font-regular text-secondary">

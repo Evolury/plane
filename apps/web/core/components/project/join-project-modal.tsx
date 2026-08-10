@@ -62,7 +62,7 @@ export function JoinProjectModal(props: TJoinProjectModalProps) {
       </div>
       <div className="mt-5 flex justify-end gap-2 px-5 pb-8 sm:px-6 sm:pb-6">
         <Button variant="secondary" size="lg" onClick={handleClose}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button variant="primary" size="lg" tabIndex={1} type="submit" onClick={handleJoin} loading={isJoiningLoading}>
           {isJoiningLoading ? "Joining..." : t("ui.join_project")}

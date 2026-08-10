@@ -120,7 +120,7 @@ export function Invitations(props: Props) {
         onClick={handleCurrentViewChange}
         disabled={isJoiningWorkspaces}
       >
-        Create your own workspace
+        {t("ui.create_your_own_workspace")}
       </Button>
     </div>
   ) : (

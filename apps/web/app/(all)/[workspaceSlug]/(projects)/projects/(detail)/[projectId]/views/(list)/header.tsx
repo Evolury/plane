@@ -19,8 +19,10 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
+import { useTranslation } from "@plane/i18n";
 
 export const ProjectViewsHeader = observer(function ProjectViewsHeader() {
+  const { t } = useTranslation();
   const { workspaceSlug, projectId } = useParams();
   // store hooks
   const { toggleCreateViewModal } = useCommandPalette();
@@ -54,7 +56,7 @@ export const ProjectViewsHeader = observer(function ProjectViewsHeader() {
               size="lg"
               onClick={() => toggleCreateViewModal(true)}
             >
-              Add view
+              {t("workspace_views.add_view")}
             </Button>
           </div>
         </Header.RightItem>

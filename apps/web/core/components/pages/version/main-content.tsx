@@ -96,7 +96,7 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
               <p className="text-13 text-tertiary">{t("toast.version_load_failed")}</p>
             </div>
             <Button variant="link" onClick={handleRetry} loading={isRetrying}>
-              Try again
+              {t("ui.try_again")}
             </Button>
           </div>
         </div>
@@ -111,7 +111,7 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
               </h6>
               <span className="flex flex-shrink-0 items-center gap-1 rounded-sm bg-accent-primary/20 px-1.5 py-1 text-11 font-medium text-accent-primary">
                 <EyeIcon className="size-3 flex-shrink-0" />
-                View only
+                {t("ui.view_only")}
               </span>
             </div>
             {restoreEnabled && (

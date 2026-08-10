@@ -30,7 +30,7 @@ export function TransferIssues(props: Props) {
       {canTransferIssues && (
         <div>
           <Button variant="primary" size="lg" prependIcon={<TransferIcon />} onClick={handleClick} disabled={disabled}>
-            Transfer work items
+            {t("product_tour.cycle.step_four.title")}
           </Button>
         </div>
       )}

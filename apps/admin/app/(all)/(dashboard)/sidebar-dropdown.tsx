@@ -16,11 +16,13 @@ import { Avatar } from "@plane/ui";
 import { getFileURL, cn } from "@plane/utils";
 // hooks
 import { useTheme, useUser } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 // service initialization
 const authService = new AuthService();
 
 export const AdminSidebarDropdown = observer(function AdminSidebarDropdown() {
+  const { t } = useTranslation();
   // store hooks
   const { isSidebarCollapsed } = useTheme();
   const { currentUser, signOut } = useUser();
@@ -68,7 +70,7 @@ export const AdminSidebarDropdown = observer(function AdminSidebarDropdown() {
             className="flex w-full items-center gap-2 rounded-sm px-2 py-1 hover:bg-layer-1-hover"
           >
             <LogOut className="h-4 w-4 stroke-[1.5]" />
-            Sign out
+            {t("sign_out")}
           </Menu.Item>
         </form>
       </div>

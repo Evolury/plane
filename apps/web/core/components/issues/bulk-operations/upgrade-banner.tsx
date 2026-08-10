@@ -7,12 +7,14 @@
 import { MARKETING_PLANE_ONE_PAGE_LINK } from "@plane/constants";
 import { getButtonStyling } from "@plane/propel/button";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   className?: string;
 };
 
 export function BulkOperationsUpgradeBanner(props: Props) {
+  const { t } = useTranslation();
   const { className } = props;
 
   return (
@@ -28,7 +30,7 @@ export function BulkOperationsUpgradeBanner(props: Props) {
           rel="noopener noreferrer"
           className={cn(getButtonStyling("primary", "base"), "flex-shrink-0")}
         >
-          Upgrade to One
+          {t("ui.upgrade_to_one")}
         </a>
       </div>
     </div>

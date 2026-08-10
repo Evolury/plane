@@ -18,14 +18,15 @@ interface ErrorActionsProps {
 }
 
 function ErrorActions({ onGoHome, onReload }: ErrorActionsProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-3 pt-2">
       <Button variant="primary" size="lg" onClick={onGoHome}>
-        Go to home
+        {t("power_k.navigation_actions.nav_home")}
       </Button>
       {onReload && (
         <Button variant="secondary" size="lg" onClick={onReload}>
-          Reload page
+          {t("ui.reload_page")}
         </Button>
       )}
     </div>

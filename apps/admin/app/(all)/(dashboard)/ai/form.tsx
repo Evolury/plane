@@ -54,7 +54,7 @@ export function InstanceAIForm(props: IInstanceAIForm) {
             rel="noreferrer"
             aria-label="OpenAI models documentation"
           >
-            Learn more
+            {t("wiki.upgrade_flow.learn_more_button.text")}
           </a>
         </>
       ),

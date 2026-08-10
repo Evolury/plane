@@ -83,7 +83,7 @@ export function ProdErrorComponent({ onGoHome }: ProdErrorComponentProps) {
 
           <div className="flex items-center justify-start gap-6">
             <Button variant="primary" size="lg" onClick={onGoHome}>
-              Go to home
+              {t("power_k.navigation_actions.nav_home")}
             </Button>
           </div>
         </div>

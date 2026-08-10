@@ -11,8 +11,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@plane/propel/button";
 import { useUser } from "@/hooks/store/user";
 import type { Props } from "./confirm-workspace-member-remove";
+import { useTranslation } from "@plane/i18n";
 
 export const ConfirmWorkspaceMemberRemove = observer(function ConfirmWorkspaceMemberRemove(props: Props) {
+  const { t } = useTranslation();
   const { isOpen, onClose, onSubmit, userDetails } = props;
   // states
   const [isRemoving, setIsRemoving] = useState(false);
@@ -89,7 +91,7 @@ export const ConfirmWorkspaceMemberRemove = observer(function ConfirmWorkspaceMe
                 </div>
                 <div className="flex justify-end gap-2 p-4 sm:px-6">
                   <Button variant="secondary" onClick={handleClose}>
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button variant="error-fill" tabIndex={1} onClick={handleDeletion} loading={isRemoving}>
                     {currentUser?.id === userDetails.id

@@ -78,7 +78,7 @@ export const PaidPlanUpgradeModal = observer(function PaidPlanUpgradeModal(props
               extraFeatures={
                 <p className={COMMON_EXTRA_FEATURES_CLASSNAME}>
                   <a href={SUBSCRIPTION_WEBPAGE_URLS[EProductSubscriptionEnum.PRO]} target="_blank" rel="noreferrer">
-                    See full features list
+                    {t("ui.see_full_features_list")}
                   </a>
                 </p>
               }
@@ -100,7 +100,7 @@ export const PaidPlanUpgradeModal = observer(function PaidPlanUpgradeModal(props
                     target="_blank"
                     rel="noreferrer"
                   >
-                    See full features list
+                    {t("ui.see_full_features_list")}
                   </a>
                 </p>
               }
@@ -122,7 +122,7 @@ export const PaidPlanUpgradeModal = observer(function PaidPlanUpgradeModal(props
                     target="_blank"
                     rel="noreferrer"
                   >
-                    See full features list
+                    {t("ui.see_full_features_list")}
                   </a>
                 </p>
               }

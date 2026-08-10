@@ -295,7 +295,7 @@ export const WorkspaceCreateStep = observer(function WorkspaceCreateStep({
         </Button>
         {hasInvitations && (
           <Button variant="ghost" size="xl" className="w-full" onClick={handleCurrentViewChange}>
-            Join existing workspace
+            {t("ui.join_existing_workspace")}
           </Button>
         )}
       </div>

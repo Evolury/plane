@@ -72,7 +72,7 @@ export function ArchiveModuleModal(props: Props) {
         </p>
         <div className="mt-3 flex justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={onClose}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button variant="primary" size="lg" tabIndex={1} onClick={handleArchiveModule} loading={isArchiving}>
             {isArchiving ? "Archiving" : "Archive"}

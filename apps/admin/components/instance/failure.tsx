@@ -37,7 +37,7 @@ export const InstanceFailureView = observer(function InstanceFailureView() {
           </div>
           <div className="flex justify-center">
             <Button size="lg" onClick={handleRetry}>
-              Retry
+              {t("common.retry")}
             </Button>
           </div>
         </div>

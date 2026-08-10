@@ -182,17 +182,17 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
             <div className="flex items-center justify-center gap-2 pt-4">
               {allWorkspaces && allWorkspaces.length > 0 && (
                 <Link href="/" className={cn(getButtonStyling("primary", "base"))}>
-                  Go Home
+                  {t("go_home")}
                 </Link>
               )}
               {allWorkspaces?.length > 0 && (
                 <Link href="/settings/profile/general/" className={cn(getButtonStyling("secondary", "base"))}>
-                  Visit Profile
+                  {t("ui.visit_profile")}
                 </Link>
               )}
               {allWorkspaces && allWorkspaces.length === 0 && (
                 <Link href="/create-workspace/" className={cn(getButtonStyling("secondary", "base"))}>
-                  Create new workspace
+                  {t("ui.create_new_workspace")}
                 </Link>
               )}
             </div>

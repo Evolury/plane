@@ -115,7 +115,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                       setStep("work-items");
                     }}
                   >
-                    Take a Product Tour
+                    {t("ui.take_a_product_tour")}
                   </Button>
                   <button
                     type="button"
@@ -124,7 +124,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                       onComplete();
                     }}
                   >
-                    No thanks, I will explore it myself
+                    {t("ui.no_thanks_i_will_explore_it_myself")}
                   </button>
                 </div>
               </div>
@@ -156,12 +156,12 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                 <div className="flex items-center gap-4">
                   {currentStep?.prevStep && (
                     <Button variant="secondary" onClick={() => setStep(currentStep.prevStep ?? "welcome")}>
-                      Back
+                      {t("common.back")}
                     </Button>
                   )}
                   {currentStep?.nextStep && (
                     <Button variant="primary" onClick={() => setStep(currentStep.nextStep ?? "work-items")}>
-                      Next
+                      {t("next")}
                     </Button>
                   )}
                 </div>
@@ -173,7 +173,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                       toggleCreateProjectModal(true);
                     }}
                   >
-                    Create your first project
+                    {t("ui.create_your_first_project")}
                   </Button>
                 )}
               </div>

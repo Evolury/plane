@@ -76,7 +76,7 @@ export function InstanceGoogleConfigForm(props: Props) {
             rel="noreferrer"
             aria-label="Google OAuth client ID documentation"
           >
-            Learn more
+            {t("wiki.upgrade_flow.learn_more_button.text")}
           </a>
         </>
       ),
@@ -98,7 +98,7 @@ export function InstanceGoogleConfigForm(props: Props) {
             rel="noreferrer"
             aria-label="Google OAuth client secret documentation"
           >
-            Learn more
+            {t("wiki.upgrade_flow.learn_more_button.text")}
           </a>
         </>
       ),
@@ -218,7 +218,7 @@ export function InstanceGoogleConfigForm(props: Props) {
                   {isSubmitting ? "Saving" : t("save_changes")}
                 </Button>
                 <Link href="/authentication" className={getButtonStyling("secondary", "lg")} onClick={handleGoBack}>
-                  Go back
+                  {t("common.go_back")}
                 </Link>
               </div>
             </div>

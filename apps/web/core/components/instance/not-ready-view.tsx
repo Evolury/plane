@@ -49,7 +49,7 @@ export function InstanceNotReady() {
             </div>
             <a href={GOD_MODE_URL} className="w-72">
               <Button variant="primary" className="w-full" size="xl">
-                Get started
+                {t("common.get_started")}
               </Button>
             </a>
           </div>

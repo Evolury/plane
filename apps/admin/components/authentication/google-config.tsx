@@ -15,6 +15,7 @@ import { ToggleSwitch } from "@plane/ui";
 import { cn } from "@plane/utils";
 // hooks
 import { useInstance } from "@/hooks/store";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   disabled: boolean;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const GoogleConfiguration = observer(function GoogleConfiguration(props: Props) {
+  const { t } = useTranslation();
   const { disabled, updateConfig } = props;
   // store
   const { formattedConfig } = useInstance();
@@ -34,7 +36,7 @@ export const GoogleConfiguration = observer(function GoogleConfiguration(props: 
       {isGoogleConfigured ? (
         <div className="flex items-center gap-4">
           <Link href="/authentication/google" className={cn(getButtonStyling("link", "base"), "font-medium")}>
-            Edit
+            {t("edit")}
           </Link>
           <ToggleSwitch
             value={Boolean(parseInt(enableGoogleConfig))}
@@ -49,7 +51,7 @@ export const GoogleConfiguration = observer(function GoogleConfiguration(props: 
       ) : (
         <Link href="/authentication/google" className={cn(getButtonStyling("secondary", "base"), "text-tertiary")}>
           <Settings2 className="h-4 w-4 p-0.5 text-tertiary" />
-          Configure
+          {t("integrations.configure")}
         </Link>
       )}
     </>

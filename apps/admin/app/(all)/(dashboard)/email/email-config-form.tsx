@@ -226,7 +226,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
           loading={isSubmitting}
           disabled={!isValid}
         >
-          Send test email
+          {t("instance_admin.send_test_email")}
         </Button>
       </div>
     </div>

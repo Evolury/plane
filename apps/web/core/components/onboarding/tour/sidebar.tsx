@@ -9,7 +9,7 @@ import { CycleIcon, ModuleIcon, PageIcon, ViewsIcon, WorkItemsIcon } from "@plan
 import type { ISvgIcons } from "@plane/propel/icons";
 // types
 import type { TTourSteps } from "./root";
-import { translate } from "@plane/i18n";
+import { useTranslation, translate } from "@plane/i18n";
 
 const sidebarOptions: {
   key: TTourSteps;
@@ -49,12 +49,13 @@ type Props = {
 };
 
 export function TourSidebar({ step, setStep }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="col-span-3 hidden bg-surface-2 p-8 lg:block">
       <h3 className="text-16 font-medium">
         Let{"'"}s get started!
         <br />
-        Get more out of Plane.
+        {t("ui.get_more_out_of_plane")}
       </h3>
       <div className="mt-8 space-y-5">
         {sidebarOptions.map((option) => (

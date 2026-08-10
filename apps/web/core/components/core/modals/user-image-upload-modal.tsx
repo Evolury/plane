@@ -115,7 +115,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
                     type="button"
                     className="absolute top-0 right-0 z-40 translate-x-1/2 -translate-y-1/2 rounded-sm bg-surface-2 px-2 py-0.5 text-11 font-medium text-secondary"
                   >
-                    Edit
+                    {t("edit")}
                   </button>
                   <img
                     src={image ? URL.createObjectURL(image) : value ? getFileURL(value) : ""}
@@ -150,7 +150,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
           </Button>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="lg" onClick={handleClose}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button variant="primary" size="lg" onClick={handleSubmit} disabled={!image} loading={isImageUploading}>
               {isImageUploading ? "Uploading" : t("workspace_settings.settings.applications.upload_and_save")}

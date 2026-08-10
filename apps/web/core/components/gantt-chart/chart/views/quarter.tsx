@@ -13,8 +13,10 @@ import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
 import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "../../constants";
 import type { IMonthBlock, IQuarterMonthBlock } from "../../views";
 import { groupMonthsToQuarters } from "../../views";
+import { useTranslation } from "@plane/i18n";
 
 export const QuarterChartView = observer(function QuarterChartView(_props: any) {
+  const { t } = useTranslation();
   const { currentViewData, renderView } = useTimeLineChartStore();
   const monthBlocks: IMonthBlock[] = renderView;
 
@@ -46,7 +48,7 @@ export const QuarterChartView = observer(function QuarterChartView(_props: any) 
                   {quarterBlock?.title}
                   {quarterBlock.today && (
                     <span className={cn("ml-2 rounded-sm bg-accent-primary px-1 text-9 font-medium text-on-color")}>
-                      Current
+                      {t("current")}
                     </span>
                   )}
                 </div>

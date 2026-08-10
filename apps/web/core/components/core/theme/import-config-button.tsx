@@ -94,7 +94,7 @@ export const CustomThemeImportConfigButton = observer(function CustomThemeImport
     <>
       <input ref={fileInputRef} type="file" accept=".json" onChange={handleUploadConfig} className="hidden" />
       <Button variant="secondary" size="lg" type="button" onClick={() => fileInputRef.current?.click()}>
-        Import config
+        {t("ui.import_config")}
       </Button>
     </>
   );
