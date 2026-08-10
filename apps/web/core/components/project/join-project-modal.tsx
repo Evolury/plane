@@ -10,6 +10,7 @@ import { Button } from "@plane/propel/button";
 import type { IProject } from "@plane/types";
 // ui
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useUserPermissions } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -26,6 +27,7 @@ export function JoinProjectModal(props: TJoinProjectModalProps) {
   const { handleClose, isOpen, project, workspaceSlug } = props;
   // states
   const [isJoiningLoading, setIsJoiningLoading] = useState(false);
+  const { t } = useTranslation();
   // store hooks
   const { joinProject } = useUserPermissions();
   // router
@@ -51,7 +53,7 @@ export function JoinProjectModal(props: TJoinProjectModalProps) {
   return (
     <ModalCore isOpen={isOpen} handleClose={handleClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
       <div className="space-y-5 px-5 py-8 sm:p-6">
-        <h3 className="text-16 leading-6 font-medium text-primary">Join Project?</h3>
+        <h3 className="text-16 leading-6 font-medium text-primary">{t("ui.join_project_q")}</h3>
         <p>
           Are you sure you want to join the project <span className="font-semibold break-words">{project?.name}</span>?
           Please click the &apos;Join Project&apos; button below to continue.

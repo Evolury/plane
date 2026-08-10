@@ -81,7 +81,7 @@ export const DeletePageModal = observer(function DeletePageModal(props: TConfirm
       handleSubmit={handleDelete}
       isSubmitting={isDeleting}
       isOpen={isOpen}
-      title="Delete page"
+      title={t("ui.delete_page")}
       content={
         <>
           Are you sure you want to delete page-{" "}

@@ -54,7 +54,7 @@ export const DeleteEstimateModal = observer(function DeleteEstimateModal(props: 
       setButtonLoader(false);
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Estimate creation failed",
+        title: t("project_settings.estimates.toasts.created.error.title"),
         message: t("toast.estimate_delete_failed"),
       });
     }

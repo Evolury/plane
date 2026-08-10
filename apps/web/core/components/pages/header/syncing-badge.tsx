@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { CloudOff, Dot } from "lucide-react";
 import { Tooltip } from "@plane/propel/tooltip";
 import { Badge } from "@plane/propel/badge";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   syncStatus: "syncing" | "synced" | "error";
@@ -16,6 +17,7 @@ type Props = {
 export function PageSyncingBadge({ syncStatus }: Props) {
   const [prevSyncStatus, setPrevSyncStatus] = useState<"syncing" | "synced" | "error" | null>(null);
   const [isVisible, setIsVisible] = useState(syncStatus !== "synced");
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Only handle transitions when there's a change
@@ -38,7 +40,7 @@ export function PageSyncingBadge({ syncStatus }: Props) {
     syncing: {
       label: "Syncing...",
       tooltipHeading: "Syncing...",
-      tooltipContent: "Your changes are being synced with the server. You can continue making changes.",
+      tooltipContent: t("toast.syncing_changes"),
     },
     error: {
       label: "Connection lost",

@@ -12,6 +12,7 @@ import { CycleGroupIcon } from "@plane/propel/icons";
 import type { TCycleGroups } from "@plane/types";
 // components
 import { Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 import { FilterHeader, FilterOption } from "@/components/issues/issue-layouts/filters";
 import { useCycle } from "@/hooks/store/use-cycle";
 // ui
@@ -28,6 +29,7 @@ export const FilterCycle = observer(function FilterCycle(props: Props) {
 
   // hooks
   const { projectId } = useParams();
+  const { t } = useTranslation();
   const { getCycleById, getProjectCycleIds } = useCycle();
 
   // states
@@ -95,7 +97,7 @@ export const FilterCycle = observer(function FilterCycle(props: Props) {
                 )}
               </>
             ) : (
-              <p className="text-11 text-placeholder italic">No matches found</p>
+              <p className="text-11 text-placeholder italic">{t("common.search.no_matches_found")}</p>
             )
           ) : (
             <Loader className="space-y-2">

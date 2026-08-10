@@ -70,7 +70,7 @@ export const StateDeleteModal = observer(function StateDeleteModal(props: TState
       handleSubmit={handleDeletion}
       isSubmitting={isDeleteLoading}
       isOpen={isOpen}
-      title="Delete State"
+      title={t("ui.delete_state")}
       content={
         <>
           Are you sure you want to delete state- <span className="font-medium text-primary">{data?.name}</span>? All of

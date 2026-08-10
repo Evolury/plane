@@ -66,7 +66,7 @@ export const usePageOperations = (
         await copyUrlToClipboard(pageLink);
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Link Copied!",
+          title: t("toast.link_copied_excl"),
           message: t("toast.page_link_copied"),
         });
       },

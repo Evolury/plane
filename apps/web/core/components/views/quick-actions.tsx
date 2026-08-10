@@ -55,7 +55,7 @@ export const ViewQuickActions = observer(function ViewQuickActions(props: Props)
     copyUrlToClipboard(viewLink).then(() => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Link Copied!",
+        title: t("toast.link_copied_excl"),
         message: t("toast.view_link_copied"),
       });
     });

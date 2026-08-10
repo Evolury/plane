@@ -51,7 +51,7 @@ export const useAttachmentOperations = (
             message: () => "The attachment has been successfully uploaded",
           },
           error: {
-            title: "Attachment not uploaded",
+            title: t("toast.attachment_not_uploaded"),
             message: () => "The attachment could not be uploaded",
           },
         });
@@ -71,7 +71,7 @@ export const useAttachmentOperations = (
           setToast({
             message: t("toast.attachment_remove_failed"),
             type: TOAST_TYPE.ERROR,
-            title: "Attachment not removed",
+            title: t("toast.attachment_not_removed"),
           });
         }
       },

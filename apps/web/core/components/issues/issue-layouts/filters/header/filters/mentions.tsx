@@ -11,6 +11,7 @@ import { observer } from "mobx-react";
 import { Loader, Avatar } from "@plane/ui";
 // components
 import { getFileURL } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 import { FilterHeader, FilterOption } from "@/components/issues/issue-layouts/filters";
 // helpers
 // hooks
@@ -28,6 +29,7 @@ export const FilterMentions = observer(function FilterMentions(props: Props) {
   const { appliedFilters, handleUpdate, memberIds, searchQuery } = props;
   // states
   const [itemsToRender, setItemsToRender] = useState(5);
+  const { t } = useTranslation();
   const [previewEnabled, setPreviewEnabled] = useState(true);
   // store hooks
   const { getUserDetails } = useMember();
@@ -99,7 +101,7 @@ export const FilterMentions = observer(function FilterMentions(props: Props) {
                 )}
               </>
             ) : (
-              <p className="text-11 text-placeholder italic">No matches found</p>
+              <p className="text-11 text-placeholder italic">{t("common.search.no_matches_found")}</p>
             )
           ) : (
             <Loader className="space-y-2">

@@ -12,6 +12,7 @@ import { Banner } from "@plane/propel/banner";
 import { Button } from "@plane/propel/button";
 import { ArchiveIcon } from "@plane/propel/icons";
 import { Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // components
 import { PageHead } from "@/components/core/page-title";
 import { IssueDetailRoot } from "@/components/issues/issue-detail";
@@ -25,6 +26,7 @@ function ArchivedIssueDetailsPage({ params }: Route.ComponentProps) {
   // router
   const { workspaceSlug, projectId, archivedIssueId } = params;
   const router = useRouter();
+  const { t } = useTranslation();
   // states
   // hooks
   const {
@@ -69,7 +71,7 @@ function ArchivedIssueDetailsPage({ params }: Route.ComponentProps) {
         <>
           <Banner
             variant="warning"
-            title="This work item has been archived. Visit the Archives section to restore it."
+            title={t("ui.work_item_archived_note")}
             icon={<ArchiveIcon className="size-4" />}
             action={
               <Button

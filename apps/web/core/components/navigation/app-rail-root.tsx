@@ -11,6 +11,7 @@ import { SettingsIcon } from "lucide-react";
 import { ContextMenu } from "@plane/propel/context-menu";
 import { CheckIcon } from "@plane/propel/icons";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 // hooks
@@ -22,6 +23,7 @@ import { AppSidebarItemsRoot } from "./items-root";
 export const AppRailRoot = observer(() => {
   // router
   const { workspaceSlug, projectId } = useParams();
+  const { t } = useTranslation();
   const pathname = usePathname();
   // preferences
   const { preferences, updateDisplayMode } = useAppRailPreferences();
@@ -52,7 +54,7 @@ export const AppRailRoot = observer(() => {
               <div className="mx-2 border-t border-strong" />
               <AppSidebarItem
                 item={{
-                  label: "Settings",
+                  label: t("settings"),
                   icon: <SettingsIcon className="size-5" />,
                   href: `/${workspaceSlug}/settings`,
                   isActive: isWorkspaceSettingsPath,
@@ -72,7 +74,7 @@ export const AppRailRoot = observer(() => {
             </ContextMenu.Item>
             <ContextMenu.Item onClick={() => updateDisplayMode("icon_with_label")}>
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-11">Icon with name</span>
+                <span className="text-11">{t("ui.icon_with_name")}</span>
                 {preferences.displayMode === "icon_with_label" && <CheckIcon className="size-3.5" />}
               </div>
             </ContextMenu.Item>

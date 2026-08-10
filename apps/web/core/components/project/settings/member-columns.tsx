@@ -15,6 +15,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { EUserProjectRoles, IUser, IWorkspaceMember, TProjectMembership } from "@plane/types";
 import { CustomMenu, CustomSelect } from "@plane/ui";
 import { getFileURL } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useMember } from "@/hooks/store/use-member";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
@@ -102,6 +103,7 @@ export const AccountTypeColumn = observer(function AccountTypeColumn(props: Acco
     workspace: { getWorkspaceMemberDetails },
   } = useMember();
   const { data: currentUser } = useUser();
+  const { t } = useTranslation();
   const { getProjectRoleByWorkspaceSlugAndProjectId } = useUserPermissions();
   // form info
   const {
@@ -162,7 +164,7 @@ export const AccountTypeColumn = observer(function AccountTypeColumn(props: Acco
 
                     setToast({
                       type: TOAST_TYPE.ERROR,
-                      title: "You can’t change this role yet.",
+                      title: t("ui.cannot_change_role_yet"),
                       message: errorString ?? "An error occurred while updating member role. Please try again.",
                     });
                   }

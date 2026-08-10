@@ -47,7 +47,7 @@ export function ArchiveRestoreProjectModal(props: Props) {
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Archive success",
+          title: t("issue.archive.success.label"),
           message: `${projectDetails.name} has been archived successfully`,
         });
         onClose();
@@ -70,7 +70,7 @@ export function ArchiveRestoreProjectModal(props: Props) {
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Restore success",
+          title: t("issue.restore.success.title"),
           message: `You can find ${projectDetails.name} in your projects.`,
         });
         onClose();

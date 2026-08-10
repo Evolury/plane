@@ -8,6 +8,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { LockIcon, ChevronDownIcon } from "@plane/propel/icons";
 import { PasswordInput, PasswordStrengthIndicator } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 
 interface PasswordState {
   password: string;
@@ -22,6 +23,7 @@ interface SetPasswordRootProps {
 
 export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, disabled = false }: SetPasswordRootProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation();
   const [passwordState, setPasswordState] = useState<PasswordState>({
     password: "",
     confirmPassword: "",
@@ -123,7 +125,7 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
               placeholder="Confirm password"
               className="transition-all duration-200"
             />
-            {hasPasswordMismatch && <p className="mt-1 text-11 text-danger-primary">Passwords do not match</p>}
+            {hasPasswordMismatch && <p className="mt-1 text-11 text-danger-primary">{t("ui.passwords_do_not_match")}</p>}
             {isPasswordValid && <p className="mt-1 text-11 text-success-primary">✓ Passwords match</p>}
           </div>
         </div>

@@ -8,12 +8,14 @@ import { useState, useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 // hooks
 import { Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 import { ProductUpdatesFallback } from "@/components/global/product-updates/fallback";
 import { useInstance } from "@/hooks/store/use-instance";
 
 export const ProductUpdatesChangelog = observer(function ProductUpdatesChangelog() {
   // refs
   const isLoadingRef = useRef(true);
+  const { t } = useTranslation();
   // states
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -65,7 +67,7 @@ export const ProductUpdatesChangelog = observer(function ProductUpdatesChangelog
   if (shouldShowFallback) {
     return (
       <ProductUpdatesFallback
-        description="We're having trouble fetching the updates. Please visit our changelog to view the latest updates."
+        description={t("ui.changelog_fetch_error")}
         variant={config?.is_self_managed ? "self-managed" : "cloud"}
       />
     );

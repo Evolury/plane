@@ -13,6 +13,7 @@ import { CloseIcon } from "@plane/propel/icons";
 import { CustomSelect, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // components
 import { getDate, cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 import { DateDropdown } from "@/components/dropdowns/date";
 
 type TNotificationSnoozeModal = {
@@ -39,6 +40,7 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
   const { isOpen, onClose, onSubmit: handleSubmitSnooze } = props;
 
   const { workspaceSlug } = useParams();
+  const { t } = useTranslation();
 
   const {
     formState: { isSubmitting },
@@ -166,7 +168,7 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
                           {value} {watch("period").toLowerCase()}
                         </span>
                       ) : (
-                        <span className="text-body-xs-medium text-placeholder">Select a time</span>
+                        <span className="text-body-xs-medium text-placeholder">{t("ui.select_a_time")}</span>
                       )}
                     </div>
                   }
@@ -205,7 +207,7 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
                       </CustomSelect.Option>
                     ))
                   ) : (
-                    <p className="p-3 text-center text-secondary">No available time for this date.</p>
+                    <p className="p-3 text-center text-secondary">{t("ui.no_available_time")}</p>
                   )}
                 </CustomSelect>
               )}

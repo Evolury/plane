@@ -19,6 +19,7 @@ import { EIssueServiceType } from "@plane/types";
 // ui
 import { Spinner, ControlLink, Row } from "@plane/ui";
 import { cn, generateWorkItemLink } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // components
 import { MultipleSelectEntityAction } from "@/components/core/multiple-select";
 import { IssueProperties } from "@/components/issues/issue-layouts/properties";
@@ -74,6 +75,7 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
   const issueRef = useRef<HTMLDivElement | null>(null);
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId } = useParams();
+  const { t } = useTranslation();
   const workspaceSlug = routerWorkspaceSlug?.toString();
   const projectId = routerProjectId?.toString();
   // hooks
@@ -194,7 +196,7 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
           if (!isDraggingAllowed) {
             setToast({
               type: TOAST_TYPE.WARNING,
-              title: "Cannot move work item",
+              title: t("toast.cannot_move_work_item"),
               message: !canEditIssueProperties
                 ? "You are not allowed to move this work item"
                 : "Drag and drop is disabled for the current grouping",

@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import { EditIcon, TrashIcon } from "@plane/propel/icons";
 import { CustomMenu } from "@plane/ui";
 import { truncateText } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useGlobalView } from "@/hooks/store/use-global-view";
 // local imports
@@ -24,6 +25,7 @@ export const GlobalViewListItem = observer(function GlobalViewListItem(props: Pr
   const { viewId } = props;
   // states
   const [updateViewModal, setUpdateViewModal] = useState(false);
+  const { t } = useTranslation();
   const [deleteViewModal, setDeleteViewModal] = useState(false);
   // router
   const { workspaceSlug } = useParams();
@@ -58,7 +60,7 @@ export const GlobalViewListItem = observer(function GlobalViewListItem(props: Pr
                     >
                       <span className="flex items-center justify-start gap-2">
                         <EditIcon width={14} height={14} strokeWidth={2} />
-                        <span>Edit View</span>
+                        <span>{t("ui.edit_view")}</span>
                       </span>
                     </CustomMenu.MenuItem>
                     <CustomMenu.MenuItem
@@ -68,7 +70,7 @@ export const GlobalViewListItem = observer(function GlobalViewListItem(props: Pr
                     >
                       <span className="flex items-center justify-start gap-2">
                         <TrashIcon width={14} height={14} strokeWidth={2} />
-                        <span>Delete View</span>
+                        <span>{t("ui.delete_view")}</span>
                       </span>
                     </CustomMenu.MenuItem>
                   </CustomMenu>

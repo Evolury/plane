@@ -142,7 +142,7 @@ export const ProjectLevelWorkItemFiltersHOC = observer(function ProjectLevelWork
       if (!viewDetails) {
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "We couldn't find the view",
+          title: t("ui.view_not_found"),
           message: t("toast.view_not_found"),
         });
 

@@ -178,11 +178,11 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
     setPromiseToast(updatePromise, {
       loading: "Updating...",
       success: {
-        title: "Success!",
+        title: t("toast.success"),
         message: () => `Profile updated successfully.`,
       },
       error: {
-        title: "Error!",
+        title: t("toast.error"),
         message: () => `There was some error in updating your profile. Please try again.`,
       },
     });

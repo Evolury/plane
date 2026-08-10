@@ -12,6 +12,7 @@ import { copyUrlToClipboard, cn } from "@plane/utils";
 import { useLayoutMenuItems } from "@/components/common/quick-actions-helper";
 import { Ellipsis } from "lucide-react";
 import { IconButton } from "@plane/propel/icon-button";
+import { useTranslation } from "@plane/i18n";
 
 type Props = {
   workspaceSlug: string;
@@ -28,7 +29,7 @@ export const LayoutQuickActions = observer(function LayoutQuickActions(props: Pr
     copyUrlToClipboard(layoutLink).then(() => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Link copied",
+        title: t("link_copied"),
         message: `${storeType === "EPIC" ? "Epics" : "Work items"} link copied to clipboard.`,
       });
     });
@@ -42,6 +43,7 @@ export const LayoutQuickActions = observer(function LayoutQuickActions(props: Pr
     handleCopyLink,
     handleOpenInNewTab,
   });
+  const { t } = useTranslation();
 
   const MENU_ITEMS: TContextMenuItem[] = Array.isArray(menuResult) ? menuResult : menuResult.items;
   const additionalModals = Array.isArray(menuResult) ? null : menuResult.modals;

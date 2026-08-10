@@ -13,6 +13,7 @@ import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TPageVersion } from "@plane/types";
 import { renderFormattedDate, renderFormattedTime } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // helpers
 import type { EPageStoreType } from "@/hooks/store";
 // local imports
@@ -42,6 +43,7 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
   } = props;
   // states
   const [isRestoring, setIsRestoring] = useState(false);
+  const { t } = useTranslation();
   const [isRetrying, setIsRetrying] = useState(false);
 
   const {
@@ -60,14 +62,14 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Page version restored.",
+          title: t("toast.page_version_restored"),
         });
         handleClose();
       })
       .catch(() =>
         setToast({
           type: TOAST_TYPE.ERROR,
-          title: "Failed to restore page version.",
+          title: t("toast.page_version_restore_failed"),
         })
       )
       .finally(() => setIsRestoring(false));
@@ -91,7 +93,7 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
             </span>
             <div>
               <h6 className="text-16 font-semibold">Something went wrong!</h6>
-              <p className="text-13 text-tertiary">The version could not be loaded, please try again.</p>
+              <p className="text-13 text-tertiary">{t("toast.version_load_failed")}</p>
             </div>
             <Button variant="link" onClick={handleRetry} loading={isRetrying}>
               Try again

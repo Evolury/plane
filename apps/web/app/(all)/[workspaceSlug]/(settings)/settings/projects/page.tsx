@@ -11,6 +11,7 @@ import { useTheme } from "next-themes";
 import { PROJECT_TRACKER_ELEMENTS } from "@plane/constants";
 import { Button, getButtonStyling } from "@plane/propel/button";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // assets
 import ProjectDarkEmptyState from "@/app/assets/empty-state/project-settings/no-projects-dark.png?url";
 import ProjectLightEmptyState from "@/app/assets/empty-state/project-settings/no-projects-light.png?url";
@@ -20,13 +21,14 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 function ProjectSettingsPage() {
   // store hooks
   const { resolvedTheme } = useTheme();
+  const { t } = useTranslation();
   const { toggleCreateProjectModal } = useCommandPalette();
   // derived values
   const resolvedPath = resolvedTheme === "dark" ? ProjectDarkEmptyState : ProjectLightEmptyState;
   return (
     <div className="mx-auto flex h-full max-w-[480px] flex-col items-center justify-center gap-4">
       <img src={resolvedPath} alt="No projects yet" />
-      <div className="text-16 font-semibold text-tertiary">No projects yet</div>
+      <div className="text-16 font-semibold text-tertiary">{t("ui.no_projects_yet")}</div>
       <div className="text-center text-13 text-tertiary">
         Projects act as the foundation for goal-driven work. They let you manage your teams, tasks, and everything you
         need to get things done.

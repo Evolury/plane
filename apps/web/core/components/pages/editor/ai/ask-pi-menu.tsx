@@ -10,6 +10,7 @@ import { CircleArrowUp, CornerDownRight, RefreshCcw, Sparkles } from "lucide-rea
 import { Tooltip } from "@plane/propel/tooltip";
 // components
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 import { RichTextEditor } from "@/components/editor/rich-text";
 // helpers
 // hooks
@@ -27,6 +28,7 @@ export function AskPiMenu(props: Props) {
   const { handleInsertText, handleRegenerate, isRegenerating, response, workspaceSlug } = props;
   // states
   const [query, setQuery] = useState("");
+  const { t } = useTranslation();
   // store hooks
   const { getWorkspaceBySlug } = useWorkspace();
   // derived values
@@ -94,7 +96,7 @@ export function AskPiMenu(props: Props) {
             </div>
           </div>
         ) : (
-          <p className="text-13 text-secondary">AI is answering...</p>
+          <p className="text-13 text-secondary">{t("ui.ai_answering")}</p>
         )}
       </div>
       <div className="px-4 py-3">

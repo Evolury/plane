@@ -16,6 +16,7 @@ import { EIssuesStoreType } from "@plane/types";
 import type { TContextMenuItem } from "@plane/ui";
 import { Row } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useProject } from "@/hooks/store/use-project";
@@ -37,6 +38,7 @@ export const DraftIssueBlock = observer(function DraftIssueBlock(props: Props) {
   const { workspaceSlug, issueId } = props;
   // states
   const [moveToIssue, setMoveToIssue] = useState(false);
+  const { t } = useTranslation();
   const [createUpdateIssueModal, setCreateUpdateIssueModal] = useState(false);
   const [issueToEdit, setIssueToEdit] = useState<TWorkspaceDraftIssue | undefined>(undefined);
   const [deleteIssueModal, setDeleteIssueModal] = useState(false);
@@ -63,7 +65,7 @@ export const DraftIssueBlock = observer(function DraftIssueBlock(props: Props) {
   const MENU_ITEMS: TContextMenuItem[] = [
     {
       key: "edit",
-      title: "edit",
+      title: t("ui.edit_lower"),
       icon: EditIcon,
       action: () => {
         setIssueToEdit(issue);
@@ -90,7 +92,7 @@ export const DraftIssueBlock = observer(function DraftIssueBlock(props: Props) {
     },
     {
       key: "delete",
-      title: "delete",
+      title: t("ui.delete_lower"),
       icon: TrashIcon,
       action: () => {
         setDeleteIssueModal(true);

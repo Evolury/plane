@@ -10,6 +10,7 @@ import type { EventToPayloadMap } from "@plane/editor";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 // types
 import type { IUserLite } from "@plane/types";
+import { useTranslation } from "@plane/i18n";
 // components
 import type { TEditorBodyHandlers } from "@/components/pages/editor/editor-body";
 // hooks
@@ -48,6 +49,7 @@ export const useRealtimePageEvents = ({
   handlers,
 }: UsePageEventsProps) => {
   const router = useAppRouter();
+  const { t } = useTranslation();
   const { removePage, getPageById } = usePageStore(storeType);
 
   const { data: currentUser } = useUser();
@@ -119,7 +121,7 @@ export const useRealtimePageEvents = ({
               if (page.id === pageId && data?.user_id !== currentUser?.id) {
                 setToast({
                   type: TOAST_TYPE.ERROR,
-                  title: "Page deleted",
+                  title: t("toast.page_deleted_title"),
                   message: `Page deleted${getUserDisplayText(data.user_id)}`,
                 });
                 router.push(handlers.getRedirectionLink());

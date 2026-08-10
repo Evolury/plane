@@ -14,6 +14,7 @@ import { LogoSpinner } from "@/components/common/logo-spinner";
 import { EmptySpace, EmptySpaceItem } from "@/components/ui/empty-space";
 // constants
 import { WORKSPACE_INVITATION } from "@plane/constants";
+import { useTranslation } from "@plane/i18n";
 // helpers
 import { EPageTypes } from "@/helpers/authentication.helper";
 // hooks
@@ -30,6 +31,7 @@ const workspaceService = new WorkspaceService();
 function WorkspaceInvitationPage() {
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   // query params
   const searchParams = useSearchParams();
   const invitation_id = searchParams.get("invitation_id");
@@ -81,7 +83,7 @@ function WorkspaceInvitationPage() {
         {invitationDetail && !invitationDetail.responded_at ? (
           error ? (
             <div className="shadow-2xl flex w-full flex-col space-y-4 rounded-sm border border-subtle bg-surface-1 px-4 py-8 text-center md:w-1/3">
-              <h2 className="text-18 uppercase">INVITATION NOT FOUND</h2>
+              <h2 className="text-18 uppercase">{t("ui.invitation_not_found")}</h2>
             </div>
           ) : (
             <EmptySpace
@@ -98,18 +100,18 @@ function WorkspaceInvitationPage() {
               title={`You are already a member of ${invitationDetail.workspace.name}`}
               description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
             >
-              <EmptySpaceItem Icon={Boxes} title="Continue to home" href="/" />
+              <EmptySpaceItem Icon={Boxes} title={t("ui.continue_to_home")} href="/" />
             </EmptySpace>
           ) : (
             <EmptySpace
-              title="This invitation link is not active anymore."
+              title={t("ui.invitation_link_inactive")}
               description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
               link={{ text: "Or start from an empty project", href: "/" }}
             >
               {!currentUser ? (
-                <EmptySpaceItem Icon={User2} title="Sign in to continue" href="/" />
+                <EmptySpaceItem Icon={User2} title={t("ui.sign_in_to_continue")} href="/" />
               ) : (
-                <EmptySpaceItem Icon={Boxes} title="Continue to home" href="/" />
+                <EmptySpaceItem Icon={Boxes} title={t("ui.continue_to_home")} href="/" />
               )}
               <EmptySpaceItem Icon={Star} title="Star us on GitHub" href="https://github.com/makeplane" />
               <EmptySpaceItem

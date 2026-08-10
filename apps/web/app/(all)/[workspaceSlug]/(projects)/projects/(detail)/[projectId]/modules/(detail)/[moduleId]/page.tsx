@@ -8,6 +8,7 @@ import { observer } from "mobx-react";
 import useSWR from "swr";
 // plane imports
 import { cn } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // assets
 import emptyModule from "@/app/assets/empty-state/module.svg?url";
 // components
@@ -25,6 +26,7 @@ import type { Route } from "./+types/page";
 function ModuleIssuesPage({ params }: Route.ComponentProps) {
   // router
   const router = useAppRouter();
+  const { t } = useTranslation();
   const { workspaceSlug, projectId, moduleId } = params;
   // store hooks
   const { fetchModuleDetails, getModuleById } = useModule();
@@ -53,8 +55,8 @@ function ModuleIssuesPage({ params }: Route.ComponentProps) {
       {error ? (
         <EmptyState
           image={emptyModule}
-          title="Module does not exist"
-          description="The module you are looking for does not exist or has been deleted."
+          title={t("ui.module_does_not_exist")}
+          description={t("ui.module_not_exist_description")}
           primaryButton={{
             text: "View other modules",
             onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}/modules`),

@@ -31,7 +31,7 @@ export const StartOfWeekPreference = observer(function StartOfWeekPreference(pro
       await updateUserProfile({ start_of_the_week: val });
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("success"), message: t("toast.first_day_updated") });
     } catch (_error) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Update failed", message: t("toast.try_again_later") });
+      setToast({ type: TOAST_TYPE.ERROR, title: t("toast.update_failed"), message: t("toast.try_again_later") });
     }
   };
 

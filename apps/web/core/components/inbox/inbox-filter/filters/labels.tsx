@@ -8,6 +8,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import type { IIssueLabel } from "@plane/types";
 import { Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // components
 import { FilterHeader, FilterOption } from "@/components/issues/issue-layouts/filters";
 // hooks
@@ -26,6 +27,7 @@ export const FilterLabels = observer(function FilterLabels(props: Props) {
   const { labels, searchQuery } = props;
 
   const [itemsToRender, setItemsToRender] = useState(5);
+  const { t } = useTranslation();
   const [previewEnabled, setPreviewEnabled] = useState(true);
 
   const { inboxFilters, handleInboxIssueFilters } = useProjectInbox();
@@ -78,7 +80,7 @@ export const FilterLabels = observer(function FilterLabels(props: Props) {
                 )}
               </>
             ) : (
-              <p className="text-11 text-placeholder italic">No matches found</p>
+              <p className="text-11 text-placeholder italic">{t("common.search.no_matches_found")}</p>
             )
           ) : (
             <Loader className="space-y-2">

@@ -11,6 +11,7 @@ import { Button } from "@plane/propel/button";
 import type { IProject } from "@plane/types";
 // ui
 import { Input, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 
 // types
 type Props = {
@@ -23,6 +24,7 @@ type Props = {
 
 export function SelectMonthModal({ type, initialValues, isOpen, handleClose, handleChange }: Props) {
   const { workspaceSlug, projectId } = useParams();
+  const { t } = useTranslation();
 
   const {
     formState: { errors, isSubmitting },
@@ -82,7 +84,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                   />
 
                   {errors.close_in && (
-                    <span className="px-1 text-13 text-danger-primary">Select a month between 1 and 12.</span>
+                    <span className="px-1 text-13 text-danger-primary">{t("ui.select_month_range")}</span>
                   )}
                 </>
               ) : (
@@ -115,7 +117,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                     )}
                   />
                   {errors.archive_in && (
-                    <span className="px-1 text-13 text-danger-primary">Select a month between 1 and 12.</span>
+                    <span className="px-1 text-13 text-danger-primary">{t("ui.select_month_range")}</span>
                   )}
                 </>
               )}

@@ -20,6 +20,7 @@ import { Button, getButtonStyling } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { EFileAssetType } from "@plane/types";
 import { Input, Loader } from "@plane/ui";
+import { useTranslation } from "@plane/i18n";
 // helpers
 import { STATIC_COVER_IMAGES, getCoverImageDisplayURL } from "@/helpers/cover-image.helper";
 // hooks
@@ -53,6 +54,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
   // states
   const [image, setImage] = useState<File | null>(null);
   const [isImageUploading, setIsImageUploading] = useState(false);
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchParams, setSearchParams] = useState("");
   const [formData, setFormData] = useState({
@@ -142,7 +144,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
           setToast({
             message: error?.error ?? "The image could not be uploaded",
             type: TOAST_TYPE.ERROR,
-            title: "Image not uploaded",
+            title: t("toast.image_not_uploaded"),
           });
         });
     } else {
@@ -163,7 +165,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
           setToast({
             message: error?.error ?? "The image could not be uploaded",
             type: TOAST_TYPE.ERROR,
-            title: "Image not uploaded",
+            title: t("toast.image_not_uploaded"),
           });
         });
     }
@@ -263,7 +265,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                             ))}
                           </div>
                         ) : (
-                          <p className="pt-7 text-center text-11 text-secondary">No images found.</p>
+                          <p className="pt-7 text-center text-11 text-secondary">{t("ui.no_images_found")}</p>
                         )
                       ) : (
                         <Loader className="grid grid-cols-4 gap-4">

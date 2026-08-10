@@ -46,7 +46,7 @@ export function ArchiveCycleModal(props: Props) {
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,
-          title: "Archive success",
+          title: t("issue.archive.success.label"),
           message: t("toast.archives_in_project"),
         });
         onClose();

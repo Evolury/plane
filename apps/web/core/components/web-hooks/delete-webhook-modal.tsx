@@ -62,7 +62,7 @@ export function DeleteWebhookModal(props: IDeleteWebhook) {
       handleSubmit={handleDelete}
       isSubmitting={isDeleting}
       isOpen={isOpen}
-      title="Delete webhook"
+      title={t("ui.delete_webhook")}
       content={
         <>
           Are you sure you want to delete this webhook? Future events will not be delivered to this webhook. This action

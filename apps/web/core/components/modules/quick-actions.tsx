@@ -60,7 +60,7 @@ export const ModuleQuickActions = observer(function ModuleQuickActions(props: Pr
     copyUrlToClipboard(moduleLink).then(() => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Link Copied!",
+        title: t("toast.link_copied_excl"),
         message: t("toast.module_link_copied"),
       });
     });
@@ -71,7 +71,7 @@ export const ModuleQuickActions = observer(function ModuleQuickActions(props: Pr
       await restoreModule(workspaceSlug, projectId, moduleId);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Restore success",
+        title: t("issue.restore.success.title"),
         message: t("toast.module_in_project"),
       });
       router.push(`/${workspaceSlug}/projects/${projectId}/archives/modules`);

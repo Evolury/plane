@@ -6,6 +6,7 @@
 
 import { MoveRight } from "lucide-react";
 import { Tooltip } from "@plane/propel/tooltip";
+import { useTranslation } from "@plane/i18n";
 // assets
 import emptyIssue from "@/app/assets/empty-state/issue.svg?url";
 // components
@@ -21,6 +22,7 @@ export function IssuePeekOverviewError(props: TIssuePeekOverviewError) {
   const { removeRoutePeekId } = props;
   // hooks
   const { isMobile } = usePlatformOS();
+  const { t } = useTranslation();
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
@@ -35,8 +37,8 @@ export function IssuePeekOverviewError(props: TIssuePeekOverviewError) {
       <div className="h-full w-full">
         <EmptyState
           image={emptyIssue ?? undefined}
-          title="Work item does not exist"
-          description="The work item you are looking for does not exist, has been archived, or has been deleted."
+          title={t("issue.empty_state.issue_detail.title")}
+          description={t("issue.empty_state.issue_detail.description")}
         />
       </div>
     </div>

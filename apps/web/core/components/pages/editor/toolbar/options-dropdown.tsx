@@ -85,7 +85,7 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
               message: t("toast.markdown_copied"),
             });
           },
-          title: "Copy markdown",
+          title: t("common.actions.copy_markdown"),
           icon: Clipboard,
           shouldRender: true,
         },

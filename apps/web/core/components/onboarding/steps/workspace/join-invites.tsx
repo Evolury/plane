@@ -11,6 +11,7 @@ import { Button } from "@plane/propel/button";
 import type { IWorkspaceMemberInvitation } from "@plane/types";
 import { Checkbox, Spinner } from "@plane/ui";
 import { truncateText } from "@plane/utils";
+import { useTranslation } from "@plane/i18n";
 // constants
 import { WorkspaceLogo } from "@/components/workspace/logo";
 // hooks
@@ -32,6 +33,7 @@ export function WorkspaceJoinInvitesStep(props: Props) {
   const { invitations, handleNextStep, handleCurrentViewChange } = props;
   // states
   const [isJoiningWorkspaces, setIsJoiningWorkspaces] = useState(false);
+  const { t } = useTranslation();
   const [invitationsRespond, setInvitationsRespond] = useState<string[]>([]);
   // store hooks
   const { fetchWorkspaces } = useWorkspace();
@@ -67,7 +69,7 @@ export function WorkspaceJoinInvitesStep(props: Props) {
 
   return invitations && invitations.length > 0 ? (
     <div className="flex flex-col gap-10">
-      <CommonOnboardingHeader title="Join invites or create a workspace" description="All your work — unified." />
+      <CommonOnboardingHeader title={t("ui.join_or_create_workspace")} description="All your work — unified." />
       <div className="flex flex-col gap-3">
         {invitations &&
           invitations.length > 0 &&
@@ -120,6 +122,6 @@ export function WorkspaceJoinInvitesStep(props: Props) {
       </div>
     </div>
   ) : (
-    <div>No Invitations found</div>
+    <div>{t("ui.no_invitations_found")}</div>
   );
 }

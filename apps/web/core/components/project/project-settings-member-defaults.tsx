@@ -139,7 +139,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
 
   return (
     <div className="my-6 flex flex-col gap-y-6">
-      <DefaultSettingItem title="Project Lead" description="Select the project lead for the project.">
+      <DefaultSettingItem title={t("ui.project_lead")} description="Select the project lead for the project.">
         {currentProjectDetails ? (
           <Controller
             control={control}
@@ -160,7 +160,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
           </Loader>
         )}
       </DefaultSettingItem>
-      <DefaultSettingItem title="Default Assignee" description="Select the default assignee for the project.">
+      <DefaultSettingItem title="Default Assignee" description={t("project_settings.members.default_assignee_description")}>
         {currentProjectDetails ? (
           <Controller
             control={control}
@@ -184,7 +184,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
       {currentProjectDetails && (
         <DefaultSettingItem
           title="Guest access"
-          description="This will allow guests to have view access to all the project work items."
+          description={t("project_settings.members.guest_super_permissions.sub_heading")}
         >
           <div className="flex items-center justify-end">
             <ToggleSwitch
