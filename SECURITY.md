@@ -1,39 +1,53 @@
-# Security policy
-This document outlines the security protocols and vulnerability reporting guidelines for the Plane project. Ensuring the security of our systems is a top priority, and while we work diligently to maintain robust protection, vulnerabilities may still occur. We highly value the community’s role in identifying and reporting security concerns to uphold the integrity of our systems and safeguard our users.
+# Política de segurança
 
-## Reporting a vulnerability
-If you have identified a security vulnerability, submit your findings to [security@plane.so](mailto:security@plane.so). 
-Ensure your report includes all relevant information needed for us to reproduce and assess the issue. Include the IP address or URL of the affected system.
+Este documento descreve como reportar vulnerabilidades neste produto. A
+segurança das instâncias que operamos é prioridade, e o trabalho de quem
+identifica e reporta problemas é parte disso.
 
-To ensure a responsible and effective disclosure process, please adhere to the following:
+## Reportando uma vulnerabilidade
 
-- Maintain confidentiality and refrain from publicly disclosing the vulnerability until we have had the opportunity to investigate and address the issue.
-- Refrain from running automated vulnerability scans on our infrastructure or dashboard without prior consent. Contact us to set up a sandbox environment if necessary.
-- Do not exploit any discovered vulnerabilities for malicious purposes, such as accessing or altering user data.
-- Do not engage in physical security attacks, social engineering, distributed denial of service (DDoS) attacks, spam campaigns, or attacks on third-party applications as part of your vulnerability testing.
+Envie os achados para [contato@evolury.com.br](mailto:contato@evolury.com.br).
+Inclua tudo o que for necessário para reproduzir e avaliar o problema, com o IP
+ou a URL do sistema afetado.
 
-## Out of scope
-While we appreciate all efforts to assist in improving our security, please note that the following types of vulnerabilities are considered out of scope:
+Para que a divulgação seja responsável e efetiva:
 
-- Vulnerabilities requiring man-in-the-middle (MITM) attacks or physical access to a user’s device.
-- Content spoofing or text injection issues without a clear attack vector or the ability to modify HTML/CSS.
-- Issues related to email spoofing.
-- Missing DNSSEC, CAA, or CSP headers.
-- Absence of secure or HTTP-only flags on non-sensitive cookies.
+- Mantenha a confidencialidade e não divulgue publicamente a vulnerabilidade
+  antes de termos tido a oportunidade de investigar e corrigir.
+- Não rode varreduras automatizadas contra a nossa infraestrutura sem
+  autorização prévia. Se precisar, fale conosco para montarmos um ambiente de
+  testes.
+- Não explore a vulnerabilidade para fins maliciosos, como acessar ou alterar
+  dados de usuários.
+- Não use ataques físicos, engenharia social, negação de serviço (DDoS), spam ou
+  ataques a aplicações de terceiros como parte do teste.
 
-## Our commitment
+## Fora de escopo
 
-At Plane, we are committed to maintaining transparent and collaborative communication throughout the vulnerability resolution process. Here's what you can expect from us:
+- Vulnerabilidades que exijam ataque man-in-the-middle ou acesso físico ao
+  dispositivo do usuário.
+- Content spoofing ou injeção de texto sem vetor de ataque claro ou sem
+  capacidade de modificar HTML/CSS.
+- Questões relacionadas a spoofing de e-mail.
+- Ausência de DNSSEC, CAA ou cabeçalhos CSP.
+- Ausência das flags secure ou HTTP-only em cookies não sensíveis.
 
-- **Response Time** <br/>
-We will acknowledge receipt of your vulnerability report within three business days and provide an estimated timeline for resolution.
-- **Legal Protection** <br/>
-We will not initiate legal action against you for reporting vulnerabilities, provided you adhere to the reporting guidelines.
-- **Confidentiality** <br/>
-Your report will be treated with confidentiality. We will not disclose your personal information to third parties without your consent.
-- **Recognition** <br/>
-With your permission, we are happy to publicly acknowledge your contribution to improving our security once the issue is resolved.
-- **Timely Resolution** <br/>
-We are committed to working closely with you throughout the resolution process, providing timely updates as necessary. Our goal is to address all reported vulnerabilities swiftly, and we will actively engage with you to coordinate a responsible disclosure once the issue is fully resolved.
+## Nosso compromisso
 
-We appreciate your help in ensuring the security of our platform. Your contributions are crucial to protecting our users and maintaining a secure environment. Thank you for working with us to keep Plane safe.
+- **Tempo de resposta** — confirmamos o recebimento em até três dias úteis, com
+  uma estimativa de prazo para resolução.
+- **Proteção legal** — não tomaremos medidas legais contra quem reportar
+  vulnerabilidades seguindo estas diretrizes.
+- **Confidencialidade** — o relato é tratado com sigilo; não divulgamos dados
+  pessoais de quem reporta sem consentimento.
+- **Reconhecimento** — com sua permissão, temos prazer em reconhecer
+  publicamente a contribuição depois que o problema for resolvido.
+- **Resolução** — acompanhamos o processo até o fim, com atualizações ao longo
+  do caminho, e coordenamos a divulgação responsável quando estiver corrigido.
+
+## Vulnerabilidades no upstream
+
+Este produto deriva do Plane Community Edition (ver [UPSTREAM.md](UPSTREAM.md)).
+Vulnerabilidades que existam também no código do upstream devem ser reportadas
+**a nós**, não à Plane Software — nós avaliamos e, quando for o caso, coordenamos
+a comunicação com o projeto de origem.

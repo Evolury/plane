@@ -1,6 +1,4 @@
 contact_links:
-  - name: Help and support
-    about: Reach out to us on our Forum or GitHub discussions.
-  - name: Dedicated support
-    url: mailto:support@plane.so
-    about: Write to us if you'd like dedicated support using Plane
+  - name: Suporte
+    url: mailto:contato@evolury.com.br
+    about: Fale com a equipe da Evolury sobre uso, acesso ou incidentes na sua instância.
