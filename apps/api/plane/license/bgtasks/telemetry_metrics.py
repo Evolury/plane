@@ -69,6 +69,10 @@ def _collect_and_push_metrics() -> None:
 
     Uses OTEL metrics SDK to push gauge metrics directly to the collector,
     replacing the previous span-based tracing approach.
+
+    Exige, em conjunto: telemetria ligada na instância (god-mode) e OTLP_ENDPOINT
+    apontando para um coletor. Nenhum dos dois vem ligado por padrão, e a task não
+    é agendada — ver docs/telemetria.md.
     """
     # Check if the instance is registered
     instance = Instance.objects.first()
@@ -84,6 +88,12 @@ def _collect_and_push_metrics() -> None:
     # Configure OTEL metrics (gRPC default, or HTTP if OTLP_METRICS_PROTOCOL=http)
     protocol = (os.environ.get("OTLP_METRICS_PROTOCOL") or "grpc").strip().lower()
     export_endpoint = get_otlp_grpc_endpoint() if protocol == "grpc" else get_otlp_http_metrics_url()
+
+    # Sem coletor configurado não há para onde exportar. Não existe destino
+    # default: ligar a telemetria exige apontar OTLP_ENDPOINT explicitamente.
+    if not export_endpoint:
+        logger.debug("OTLP_ENDPOINT not configured, skipping metrics push")
+        return
 
     service_name = os.environ.get("SERVICE_NAME", "plane-ce-api")
 

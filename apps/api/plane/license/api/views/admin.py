@@ -126,7 +126,9 @@ class InstanceAdminSignUpEndpoint(View):
         first_name = request.POST.get("first_name", False)
         last_name = request.POST.get("last_name", "")
         company_name = request.POST.get("company_name", "")
-        is_telemetry_enabled = request.POST.get("is_telemetry_enabled", True)
+        # Ausente no POST significa desligada: telemetria só é ligada por escolha
+        # explícita no formulário de setup.
+        is_telemetry_enabled = request.POST.get("is_telemetry_enabled", False)
 
         # return error if the email and password is not present
         if not email or not password or not first_name:
