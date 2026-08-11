@@ -104,7 +104,10 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       };
     case "archived_at":
       return {
-        message: newValue === "restore" ? translate("activity_log.restored_the_project") : translate("activity_log.archived_the_project"),
+        message:
+          newValue === "restore"
+            ? translate("activity_log.restored_the_project")
+            : translate("activity_log.archived_the_project"),
         customUserName: newValue === "archive" ? "Plane" : undefined,
       };
     case "name":
@@ -117,7 +120,9 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       };
     case "description":
       return {
-        message: newValue ? translate("activity_log.updated_the_project_description") : translate("activity_log.removed_the_project_description"),
+        message: newValue
+          ? translate("activity_log.updated_the_project_description")
+          : translate("activity_log.removed_the_project_description"),
       };
     case "start_date":
       return {
@@ -207,7 +212,9 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
               {verb} this project {verb === translate("activity_log.removed") ? "from" : "to"} the module{" "}
             </span>
             <span className="font-medium text-primary">
-              {verb === translate("activity_log.removed") ? oldValue : newValue || translate("activity_log.unknown_module")}
+              {verb === translate("activity_log.removed")
+                ? oldValue
+                : newValue || translate("activity_log.unknown_module")}
             </span>
           </>
         ),
@@ -230,7 +237,9 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
         message: (
           <>
             {newValue ? "created" : translate("activity_log.removed")} the project page{" "}
-            <span className="font-medium text-primary">{newValue || oldValue || translate("templates.settings.form.page.name.placeholder")}</span>
+            <span className="font-medium text-primary">
+              {newValue || oldValue || translate("templates.settings.form.page.name.placeholder")}
+            </span>
           </>
         ),
       };

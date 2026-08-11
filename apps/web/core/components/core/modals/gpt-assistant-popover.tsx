@@ -270,7 +270,9 @@ export function GptAssistantPopover(props: Props) {
                 onChange={onChange}
                 ref={ref}
                 placeholder={`${
-                  prompt && prompt !== "" ? t("ui.tell_ai_what_action_to_perform_on_this_content") : "Ask AI anything..."
+                  prompt && prompt !== ""
+                    ? t("ui.tell_ai_what_action_to_perform_on_this_content")
+                    : "Ask AI anything..."
                 }`}
                 className="w-full"
                 autoFocus

@@ -47,8 +47,7 @@ const TOUR_STEPS: {
   {
     key: "cycles",
     title: "ui.move_with_cycles",
-    description:
-      translate("ui.cycles_help_you_and_your_team_to_progress_faster"),
+    description: translate("ui.cycles_help_you_and_your_team_to_progress_faster"),
     image: CyclesTour,
     prevStep: "work-items",
     nextStep: "modules",
@@ -147,11 +146,17 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
                 currentStepIndex % 2 === 0 ? "justify-end" : "justify-start"
               }`}
             >
-              <img src={currentStep?.image} className="h-full w-full object-cover" alt={currentStep?.title ? t(currentStep.title) : ""} />
+              <img
+                src={currentStep?.image}
+                className="h-full w-full object-cover"
+                alt={currentStep?.title ? t(currentStep.title) : ""}
+              />
             </div>
             <div className="flex h-1/2 flex-col overflow-y-auto p-4 sm:h-2/5">
               <h3 className="font-semibold sm:text-18">{currentStep?.title ? t(currentStep.title) : ""}</h3>
-              <p className="mt-3 text-13 text-secondary">{currentStep?.description ? t(currentStep.description) : ""}</p>
+              <p className="mt-3 text-13 text-secondary">
+                {currentStep?.description ? t(currentStep.description) : ""}
+              </p>
               <div className="mt-3 flex h-full items-end justify-between gap-4">
                 <div className="flex items-center gap-4">
                   {currentStep?.prevStep && (

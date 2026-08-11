@@ -3,10 +3,12 @@
 # See the LICENSE file for details.
 
 """
-Shared OTLP endpoint helpers so metrics and traces use the same collector
-when both are enabled. One URL (OTLP_ENDPOINT) is enough: same as traces
-(e.g. https://telemetry.plane.so or https://telemetry.plane.town behind
-nginx ingress with gRPC backend).
+Helpers de endpoint OTLP compartilhados por métricas e traces, para que ambos
+usem o mesmo coletor: uma URL (OTLP_ENDPOINT) basta.
+
+Não há endpoint default. Sem OTLP_ENDPOINT configurado as funções devolvem
+None e quem chama simplesmente não exporta — esta instalação não envia
+telemetria para terceiros. Ver docs/telemetria.md.
 """
 
 import os
@@ -16,16 +18,19 @@ from urllib.parse import urlparse
 OTLP_GRPC_DEFAULT_PORT = "4317"
 HTTPS_DEFAULT_PORT = "443"
 
-_DEFAULT_OTLP_ENDPOINT = "https://telemetry.plane.so"
+
+def get_otlp_base_endpoint() -> str | None:
+    """URL do coletor OTLP configurado, ou None quando não há nenhum."""
+    return (os.environ.get("OTLP_ENDPOINT") or "").strip() or None
 
 
-def grpc_endpoint_from_url(url: str) -> str:
+def grpc_endpoint_from_url(url: str) -> str | None:
     """
-    Derive gRPC host:port from OTLP_ENDPOINT URL.
-    - https://telemetry.plane.so -> telemetry.plane.so:443 (nginx ingress)
-    - https://telemetry.plane.town -> telemetry.plane.town:443 (dev)
-    - telemetry.plane.so:4317 -> telemetry.plane.so:4317 (scheme-less with port)
-    - telemetry.plane.so -> telemetry.plane.so:4317 (scheme-less, default gRPC port)
+    Derive gRPC host:port from an OTLP_ENDPOINT URL, or None when the value has
+    no usable host.
+    - https://otel.example.com -> otel.example.com:443 (nginx ingress)
+    - otel.example.com:4317 -> otel.example.com:4317 (scheme-less with port)
+    - otel.example.com -> otel.example.com:4317 (scheme-less, default gRPC port)
     - Explicit port in URL is always preserved.
     """
     # urlparse needs a scheme to correctly populate hostname/netloc.
@@ -33,7 +38,9 @@ def grpc_endpoint_from_url(url: str) -> str:
     if "://" not in url:
         url = "//" + url
     parsed = urlparse(url)
-    host = parsed.hostname or "telemetry.plane.so"
+    host = parsed.hostname
+    if not host:
+        return None
     if parsed.port is not None:
         port = str(parsed.port)
     elif parsed.scheme == "https":
@@ -43,17 +50,19 @@ def grpc_endpoint_from_url(url: str) -> str:
     return f"{host}:{port}"
 
 
-def get_otlp_grpc_endpoint() -> str:
+def get_otlp_grpc_endpoint() -> str | None:
     """
-    Return the gRPC endpoint (host:port) for OTLP traces and metrics.
-    Derived from OTLP_ENDPOINT so the same URL works for both (e.g. collector
-    behind nginx ingress with gRPC backend on 443).
+    Return the gRPC endpoint (host:port) for OTLP traces and metrics, or None
+    when OTLP_ENDPOINT is not configured.
     """
-    base = os.environ.get("OTLP_ENDPOINT", _DEFAULT_OTLP_ENDPOINT)
-    return grpc_endpoint_from_url(base)
+    base = get_otlp_base_endpoint()
+    return grpc_endpoint_from_url(base) if base else None
 
 
-def get_otlp_http_metrics_url() -> str:
-    """Return the HTTP URL for OTLP metrics (OTLP_ENDPOINT + /v1/metrics)."""
-    base = os.environ.get("OTLP_ENDPOINT", _DEFAULT_OTLP_ENDPOINT)
-    return f"{base.rstrip('/')}/v1/metrics"
+def get_otlp_http_metrics_url() -> str | None:
+    """
+    Return the HTTP URL for OTLP metrics (OTLP_ENDPOINT + /v1/metrics), or None
+    when OTLP_ENDPOINT is not configured.
+    """
+    base = get_otlp_base_endpoint()
+    return f"{base.rstrip('/')}/v1/metrics" if base else None

@@ -57,7 +57,9 @@ export function IssueLink({ activity }: { activity: IIssueActivity }) {
 
   return (
     <Tooltip
-      tooltipContent={activity?.issue_detail ? activity.issue_detail.name : translate("activity_log.this_work_item_has_been_deleted")}
+      tooltipContent={
+        activity?.issue_detail ? activity.issue_detail.name : translate("activity_log.this_work_item_has_been_deleted")
+      }
       isMobile={isMobile}
     >
       {activity?.issue_detail ? (
@@ -162,7 +164,8 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            {translate("activity_log.added_assignee")}<UserLink activity={activity} />
+            {translate("activity_log.added_assignee")}
+            <UserLink activity={activity} />
             {showIssue && (
               <>
                 {" "}
@@ -174,7 +177,8 @@ const activityDetails: {
       else
         return (
           <>
-            {translate("activity_log.removed_assignee")}<UserLink activity={activity} />
+            {translate("activity_log.removed_assignee")}
+            <UserLink activity={activity} />
             {showIssue && (
               <>
                 {" "}
@@ -478,7 +482,8 @@ const activityDetails: {
       if (activity.verb === "created")
         return (
           <>
-            added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} to the module{" "}
+            added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} to the
+            module{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.new_identifier}`}
               target="_blank"
@@ -539,7 +544,8 @@ const activityDetails: {
       if (!activity.new_value)
         return (
           <>
-            {translate("activity_log.removed_parent")}<span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>
+            {translate("activity_log.removed_parent")}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>
             {showIssue && (
               <>
                 {" "}
@@ -551,7 +557,8 @@ const activityDetails: {
       else
         return (
           <>
-            {translate("activity_log.set_parent")}<span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>
+            {translate("activity_log.set_parent")}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>
             {showIssue && (
               <>
                 {" "}
@@ -585,8 +592,8 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked that {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} relates to{" "}
-            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            marked that {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            relates to <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
@@ -604,8 +611,8 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is blocking work item{" "}
-            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is
+            blocking work item <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
@@ -623,14 +630,15 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is being blocked by{" "}
-            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is being
+            blocked by <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} being blocked by work item{" "}
+            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} being
+            blocked by work item{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
@@ -642,15 +650,15 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as duplicate of{" "}
-            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as
+            duplicate of <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as a duplicate of{" "}
-            <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
+            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as a
+            duplicate of <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
     },
@@ -659,7 +667,8 @@ const activityDetails: {
   state: {
     message: (activity, showIssue) => (
       <>
-        {translate("activity_log.set_state")}<span className="font-medium break-all text-primary">{activity.new_value}</span>
+        {translate("activity_log.set_state")}
+        <span className="font-medium break-all text-primary">{activity.new_value}</span>
         {showIssue && (
           <>
             {" "}

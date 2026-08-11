@@ -90,7 +90,9 @@ export const PlanCheckoutButton = observer(function PlanCheckoutButton(props: Pr
             }}
             disabled={!!upgradeLoaderType}
           >
-            {upgradeLoaderType === planVariant ? t("ui.redirecting_to_stripe") : (upgradeCTA ?? `Upgrade to ${planeName}`)}
+            {upgradeLoaderType === planVariant
+              ? t("ui.redirecting_to_stripe")
+              : (upgradeCTA ?? `Upgrade to ${planeName}`)}
           </Button>
           {isTrialAllowed && !isSelfHosted && (
             <div className="mt-1 h-3">

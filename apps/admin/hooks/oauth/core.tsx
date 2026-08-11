@@ -37,8 +37,7 @@ export const getCoreAuthenticationModesMap: (
   "unique-codes": {
     key: "unique-codes",
     name: "Unique codes",
-    description:
-      translate("instance_admin.log_in_or_sign_up_for_plane_using_codes_sent_via"),
+    description: translate("instance_admin.log_in_or_sign_up_for_plane_using_codes_sent_via"),
     icon: <Mails className="h-6 w-6 p-0.5 text-tertiary" />,
     config: <EmailCodesConfiguration disabled={disabled} updateConfig={updateConfig} />,
     enabledConfigKey: "ENABLE_MAGIC_LINK_LOGIN",

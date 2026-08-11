@@ -33,7 +33,8 @@ export const IssueStateActivity = observer(function IssueStateActivity(props: TI
       ends={ends}
     >
       <>
-        {t("activity_log.set_state")}<span className="font-medium text-primary">{activity.new_value}</span>
+        {t("activity_log.set_state")}
+        <span className="font-medium text-primary">{activity.new_value}</span>
         {showIssue ? t("activity_log.prep_in") : ``}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>

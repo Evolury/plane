@@ -63,7 +63,9 @@ export function TabNavigationVisibleItem({
                 className="flex cursor-pointer items-center gap-2 text-secondary transition-colors"
               >
                 <SetAsDefaultIcon className="size-3 shrink-0" />
-                <span className="text-11">{isDefault ? "Clear default" : t("work_item_types.settings.set_as_default")}</span>
+                <span className="text-11">
+                  {isDefault ? "Clear default" : t("work_item_types.settings.set_as_default")}
+                </span>
               </ContextMenu.Item>
               <ContextMenu.Item
                 onClick={(e) => {

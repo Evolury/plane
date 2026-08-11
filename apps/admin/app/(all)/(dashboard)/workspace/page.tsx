@@ -88,7 +88,9 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
           <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
             <div className="flex grow items-center gap-4">
               <div className="grow">
-                <div className="pb-1 text-16 font-medium">{t("instance_admin.prevent_anyone_else_from_creating_a_workspace")}</div>
+                <div className="pb-1 text-16 font-medium">
+                  {t("instance_admin.prevent_anyone_else_from_creating_a_workspace")}
+                </div>
                 <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
                   Toggling this on will let only you create workspaces. You will have to invite users to new workspaces.
                 </div>

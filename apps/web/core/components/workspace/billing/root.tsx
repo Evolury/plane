@@ -51,10 +51,7 @@ export const BillingRoot = observer(function BillingRoot() {
           description={t("workspace_settings.settings.billing_and_plans.description")}
         />
         <div className="mt-6">
-          <SettingsBoxedControlItem
-            title="Community"
-            description={t("ui.unlimited_everything")}
-          />
+          <SettingsBoxedControlItem title="Community" description={t("ui.unlimited_everything")} />
         </div>
       </div>
       <div className="mt-10 flex flex-col gap-y-3">

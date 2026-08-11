@@ -4,14 +4,14 @@
  * See the LICENSE file for details.
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, type ComponentType } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import { HelpCircle, MessageSquare, MoveLeft } from "lucide-react";
+import { HelpCircle, MoveLeft } from "lucide-react";
 import { Transition } from "@headlessui/react";
 import { WEB_BASE_URL } from "@plane/constants";
 // plane internal packages
-import { GithubIcon, NewTabIcon, PageIcon } from "@plane/propel/icons";
+import { NewTabIcon } from "@plane/propel/icons";
 import { Tooltip } from "@plane/propel/tooltip";
 import { cn } from "@plane/utils";
 // hooks
@@ -19,23 +19,10 @@ import { useInstance, useTheme } from "@/hooks/store";
 import { useTranslation } from "@plane/i18n";
 // assets
 
-const helpOptions = [
-  {
-    name: "Documentation",
-    href: "https://docs.plane.so/",
-    Icon: PageIcon,
-  },
-  {
-    name: "Join our Forum",
-    href: "https://forum.plane.so",
-    Icon: MessageSquare,
-  },
-  {
-    name: "Report a bug",
-    href: "https://github.com/makeplane/plane/issues/new/choose",
-    Icon: GithubIcon,
-  },
-];
+// Evolury: as entradas apontavam para docs.plane.so, forum.plane.so e as issues
+// do makeplane/plane — canais do upstream, não desta operação. Ficam de fora até
+// existirem destinos próprios; a lista volta a aparecer ao ganhar um item.
+const helpOptions: { name: string; href?: string; Icon: ComponentType<{ className?: string }> }[] = [];
 
 export const AdminSidebarHelpSection = observer(function AdminSidebarHelpSection() {
   const { t } = useTranslation();
@@ -59,7 +46,12 @@ export const AdminSidebarHelpSection = observer(function AdminSidebarHelpSection
       )}
     >
       <div className={`flex items-center gap-1 ${isSidebarCollapsed ? "flex-col justify-center" : "w-full"}`}>
-        <Tooltip tooltipContent={t("instance_admin.redirect_to_plane")} position="right" className="ml-4" disabled={!isSidebarCollapsed}>
+        <Tooltip
+          tooltipContent={t("instance_admin.redirect_to_plane")}
+          position="right"
+          className="ml-4"
+          disabled={!isSidebarCollapsed}
+        >
           <a
             href={redirectionLink}
             className={`relative flex items-center gap-1 rounded-sm bg-layer-1 px-2 py-1 text-body-xs-medium whitespace-nowrap text-secondary`}

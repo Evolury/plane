@@ -53,7 +53,12 @@ export function PasswordInput({
         autoComplete={autoComplete}
       />
       {showToggle && (
-        <Tooltip tooltipContent={showPassword ? (labels?.hidePassword ?? "Hide password") : (labels?.showPassword ?? "Show password")} position="top">
+        <Tooltip
+          tooltipContent={
+            showPassword ? (labels?.hidePassword ?? "Hide password") : (labels?.showPassword ?? "Show password")
+          }
+          position="top"
+        >
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}

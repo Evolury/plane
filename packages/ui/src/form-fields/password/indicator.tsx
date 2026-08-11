@@ -62,7 +62,11 @@ export function PasswordStrengthIndicator({
         </div>
 
         {/* Strength Message */}
-        {password && <p className={cn("!text-13 font-medium", strengthInfo.textColor)}>{translateStrength(strengthInfo.messageKey, strengthInfo.message)}</p>}
+        {password && (
+          <p className={cn("!text-13 font-medium", strengthInfo.textColor)}>
+            {translateStrength(strengthInfo.messageKey, strengthInfo.message)}
+          </p>
+        )}
       </div>
 
       {/* Criteria list */}

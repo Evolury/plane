@@ -143,7 +143,13 @@ export function CreateUpdateModuleLinkModal(props: Props) {
             {t("cancel")}
           </Button>
           <Button variant="primary" size="lg" type="submit" loading={isSubmitting}>
-            {data ? (isSubmitting ? t("ui.updating_link") : t("common.update_link")) : isSubmitting ? t("ui.adding_link") : t("add_link")}
+            {data
+              ? isSubmitting
+                ? t("ui.updating_link")
+                : t("common.update_link")
+              : isSubmitting
+                ? t("ui.adding_link")
+                : t("add_link")}
           </Button>
         </div>
       </form>

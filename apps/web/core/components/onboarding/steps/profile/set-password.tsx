@@ -107,7 +107,9 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
             placeholder={t("auth.common.password.set_password")}
             className="transition-all duration-200"
           />
-          {passwordState.password.length > 0 && <PasswordStrengthIndicator translateLabel={t} password={passwordState.password} />}
+          {passwordState.password.length > 0 && (
+            <PasswordStrengthIndicator translateLabel={t} password={passwordState.password} />
+          )}
         </div>
 
         <div className="flex flex-col gap-2 pb-2">
@@ -125,7 +127,9 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
               placeholder="Confirm password"
               className="transition-all duration-200"
             />
-            {hasPasswordMismatch && <p className="mt-1 text-11 text-danger-primary">{t("ui.passwords_do_not_match")}</p>}
+            {hasPasswordMismatch && (
+              <p className="mt-1 text-11 text-danger-primary">{t("ui.passwords_do_not_match")}</p>
+            )}
             {isPasswordValid && <p className="mt-1 text-11 text-success-primary">✓ Passwords match</p>}
           </div>
         </div>

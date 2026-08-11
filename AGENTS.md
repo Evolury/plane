@@ -1,5 +1,25 @@
 # Agent Development Guide
 
+## Política do fork
+
+Este repositório é um produto independente derivado do Plane CE v1.4.1, não um
+fork que acompanha o upstream. Consequências práticas para qualquer trabalho aqui:
+
+- A branch principal é `main`. `preview`, `master` e `canary` são nomes do
+  upstream — nunca abra PR contra eles nem trabalhe a partir deles.
+- Versionamento é próprio, a partir de `1.0.0`, sem relação com a numeração do
+  Plane. Ver `VERSIONING.md`.
+- Commits em português, conventional commits, com o _porquê_ no corpo. Merge por
+  squash.
+- Não há work item ID da Plane nos títulos de PR; a convenção do upstream não se
+  aplica.
+- Ao alterar arquivo herdado, marque a divergência com um comentário iniciado por
+  `Evolury:`. Mantenha os cabeçalhos de copyright existentes (AGPL-3.0, ver
+  `UPSTREAM.md`).
+- A instância não envia telemetria. Antes de mexer em qualquer coisa que fale com
+  a rede a partir do backend, leia `docs/telemetria.md`.
+- Correção do upstream entra por cherry-pick com `-x`, nunca por merge de branch.
+
 ## Commands
 
 - `pnpm dev` - Start all dev servers (web:3000, admin:3001)

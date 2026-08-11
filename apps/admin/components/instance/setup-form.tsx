@@ -55,7 +55,8 @@ const defaultFromData: TFormData = {
   email: "",
   company_name: "",
   password: "",
-  is_telemetry_enabled: true,
+  // Telemetria desligada por padrão: ligar é escolha explícita de quem instala.
+  is_telemetry_enabled: false,
 };
 
 export function InstanceSetupForm() {
@@ -66,7 +67,11 @@ export function InstanceSetupForm() {
   const lastNameParam = searchParams?.get("last_name") || undefined;
   const companyParam = searchParams?.get("company") || undefined;
   const emailParam = searchParams?.get("email") || undefined;
-  const isTelemetryEnabledParam = (searchParams?.get("is_telemetry_enabled") === "True" ? true : false) || true;
+  // `undefined` quando o parâmetro não veio na URL — só então o default do
+  // formulário prevalece. Quando veio (o backend devolve a escolha do usuário
+  // ao redirecionar com erro de validação), ele é respeitado como está.
+  const telemetryParam = searchParams?.get("is_telemetry_enabled");
+  const isTelemetryEnabledParam = telemetryParam == null ? undefined : telemetryParam === "True";
   const errorCode = searchParams?.get("error_code") || undefined;
   const errorMessage = searchParams?.get("error_message") || undefined;
   // state
@@ -96,7 +101,8 @@ export function InstanceSetupForm() {
     if (lastNameParam) setFormData((prev) => ({ ...prev, last_name: lastNameParam }));
     if (companyParam) setFormData((prev) => ({ ...prev, company_name: companyParam }));
     if (emailParam) setFormData((prev) => ({ ...prev, email: emailParam }));
-    if (isTelemetryEnabledParam) setFormData((prev) => ({ ...prev, is_telemetry_enabled: isTelemetryEnabledParam }));
+    if (isTelemetryEnabledParam !== undefined)
+      setFormData((prev) => ({ ...prev, is_telemetry_enabled: isTelemetryEnabledParam }));
   }, [firstNameParam, lastNameParam, companyParam, emailParam, isTelemetryEnabledParam]);
 
   // derived values
@@ -295,7 +301,11 @@ export function InstanceSetupForm() {
               {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
                 <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
               )}
-              <PasswordStrengthIndicator translateLabel={t} password={formData.password} isFocused={isPasswordInputFocused} />
+              <PasswordStrengthIndicator
+                translateLabel={t}
+                password={formData.password}
+                isFocused={isPasswordInputFocused}
+              />
             </div>
 
             <div className="w-full space-y-1">

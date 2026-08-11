@@ -1,16 +1,16 @@
 ---
 name: create-pull-request
-description: Use when creating a pull request for the current branch — gathers branch context, generates a PR description following the repo's pull_request_template.md, and creates the PR with a Plane work item ID prefix in the title.
+description: Use when creating a pull request for the current branch — gathers branch context, generates a PR description in pt-BR following the repo's pull_request_template.md, and creates the PR against `main`.
 user_invocable: true
 ---
 
 # Create PR
 
-Create a pull request using the repo's PR template, a Plane work item ID as the title prefix, and a fully filled-out description based on the actual diff.
+Create a pull request using the repo's PR template, with a fully filled-out description based on the actual diff. Título e corpo em português, como o resto do repositório.
 
 ## Workflow
 
-1. **Determine the base branch**: Default to `preview` unless the user specifies otherwise.
+1. **Determine the base branch**: Default to `main` unless the user specifies otherwise. Nunca use `preview`/`master` — são branches do upstream (ver UPSTREAM.md).
 
 2. **Gather context** (in parallel):
    - `git status -s` — check for uncommitted changes
@@ -20,34 +20,30 @@ Create a pull request using the repo's PR template, a Plane work item ID as the 
    - `git rev-parse --abbrev-ref --symbolic-full-name @{u}` — check if branch tracks a remote
    - Read `.github/pull_request_template.md` from the repo root
 
-3. **Determine work item ID**:
-   - Extract from branch name if it contains an identifier (e.g., `chore/silo-1146-foo` → `SILO-1146`, `feat/web-1234-x` → `WEB-1234`)
-   - If not found in branch name, ask the user
+3. **Draft the PR** using the template from step 2:
 
-4. **Draft the PR** using the template from step 2:
-
-   **Title**: `[WORK-ITEM-ID] <type>: <concise summary>` (under 70 chars)
-   - Type reflects the change: `fix`, `feat`, `chore`, `refactor`, `docs`, `perf`, etc.
+   **Title**: `<type>: <resumo conciso>` (under 70 chars, em português)
+   - Type reflects the change: `fix`, `feat`, `chore`, `refactor`, `docs`, `perf`, `i18n`
 
    **Body**: Fill in every section from the PR template based on the actual diff:
    - **Description** — Clear, concise summary of what the PR does and why. Focus on the "what" and "why", not line-by-line changes. Mention important implementation decisions.
    - **Type of Change** — Check the appropriate box(es): Bug fix, Feature, Improvement, Code refactoring, Performance improvements, Documentation update.
    - **Screenshots and Media** — Leave a placeholder: `<!-- Add screenshots here -->`
    - **Test Scenarios** — Suggest concrete scenarios grounded in the actual changes (e.g., "Navigate to project settings and verify the new toggle works"), not generic ones.
-   - **References** — Include the work item ID, any linked issues the user mentions, and any Sentry issue links/IDs (e.g., `SENTRY-ABC123` or Sentry URLs) referenced earlier in the conversation.
+   - **References** — Link related issues the user mentions. Em cherry-pick vindo do upstream, cite o commit de origem e o CVE/GHSA.
 
    Append a Claude Code session line at the bottom of the body.
 
-5. **Push and create** (in parallel where possible):
+4. **Push and create** (in parallel where possible):
    - Push branch with `-u` if no upstream is set
    - Create PR via `gh pr create` using a HEREDOC for the body
 
-6. **Return the PR URL** to the user.
+5. **Return the PR URL** to the user.
 
 ## Example Title
 
 ```
-[SILO-1146] fix: allow relative URLs for configuration_url and improve app tile visibility
+fix: permitir URLs relativas em configuration_url
 ```
 
 ## Guidelines
@@ -61,5 +57,5 @@ Create a pull request using the repo's PR template, a Plane work item ID as the 
 
 - Summarizing only the latest commit instead of all commits on the branch
 - Forgetting to check for an upstream before pushing
-- Using a work item ID format that doesn't match the branch convention
+- Abrir o PR contra `preview`/`master` em vez de `main`
 - Wrapping the PR body in a code fence when passing it to `gh pr create`

@@ -137,7 +137,9 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
               render={({ field: { value, onChange } }) => (
                 <DateDropdown
                   value={value || null}
-                  placeholder={t("automations.action.configuration.change_property.placeholders.property_value_select_date")}
+                  placeholder={t(
+                    "automations.action.configuration.change_property.placeholders.property_value_select_date"
+                  )}
                   onChange={(val) => {
                     setValue("time", undefined);
                     onChange(val);

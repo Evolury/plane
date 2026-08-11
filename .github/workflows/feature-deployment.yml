@@ -1,5 +1,9 @@
 name: Feature Preview
 
+# Deploy de ambiente efêmero na infraestrutura do upstream (buckets, cluster e
+# secrets da Plane). Mantido apenas como referência; não há ambiente equivalente
+# na Evolury.
+
 on:
   workflow_dispatch:
     inputs:

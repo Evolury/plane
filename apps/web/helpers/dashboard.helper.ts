@@ -92,8 +92,7 @@ export const getDurationFilterDropdownLabel = (duration: EDurationFilters, custo
   if (duration !== "custom") {
     const option = DURATION_FILTER_OPTIONS.find((o) => o.key === duration);
     return option?.i18n_label ? translate(option.i18n_label) : (option?.label ?? "");
-  }
-  else {
+  } else {
     const afterDate = customDates.find((date) => date.includes("after"))?.split(";")[0];
     const beforeDate = customDates.find((date) => date.includes("before"))?.split(";")[0];
 

@@ -30,7 +30,9 @@ export const InstanceFailureView = observer(function InstanceFailureView() {
         <div className="relative flex w-full max-w-[22.5rem] flex-col gap-6">
           <div className="relative flex flex-col items-center justify-center space-y-4">
             <img src={instanceImage} alt="Instance failure illustration" />
-            <h3 className="text-center text-20 font-medium text-on-color">{t("instance_admin.unable_to_fetch_instance_details")}</h3>
+            <h3 className="text-center text-20 font-medium text-on-color">
+              {t("instance_admin.unable_to_fetch_instance_details")}
+            </h3>
             <p className="text-center text-14 font-medium">
               We were unable to fetch the details of the instance. Fret not, it might just be a connectivity issue.
             </p>

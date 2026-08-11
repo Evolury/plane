@@ -1,21 +1,20 @@
 ---
 name: branch-name
-description: Use when starting a new branch or renaming an existing one — produces a branch name in the format `<type>/<work-item-id>-<short-description>` that's compatible with the create-pr skill's work item ID extraction.
+description: Use when starting a new branch or renaming an existing one — produces a branch name in the format `<type>/<short-description>`, always cut from `main`.
 user_invocable: true
 ---
 
 # Branch Naming
 
-Create branch names that follow the convention `<type>/<work-item-id>-<short-description>`, where the work item ID can be cleanly extracted later (e.g., by the create-pr skill).
+Create branch names that follow the convention `<type>/<short-description>`. Branches são sempre cortadas de `main` (ver VERSIONING.md).
 
 ## Format
 
 ```
-<type>/<work-item-id>-<short-description>
+<type>/<short-description>
 ```
 
 - All lowercase, hyphen-separated
-- Work item ID stays in its original form but lowercased (e.g., `SILO-1146` → `silo-1146`)
 - Short description is 2–5 words in kebab-case, focused on the _what_, not the _how_
 
 ## Workflow
@@ -28,40 +27,34 @@ Create branch names that follow the convention `<type>/<work-item-id>-<short-des
    - `docs` — documentation only
    - `perf` — performance improvement
 
-2. **Determine the work item ID**:
-   - If the user gives one, use it
-   - If they reference a Plane work item (e.g., a URL or title), extract the ID
-   - If none exists, ask the user — don't invent one
-
-3. **Write the short description**:
+2. **Write the short description**:
    - 2–5 words in kebab-case
    - Describe the outcome, not the implementation (`add-app-tile-visibility`, not `update-tile-component`)
    - Skip filler words (`the`, `a`, `for`)
 
-4. **Assemble and create the branch**:
+3. **Assemble and create the branch**:
 
 ```
-   git checkout -b <type>/<work-item-id-lowercased>-<short-description>
+   git switch -c <type>/<short-description> main
 ```
 
-5. **Return the branch name** to the user.
+4. **Return the branch name** to the user.
 
 ## Examples
 
 ```
-fix/silo-1146-relative-config-urls
-feat/web-1234-app-tile-visibility
-chore/web-2201-bump-eslint
-refactor/silo-980-extract-auth-middleware
-docs/web-1500-pr-template-update
-perf/silo-1310-cache-workspace-lookup
+fix/relative-config-urls
+feat/app-tile-visibility
+chore/bump-eslint
+refactor/extract-auth-middleware
+docs/pr-template-update
+perf/cache-workspace-lookup
+i18n/traduzir-empty-states
 ```
 
 ## Common Mistakes
 
-- Putting the work item ID at the end instead of after the type (breaks extraction)
 - Using underscores or camelCase instead of hyphens
-- Uppercasing the work item ID inside the branch name (it should be lowercase here, uppercased only when used as the PR title prefix)
 - Writing a long, narrative description — keep it scannable
-- Omitting the work item ID when one exists in Plane
+- Cutting the branch from anything other than `main`
 - Using a type that won't match the eventual PR type (pick the type you'd use in the PR title)
