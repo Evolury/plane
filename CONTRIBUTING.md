@@ -1,36 +1,51 @@
-# Contributing to Plane
+# Como contribuir
 
-Thank you for showing an interest in contributing to Plane! All kinds of contributions are valuable to us. In this guide, we will cover how you can quickly onboard and make your first contribution.
+Este guia cobre o fluxo de trabalho do repositório, o setup local e as
+convenções de tradução. Para o esquema de versão e o processo de release, ver
+[VERSIONING.md](VERSIONING.md); para a relação com o Plane CE, [UPSTREAM.md](UPSTREAM.md).
 
-## Submitting an issue
+## Fluxo de trabalho
 
-Before submitting a new issue, please search the [issues](https://github.com/makeplane/plane/issues) tab. Maybe an issue or discussion already exists and might inform you of workarounds. Otherwise, you can give new information.
+**Branch.** Toda branch sai de `main` e segue `<tipo>/<descrição-curta>`, em
+minúsculas e com hífens. Tipos: `feat`, `fix`, `chore`, `refactor`, `docs`,
+`perf`, `i18n`. Nunca trabalhe direto na `main`, e nunca use os nomes do
+upstream (`preview`, `master`, `canary`).
 
-While we want to fix all the [issues](https://github.com/makeplane/plane/issues), before fixing a bug we need to be able to reproduce and confirm it. Please provide us with a minimal reproduction scenario using a repository or [Gist](https://gist.github.com/). Having a live, reproducible scenario gives us the information without asking questions back & forth with additional questions like:
+**Commits.** Conventional commits, com assunto em português e no imperativo:
+`feat(web): ocultar faturamento das configurações`. O corpo importa mais que o
+assunto — explique _por que_ a mudança existe, não o que o diff já mostra. Se a
+mudança tem número (tamanho de imagem, tempo de query, contagem de strings),
+inclua a medição.
 
-- 3rd-party libraries being used and their versions
-- a use-case that fails
+**PR.** Base sempre `main`, seguindo o [template](.github/pull_request_template.md).
+Os checks que rodam: lint e build (api e web apps), tipos, sync de i18n quando
+`packages/i18n/**` for tocado, copyright e CodeQL.
 
-Without said minimal reproduction, we won't be able to investigate all [issues](https://github.com/makeplane/plane/issues), and the issue might not be resolved.
+**Merge.** Squash, um commit por PR. As mensagens dos commits da branch viram o
+corpo da mensagem final.
 
-You can open a new issue with this [issue form](https://github.com/makeplane/plane/issues/new).
+**Correção vinda do upstream.** Não faça merge de branch do Plane: cherry-pick
+com `-x` e registre o CVE/GHSA no PR. O passo a passo está em
+[UPSTREAM.md](UPSTREAM.md).
 
-### Naming conventions for issues
+## Abrindo uma issue
 
-When opening a new issue, please use a clear and concise title that follows this format:
+Antes de abrir, procure nas [issues](https://github.com/Evolury/plane/issues) —
+pode já existir registro ou contorno.
 
-- For bugs: `🐛 Bug: [short description]`
-- For features: `🚀 Feature: [short description]`
-- For improvements: `🛠️ Improvement: [short description]`
-- For documentation: `📘 Docs: [short description]`
+Para bug, o essencial é conseguirmos reproduzir: descreva o passo a passo, o que
+era esperado e o que aconteceu, com versão da instância (visível no god-mode),
+navegador e, quando houver, o erro do console ou o trecho de log. Sem
+reprodução, a investigação empaca.
 
-**Examples:**
+Títulos seguem o formato:
 
-- `🐛 Bug: API token expiry time not saving correctly`
-- `📘 Docs: Clarify RAM requirement for local setup`
-- `🚀 Feature: Allow custom time selection for token expiration`
+- Bug: `🐛 Bug: [descrição curta]`
+- Funcionalidade: `🚀 Feature: [descrição curta]`
+- Melhoria: `🛠️ Improvement: [descrição curta]`
+- Documentação: `📘 Docs: [descrição curta]`
 
-This helps us triage and manage issues more efficiently.
+Vulnerabilidade **não** vira issue: ver [SECURITY.md](SECURITY.md).
 
 ## Projects setup and Architecture
 
@@ -53,7 +68,7 @@ The backend is a django project which is kept inside apps/api
 1. Clone the repo
 
 ```bash
-git clone https://github.com/makeplane/plane.git [folder-name]
+git clone git@github.com:Evolury/plane.git [folder-name]
 cd [folder-name]
 chmod +x setup.sh
 ```
@@ -81,29 +96,20 @@ pnpm dev
 
 That’s it! You’re all set to begin coding. Remember to refresh your browser if changes don’t auto-reload. Happy contributing! 🎉
 
-## Missing a Feature?
-
-If a feature is missing, you can directly _request_ a new one [here](https://github.com/makeplane/plane/issues/new?assignees=&labels=feature&template=feature_request.yml&title=%F0%9F%9A%80+Feature%3A+). You also can do the same by choosing "🚀 Feature" when raising a [New Issue](https://github.com/makeplane/plane/issues/new/choose) on our GitHub Repository.
-If you would like to _implement_ it, an issue with your proposal must be submitted first, to be sure that we can use it. Please consider the guidelines given below.
-
 ## Coding guidelines
 
-To ensure consistency throughout the source code, please keep these rules in mind as you are working:
-
-- All features or bug fixes must be tested by one or more specs (unit-tests).
-- We lint with [OxLint](https://oxc.rs/docs/guide/usage/linter) using the shared `.oxlintrc.json` and format with [oxfmt](https://oxc.rs/docs/guide/usage/formatter) using `.oxfmtrc.json`.
-
-## Ways to contribute
-
-- Try Plane Cloud and the self hosting platform and give feedback
-- Add new integrations
-- Add or update translations
-- Help with open [issues](https://github.com/makeplane/plane/issues) or [create your own](https://github.com/makeplane/plane/issues/new/choose)
-- Share your thoughts and suggestions with us
-- Help create tutorials and blog posts
-- Request a feature by submitting a proposal
-- Report a bug
-- **Improve documentation** - fix incomplete or missing [docs](https://docs.plane.so/), bad wording, examples or explanations.
+- Funcionalidade nova e correção de bug vêm acompanhadas de teste.
+- Lint com [OxLint](https://oxc.rs/docs/guide/usage/linter) (`.oxlintrc.json`) e
+  formatação com [oxfmt](https://oxc.rs/docs/guide/usage/formatter)
+  (`.oxfmtrc.json`), ambos na raiz. `pnpm check` roda formato, lint e tipos;
+  `pnpm fix` corrige o que é automático.
+- Texto visível ao usuário nunca é escrito direto no componente: vai para o
+  i18n, seguindo o guia de tradução abaixo.
+- Ao alterar arquivo herdado do upstream, marque a divergência com um comentário
+  começando por `Evolury:` explicando o motivo. É o que torna a mudança
+  reconhecível anos depois, quando ninguém lembra do contexto.
+- Cabeçalho de copyright: os arquivos herdados mantêm o da Plane Software Inc.
+  Ver [UPSTREAM.md](UPSTREAM.md).
 
 ## Contributing to language support
 
@@ -242,6 +248,7 @@ Before submitting your contribution, please ensure the following:
 
 Happy translating! 🌍✨
 
-## Need help? Questions and suggestions
+## Dúvidas e sugestões
 
-Questions, suggestions, and thoughts are most welcome. We can also be reached in our [Forum](https://forum.plane.so).
+Abra uma [issue](https://github.com/Evolury/plane/issues) ou escreva para
+[contato@evolury.com.br](mailto:contato@evolury.com.br).

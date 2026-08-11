@@ -10,15 +10,15 @@ religá-la contra um coletor próprio, se um dia for do interesse.
 
 ## O que foi desligado
 
-| Onde | Mudança |
-|---|---|
-| `apps/api/plane/celery.py` | A task `push-instance-metrics` não está mais no `beat_schedule` — não há coleta periódica |
-| `apps/api/plane/license/management/commands/register_instance.py` | Removido o `push_instance_metrics.delay()` que disparava um envio a cada start de container |
+| Onde                                                              | Mudança                                                                                                                                                               |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api/plane/celery.py`                                        | A task `push-instance-metrics` não está mais no `beat_schedule` — não há coleta periódica                                                                             |
+| `apps/api/plane/license/management/commands/register_instance.py` | Removido o `push_instance_metrics.delay()` que disparava um envio a cada start de container                                                                           |
 | `apps/api/plane/license/management/commands/register_instance.py` | Removida a consulta a `api.github.com/repos/makeplane/plane/releases/latest`; a versão em execução vem de `APP_VERSION` (ou do `package.json`) e é a única referência |
-| `apps/api/plane/license/models/instance.py` | `is_telemetry_enabled` passa a `default=False`; a migration `0007` desliga também as instâncias já registradas |
-| `apps/api/plane/license/api/views/admin.py` | No setup, campo ausente no POST significa desligado |
-| `apps/admin/components/instance/setup-form.tsx` | Checkbox de telemetria começa desmarcado (antes um `\|\| true` forçava marcado, ignorando o parâmetro de URL) |
-| `apps/api/plane/utils/otlp_endpoints.py` | Sem endpoint default: sem `OTLP_ENDPOINT`, os helpers devolvem `None` e nada é exportado |
+| `apps/api/plane/license/models/instance.py`                       | `is_telemetry_enabled` passa a `default=False`; a migration `0007` desliga também as instâncias já registradas                                                        |
+| `apps/api/plane/license/api/views/admin.py`                       | No setup, campo ausente no POST significa desligado                                                                                                                   |
+| `apps/admin/components/instance/setup-form.tsx`                   | Checkbox de telemetria começa desmarcado (antes um `\|\| true` forçava marcado, ignorando o parâmetro de URL)                                                         |
+| `apps/api/plane/utils/otlp_endpoints.py`                          | Sem endpoint default: sem `OTLP_ENDPOINT`, os helpers devolvem `None` e nada é exportado                                                                              |
 
 O código da coleta (`apps/api/plane/license/bgtasks/telemetry_metrics.py`) e o
 toggle no god-mode (Admin → General) foram mantidos de propósito: é o que permite
