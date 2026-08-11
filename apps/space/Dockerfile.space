@@ -74,6 +74,17 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store CI=true pnpm install --o
 # Build only the space package
 RUN pnpm turbo run build --filter=space
 
+# Monta uma árvore autocontida só com o que roda em produção.
+#
+# Sem isto, o estágio final copiava /app/node_modules inteiro — o node_modules
+# HOISTED DO MONOREPO, com dependências dos outros apps e todo o ferramental de
+# build. Mesmo problema medido no apps/live em 11/08/2026, onde representava
+# 1,1 GB de uma imagem de 1,65 GB.
+#
+# `pnpm deploy --prod` resolve o grafo real do app, instala apenas
+# `dependencies` e injeta os pacotes de workspace (@plane/*) no node_modules.
+RUN pnpm deploy --filter=space --prod --legacy /prod/space
+
 # =========================================================================== #
 
 FROM base AS runner
@@ -84,17 +95,22 @@ ENV NODE_ENV=production
 RUN apk del go 2>/dev/null || true
 
 # Remove vulnerable picomatch bundled inside npm (CVE-2026-33671)
-# npx only needs picomatch when installing packages, not when running a locally-installed binary
 RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/picomatch
 
-COPY --from=installer /app/apps/space/build ./apps/space/build
-COPY --from=installer /app/apps/space/node_modules ./apps/space/node_modules
-COPY --from=installer /app/node_modules ./node_modules
+WORKDIR /app
 
-# esbuild and tsgolint are build-only Go binaries; remove from runtime image to eliminate stdlib CVEs
+# A árvore de produção já vem pronta e podada do estágio anterior.
+COPY --from=installer /prod/space ./
+
+# O build entra SEPARADO, e de propósito: `pnpm deploy` empacota o pacote
+# seguindo as regras de publicação, e `apps/space/.gitignore` lista `/build` —
+# então a saída da compilação fica de fora do deploy. Sem esta linha o container
+# sobe e morre em laço com "Cannot find module '/app/build/server/index.js'".
+COPY --from=installer /app/apps/space/build ./build
+
+# Rede de segurança: se alguma dependência de produção ainda arrastar um binário
+# de build, ele não deve sobreviver no runtime (CVEs de stdlib Go).
 RUN find /app/node_modules \( -name 'esbuild' -o -name 'tsgolint' \) -type f -delete 2>/dev/null || true
-
-WORKDIR /app/apps/space
 
 EXPOSE 3000
 
@@ -102,4 +118,6 @@ RUN apk add --no-cache curl
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -fsS http://127.0.0.1:3000/spaces/ >/dev/null || exit 1
 
-CMD ["npx", "react-router-serve", "./build/server/index.js"]
+# Chama o binário local em vez de `npx`: o npx existia só para localizar o
+# executável, e era ele que trazia a dependência do picomatch removido acima.
+CMD ["./node_modules/.bin/react-router-serve", "./build/server/index.js"]

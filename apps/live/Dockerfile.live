@@ -47,6 +47,21 @@ ENV TURBO_TELEMETRY_DISABLED=1
 
 RUN pnpm turbo run build --filter=live
 
+# Monta uma árvore autocontida só com o que roda em produção.
+#
+# Sem isto, o estágio final copiava /app/node_modules inteiro — o node_modules
+# HOISTED DO MONOREPO, com as dependências de todos os outros apps e de todo o
+# ferramental de build. Medido em 11/08/2026: 1,1 GB dos 1,65 GB da imagem, para
+# servir uma aplicação de 100 KB. Lá dentro havia @swc/core (53 MB), turbo
+# (37 MB), typescript (22 MB), @blueprintjs/icons (49 MB), pdfjs-dist (36 MB) e
+# emojibase-data (43 MB) — compiladores e dependências de frontend que um
+# servidor WebSocket de colaboração nunca carrega.
+#
+# `pnpm deploy --prod` resolve o grafo real do app, instala apenas
+# `dependencies` e injeta os pacotes de workspace (@plane/*) dentro do próprio
+# node_modules — o que também dispensa copiar /app/packages.
+RUN pnpm deploy --filter=live --prod --legacy /prod/live
+
 # *****************************************************************************
 # STAGE 3: Run the project
 # *****************************************************************************
@@ -60,17 +75,23 @@ RUN apk del go 2>/dev/null || true
 # Remove vulnerable picomatch bundled inside npm (CVE-2026-33671); npm is not used at runtime
 RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/picomatch
 
-COPY --from=installer /app/packages ./packages
-COPY --from=installer /app/apps/live/dist ./apps/live/dist
-COPY --from=installer /app/apps/live/node_modules ./apps/live/node_modules
-COPY --from=installer /app/node_modules ./node_modules
-COPY --from=installer /app/apps/live/package.json ./apps/live/package.json
+# A árvore de produção já vem pronta e podada do estágio anterior.
+COPY --from=installer /prod/live ./
 
-# esbuild and tsgolint are build-only Go binaries; remove from runtime image to eliminate stdlib CVEs
+# O build entra SEPARADO por segurança. Hoje o `pnpm deploy` inclui o `dist/`
+# aqui porque apps/live não tem `.gitignore` próprio — mas o `space` quebrou
+# exatamente assim: lá o `/build` é ignorado e sumiu do deploy, sem aviso. Ser
+# explícito custa uma linha e remove a dependência dessa sutileza.
+COPY --from=installer /app/apps/live/dist ./dist
+
+# Rede de segurança: se alguma dependência de produção ainda arrastar um binário
+# de build, ele não deve sobreviver no runtime (CVEs de stdlib Go).
 RUN find /app/node_modules \( -name 'esbuild' -o -name 'tsgolint' \) -type f -delete 2>/dev/null || true
 
 ENV TURBO_TELEMETRY_DISABLED=1
 
 EXPOSE 3000
 
-CMD ["node", "apps/live"]
+# `main` do package.json aponta para ./dist/start.mjs, e agora o pacote é a raiz
+# do WORKDIR — daí `node .` em vez do antigo `node apps/live`.
+CMD ["node", "."]
