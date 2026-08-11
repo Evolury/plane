@@ -19,6 +19,11 @@ fork que acompanha o upstream. Consequências práticas para qualquer trabalho a
 - A instância não envia telemetria. Antes de mexer em qualquer coisa que fale com
   a rede a partir do backend, leia `docs/telemetria.md`.
 - Correção do upstream entra por cherry-pick com `-x`, nunca por merge de branch.
+- Funcionalidades próprias são documentadas em `docs/evolury/funcionalidades/`
+  (especificação, arquitetura, matriz de compatibilidade e backlog) e as decisões
+  estruturais em `docs/evolury/decisoes/` (ADRs). Antes de mexer em uma
+  funcionalidade Evolury, leia a especificação dela; ao implementar, referencie os
+  itens do backlog no PR.
 
 ## Commands
 
