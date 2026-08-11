@@ -30,10 +30,11 @@ on:
         required: false
         default: false
         type: boolean
-  push:
-    branches:
-      - preview
-      - canary
+
+# Sem gatilho por push: este workflow publica em `docker-image-owner: makeplane`
+# usando a action `makeplane/actions/build-push` e os secrets DOCKERHUB_* do
+# upstream. Fica só como referência, acessível por workflow_dispatch, até existir
+# um pipeline de imagens da Evolury com registry e secrets próprios.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
