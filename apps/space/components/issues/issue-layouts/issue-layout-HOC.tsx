@@ -36,7 +36,11 @@ export const IssueLayoutHOC = observer(function IssueLayoutHOC(props: Props) {
   }
 
   if (getGroupIssueCount(undefined, undefined, false) === 0) {
-    return <div className="grid size-full place-items-center text-secondary">{t("project_empty_state.work_item_filter.title")}</div>;
+    return (
+      <div className="grid size-full place-items-center text-secondary">
+        {t("project_empty_state.work_item_filter.title")}
+      </div>
+    );
   }
 
   return <>{props.children}</>;

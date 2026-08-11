@@ -92,16 +92,16 @@ export function EditorWrapper(props: Props) {
   return (
     <EditorTranslationProvider translate={translate}>
       <EditorContainer
-      displayConfig={displayConfig}
-      editor={editor}
-      editorContainerClassName={editorContainerClassName}
-      id={id}
-      isTouchDevice={!!isTouchDevice}
-    >
-      {children?.(editor)}
-      <div className="flex flex-col">
-        <EditorContentWrapper editor={editor} id={id} tabIndex={tabIndex} />
-      </div>
+        displayConfig={displayConfig}
+        editor={editor}
+        editorContainerClassName={editorContainerClassName}
+        id={id}
+        isTouchDevice={!!isTouchDevice}
+      >
+        {children?.(editor)}
+        <div className="flex flex-col">
+          <EditorContentWrapper editor={editor} id={id} tabIndex={tabIndex} />
+        </div>
       </EditorContainer>
     </EditorTranslationProvider>
   );

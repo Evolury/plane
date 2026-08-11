@@ -13,7 +13,6 @@
  * and other security vulnerabilities while maintaining good UX
  */
 
-
 /**
  * Traduz uma mensagem de validação.
  *
@@ -126,11 +125,19 @@ export const validateDisplayName = (displayName: string, t?: TValidationTranslat
   }
 
   if (hasInjectionRiskChars(displayName)) {
-    return msg(t, "validation.display_special", "Display name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %");
+    return msg(
+      t,
+      "validation.display_special",
+      "Display name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %"
+    );
   }
 
   if (!DISPLAY_NAME_REGEX.test(displayName)) {
-    return msg(t, "validation.display_allowed", "Display name can only contain letters, numbers, periods, hyphens, and underscores");
+    return msg(
+      t,
+      "validation.display_allowed",
+      "Display name can only contain letters, numbers, periods, hyphens, and underscores"
+    );
   }
 
   return true;
@@ -146,7 +153,11 @@ export const validateDisplayName = (displayName: string, t?: TValidationTranslat
  * validateCompanyName("Acme_Corp-123") // returns true
  * validateCompanyName("Acme{Corp}") // returns error message
  */
-export const validateCompanyName = (companyName: string, required: boolean = false, t?: TValidationTranslate): boolean | string => {
+export const validateCompanyName = (
+  companyName: string,
+  required: boolean = false,
+  t?: TValidationTranslate
+): boolean | string => {
   if (!companyName || companyName.trim() === "") {
     return required ? msg(t, "validation.company_required", "Company name is required") : true;
   }
@@ -156,11 +167,19 @@ export const validateCompanyName = (companyName: string, required: boolean = fal
   }
 
   if (hasInjectionRiskChars(companyName)) {
-    return msg(t, "validation.company_special", "Company name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %");
+    return msg(
+      t,
+      "validation.company_special",
+      "Company name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %"
+    );
   }
 
   if (!COMPANY_NAME_REGEX.test(companyName)) {
-    return msg(t, "validation.company_allowed", "Company name can only contain letters, numbers, spaces, hyphens, and underscores");
+    return msg(
+      t,
+      "validation.company_allowed",
+      "Company name can only contain letters, numbers, spaces, hyphens, and underscores"
+    );
   }
 
   if (!HAS_ALPHANUMERIC_REGEX.test(companyName)) {
@@ -180,7 +199,11 @@ export const validateCompanyName = (companyName: string, required: boolean = fal
  * validateWorkspaceName("Acme_Corp-123") // returns true
  * validateWorkspaceName("Acme{Corp}") // returns error message
  */
-export const validateWorkspaceName = (workspaceName: string, required: boolean = false, t?: TValidationTranslate): boolean | string => {
+export const validateWorkspaceName = (
+  workspaceName: string,
+  required: boolean = false,
+  t?: TValidationTranslate
+): boolean | string => {
   if (!workspaceName || workspaceName.trim() === "") {
     return required ? msg(t, "validation.workspace_required", "Workspace name is required") : true;
   }
@@ -190,11 +213,19 @@ export const validateWorkspaceName = (workspaceName: string, required: boolean =
   }
 
   if (hasInjectionRiskChars(workspaceName)) {
-    return msg(t, "validation.workspace_special", "Workspace name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %");
+    return msg(
+      t,
+      "validation.workspace_special",
+      "Workspace name cannot contain special characters like < > ' \" { } [ ] * ^ ! # %"
+    );
   }
 
   if (!COMPANY_NAME_REGEX.test(workspaceName)) {
-    return msg(t, "validation.workspace_allowed", "Workspace name can only contain letters, numbers, spaces, hyphens, and underscores");
+    return msg(
+      t,
+      "validation.workspace_allowed",
+      "Workspace name can only contain letters, numbers, spaces, hyphens, and underscores"
+    );
   }
 
   if (!HAS_ALPHANUMERIC_REGEX.test(workspaceName)) {

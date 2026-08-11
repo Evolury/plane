@@ -68,7 +68,9 @@ const InstanceEmailPage = observer(function InstanceEmailPage(_props: Route.Comp
             Plane can send useful emails to you and your users from your own instance without talking to the Internet.
             <div className="text-13 font-regular text-tertiary">
               Set it up below and please test your settings before you save them.&nbsp;
-              <span className="text-danger-primary">{t("instance_admin.misconfigs_can_lead_to_email_bounces_and_errors")}</span>
+              <span className="text-danger-primary">
+                {t("instance_admin.misconfigs_can_lead_to_email_bounces_and_errors")}
+              </span>
             </div>
           </>
         ),

@@ -24,7 +24,9 @@ export const getRelationActivityContent = (activity: TIssueActivity | undefined)
         ? `${translate("activity_log.marked_this_work_item_as_duplicate_of")} `
         : `${translate("activity_log.removed_this_work_item_as_a_duplicate_of")} `;
     case "relates_to":
-      return activity.old_value === "" ? `${translate("activity_log.marked_that_this_work_item_relates_to")} ` : `${translate("activity_log.removed_the_relation_from")} `;
+      return activity.old_value === ""
+        ? `${translate("activity_log.marked_that_this_work_item_relates_to")} `
+        : `${translate("activity_log.removed_the_relation_from")} `;
   }
 
   return;

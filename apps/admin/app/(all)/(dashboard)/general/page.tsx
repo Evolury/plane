@@ -23,8 +23,7 @@ function GeneralPage() {
     <PageWrapper
       header={{
         title: t("general_settings"),
-        description:
-          t("instance_admin.change_the_name_of_your_instance_and_instance_ad"),
+        description: t("instance_admin.change_the_name_of_your_instance_and_instance_ad"),
       }}
     >
       {instance && instanceAdmins && <GeneralConfigurationForm instance={instance} instanceAdmins={instanceAdmins} />}

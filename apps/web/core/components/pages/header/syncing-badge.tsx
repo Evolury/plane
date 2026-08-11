@@ -45,8 +45,7 @@ export function PageSyncingBadge({ syncStatus }: Props) {
     error: {
       label: "Connection lost",
       tooltipHeading: "Connection lost",
-      tooltipContent:
-        t("ui.we_re_having_trouble_connecting_to_the_websocket"),
+      tooltipContent: t("ui.we_re_having_trouble_connecting_to_the_websocket"),
     },
   };
 

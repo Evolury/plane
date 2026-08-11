@@ -40,7 +40,10 @@ export const CalendarWeekHeader = observer(function CalendarWeekHeader(props: Pr
           return null;
 
         return (
-          <div key={getWeekDayName(day.value, true)} className="flex h-11 items-center justify-center bg-layer-1 px-4 md:justify-end">
+          <div
+            key={getWeekDayName(day.value, true)}
+            className="flex h-11 items-center justify-center bg-layer-1 px-4 md:justify-end"
+          >
             {getWeekDayName(day.value, true)}
           </div>
         );

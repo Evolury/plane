@@ -32,7 +32,8 @@ export const IssuePriorityActivity = observer(function IssuePriorityActivity(pro
       ends={ends}
     >
       <>
-        {t("activity_log.set_priority")}<span className="font-medium text-primary">{activity.new_value}</span>
+        {t("activity_log.set_priority")}
+        <span className="font-medium text-primary">{activity.new_value}</span>
         {showIssue ? t("activity_log.prep_in") : ``}
         {showIssue && <IssueLink activityId={activityId} />}.
       </>

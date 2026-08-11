@@ -59,7 +59,9 @@ export const getSlashCommandFilteredSections =
   ({ query }: { query: string }): TSlashCommandSection[] => {
     const { additionalOptions: externalAdditionalOptions, disabledExtensions, flaggedExtensions } = args;
     // Sem `translate` (app que não injeta), cai no texto em inglês do 2º argumento.
-    const translate = args.translate ? (key: string, fallback: string) => args.translate?.(key) || fallback : (_key: string, fallback: string) => fallback;
+    const translate = args.translate
+      ? (key: string, fallback: string) => args.translate?.(key) || fallback
+      : (_key: string, fallback: string) => fallback;
     const SLASH_COMMAND_SECTIONS: TSlashCommandSection[] = [
       {
         key: "general",

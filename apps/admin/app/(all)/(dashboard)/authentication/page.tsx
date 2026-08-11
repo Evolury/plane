@@ -58,8 +58,7 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
             setToast({
               type: TOAST_TYPE.ERROR,
               title: t("instance_admin.cannot_disable_authentication"),
-              message:
-                t("instance_admin.at_least_one_authentication_method_must_remain_e"),
+              message: t("instance_admin.at_least_one_authentication_method_must_remain_e"),
             });
             return;
           }
@@ -124,7 +123,9 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
           <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
             <div className="flex grow items-center gap-4">
               <div className="grow">
-                <div className="pb-1 text-16 font-medium">{t("instance_admin.allow_anyone_to_sign_up_even_without_an_invite")}</div>
+                <div className="pb-1 text-16 font-medium">
+                  {t("instance_admin.allow_anyone_to_sign_up_even_without_an_invite")}
+                </div>
                 <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
                   Toggling this off will only let users sign up when they are invited.
                 </div>
@@ -173,6 +174,8 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.authentication_settings_plane_web") }];
+export const meta: Route.MetaFunction = () => [
+  { title: translate("instance_admin.authentication_settings_plane_web") },
+];
 
 export default InstanceAuthenticationPage;

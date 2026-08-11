@@ -157,7 +157,9 @@ export function WorkspaceCreateForm() {
               )}
             />
           </div>
-          {slugError && <p className="text-13 text-danger-primary">{t("instance_admin.this_url_is_taken_try_something_else")}</p>}
+          {slugError && (
+            <p className="text-13 text-danger-primary">{t("instance_admin.this_url_is_taken_try_something_else")}</p>
+          )}
           {invalidSlug && (
             <p className="text-13 text-danger-primary">{`URLs can contain only ( - ), ( _ ) and alphanumeric characters.`}</p>
           )}
@@ -176,7 +178,9 @@ export function WorkspaceCreateForm() {
                   onChange={onChange}
                   label={
                     ORGANIZATION_SIZE.find((c) => c === value) ?? (
-                      <span className="text-placeholder">{t("workspace_creation.form.organization_size.placeholder")}</span>
+                      <span className="text-placeholder">
+                        {t("workspace_creation.form.organization_size.placeholder")}
+                      </span>
                     )
                   }
                   buttonClassName="!border-[0.5px] !border-subtle !shadow-none"

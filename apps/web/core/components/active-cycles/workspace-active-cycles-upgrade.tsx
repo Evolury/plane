@@ -29,8 +29,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "10000_feet_view",
     title: "10000_feet_view",
-    description:
-      translate("10000_feet_view_description"),
+    description: translate("10000_feet_view_description"),
     icon: Folder,
   },
   {
@@ -43,8 +42,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "compare_burndowns",
     title: "Compare burndowns.",
-    description:
-      translate("ui.active_cycles_monitor"),
+    description: translate("ui.active_cycles_monitor"),
     icon: BarChart4,
   },
   {
@@ -63,8 +61,7 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   {
     key: "stay_ahead_of_blockers",
     title: translate("stay_ahead_of_blockers"),
-    description:
-      translate("ui.spot_challenges_from_one_project_to_another_and"),
+    description: translate("ui.spot_challenges_from_one_project_to_another_and"),
     icon: Microscope,
   },
 ];

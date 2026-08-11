@@ -284,7 +284,9 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
                 isMobile={isMobile}
                 tooltipHeading="Members"
                 tooltipContent={
-                  project.members && project.members.length > 0 ? `${project.members.length} Members` : t("ui.no_member")
+                  project.members && project.members.length > 0
+                    ? `${project.members.length} Members`
+                    : t("ui.no_member")
                 }
                 position="top"
               >

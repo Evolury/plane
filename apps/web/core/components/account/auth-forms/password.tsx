@@ -99,7 +99,11 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
     ) : (
       passwordFormData.password.length > 0 &&
       getPasswordStrength(passwordFormData.password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (
-        <PasswordStrengthIndicator translateLabel={t} password={passwordFormData.password} isFocused={isPasswordInputFocused} />
+        <PasswordStrengthIndicator
+          translateLabel={t}
+          password={passwordFormData.password}
+          isFocused={isPasswordInputFocused}
+        />
       )
     );
 

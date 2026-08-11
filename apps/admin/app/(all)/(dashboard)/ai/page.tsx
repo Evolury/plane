@@ -47,6 +47,8 @@ const InstanceAIPage = observer(function InstanceAIPage(_props: Route.ComponentP
   );
 });
 
-export const meta: Route.MetaFunction = () => [{ title: translate("instance_admin.artificial_intelligence_settings_god_mode") }];
+export const meta: Route.MetaFunction = () => [
+  { title: translate("instance_admin.artificial_intelligence_settings_god_mode") },
+];
 
 export default InstanceAIPage;

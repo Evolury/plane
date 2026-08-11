@@ -76,7 +76,11 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
   const passwordSupport = passwordFormData.password.length > 0 &&
     mode === EAuthModes.SIGN_UP &&
     getPasswordStrength(passwordFormData.password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (
-      <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} translateLabel={t} />
+      <PasswordStrengthIndicator
+        password={passwordFormData.password}
+        isFocused={isPasswordInputFocused}
+        translateLabel={t}
+      />
     );
 
   const isButtonDisabled = useMemo(

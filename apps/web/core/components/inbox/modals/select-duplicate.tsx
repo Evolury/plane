@@ -87,7 +87,9 @@ export function SelectDuplicateInboxIssueModal(props: Props) {
   const issueList =
     filteredIssues.length > 0 ? (
       <li className="p-2">
-        {query === "" && <h2 className="mt-4 mb-2 px-3 text-11 font-semibold text-primary">{t("ui.select_work_item")}</h2>}
+        {query === "" && (
+          <h2 className="mt-4 mb-2 px-3 text-11 font-semibold text-primary">{t("ui.select_work_item")}</h2>
+        )}
         <ul className="text-13 text-primary">
           {filteredIssues.map((issue) => {
             const stateColor = issue.state__color || "";

@@ -65,13 +65,15 @@ export const CalendarMonthsDropdown = observer(function CalendarMonthsDropdown(p
       return `${getMonthName(firstDay.getMonth())} ${firstDay.getFullYear()}`;
 
     if (firstDay.getFullYear() !== lastDay.getFullYear()) {
-      return `${getMonthName(firstDay.getMonth(), true)} ${firstDay.getFullYear()} - ${
-        getMonthName(lastDay.getMonth(), true)
-      } ${lastDay.getFullYear()}`;
+      return `${getMonthName(firstDay.getMonth(), true)} ${firstDay.getFullYear()} - ${getMonthName(
+        lastDay.getMonth(),
+        true
+      )} ${lastDay.getFullYear()}`;
     } else
-      return `${getMonthName(firstDay.getMonth(), true)} - ${
-        getMonthName(lastDay.getMonth(), true)
-      } ${lastDay.getFullYear()}`;
+      return `${getMonthName(firstDay.getMonth(), true)} - ${getMonthName(
+        lastDay.getMonth(),
+        true
+      )} ${lastDay.getFullYear()}`;
   };
 
   const handleDateChange = (date: Date) => {

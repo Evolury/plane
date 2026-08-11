@@ -23,8 +23,7 @@ import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
 
 const APP_TITLE = "Plane | Simple, extensible, open-source project management tool.";
-const APP_DESCRIPTION =
-  translate("instance_admin.open_source_project_management_tool_to_manage_wo");
+const APP_DESCRIPTION = translate("instance_admin.open_source_project_management_tool_to_manage_wo");
 
 export const links: LinksFunction = () => [
   { rel: "apple-touch-icon", sizes: "180x180", href: appleTouchIcon },

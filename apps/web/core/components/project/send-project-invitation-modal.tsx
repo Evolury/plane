@@ -206,7 +206,9 @@ export const SendProjectInvitationModal = observer(function SendProjectInvitatio
                                   {selectedMember?.member.display_name}
                                 </div>
                               ) : (
-                                <div className="flex items-center gap-2 py-0.5">{t("project_settings.members.invite_members.select_co_worker")}</div>
+                                <div className="flex items-center gap-2 py-0.5">
+                                  {t("project_settings.members.invite_members.select_co_worker")}
+                                </div>
                               )}
                               <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
                             </button>
@@ -246,7 +248,9 @@ export const SendProjectInvitationModal = observer(function SendProjectInvitatio
                           {...field}
                           customButton={
                             <div className="shadow-sm flex w-24 items-center justify-between gap-1 rounded-md border border-subtle px-3 py-2.5 text-left text-13 text-secondary duration-300 hover:bg-layer-1 hover:text-primary focus:outline-none">
-                              <span className="capitalize">{field.value ? ROLE[field.value] : t("ui.select_role_2")}</span>
+                              <span className="capitalize">
+                                {field.value ? ROLE[field.value] : t("ui.select_role_2")}
+                              </span>
                               <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
                             </div>
                           }
