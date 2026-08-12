@@ -9,14 +9,17 @@ os itens daqui (ex.: "Implementa F1.2–F1.4").
 Decide a única incerteza técnica do projeto ([arquitetura.md](arquitetura.md),
 "O ponto crítico"). Timebox: 1 dia; código descartável.
 
-- [ ] F0.1 Protótipo (a): `GroupByColumnTypes` novo + caso de resolução no
-      `base-issues.store.ts` + payload de drop, com colunas vindas de um store
-      mockado
-- [ ] F0.2 Protótipo (b): root próprio sobre `KanbanGroup`/blocos de lista com
-      agrupamento resolvido fora do store base
-- [ ] F0.3 Escrever **ADR 0002** com a escolha e os motivos
+- [x] F0.1 Abordagem (a) provada por rastreio de ponta a ponta + sonda de
+      compilação: uniões estendidas e typecheck do `web` enumerando os pontos
+      exaustivos (exatamente 4, todos aditivos)
+- [x] F0.2 Abordagem (b) avaliada por custo sobre o mesmo rastreio:
+      reimplementaria paginação por grupo, reagrupamento otimista e drop —
+      descartada sem protótipo, diferença conclusiva
+- [x] F0.3 **[ADR 0002](../../decisoes/0002-agrupamento-por-etapa-fonte-aditiva.md)**
+      escrito e aceito
 
-**Aceite:** ADR 0002 aceito; abordagem única definida para F3.
+**Aceite:** ✓ ADR 0002 aceito em 11/08/2026; F3 usará a fonte aditiva
+`my_task_stage` com campo anotado `my_task_stage_id`.
 
 ## F1 — Backend
 
