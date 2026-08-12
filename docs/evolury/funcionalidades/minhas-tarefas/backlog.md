@@ -84,8 +84,13 @@ da API 543 verdes (preferências com a chave nova incluídas).
 
 **Aceite:** ✓ 11/08/2026 — persistência de mover/reordenar coberta por
 contrato (544 testes verdes, incl. o de sort_order pessoal no payload e os de
-silêncio do ADR 0001); `pnpm check` 60/60; validação visual de drag pendente
-de stack local (registrada para a F6).
+silêncio do ADR 0001); `pnpm check` 60/60. **Validação visual executada** em
+stack local (login → sidebar → lista → kanban → drag → reload): drag persiste,
+estado real e sort_order reais intocados, 0 atividades no banco. A validação
+encontrou e corrigiu dois bloqueios que os tipos não pegam: etapas vazias
+ocultas no kanban (show_empty_groups virou estrutural da página — sem coluna
+vazia não há destino de drag) e a DRAG_ALLOWED_GROUPS, allowlist de
+agrupamentos arrastáveis que não estava no rastreio da F0 (7º ponto).
 
 ## F4 — Gestão de etapas
 

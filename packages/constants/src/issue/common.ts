@@ -106,6 +106,8 @@ export const DRAG_ALLOWED_GROUPS: TIssueGroupByOptions[] = [
   "labels",
   "module",
   "cycle",
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  "my_task_stage",
 ];
 
 export type TCreateModalStoreTypes =
