@@ -52,6 +52,8 @@ export const useIssuesActions = (storeType: EIssuesStoreType): IssueActions => {
   const projectViewIssueActions = useProjectViewIssueActions();
   const globalIssueActions = useGlobalIssueActions();
   const profileIssueActions = useProfileIssueActions();
+  // Evolury: minhas tarefas
+  const myTasksIssueActions = useMyTasksIssueActions();
   const archivedIssueActions = useArchivedIssueActions();
   const workspaceDraftIssueActions = useWorkspaceDraftIssueActions();
 
@@ -60,6 +62,9 @@ export const useIssuesActions = (storeType: EIssuesStoreType): IssueActions => {
       return projectViewIssueActions;
     case EIssuesStoreType.PROFILE:
       return profileIssueActions;
+    // Evolury: minhas tarefas
+    case EIssuesStoreType.MY_TASKS:
+      return myTasksIssueActions;
     case EIssuesStoreType.ARCHIVED:
       return archivedIssueActions;
     case EIssuesStoreType.CYCLE:
@@ -524,6 +529,73 @@ const useProfileIssueActions = () => {
       updateFilters,
     }),
     [fetchIssues, createIssue, updateIssue, removeIssue, archiveIssue, updateFilters]
+  );
+};
+
+// Evolury: ações de "Minhas tarefas" — espelho das de perfil, sem userId/viewId
+// (a página é sempre do usuário corrente). ADR 0002.
+const useMyTasksIssueActions = () => {
+  // router
+  const { workspaceSlug: routerWorkspaceSlug } = useParams();
+  const workspaceSlug = routerWorkspaceSlug?.toString();
+  // store hooks
+  const { issues, issuesFilter } = useIssues(EIssuesStoreType.MY_TASKS);
+
+  const fetchIssues = useCallback(
+    async (loadType: TLoader, options: IssuePaginationOptions) => {
+      if (!workspaceSlug) return;
+      return issues.fetchIssues(workspaceSlug, loadType, options);
+    },
+    [issues.fetchIssues, workspaceSlug]
+  );
+  const fetchNextIssues = useCallback(
+    async (groupId?: string, subGroupId?: string) => {
+      if (!workspaceSlug) return;
+      return issues.fetchNextIssues(workspaceSlug, groupId, subGroupId);
+    },
+    [issues.fetchNextIssues, workspaceSlug]
+  );
+
+  const updateIssue = useCallback(
+    async (projectId: string | undefined | null, issueId: string, data: Partial<TIssue>) => {
+      if (!workspaceSlug || !projectId) return;
+      return await issues.updateIssue(workspaceSlug, projectId, issueId, data);
+    },
+    [issues.updateIssue, workspaceSlug]
+  );
+  const removeIssue = useCallback(
+    async (projectId: string | undefined | null, issueId: string) => {
+      if (!workspaceSlug || !projectId) return;
+      return await issues.removeIssue(workspaceSlug, projectId, issueId);
+    },
+    [issues.removeIssue, workspaceSlug]
+  );
+  const archiveIssue = useCallback(
+    async (projectId: string | undefined | null, issueId: string) => {
+      if (!workspaceSlug || !projectId) return;
+      return await issues.archiveIssue(workspaceSlug, projectId, issueId);
+    },
+    [issues.archiveIssue, workspaceSlug]
+  );
+
+  const updateFilters = useCallback(
+    async (projectId: string, filterType: TSupportedFilterTypeForUpdate, filters: TSupportedFilterForUpdate) => {
+      if (!workspaceSlug) return;
+      return await issuesFilter.updateFilters(workspaceSlug, projectId, filterType, filters);
+    },
+    [issuesFilter.updateFilters, workspaceSlug]
+  );
+
+  return useMemo(
+    () => ({
+      fetchIssues,
+      fetchNextIssues,
+      updateIssue,
+      removeIssue,
+      archiveIssue,
+      updateFilters,
+    }),
+    [fetchIssues, fetchNextIssues, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
 };
 

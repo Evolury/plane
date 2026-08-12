@@ -61,15 +61,31 @@ da API 543 verdes (preferências com a chave nova incluídas).
 
 ## F3 — Layouts com etapas
 
-- [ ] F3.1 Integração do agrupamento conforme ADR 0002
-- [ ] F3.2 Kanban: colunas = etapas do usuário; drag entre colunas chama
-      `move`; reordenação dentro da coluna persiste `sort_order`
-- [ ] F3.3 Lista: grupos = etapas; mover via drag e via seletor no card
-- [ ] F3.4 Itens sem associação renderizam na etapa padrão; mover cria a
-      associação (verificar otimismo/rollback do MobX store)
+- [x] F3.1 Integração conforme ADR 0002: uniões + campo `my_task_stage_id` em
+      `TBaseIssue` + entradas nos pontos exaustivos. A sonda da F0 achou 4; a
+      implementação revelou mais 2 que só aparecem com o enum estendido —
+      `EServerGroupByToFilterOptions` (mapa reverso) e a cópia do
+      `ISSUE_FILTER_DEFAULT_DATA` no `apps/space` — e `TIssueParams` ganhou
+      `my_task_stage` para a paginação por grupo (com o filtro correspondente
+      no endpoint)
+- [x] F3.2 Kanban sobre `BaseKanBanRoot`: colunas = etapas (getter lê o
+      stage store); drag entre colunas roteia para `move`; reordenação dentro
+      da coluna persiste o sort pessoal — o payload da página tem `sort_order`
+      SOBRESCRITO pelo da associação no servidor, então o cálculo de vizinhos
+      do drop opera em base pessoal e o sort real do item nunca é tocado
+- [x] F3.3 Lista sobre `BaseListRoot`, mesmos grupos e drag
+- [x] F3.4 Sem associação ⇒ etapa padrão (anotação do servidor); mover usa
+      `issueUpdate(shouldSync=false)` otimista com reversão manual em falha.
+      Roteamento no `updateIssue` do store: `my_task_stage_id` e/ou
+      `sort_order` sozinho vão para o `move/`; qualquer outra edição segue o
+      PATCH normal com atividade
+- [x] extra: alternador lista/kanban no header (aceite "layouts trocam por
+      display filters"); a linha completa de filtros fica na F5
 
-**Aceite:** mover e reordenar persistem e sobrevivem a reload; nenhum efeito no
-work item real (conferir atividade vazia); layouts trocam por display filters.
+**Aceite:** ✓ 11/08/2026 — persistência de mover/reordenar coberta por
+contrato (544 testes verdes, incl. o de sort_order pessoal no payload e os de
+silêncio do ADR 0001); `pnpm check` 60/60; validação visual de drag pendente
+de stack local (registrada para a F6).
 
 ## F4 — Gestão de etapas
 

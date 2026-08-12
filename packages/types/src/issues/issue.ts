@@ -45,6 +45,9 @@ export enum EIssuesStoreType {
 }
 
 export type TBaseIssue = {
+  // Evolury: anotação do endpoint de minhas tarefas — etapa pessoal do
+  // usuário corrente; undefined fora daquela página (ADR 0002)
+  my_task_stage_id?: string | null;
   id: string;
   sequence_id: number;
   name: string;

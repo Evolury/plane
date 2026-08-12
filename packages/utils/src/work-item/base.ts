@@ -107,6 +107,8 @@ export const handleIssueQueryParamsByLayout = (
     | "my_issues"
     | "issues"
     | "profile_issues"
+    // Evolury: minhas tarefas
+    | "my_tasks"
     | "archived_issues"
     | "draft_issues"
     | "team_issues"

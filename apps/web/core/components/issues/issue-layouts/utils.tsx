@@ -148,6 +148,8 @@ export const getGroupByColumns = ({
     module: getModuleColumns,
     state: getStateColumns,
     "state_detail.group": getStateGroupColumns,
+    // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+    my_task_stage: getMyTaskStageColumns,
     priority: getPriorityColumns,
     labels: getLabelsColumns,
     assignees: getAssigneeColumns,
@@ -157,6 +159,22 @@ export const getGroupByColumns = ({
 
   // Get and return the columns for the specified group by option
   return groupByColumnMap[groupBy]?.({ isWorkspaceLevel, projectId });
+};
+
+// Evolury: colunas = etapas pessoais do usuário no workspace (minhas tarefas).
+// payload carrega my_task_stage_id: o drop monta { my_task_stage_id: <destino> }
+// e o updateIssue do store MY_TASKS roteia para o POST .../move/ (ADR 0002).
+const getMyTaskStageColumns = (): IGroupByColumn[] | undefined => {
+  const stages = store.myTasksStore?.sortedStages;
+  if (!stages || stages.length === 0) return;
+  return stages.map((stage) => ({
+    id: stage.id,
+    name: stage.name,
+    icon: (
+      <span className="size-3 flex-shrink-0 rounded-full" style={{ backgroundColor: stage.color }} aria-hidden="true" />
+    ),
+    payload: { my_task_stage_id: stage.id },
+  }));
 };
 
 const getProjectColumns = (): IGroupByColumn[] | undefined => {

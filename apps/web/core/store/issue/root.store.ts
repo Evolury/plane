@@ -29,6 +29,9 @@ import type { IModuleIssuesFilter, IModuleIssues } from "./module";
 import { ModuleIssuesFilter, ModuleIssues } from "./module";
 import type { IProfileIssuesFilter, IProfileIssues } from "./profile";
 import { ProfileIssuesFilter, ProfileIssues } from "./profile";
+// Evolury: minhas tarefas
+import type { IMyTasksIssuesFilter, IMyTasksIssues } from "./my-tasks";
+import { MyTasksIssuesFilter, MyTasksIssues } from "./my-tasks";
 import type { IProjectIssuesFilter, IProjectIssues } from "./project";
 import { ProjectIssuesFilter, ProjectIssues } from "./project";
 import type { IProjectViewIssuesFilter, IProjectViewIssues } from "./project-views";
@@ -76,6 +79,9 @@ export interface IIssueRootStore {
 
   profileIssuesFilter: IProfileIssuesFilter;
   profileIssues: IProfileIssues;
+  // Evolury: minhas tarefas
+  myTasksIssuesFilter: IMyTasksIssuesFilter;
+  myTasksIssues: IMyTasksIssues;
 
   teamIssuesFilter: IProjectIssuesFilter;
   teamIssues: IProjectIssues;
@@ -144,6 +150,9 @@ export class IssueRootStore implements IIssueRootStore {
 
   profileIssuesFilter: IProfileIssuesFilter;
   profileIssues: IProfileIssues;
+  // Evolury: minhas tarefas
+  myTasksIssuesFilter: IMyTasksIssuesFilter;
+  myTasksIssues: IMyTasksIssues;
 
   teamIssuesFilter: IProjectIssuesFilter;
   teamIssues: IProjectIssues;
@@ -232,6 +241,9 @@ export class IssueRootStore implements IIssueRootStore {
 
     this.profileIssuesFilter = new ProfileIssuesFilter(this);
     this.profileIssues = new ProfileIssues(this, this.profileIssuesFilter);
+    // Evolury: minhas tarefas
+    this.myTasksIssuesFilter = new MyTasksIssuesFilter(this);
+    this.myTasksIssues = new MyTasksIssues(this, this.myTasksIssuesFilter);
 
     this.workspaceDraftIssuesFilter = new WorkspaceDraftIssuesFilter(this);
     this.workspaceDraftIssues = new WorkspaceDraftIssues(this);

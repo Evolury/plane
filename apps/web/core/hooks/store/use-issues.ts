@@ -18,6 +18,8 @@ import type { IProjectIssues, IProjectIssuesFilter } from "@/store/issue/project
 import type { IProjectViewIssues, IProjectViewIssuesFilter } from "@/store/issue/project-views";
 import type { IWorkspaceIssuesFilter } from "@/store/issue/workspace";
 import type { IWorkspaceDraftIssues, IWorkspaceDraftIssuesFilter } from "@/store/issue/workspace-draft";
+// Evolury: minhas tarefas
+import type { IMyTasksIssues, IMyTasksIssuesFilter } from "@/store/issue/my-tasks";
 // constants
 
 type defaultIssueStore = {
@@ -37,12 +39,10 @@ export type TStoreIssues = {
     issues: IProfileIssues;
     issuesFilter: IProfileIssuesFilter;
   };
-  // Evolury: minhas tarefas — na F2 a página usa o MyTasksStore próprio
-  // (use-my-tasks); esta entrada existe para o mapa continuar exaustivo sobre
-  // o enum. A F3 troca pelo store dedicado integrado aos layouts (ADR 0002).
+  // Evolury: minhas tarefas (ADR 0002)
   [EIssuesStoreType.MY_TASKS]: defaultIssueStore & {
-    issues: IProfileIssues;
-    issuesFilter: IProfileIssuesFilter;
+    issues: IMyTasksIssues;
+    issuesFilter: IMyTasksIssuesFilter;
   };
   [EIssuesStoreType.TEAM]: defaultIssueStore & {
     issues: IProjectIssues;
@@ -109,6 +109,12 @@ export const useIssues = <T extends EIssuesStoreType>(storeType?: T): TStoreIssu
       return merge(defaultStore, {
         issues: context.issue.profileIssues,
         issuesFilter: context.issue.profileIssuesFilter,
+      }) as TStoreIssues[T];
+    // Evolury: minhas tarefas
+    case EIssuesStoreType.MY_TASKS:
+      return merge(defaultStore, {
+        issues: context.issue.myTasksIssues,
+        issuesFilter: context.issue.myTasksIssuesFilter,
       }) as TStoreIssues[T];
     case EIssuesStoreType.TEAM:
       return merge(defaultStore, {

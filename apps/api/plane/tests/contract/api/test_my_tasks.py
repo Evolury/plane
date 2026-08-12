@@ -269,6 +269,27 @@ class TestMyTasksIssues:
         result = response.data["results"][0]
         assert result["my_task_stage_id"] == stages["Hoje"].id
 
+    def test_payload_sort_order_is_the_personal_one(
+        self, session_client, workspace, create_user, assigned_issue
+    ):
+        """O sort_order serializado é o da associação (my_task_sort_order),
+        não o do item — toda a ordenação manual da página é pessoal. O
+        sort_order real do work item permanece intocado no banco."""
+        stages = seed_stages(workspace, create_user)
+        issue_sort_order_before = assigned_issue.sort_order
+        WorkStageIssue.objects.create(
+            workspace=workspace,
+            owner=create_user,
+            stage=stages["Hoje"],
+            issue=assigned_issue,
+            sort_order=111.0,
+        )
+        response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
+        result = response.data["results"][0]
+        assert result["sort_order"] == 111.0
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.sort_order == issue_sort_order_before
+
     def test_annotation_is_per_user(
         self, session_client, second_client, workspace, project, create_user, second_user, assigned_issue
     ):
