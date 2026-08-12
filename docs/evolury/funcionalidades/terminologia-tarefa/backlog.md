@@ -50,5 +50,5 @@ venda do Plane Pro; candidatas a remoção do fork em decisão futura.
       projeto, modais de criação/exclusão, arquivos e ciclos; varredura
       automática por "item de trabalho" zerada em todas as telas
 - [x] T3.3 Backend intocado (nenhum arquivo de apps/api no diff)
-- [ ] T3.4 PR(s), CI, merge e deploy em plane.evolury.app.br
-- [ ] T3.5 CHANGELOG + release
+- [x] T3.4 PR #18 (CI verde, squash-merge) e deploy em plane.evolury.app.br
+- [x] T3.5 CHANGELOG + release v1.2.0
