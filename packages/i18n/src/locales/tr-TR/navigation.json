@@ -37,6 +37,8 @@
     "stages": {
       "title": "Aşamalar",
       "description": "Kişisel aşamalarınızı oluşturun, düzenleyin ve yeniden sıralayın. Bir aşamayı silmek, öğelerini varsayılan aşamaya taşır."
-    }
+    },
+    "stage_label": "Aşama",
+    "empty_title": "Henüz size atanmış bir şey yok"
   }
 }

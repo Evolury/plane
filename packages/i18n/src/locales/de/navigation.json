@@ -37,6 +37,8 @@
     "stages": {
       "title": "Phasen",
       "description": "Erstelle, bearbeite und sortiere deine persönlichen Phasen. Beim Löschen einer Phase wandern ihre Elemente in die Standardphase."
-    }
+    },
+    "stage_label": "Phase",
+    "empty_title": "Dir ist noch nichts zugewiesen"
   }
 }

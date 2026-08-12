@@ -37,6 +37,8 @@
     "stages": {
       "title": "Etape",
       "description": "Creează, editează și reordonează etapele tale personale. Ștergerea unei etape mută elementele ei în etapa implicită."
-    }
+    },
+    "stage_label": "Etapă",
+    "empty_title": "Nimic nu ți-a fost încă atribuit"
   }
 }

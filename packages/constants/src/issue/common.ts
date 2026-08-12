@@ -127,6 +127,8 @@ export const ISSUE_GROUP_BY_OPTIONS: {
 }[] = [
   { key: "state", titleTranslationKey: "common.states" },
   { key: "state_detail.group", titleTranslationKey: "common.state_groups" },
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  { key: "my_task_stage", titleTranslationKey: "my_tasks.stage_label" },
   { key: "priority", titleTranslationKey: "common.priority" },
   { key: "team_project", titleTranslationKey: "common.team_project" }, // required this on team issues
   { key: "project", titleTranslationKey: "common.project" }, // required this on my issues
