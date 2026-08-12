@@ -87,7 +87,7 @@ que o usuário é membro.
 
 ### Estrutura nova
 
-```
+```text
 apps/web/app/(all)/[workspaceSlug]/(projects)/my-tasks/
 ├── layout.tsx · header.tsx · page.tsx
 
@@ -120,20 +120,17 @@ Todo agrupamento hoje deriva de campo do work item:
 - drop no kanban: payload de atualização derivado da coluna de destino no
   `base-kanban-root`.
 
-Etapa pessoal exige uma fonte externa (o mapa de associações). Duas abordagens,
-a decidir no **spike F0** com código de prova:
-
-- **(a) Fonte de agrupamento aditiva** — novo `GroupByColumnTypes`
-  `"my_task_stage"`: getter de colunas lê o stage.store; resolução de chave e
-  payload de drop ganham um caso novo. Reusa `BaseKanBanRoot`/`BaseListRoot`
-  inteiros; toca 3 arquivos compartilhados de forma aditiva.
-- **(b) Store dedicado com resolução própria** — o store `MY_TASKS` sobrescreve
-  a derivação de grupos e a página usa roots próprios por cima dos componentes
-  de coluna (`KanbanGroup`, blocos de lista). Zero mudança em código
-  compartilhado; mais código próprio.
-
-Critério de decisão: (a) vence se os casos novos ficarem contidos e óbvios;
-(b) vence se (a) exigir espalhar condicionais. O resultado vira **ADR 0002**.
+**Decidido no spike F0 —
+[ADR 0002](../../decisoes/0002-agrupamento-por-etapa-fonte-aditiva.md):**
+fonte de agrupamento aditiva `"my_task_stage"`. O endpoint anota
+`my_task_stage_id` (subquery + `Coalesce` para a etapa padrão), o que torna a
+etapa um campo agrupável como qualquer outro — paginação por grupo, colunas,
+reagrupamento otimista e drop reusam o pipeline inteiro. Custo em código
+compartilhado: as duas uniões de tipo, o campo opcional em `TBaseIssue` e
+quatro entradas exaustivas (guardadas pelo compilador) enumeradas no ADR. O
+`updateIssue` do store `MY_TASKS` intercepta payloads com `my_task_stage_id` e
+roteia para `issueUpdate(..., shouldSync=false)` + `POST .../move/`, com
+reversão manual em falha.
 
 ## Testes
 
