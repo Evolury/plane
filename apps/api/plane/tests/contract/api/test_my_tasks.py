@@ -1,3 +1,8 @@
+# Copyright (c) 2023-present Plane Software, Inc. and contributors
+# Copyright (c) 2026-present Evolury
+# SPDX-License-Identifier: AGPL-3.0-only
+# See the LICENSE file for details.
+
 # Evolury: testes de contrato de "Minhas tarefas" — etapas pessoais, listagem
 # anotada e movimento entre etapas.
 # Regras em docs/evolury/funcionalidades/minhas-tarefas/ (ADRs 0001 e 0002).

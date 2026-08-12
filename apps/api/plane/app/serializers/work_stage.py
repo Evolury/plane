@@ -1,3 +1,8 @@
+# Copyright (c) 2023-present Plane Software, Inc. and contributors
+# Copyright (c) 2026-present Evolury
+# SPDX-License-Identifier: AGPL-3.0-only
+# See the LICENSE file for details.
+
 # Evolury: serializers das etapas pessoais de "Minhas tarefas".
 # Ver docs/evolury/funcionalidades/minhas-tarefas/arquitetura.md.
 
