@@ -52,6 +52,28 @@ A pergunta estrutural era: isso é tradução ou arquitetura? A varredura
 
 (¹) O bloco de checklist do editor coexiste sem conflito prático; manter.
 
+## Adendo (12/08/2026) — nomes de estado são dado, não rótulo
+
+O grupo de estado `backlog` não tinha tradução no pt-BR e passou a **"Em
+espera"** (rótulo, mesma camada desta decisão). A varredura mostrou que
+"Backlog" aparecia em dois lugares de naturezas diferentes:
+
+- **rótulo do grupo** (`workspace_projects.state.backlog` e irmãs) —
+  tradução, resolvida como o resto deste ADR;
+- **nome do estado gravado por projeto** (`DEFAULT_STATES`) — dado. O Plane
+  cria "Backlog / Todo / In Progress / Done / Cancelled" em inglês.
+
+Como o produto é pt-BR, os nomes padrão passaram a **"Em espera / A fazer /
+Em andamento / Concluído / Cancelado"** (e "Triagem"), e a migração `0127`
+renomeia os projetos existentes — **apenas** os que ainda estavam com o nome
+padrão em inglês, casando nome + grupo; quem personalizou não é tocado, e
+projeto que já tenha o nome de destino fica de fora por causa da constraint
+`(name, project)`.
+
+Isso é a única exceção à regra "zero migração" acima, e é deliberada: nome de
+estado é conteúdo do projeto, não string de interface — não há como traduzi-lo
+pela camada de i18n.
+
 ## Consequências
 
 - A UI pt-BR inteira (web, space, admin) fala "tarefa"; textos de outros
