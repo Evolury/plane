@@ -23,6 +23,8 @@ export enum EServerGroupByToFilterOptions {
   "priority" = "priority",
   "labels__id" = "labels",
   "state__group" = "state_group",
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  "my_task_stage_id" = "my_task_stage",
   "assignees__id" = "assignees",
   "cycle_id" = "cycle",
   "issue_module__module_id" = "module",
@@ -129,6 +131,37 @@ export const ISSUE_DISPLAY_FILTERS_BY_PAGE: TIssueFiltersToDisplayByPageType = {
         display_properties: ISSUE_DISPLAY_PROPERTIES_KEYS,
         display_filters: {
           group_by: ["state_detail.group", "priority", "project", "labels"],
+          order_by: ["sort_order", "-created_at", "-updated_at", "start_date", "-priority"],
+          type: ["active", "backlog"],
+        },
+        extra_options: {
+          access: true,
+          values: ["show_empty_groups"],
+        },
+      },
+    },
+  },
+  // Evolury: minhas tarefas — agrupamento fixo por etapa pessoal
+  // (docs/evolury/funcionalidades/minhas-tarefas/, ADR 0002)
+  my_tasks: {
+    filters: ["priority", "state_group", "label_id", "project_id", "start_date", "target_date"],
+    layoutOptions: {
+      list: {
+        display_properties: ISSUE_DISPLAY_PROPERTIES_KEYS,
+        display_filters: {
+          group_by: ["my_task_stage"],
+          order_by: ["sort_order", "-created_at", "-updated_at", "start_date", "-priority"],
+          type: ["active", "backlog"],
+        },
+        extra_options: {
+          access: true,
+          values: ["show_empty_groups", "sub_issue"],
+        },
+      },
+      kanban: {
+        display_properties: ISSUE_DISPLAY_PROPERTIES_KEYS,
+        display_filters: {
+          group_by: ["my_task_stage"],
           order_by: ["sort_order", "-created_at", "-updated_at", "start_date", "-priority"],
           type: ["active", "backlog"],
         },

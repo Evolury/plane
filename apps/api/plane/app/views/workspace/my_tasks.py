@@ -256,6 +256,12 @@ class MyTasksIssuesEndpoint(BaseAPIView):
             my_task_sort_order=Coalesce(Subquery(order_subquery), Value(65535.0)),
         )
 
+        # Paginação por grupo: o "load more" de uma etapa envia
+        # my_task_stage=<id> como filtro — aplicável só depois da anotação.
+        stage_filter = request.GET.get("my_task_stage")
+        if stage_filter:
+            issue_queryset = issue_queryset.filter(my_task_stage_id=stage_filter)
+
         # Ordenação manual: o sort_order pessoal vive na associação, não no
         # item — o pedido de "sort_order" é traduzido para a anotação.
         if order_by_param in ["sort_order", "-sort_order"]:
@@ -270,10 +276,25 @@ class MyTasksIssuesEndpoint(BaseAPIView):
             # issue_on_results serializa a lista de campos fixa do upstream;
             # o campo anotado entra por enriquecimento para não duplicar (e
             # deixar de acompanhar) essa lista aqui.
+            #
+            # O sort_order do payload é SOBRESCRITO pelo pessoal
+            # (my_task_sort_order): nesta página toda a ordenação manual — o
+            # cálculo de vizinhos no drop do front inclusive — opera sobre o
+            # valor da associação, nunca sobre o sort_order real do item
+            # (que permanece intocado no banco, ADR 0001). O issuesMap global
+            # do front recebe o valor pessoal transitoriamente; cada página
+            # refaz seu fetch ao montar, então o valor da página corrente
+            # sempre prevalece.
             results = issue_on_results(issues=issues, group_by=None, sub_group_by=None)
-            stage_map = dict(issues.values_list("id", "my_task_stage_id"))
+            annotation_map = {
+                row[0]: (row[1], row[2])
+                for row in issues.values_list("id", "my_task_stage_id", "my_task_sort_order")
+            }
             for result in results:
-                result["my_task_stage_id"] = stage_map.get(result["id"])
+                stage_id, personal_sort_order = annotation_map.get(result["id"], (None, None))
+                result["my_task_stage_id"] = stage_id
+                if personal_sort_order is not None:
+                    result["sort_order"] = personal_sort_order
             return results
 
         count_filter = Q(

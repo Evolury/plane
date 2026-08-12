@@ -29,6 +29,8 @@ export enum EIssueGroupByToServerOptions {
   "priority" = "priority",
   "labels" = "labels__id",
   "state_detail.group" = "state__group",
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  "my_task_stage" = "my_task_stage_id",
   "assignees" = "assignees__id",
   "cycle" = "cycle_id",
   "module" = "issue_module__module_id",

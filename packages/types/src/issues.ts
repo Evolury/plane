@@ -122,6 +122,8 @@ export type GroupByColumnTypes =
   | "module"
   | "state"
   | "state_detail.group"
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  | "my_task_stage"
   | "priority"
   | "labels"
   | "assignees"

@@ -17,6 +17,8 @@ export type TIssueGroupByOptions =
   | "labels"
   | "created_by"
   | "state_detail.group"
+  // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
+  | "my_task_stage"
   | "project"
   | "assignees"
   | "cycle"
@@ -63,6 +65,8 @@ export type TIssueExtraOptions = "show_empty_groups" | "sub_issue";
 export type TIssueParams =
   | "priority"
   | "state_group"
+  // Evolury: filtro por etapa pessoal — paginação por grupo de minhas tarefas
+  | "my_task_stage"
   | "state"
   | "assignees"
   | "mentions"

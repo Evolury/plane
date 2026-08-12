@@ -116,6 +116,8 @@ export const ISSUE_GROUP_BY_KEY: Record<TIssueDisplayFilterOptions, keyof TIssue
   project: "project_id",
   state: "state_id",
   "state_detail.group": "state_id", // state_detail.group is only being used for state_group display,
+  // Evolury: etapa pessoal — campo anotado pelo endpoint de minhas tarefas (ADR 0002)
+  my_task_stage: "my_task_stage_id",
   priority: "priority",
   labels: "label_ids",
   created_by: "created_by",
@@ -132,6 +134,8 @@ export const ISSUE_FILTER_DEFAULT_DATA: Record<TIssueDisplayFilterOptions, keyof
   module: "module_ids",
   state: "state_id",
   "state_detail.group": "state__group", // state_detail.group is only being used for state_group display,
+  // Evolury: etapa pessoal — campo anotado pelo endpoint de minhas tarefas (ADR 0002)
+  my_task_stage: "my_task_stage_id",
   priority: "priority",
   labels: "label_ids",
   created_by: "created_by",
