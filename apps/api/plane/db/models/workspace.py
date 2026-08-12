@@ -422,9 +422,10 @@ class WorkspaceUserPreference(BaseModel):
         ACTIVE_CYCLES = "active_cycles", "Active Cycles"
         ANALYTICS = "analytics", "Analytics"
         DRAFTS = "drafts", "Drafts"
-        YOUR_WORK = "your_work", "Your Work"
-        # Evolury: item de sidebar de "Minhas tarefas", logo após Seu trabalho
+        # Evolury: item de sidebar de "Minhas tarefas", logo acima de "Minhas
+        # atividades" (a ordem do enum define o sort_order de usuários novos)
         MY_TASKS = "my_tasks", "My Tasks"
+        YOUR_WORK = "your_work", "Your Work"
         ARCHIVES = "archives", "Archives"
         STICKIES = "stickies", "Stickies"
 

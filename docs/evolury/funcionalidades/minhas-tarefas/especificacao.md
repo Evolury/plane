@@ -13,9 +13,11 @@ o dono vê.
 
 ## Navegação
 
-- Item **"Minhas tarefas"** na sidebar, imediatamente abaixo de "Seu trabalho".
+- Item **"Minhas tarefas"** na sidebar, imediatamente acima de "Minhas
+  atividades" (página `/profile`, renomeada de "Seu trabalho" em 12/08/2026;
+  ordem invertida na mesma data a pedido do produto).
 - Rota: `/[workspaceSlug]/my-tasks`.
-- Acesso: admin e membro do workspace (mesma regra de "Seu trabalho"; guest não
+- Acesso: admin e membro do workspace (mesma regra de "Minhas atividades"; guest não
   vê).
 - O item aparece no diálogo "Personalizar navegação" como os demais, podendo
   ser ocultado/reordenado.
@@ -59,7 +61,7 @@ padrão da instância.
 - **O que entra:** todo work item com o usuário entre os responsáveis, em
   qualquer projeto do workspace ao qual ele tenha acesso.
 - **O que não entra:** itens arquivados, rascunhos, itens em triage/intake
-  pendente — os mesmos recortes da página "Seu trabalho".
+  pendente — os mesmos recortes da página "Minhas atividades".
 - **Primeira etapa implícita:** item atribuído que nunca foi movido aparece na
   etapa padrão. Não há gravação no momento da atribuição — a associação nasce
   no primeiro movimento.
@@ -82,7 +84,7 @@ padrão da instância.
 - **Mover de etapa não altera nada no projeto** — nem estado, nem atividade,
   nem notificação ([ADR 0001](../../decisoes/0001-minhas-tarefas-overlay-pessoal.md)).
 - Filtros (prioridade, projeto, etiqueta, datas), propriedades de exibição e
-  ordenação seguem o padrão da página "Seu trabalho".
+  ordenação seguem o padrão da página "Minhas atividades".
 - Clique no item abre o peek overview normal; edições feitas ali (estado real,
   responsáveis etc.) seguem o fluxo padrão do produto, com atividade e
   notificações — a exceção de silêncio vale só para o movimento entre etapas.
