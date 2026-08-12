@@ -37,6 +37,7 @@ const MY_TASKS_DEFAULT_DISPLAY_FILTERS: IIssueDisplayFilterOptions = {
   group_by: "my_task_stage",
   sub_group_by: null,
   order_by: "sort_order",
+  show_empty_groups: true,
 };
 
 export interface IMyTasksIssuesFilter extends IBaseIssueFilterStore {
@@ -131,11 +132,15 @@ export class MyTasksIssuesFilter extends IssueFilterHelperStore implements IMyTa
 
     const richFilters: TWorkItemFilterExpression = _filters?.rich_filters;
     // O agrupamento é a identidade da página: sempre etapa pessoal,
-    // independentemente do que estiver persistido.
+    // independentemente do que estiver persistido. Etapas vazias sempre
+    // visíveis — sem isso não há para onde arrastar um item numa etapa nova
+    // (achado da validação visual da F3; vira preferência na F5 se fizer
+    // sentido).
     const displayFilters: IIssueDisplayFilterOptions = {
       ...this.computedDisplayFilters(_filters?.display_filters, MY_TASKS_DEFAULT_DISPLAY_FILTERS),
       group_by: "my_task_stage",
       sub_group_by: null,
+      show_empty_groups: true,
     };
     const displayProperties: IIssueDisplayProperties = this.computedDisplayProperties(_filters?.display_properties);
     const kanbanFilters = {
@@ -188,11 +193,14 @@ export class MyTasksIssuesFilter extends IssueFilterHelperStore implements IMyTa
           const updatedDisplayFilters = filters as IIssueDisplayFilterOptions;
           _filters.displayFilters = { ..._filters.displayFilters, ...updatedDisplayFilters };
 
-          // O agrupamento por etapa é fixo nesta página (spec).
+          // O agrupamento por etapa é fixo nesta página (spec), e etapas
+          // vazias permanecem visíveis — são o destino do drag.
           _filters.displayFilters.group_by = "my_task_stage";
           _filters.displayFilters.sub_group_by = null;
+          _filters.displayFilters.show_empty_groups = true;
           updatedDisplayFilters.group_by = "my_task_stage";
           updatedDisplayFilters.sub_group_by = null;
+          updatedDisplayFilters.show_empty_groups = true;
 
           runInAction(() => {
             Object.keys(updatedDisplayFilters).forEach((_key) => {
