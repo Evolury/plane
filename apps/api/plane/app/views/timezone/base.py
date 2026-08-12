@@ -27,29 +27,17 @@ class TimezoneEndpoint(APIView):
 
     @method_decorator(cache_page(60 * 60 * 2))
     def get(self, request):
-        # Evolury: o produto atende só o Brasil (ADR 0006). A lista do
-        # upstream trazia 111 localidades do mundo e apenas duas do país.
-        # Aqui ficam as 16 zonas IANA brasileiras — o Brasil tem quatro
-        # offsets, não um: fixar um só deslocaria o horário de quem está em
-        # Manaus, Cuiabá, Campo Grande, Porto Velho, Boa Vista ou Rio Branco.
-        # Sem horário de verão desde 2019, então os offsets são estáveis.
+        # Evolury: uma entrada por offset (ADR 0006). O Brasil tem quatro
+        # offsets e 16 zonas IANA, mas as zonas que compartilham offset só
+        # diferem em regras de horário de verão anteriores a 2019, quando o
+        # país o aboliu — para datas de hoje em diante são equivalentes.
+        # Cada opção leva a cidade principal do offset; no UTC-03:00, que
+        # concentra a maioria das capitais, o rótulo cita as principais.
         timezone_locations = [
             ("Fernando de Noronha", "America/Noronha"),  # UTC-02:00
             ("Brasília, São Paulo, Rio de Janeiro", "America/Sao_Paulo"),  # UTC-03:00
-            ("Salvador", "America/Bahia"),  # UTC-03:00
-            ("Fortaleza", "America/Fortaleza"),  # UTC-03:00
-            ("Recife", "America/Recife"),  # UTC-03:00
-            ("Maceió", "America/Maceio"),  # UTC-03:00
-            ("Belém", "America/Belem"),  # UTC-03:00
-            ("Santarém", "America/Santarem"),  # UTC-03:00
-            ("Araguaína", "America/Araguaina"),  # UTC-03:00
             ("Manaus", "America/Manaus"),  # UTC-04:00
-            ("Cuiabá", "America/Cuiaba"),  # UTC-04:00
-            ("Campo Grande", "America/Campo_Grande"),  # UTC-04:00
-            ("Porto Velho", "America/Porto_Velho"),  # UTC-04:00
-            ("Boa Vista", "America/Boa_Vista"),  # UTC-04:00
             ("Rio Branco", "America/Rio_Branco"),  # UTC-05:00
-            ("Eirunepé", "America/Eirunepe"),  # UTC-05:00
         ]
 
         timezone_list = []

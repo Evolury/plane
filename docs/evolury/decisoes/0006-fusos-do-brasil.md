@@ -30,10 +30,23 @@ estavam assim.
 
 ## Decisão
 
-Manter o fuso configurável, com a lista **restrita às 16 zonas IANA do
-Brasil** e `America/Sao_Paulo` como padrão. Isso entrega o que se queria — o
-fim das 400+ zonas do mundo poluindo a tela — sem quebrar quem está fora de
-Brasília.
+Manter o fuso configurável, com **uma opção por offset** — quatro no total —
+e `America/Sao_Paulo` como padrão. Isso entrega o que se queria (o fim das
+400+ zonas do mundo poluindo a tela) sem quebrar quem está fora de Brasília.
+
+| Offset | Opção exibida                        | Zona IANA            |
+| ------ | ------------------------------------ | -------------------- |
+| UTC−2  | Fernando de Noronha                  | `America/Noronha`    |
+| UTC−3  | Brasília, São Paulo, Rio de Janeiro  | `America/Sao_Paulo`  |
+| UTC−4  | Manaus                               | `America/Manaus`     |
+| UTC−5  | Rio Branco                           | `America/Rio_Branco` |
+
+As outras 12 zonas IANA brasileiras foram dispensadas: elas só diferem das
+que ficaram em regras de horário de verão **anteriores a 2019**, quando o país
+o aboliu. Para datas de hoje em diante são equivalentes, e a base do produto
+começa em 2026 — a migração `0131` remapeia cada uma para a zona que ficou no
+mesmo offset, então ninguém muda de hora. Cada opção leva a cidade principal
+do offset; o UTC−3, que concentra a maioria das capitais, cita as principais.
 
 A restrição vale em três camadas: o endpoint `/api/timezones/` passa a
 devolver só as 16 zonas (o seletor de Preferências e o do Power-K consomem

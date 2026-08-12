@@ -18,21 +18,24 @@ from rest_framework import status
 from plane.db.models import User
 
 migration = importlib.import_module("plane.db.migrations.0130_evolury_user_timezone_brazil")
+collapse = importlib.import_module("plane.db.migrations.0131_evolury_one_timezone_per_offset")
 
 
 @pytest.mark.contract
 class TestBrazilTimezones:
     @pytest.mark.django_db
-    def test_endpoint_lists_only_brazilian_timezones(self, client):
-        """A lista oferecida na interface não traz zona de fora do Brasil."""
+    def test_endpoint_lists_one_timezone_per_offset(self, client):
+        """Uma entrada por offset: sem zonas repetidas e nada de fora do Brasil."""
         response = client.get(reverse("timezone-list"))
 
         assert response.status_code == status.HTTP_200_OK
-        valores = [tz["value"] for tz in response.json()["timezones"]]
-        assert valores, "a lista não pode vir vazia"
-        assert set(valores) <= set(User.BRAZIL_TIMEZONES)
-        # os quatro offsets do país precisam estar representados
-        assert {"America/Noronha", "America/Sao_Paulo", "America/Manaus", "America/Rio_Branco"} <= set(valores)
+        timezones = response.json()["timezones"]
+        valores = [tz["value"] for tz in timezones]
+        offsets = [tz["utc_offset"] for tz in timezones]
+
+        assert set(valores) == set(User.BRAZIL_TIMEZONES)
+        assert len(offsets) == len(set(offsets)), f"offset repetido na lista: {offsets}"
+        assert sorted(offsets) == ["UTC-02:00", "UTC-03:00", "UTC-04:00", "UTC-05:00"]
 
     @pytest.mark.django_db
     def test_endpoint_labels_carry_utc_offset(self, client):
@@ -74,3 +77,24 @@ class TestBrazilTimezones:
 
         user.refresh_from_db()
         assert user.user_timezone == "America/Manaus"
+
+    @pytest.mark.django_db
+    def test_collapse_keeps_the_same_offset(self):
+        """Zona removida vai para a que ficou no mesmo offset — ninguém muda de hora."""
+        casos = [
+            ("America/Cuiaba", "cuiaba", "America/Manaus"),
+            ("America/Boa_Vista", "boavista", "America/Manaus"),
+            ("America/Fortaleza", "fortaleza", "America/Sao_Paulo"),
+            ("America/Eirunepe", "eirunepe", "America/Rio_Branco"),
+        ]
+        usuarios = []
+        for tz, slug, _ in casos:
+            user = User.objects.create(email=f"{slug}@evolury.com.br", username=f"{slug}_user")
+            User.objects.filter(pk=user.pk).update(user_timezone=tz)
+            usuarios.append(user)
+
+        collapse.collapse_timezones(django_apps, None)
+
+        for user, (_, _, esperado) in zip(usuarios, casos):
+            user.refresh_from_db()
+            assert user.user_timezone == esperado
