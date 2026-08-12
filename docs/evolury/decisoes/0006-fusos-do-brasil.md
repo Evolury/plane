@@ -37,7 +37,7 @@ e `America/Sao_Paulo` como padrão. Isso entrega o que se queria (o fim das
 | Offset | Opção exibida                        | Zona IANA            |
 | ------ | ------------------------------------ | -------------------- |
 | UTC−2  | Fernando de Noronha                  | `America/Noronha`    |
-| UTC−3  | Brasília, São Paulo, Rio de Janeiro  | `America/Sao_Paulo`  |
+| UTC−3  | Brasília                             | `America/Sao_Paulo`  |
 | UTC−4  | Manaus                               | `America/Manaus`     |
 | UTC−5  | Rio Branco                           | `America/Rio_Branco` |
 
@@ -46,7 +46,7 @@ que ficaram em regras de horário de verão **anteriores a 2019**, quando o paí
 o aboliu. Para datas de hoje em diante são equivalentes, e a base do produto
 começa em 2026 — a migração `0131` remapeia cada uma para a zona que ficou no
 mesmo offset, então ninguém muda de hora. Cada opção leva a cidade principal
-do offset; o UTC−3, que concentra a maioria das capitais, cita as principais.
+do seu offset, e o offset aparece ao lado do nome no seletor.
 
 A restrição vale em três camadas: o endpoint `/api/timezones/` passa a
 devolver só as 16 zonas (o seletor de Preferências e o do Power-K consomem

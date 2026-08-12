@@ -31,11 +31,10 @@ class TimezoneEndpoint(APIView):
         # offsets e 16 zonas IANA, mas as zonas que compartilham offset só
         # diferem em regras de horário de verão anteriores a 2019, quando o
         # país o aboliu — para datas de hoje em diante são equivalentes.
-        # Cada opção leva a cidade principal do offset; no UTC-03:00, que
-        # concentra a maioria das capitais, o rótulo cita as principais.
+        # Cada opção leva a cidade principal do seu offset.
         timezone_locations = [
             ("Fernando de Noronha", "America/Noronha"),  # UTC-02:00
-            ("Brasília, São Paulo, Rio de Janeiro", "America/Sao_Paulo"),  # UTC-03:00
+            ("Brasília", "America/Sao_Paulo"),  # UTC-03:00
             ("Manaus", "America/Manaus"),  # UTC-04:00
             ("Rio Branco", "America/Rio_Branco"),  # UTC-05:00
         ]
