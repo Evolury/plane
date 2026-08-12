@@ -12,6 +12,7 @@ import { SUPPORTED_LANGUAGES, FALLBACK_LANGUAGE, LANGUAGE_STORAGE_KEY } from "..
 import { NAMESPACES, DEFAULT_NAMESPACE } from "../constants/namespaces";
 
 import type { i18n as I18nInstance } from "i18next";
+import type { TLanguage } from "../types";
 
 export const i18nInstance: I18nInstance = i18n.createInstance();
 
@@ -20,8 +21,17 @@ i18nInstance
   .use(initReactI18next)
   .use(resourcesToBackend((language: string, namespace: string) => import(`../locales/${language}/${namespace}.json`)));
 
-const initialLng =
-  typeof window !== "undefined" ? localStorage.getItem(LANGUAGE_STORAGE_KEY) || FALLBACK_LANGUAGE : FALLBACK_LANGUAGE;
+// Evolury: idioma único (ADR 0004). O upstream lia o idioma do localStorage;
+// aqui ele é sempre pt-BR, e a chave gravada por sessões anteriores é
+// normalizada — senão quem já tinha escolhido outro idioma continuaria com o
+// valor antigo salvo no navegador.
+const initialLng: TLanguage = FALLBACK_LANGUAGE;
+if (typeof window !== "undefined") {
+  if (localStorage.getItem(LANGUAGE_STORAGE_KEY) !== FALLBACK_LANGUAGE) {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, FALLBACK_LANGUAGE);
+  }
+  document.documentElement.lang = FALLBACK_LANGUAGE;
+}
 
 export const initPromise = i18nInstance
   .init({
