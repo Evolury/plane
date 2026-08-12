@@ -342,7 +342,7 @@
   },
   "project_modules": {
     "status": {
-      "backlog": "Backlog",
+      "backlog": "Em espera",
       "planned": "Planejado",
       "in_progress": "Em Andamento",
       "paused": "Pausado",

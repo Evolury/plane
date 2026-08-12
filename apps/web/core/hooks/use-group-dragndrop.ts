@@ -26,7 +26,9 @@ type DNDStoreType =
   | EIssuesStoreType.TEAM
   | EIssuesStoreType.TEAM_VIEW
   | EIssuesStoreType.EPIC
-  | EIssuesStoreType.TEAM_PROJECT_WORK_ITEMS;
+  | EIssuesStoreType.TEAM_PROJECT_WORK_ITEMS
+  // Evolury: quadro de "Minhas tarefas" (drag entre etapas pessoais, ADR 0002)
+  | EIssuesStoreType.MY_TASKS;
 
 export const useGroupIssuesDragNDrop = (
   storeType: DNDStoreType,

@@ -895,7 +895,7 @@
     "custom_properties": "Propriedades personalizadas",
     "your_profile": "Seu perfil",
     "developer": "Desenvolvedor",
-    "work_structure": "Estrutura de trabalho",
+    "work_structure": "Estrutura de tarefas",
     "execution": "Execução",
     "administration": "Administração"
   },
@@ -914,7 +914,7 @@
     "grouping_title": "Agrupamento de {entity}",
     "priority": "Prioridade de {entity}",
     "all": "Todos os {entity}",
-    "drop_here_to_move": "Solte aqui para mover o {entity}",
+    "drop_here_to_move": "Solte aqui para mover",
     "delete": {
       "label": "Excluir {entity}",
       "success": "{entity} excluído com sucesso",

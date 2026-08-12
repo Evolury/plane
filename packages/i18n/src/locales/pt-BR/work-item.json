@@ -85,7 +85,7 @@
     },
     "states": {
       "active": "Ativo",
-      "backlog": "Backlog"
+      "backlog": "Em espera"
     },
     "comments": {
       "placeholder": "Adicionar comentário",
