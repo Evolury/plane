@@ -61,17 +61,18 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
         sort_order: personalPreferences.items.stickies.sort_order,
       });
     }
-    if (personalPreferences.items.your_work?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["your-work"]) {
-      personalItems.push({
-        ...WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["your-work"],
-        sort_order: personalPreferences.items.your_work.sort_order,
-      });
-    }
-    // Evolury: minhas tarefas, logo após "Seu trabalho"
+    // Evolury: minhas tarefas acima de "Minhas atividades" (your_work) — a
+    // ordem exibida vem do sort_order das preferências, não deste push
     if (personalPreferences.items.my_tasks?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["my-tasks"]) {
       personalItems.push({
         ...WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["my-tasks"],
         sort_order: personalPreferences.items.my_tasks.sort_order,
+      });
+    }
+    if (personalPreferences.items.your_work?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["your-work"]) {
+      personalItems.push({
+        ...WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["your-work"],
+        sort_order: personalPreferences.items.your_work.sort_order,
       });
     }
     if (personalPreferences.items.drafts?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["drafts"]) {
