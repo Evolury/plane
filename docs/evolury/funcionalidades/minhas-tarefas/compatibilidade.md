@@ -1,31 +1,48 @@
 # Minhas tarefas — Matriz de compatibilidade
 
-Interações com recursos existentes e como cada uma é tratada. A coluna
-"Verificação" é o checklist a executar na fase F6, antes de considerar a
-funcionalidade entregue — marcar cada linha com a data e quem verificou.
+**Executada em 12/08/2026 (F6).** Cada linha traz o tratamento e a evidência da
+verificação: `[T]` teste de contrato em
+`apps/api/plane/tests/contract/api/test_my_tasks.py`, `[V]` validação visual em
+stack local (screenshots na sessão de desenvolvimento), `[I]` inspeção de
+código/design.
 
-| #   | Recurso existente                        | Interação                                     | Tratamento                                                                       | Verificação                                                              |
-| --- | ---------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1   | Múltiplos responsáveis                   | Dois usuários organizam o mesmo item          | Associação é por usuário; um não vê nem afeta a etapa do outro                   | Dois usuários movem o mesmo item para etapas diferentes; ambas persistem |
-| 2   | Estados do projeto                       | Etapa ≠ estado; duas verdades convivem        | Overlay: mover etapa nunca altera estado (ADR 0001); estado real visível no card | Mover item para etapa "Concluídas" e conferir estado intacto no projeto  |
-| 3   | Atividade do work item                   | Movimento pessoal não é evento do item        | `move` não passa por `issue_activity`                                            | Histórico do item inalterado após mover de etapa                         |
-| 4   | Webhooks                                 | Assinantes não devem receber eventos pessoais | CRUD de etapa e `move` fora do fluxo de webhooks                                 | Webhook de teste não recebe payload ao mover                             |
-| 5   | Notificações                             | Mover etapa não notifica                      | Fora do fluxo de notificação                                                     | Caixa de entrada dos demais responsáveis vazia após mover                |
-| 6   | Automação de arquivamento (`archive_in`) | Item arquivado pela automação                 | Listagem usa `issue_objects` (exclui arquivados); associação fica inerte         | Arquivar item associado; some da página; restaurar; volta à mesma etapa  |
-| 7   | Automação de fechamento (`close_in`)     | Estado muda sem ação do usuário               | Item permanece na etapa em que estava (spec)                                     | Fechar via automação; etapa preservada                                   |
-| 8   | Hard delete diário                       | Item somem do banco                           | FK CASCADE remove associações                                                    | Excluir item em definitivo; sem linha órfã em `WorkStageIssue`           |
-| 9   | Desatribuição                            | Item não é mais "meu"                         | Some da listagem; associação preservada para eventual reatribuição               | Desatribuir; some. Reatribuir; reaparece na mesma etapa                  |
-| 10  | Intake / triage                          | Itens pendentes de aceite                     | Mesmos recortes do endpoint de perfil (exclui triage/pendentes)                  | Item em intake não aparece até ser aceito                                |
-| 11  | Rascunhos (drafts)                       | Não são work items ativos                     | Fora da consulta                                                                 | Rascunho atribuído não aparece                                           |
-| 12  | Permissões de projeto                    | Usuário perde acesso a um projeto             | Listagem restrita a projetos em que é membro                                     | Remover usuário do projeto; itens daquele projeto somem                  |
-| 13  | Guest                                    | Papel sem "Seu trabalho"                      | Item de sidebar e rota com mesmo `access` (admin/membro)                         | Guest não vê o item nem acessa a rota direta                             |
-| 14  | Multi-workspace                          | Organizações independentes                    | Etapas e associações escopadas por workspace                                     | Trocar de workspace; etapas próprias em cada um                          |
-| 15  | Peek overview                            | Edição completa do item pela página           | Reúso direto; edições reais seguem fluxo padrão (com atividade)                  | Editar estado real pelo peek; atividade gerada normalmente               |
-| 16  | Quick actions                            | Ações do card                                 | Reúso das ações da página de perfil                                              | Copiar link, abrir em nova aba etc. funcionam                            |
-| 17  | Filtros e display properties             | Persistência por página                       | Bloco `my_tasks` próprio em `ISSUE_DISPLAY_FILTERS_BY_PAGE`                      | Filtros não vazam para "Seu trabalho" e vice-versa                       |
-| 18  | Personalizar navegação                   | Ocultar/reordenar itens da sidebar            | Entrada `my_tasks` no diálogo, como as demais                                    | Ocultar e reexibir o item                                                |
-| 19  | Power-K                                  | Navegação por comando                         | Comando "Ir para minhas tarefas"                                                 | Comando navega corretamente                                              |
-| 20  | i18n (19 locales)                        | Strings novas em todos os idiomas             | Fluxo da skill `translate`; sync check no CI                                     | `i18n-sync-check` verde; UI pt-BR sem chave crua                         |
-| 21  | API pública (`/api/v1`) e space          | Fora do escopo v1                             | Nenhuma rota exposta                                                             | Rotas públicas inalteradas                                               |
-| 22  | Exclusão de etapa                        | Itens associados à etapa excluída             | Migração transacional para a etapa padrão                                        | Excluir etapa com itens; todos aparecem na padrão                        |
-| 23  | Seed concorrente                         | Duas requisições no primeiro acesso           | Seed idempotente sob transação                                                   | Teste pytest de concorrência                                             |
+| #   | Recurso existente          | Tratamento                                                       | Verificação                                                                          |
+| --- | -------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 1   | Múltiplos responsáveis     | Associação por usuário; um não afeta o outro                     | ✓ `[T]` test_annotation_is_per_user                                                  |
+| 2   | Estados do projeto         | Overlay (ADR 0001): mover etapa nunca altera estado              | ✓ `[T]` test_move_does_not_touch_issue_state · `[V]` card mantém "Backlog" após drag |
+| 3   | Atividade do work item     | `move` fora do `issue_activity`                                  | ✓ `[T]` test_move_creates_no_issue_activity                                          |
+| 4   | Webhooks                   | Sem atividade não há gatilho; o módulo não importa o fluxo       | ✓ `[I]` + linha 3                                                                    |
+| 5   | Notificações               | Idem — fora do fluxo                                             | ✓ `[I]` + linha 3                                                                    |
+| 6   | Automação de arquivamento  | `issue_objects` exclui arquivados; associação inerte             | ✓ `[T]` test_lists_only_assigned_issues (arquivado excluído)                         |
+| 7   | Automação de fechamento    | Estado muda; etapa preservada (associação não referencia estado) | ✓ `[I]` modelo + linha 2                                                             |
+| 8   | Hard delete diário         | FK CASCADE remove associações                                    | ✓ `[T]` test_hard_delete_cascades_association                                        |
+| 9   | Desatribuição/reatribuição | Some da listagem; volta à mesma etapa                            | ✓ `[T]` test_reassignment_restores_previous_stage                                    |
+| 10  | Intake / triage            | Recortes espelho do endpoint de perfil                           | ✓ `[I]` consulta idêntica + manager exclui triage                                    |
+| 11  | Rascunhos                  | Fora da consulta                                                 | ✓ `[T]` test_lists_only_assigned_issues                                              |
+| 12  | Permissões de projeto      | Listagem restrita a projetos em que é membro                     | ✓ `[T]` test_removed_project_member_issues_disappear                                 |
+| 13  | Guest                      | 403 em toda a API; item de sidebar restrito                      | ✓ `[T]` test_guest_cannot_access                                                     |
+| 14  | Multi-workspace            | Escopo por workspace em modelo, constraints e consultas          | ✓ `[I]` + `[T]` test_seed_is_per_user (isolamento por dono)                          |
+| 15  | Peek overview              | Reúso direto; edições reais seguem fluxo padrão                  | ✓ `[V]` F3/F5                                                                        |
+| 16  | Quick actions              | Reúso das ações da página de perfil                              | ✓ `[V]` F3                                                                           |
+| 17  | Filtros por página         | localStorage chaveado por MY_TASKS+workspace                     | ✓ `[V]` F5 (sem vazamento para o perfil)                                             |
+| 18  | Personalizar navegação     | Entrada `my_tasks` como as demais                                | ✓ `[I]` espelho de your_work · `[V]` sidebar F2                                      |
+| 19  | Power-K                    | Comando "Ir para minhas tarefas" (`gt`)                          | ✓ `[I]` registro espelho de nav_your_work                                            |
+| 20  | i18n (19 locales)          | Chaves via fluxo da skill `translate`                            | ✓ `i18n-sync-check` verde no CI de todos os PRs                                      |
+| 21  | API pública / space        | Nenhuma rota exposta                                             | ✓ `[I]` urls só em `plane/app`                                                       |
+| 22  | Exclusão de etapa          | Migração transacional para a padrão                              | ✓ `[T]` test_destroy_migrates_associations_to_default · `[V]` F4                     |
+| 23  | Seed concorrente           | Idempotente; corrida absorvida por constraint                    | ✓ `[T]` test_seed_race_is_absorbed                                                   |
+
+## Achados das validações (corrigidos durante as fases)
+
+Três defeitos que só a execução da matriz/validação visual expôs — todos
+corrigidos e cobertos:
+
+1. **Etapas vazias ocultas no kanban** (F3): `show_empty_groups` caía para
+   `false` com filtros persistidos; sem coluna vazia não há destino de drag.
+   Visibilidade virou estrutural da página.
+2. **`DRAG_ALLOWED_GROUPS`** (F3): allowlist de agrupamentos arrastáveis fora
+   do rastreio da F0; sem a entrada, o drop era rejeitado.
+3. **Resposta agrupada vazia sem chaves** (F5): `GroupedOffsetPaginator`
+   devolve `{}` com zero resultados e o front nunca sai do "carregando"; o
+   endpoint garante toda etapa presente
+   (`test_grouped_response_always_carries_all_stage_keys`).

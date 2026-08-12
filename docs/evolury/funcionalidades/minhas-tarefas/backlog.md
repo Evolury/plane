@@ -139,13 +139,20 @@ Exibir, empty states com usuário sem atribuições).
 
 ## F6 — Fechamento
 
-- [ ] F6.1 i18n: chaves nos 19 locales via skill `translate`;
-      `i18n-sync-check` verde
-- [ ] F6.2 Executar a [matriz de compatibilidade](compatibilidade.md) completa,
-      marcando cada linha
-- [ ] F6.3 Atualizar status em `docs/README.md` e revisar
-      especificacao/arquitetura contra o que foi construído
-- [ ] F6.4 Entrada no `CHANGELOG.md` (minor — funcionalidade nova)
+- [x] F6.1 i18n: chaves da feature nos 19 locales desde as fases (sync verde
+      em todos os PRs). Nits resolvidos: valores de prioridade e grupo de
+      estado do rich-filters traduzidos (via `getOptionLabel` opcional nos
+      configs — beneficia todas as páginas) e toasts da família reusada
+      neutralizados em pt-BR ("Criado com sucesso." serve a estados e etapas
+      sem parametrizar 6 componentes)
+- [x] F6.2 [Matriz de compatibilidade](compatibilidade.md) executada e
+      assinada: 23/23 com evidência (teste de contrato, validação visual ou
+      inspeção); 2 testes adicionados na execução (hard delete em cascata,
+      memória da etapa na reatribuição) — suíte de minhas-tarefas em 31
+- [x] F6.3 Arquitetura atualizada com a lista as-built dos pontos de
+      integração; status no índice
+- [x] F6.4 Entrada v1.1.0 no `CHANGELOG.md` (no PR de release)
 
-**Aceite:** checklist da matriz assinado; `pnpm check` + pytest verdes; release
-minor cortada conforme [VERSIONING.md](../../../../VERSIONING.md).
+**Aceite:** ✓ 12/08/2026 — matriz assinada; `pnpm check` + pytest verdes;
+release v1.1.0 cortada pelo fluxo `release/` do VERSIONING.md (primeiro
+exercício do `check-version`).
