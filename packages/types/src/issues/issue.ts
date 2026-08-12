@@ -29,6 +29,8 @@ export enum EIssueServiceType {
 export enum EIssuesStoreType {
   GLOBAL = "GLOBAL",
   PROFILE = "PROFILE",
+  // Evolury: página de minhas tarefas
+  MY_TASKS = "MY_TASKS",
   TEAM = "TEAM",
   PROJECT = "PROJECT",
   CYCLE = "CYCLE",

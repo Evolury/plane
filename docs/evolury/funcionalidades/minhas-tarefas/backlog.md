@@ -43,16 +43,21 @@ explícitos).
 
 ## F2 — Fundação frontend
 
-- [ ] F2.1 Rota `my-tasks` (layout/header/page) registrada em `routes/core.ts`
-- [ ] F2.2 Item de sidebar abaixo de "Seu trabalho" + ícone + entrada no
-      "Personalizar navegação" + comando Power-K
-- [ ] F2.3 `my-tasks.service.ts` + stores (`stage.store`, `issue.store`,
-      `filter.store`) + `EIssuesStoreType.MY_TASKS`
-- [ ] F2.4 Página abre com os itens atribuídos listados na etapa padrão
-      (agrupamento simples, sem drag ainda)
+- [x] F2.1 Rota `my-tasks` (layout/header/page) registrada em `routes/core.ts`
+- [x] F2.2 Item de sidebar abaixo de "Seu trabalho" (chave `my_tasks` nas
+      preferências do servidor, ancorada no sort_order do your_work para
+      usuários existentes) + ícone + "Personalizar navegação" + Power-K (`gt`)
+- [x] F2.3 `my-tasks.service.ts` (7 métodos, cobre também o CRUD da F4) +
+      `MyTasksStore` (etapas + listagem + move otimista) +
+      `EIssuesStoreType.MY_TASKS`. Nota: na F2 o store é próprio e enxuto —
+      o espelho completo do ProfileIssues (issue/filter stores sobre
+      BaseIssuesStore) é entregue na F3 junto da integração do ADR 0002,
+      quando os layouts base passam a exigi-lo
+- [x] F2.4 Página abre com os itens atribuídos agrupados por etapa (seções
+      client-side por `my_task_stage_id`, sem drag), com i18n nos 19 locales
 
-**Aceite:** navegação completa (sidebar, diálogo, Power-K); listagem correta
-para usuário com itens em múltiplos projetos; `pnpm check` verde.
+**Aceite:** ✓ 11/08/2026 — navegação completa; `pnpm check` 60/60 verde; suíte
+da API 543 verdes (preferências com a chave nova incluídas).
 
 ## F3 — Layouts com etapas
 

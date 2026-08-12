@@ -4,7 +4,8 @@
  * See the LICENSE file for details.
  */
 
-export type TPersonalNavigationItemKey = "stickies" | "your_work" | "drafts";
+// Evolury: "my_tasks" — página de minhas tarefas
+export type TPersonalNavigationItemKey = "stickies" | "your_work" | "my_tasks" | "drafts";
 
 export interface TPersonalNavigationItem {
   key: TPersonalNavigationItemKey;
@@ -54,6 +55,8 @@ export const DEFAULT_PERSONAL_PREFERENCES: TPersonalNavigationPreferences = {
   items: {
     stickies: { enabled: false, sort_order: 0 },
     your_work: { enabled: true, sort_order: 1 },
+    // Evolury: abaixo de "Seu trabalho" por padrão
+    my_tasks: { enabled: true, sort_order: 1.5 },
     drafts: { enabled: true, sort_order: 2 },
   },
 };

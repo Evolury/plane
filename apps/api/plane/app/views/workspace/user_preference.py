@@ -32,6 +32,17 @@ class WorkspaceUserPreferenceViewSet(BaseAPIView):
 
         keys = [key for key, _ in WorkspaceUserPreference.UserPreferenceKeys.choices]
 
+        # Evolury: minhas tarefas nasce fixada e imediatamente abaixo de "Seu
+        # trabalho". Para usuário que já tem as demais linhas criadas (a chave
+        # nova chega sozinha em create_preference_keys), o sort_order sequencial
+        # a jogaria para o topo — por isso ancora no sort_order do your_work.
+        def default_sort_order(key, i):
+            if key == WorkspaceUserPreference.UserPreferenceKeys.MY_TASKS:
+                your_work = get_preference.filter(key=WorkspaceUserPreference.UserPreferenceKeys.YOUR_WORK).first()
+                if your_work is not None:
+                    return your_work.sort_order + 5000
+            return 65535 + (i * 10000)
+
         for preference in keys:
             if preference not in get_preference.values_list("key", flat=True):
                 create_preference_keys.append(preference)
@@ -42,13 +53,15 @@ class WorkspaceUserPreferenceViewSet(BaseAPIView):
                             key=key,
                             user=request.user,
                             workspace=workspace,
-                            sort_order=(65535 + (i * 10000)),
+                            sort_order=default_sort_order(key, i),
                             is_pinned=(
                                 True
                                 if key
                                 in [
                                     WorkspaceUserPreference.UserPreferenceKeys.DRAFTS,
                                     WorkspaceUserPreference.UserPreferenceKeys.YOUR_WORK,
+                                    # Evolury: minhas tarefas visível por padrão
+                                    WorkspaceUserPreference.UserPreferenceKeys.MY_TASKS,
                                     WorkspaceUserPreference.UserPreferenceKeys.STICKIES,
                                 ]
                                 else False

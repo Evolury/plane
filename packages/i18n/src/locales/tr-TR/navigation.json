@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Yapışkan Notlar",
     "your_work": "Çalışmalarınız",
+    "my_tasks": "Görevlerim",
     "projects": "Projeler",
     "pages": "Sayfalar",
     "new_work_item": "Yeni iş öğesi",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Apgreyd plen",
     "plane_pro": "Pleyn Pro",
     "business": "Biznis"
+  },
+  "my_tasks": {
+    "empty_state": "Bu çalışma alanında size henüz atanmış iş öğesi yok."
   }
 }

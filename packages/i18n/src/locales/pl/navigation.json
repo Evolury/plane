@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Karteczki",
     "your_work": "Twoja praca",
+    "my_tasks": "Moje zadania",
     "projects": "Projekty",
     "pages": "Strony",
     "new_work_item": "Nowy element pracy",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Apgrejduj plan",
     "plane_pro": "Plejn Pro",
     "business": "Biznes"
+  },
+  "my_tasks": {
+    "empty_state": "W tej przestrzeni roboczej nie przypisano Ci jeszcze żadnych elementów pracy."
   }
 }

@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Notizen",
     "your_work": "Ihre Arbeit",
+    "my_tasks": "Meine Aufgaben",
     "projects": "Projekte",
     "pages": "Seiten",
     "new_work_item": "Neues Arbeitselement",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Plan upgraden",
     "plane_pro": "Plane Pro",
     "business": "Business"
+  },
+  "my_tasks": {
+    "empty_state": "Dir sind in diesem Workspace noch keine Arbeitselemente zugewiesen."
   }
 }

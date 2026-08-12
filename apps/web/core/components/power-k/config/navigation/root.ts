@@ -26,6 +26,8 @@ export const usePowerKNavigationCommands = (): TPowerKCommandConfig[] => {
     optionsList["nav_home"],
     optionsList["nav_inbox"],
     optionsList["nav_your_work"],
+    // Evolury: minhas tarefas
+    optionsList["nav_my_tasks"],
     // Project-Level Navigation (Only visible in project context)
     optionsList["nav_project_work_items"],
     optionsList["nav_project_pages"],

@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "付箋",
     "your_work": "あなたの作業",
+    "my_tasks": "マイタスク",
     "projects": "プロジェクト",
     "pages": "ページ",
     "new_work_item": "新規作業項目",
@@ -30,5 +31,8 @@
     "upgrade_plan": "プランをアップグレード",
     "plane_pro": "Plane Pro",
     "business": "ビジネス"
+  },
+  "my_tasks": {
+    "empty_state": "このワークスペースでは、まだ作業アイテムが割り当てられていません。"
   }
 }

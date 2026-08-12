@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Stickies",
     "your_work": "Your work",
+    "my_tasks": "My tasks",
     "projects": "Projects",
     "pages": "Pages",
     "new_work_item": "New work item",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Upgrade plan",
     "plane_pro": "Plane Pro",
     "business": "Business"
+  },
+  "my_tasks": {
+    "empty_state": "No work items assigned to you in this workspace yet."
   }
 }

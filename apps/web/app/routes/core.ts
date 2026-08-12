@@ -104,6 +104,10 @@ export const coreRoutes: RouteConfigEntry[] = [
         layout("./(all)/[workspaceSlug]/(projects)/stickies/layout.tsx", [
           route(":workspaceSlug/stickies", "./(all)/[workspaceSlug]/(projects)/stickies/page.tsx"),
         ]),
+        // Evolury: minhas tarefas
+        layout("./(all)/[workspaceSlug]/(projects)/my-tasks/layout.tsx", [
+          route(":workspaceSlug/my-tasks", "./(all)/[workspaceSlug]/(projects)/my-tasks/page.tsx"),
+        ]),
 
         // Workspace Views
         layout("./(all)/[workspaceSlug]/(projects)/workspace-views/layout.tsx", [

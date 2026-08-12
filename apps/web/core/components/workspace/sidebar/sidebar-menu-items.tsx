@@ -67,6 +67,13 @@ export const SidebarMenuItems = observer(function SidebarMenuItems() {
         sort_order: personalPreferences.items.your_work.sort_order,
       });
     }
+    // Evolury: minhas tarefas, logo após "Seu trabalho"
+    if (personalPreferences.items.my_tasks?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["my-tasks"]) {
+      personalItems.push({
+        ...WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["my-tasks"],
+        sort_order: personalPreferences.items.my_tasks.sort_order,
+      });
+    }
     if (personalPreferences.items.drafts?.enabled && WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["drafts"]) {
       personalItems.push({
         ...WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["drafts"],

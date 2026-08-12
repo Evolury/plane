@@ -40,6 +40,8 @@ type TWorkspaceNavigationItem = {
 const PERSONAL_ITEMS: Array<{ key: TPersonalNavigationItemKey; labelTranslationKey: string }> = [
   { key: "stickies", labelTranslationKey: "sidebar.stickies" },
   { key: "your_work", labelTranslationKey: "sidebar.your_work" },
+  // Evolury: minhas tarefas
+  { key: "my_tasks", labelTranslationKey: "sidebar.my_tasks" },
   { key: "drafts", labelTranslationKey: "drafts" },
 ];
 

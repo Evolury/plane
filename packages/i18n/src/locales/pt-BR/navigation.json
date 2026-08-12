@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Stickies",
     "your_work": "Seu trabalho",
+    "my_tasks": "Minhas tarefas",
     "projects": "Projetos",
     "pages": "Páginas",
     "new_work_item": "Novo item de trabalho",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Atualizar plano",
     "plane_pro": "Plane Pro",
     "business": "Business"
+  },
+  "my_tasks": {
+    "empty_state": "Nenhum item de trabalho atribuído a você neste espaço de trabalho ainda."
   }
 }

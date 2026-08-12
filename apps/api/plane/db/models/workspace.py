@@ -423,6 +423,8 @@ class WorkspaceUserPreference(BaseModel):
         ANALYTICS = "analytics", "Analytics"
         DRAFTS = "drafts", "Drafts"
         YOUR_WORK = "your_work", "Your Work"
+        # Evolury: item de sidebar de "Minhas tarefas", logo após Seu trabalho
+        MY_TASKS = "my_tasks", "My Tasks"
         ARCHIVES = "archives", "Archives"
         STICKIES = "stickies", "Stickies"
 

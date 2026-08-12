@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Ghi chú nhanh",
     "your_work": "Công việc của tôi",
+    "my_tasks": "Nhiệm vụ của tôi",
     "projects": "Dự án",
     "pages": "Trang",
     "new_work_item": "Mục công việc mới",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Nâng cấp gói",
     "plane_pro": "Plane Pro",
     "business": "Doanh nghiệp"
+  },
+  "my_tasks": {
+    "empty_state": "Chưa có mục công việc nào được giao cho bạn trong không gian làm việc này."
   }
 }

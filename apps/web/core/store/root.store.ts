@@ -64,6 +64,9 @@ import type { IRouterStore } from "./router.store";
 import { RouterStore } from "./router.store";
 import type { IStickyStore } from "./sticky/sticky.store";
 import { StickyStore } from "./sticky/sticky.store";
+// Evolury: minhas tarefas
+import type { IMyTasksStore } from "./my-tasks/my-tasks.store";
+import { MyTasksStore } from "./my-tasks/my-tasks.store";
 import type { IThemeStore } from "./theme.store";
 import { ThemeStore } from "./theme.store";
 import type { IUserStore } from "./user";
@@ -99,6 +102,8 @@ export class CoreRootStore {
   workspaceNotification: IWorkspaceNotificationStore;
   favorite: IFavoriteStore;
   stickyStore: IStickyStore;
+  // Evolury: minhas tarefas
+  myTasksStore: IMyTasksStore;
   editorAssetStore: IEditorAssetStore;
   workItemFilters: IWorkItemFilterStore;
   powerK: IPowerKStore;
@@ -130,6 +135,8 @@ export class CoreRootStore {
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
     this.stickyStore = new StickyStore();
+    // Evolury: minhas tarefas
+    this.myTasksStore = new MyTasksStore();
     this.editorAssetStore = new EditorAssetStore();
     this.analytics = new AnalyticsStore();
     this.workItemFilters = new WorkItemFilterStore();
@@ -165,6 +172,8 @@ export class CoreRootStore {
     this.workspaceNotification = new WorkspaceNotificationStore(this);
     this.favorite = new FavoriteStore(this);
     this.stickyStore = new StickyStore();
+    // Evolury: minhas tarefas
+    this.myTasksStore = new MyTasksStore();
     this.editorAssetStore = new EditorAssetStore();
     this.workItemFilters = new WorkItemFilterStore();
     this.powerK = new PowerKStore();
