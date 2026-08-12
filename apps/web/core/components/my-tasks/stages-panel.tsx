@@ -18,7 +18,8 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import type { IState, TStateGroups, TStateOperationsCallbacks, TWorkStage } from "@plane/types";
+import { MY_TASKS_STAGE_GROUP_ORDER } from "@plane/constants";
+import type { IState, TStateOperationsCallbacks, TWorkStage } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { EModalWidth, ModalCore } from "@plane/ui";
 // components
@@ -26,8 +27,6 @@ import { GroupList } from "@/components/project-states";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
 import { useMyTasks } from "@/hooks/use-my-tasks";
-
-const GROUP_ORDER: TStateGroups[] = ["backlog", "unstarted", "started", "completed", "cancelled"];
 
 /** Etapa pessoal no formato que a família project-states consome. */
 const stageToState = (stage: TWorkStage): IState => ({
@@ -71,7 +70,7 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
 
   const groupedStages = useMemo(() => {
     const grouped: Record<string, IState[]> = {};
-    for (const group of GROUP_ORDER) grouped[group] = [];
+    for (const group of MY_TASKS_STAGE_GROUP_ORDER) grouped[group] = [];
     for (const stage of sortedStages) {
       if (!grouped[stage.group]) grouped[stage.group] = [];
       grouped[stage.group].push(stageToState(stage));

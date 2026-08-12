@@ -73,6 +73,10 @@ padrão da instância.
 
 - **Lista** e **kanban**, agrupados **fixamente por etapa** (o agrupamento é a
   identidade da página; não há troca de group_by no v1).
+- **Ordem das colunas/grupos**: por grupo global — não iniciado → iniciado →
+  backlog → concluído → cancelado (backlog antes de concluído, definição de
+  produto de 12/08/2026) — e, dentro de cada grupo, pela ordenação do painel
+  de etapas. Quadro, lista e painel compartilham a mesma ordem.
 - Arrastar entre colunas/grupos move o item de etapa. Reordenação manual dentro
   da etapa é preservada.
 - **Mover de etapa não altera nada no projeto** — nem estado, nem atividade,
