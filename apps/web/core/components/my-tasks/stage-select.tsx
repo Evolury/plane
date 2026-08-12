@@ -95,7 +95,7 @@ export const MyTasksStageSelect = observer(function MyTasksStageSelect(props: TM
         ref={setReferenceElement}
         aria-label={t("my_tasks.stage_in_my_tasks")}
         title={t("my_tasks.stage_in_my_tasks")}
-        className="flex max-w-24 flex-shrink-0 items-center gap-0.5 rounded-sm border border-subtle px-1 py-0.5 text-10 text-tertiary hover:bg-layer-1-hover hover:text-secondary"
+        className="flex max-w-28 min-w-0 flex-shrink items-center gap-0.5 rounded-sm border border-subtle px-1 py-0.5 text-10 text-tertiary hover:bg-layer-1-hover hover:text-secondary"
         onClick={(e) => {
           stopAll(e);
           setIsOpen((prev) => !prev);
