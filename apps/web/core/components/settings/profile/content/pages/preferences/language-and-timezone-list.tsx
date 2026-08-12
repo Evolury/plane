@@ -45,7 +45,9 @@ export const ProfileSettingsLanguageAndTimezonePreferencesList = observer(
         <SettingsControlItem
           title={t("timezone")}
           description={t("timezone_setting")}
-          control={<TimezoneSelect value={user?.user_timezone || "Asia/Kolkata"} onChange={handleTimezoneChange} />}
+          control={
+            <TimezoneSelect value={user?.user_timezone || "America/Sao_Paulo"} onChange={handleTimezoneChange} />
+          }
         />
       </div>
     );

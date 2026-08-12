@@ -7,7 +7,6 @@ import random
 import string
 import uuid
 
-import pytz
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 # Django imports
@@ -116,8 +115,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     bot_type = models.CharField(max_length=30, verbose_name="Bot Type", blank=True, null=True)
 
     # timezone
-    USER_TIMEZONE_CHOICES = tuple(zip(pytz.common_timezones, pytz.common_timezones))
-    user_timezone = models.CharField(max_length=255, default="UTC", choices=USER_TIMEZONE_CHOICES)
+    # Evolury: só os fusos do Brasil (ADR 0006). O upstream aceitava qualquer
+    # zona do pytz e nascia em UTC — três horas à frente de Brasília, errado
+    # para todo usuário do produto. As choices são validadas pelo DRF, então
+    # também barram um cliente antigo que tente gravar outra zona.
+    BRAZIL_TIMEZONES = [
+        "America/Noronha",
+        "America/Sao_Paulo",
+        "America/Bahia",
+        "America/Fortaleza",
+        "America/Recife",
+        "America/Maceio",
+        "America/Belem",
+        "America/Santarem",
+        "America/Araguaina",
+        "America/Manaus",
+        "America/Cuiaba",
+        "America/Campo_Grande",
+        "America/Porto_Velho",
+        "America/Boa_Vista",
+        "America/Rio_Branco",
+        "America/Eirunepe",
+    ]
+    USER_TIMEZONE_CHOICES = tuple(zip(BRAZIL_TIMEZONES, BRAZIL_TIMEZONES))
+    user_timezone = models.CharField(max_length=255, default="America/Sao_Paulo", choices=USER_TIMEZONE_CHOICES)
 
     # email validation
     is_email_valid = models.BooleanField(default=False)
