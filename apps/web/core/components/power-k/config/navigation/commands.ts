@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { BarChart2, Briefcase, FileText, Home, Inbox, Layers, PenSquare, Settings } from "lucide-react";
+import { BarChart2, Briefcase, FileText, Home, Inbox, Layers, ListTodo, PenSquare, Settings } from "lucide-react";
 // plane imports
 import { EUserPermissionsLevel } from "@plane/constants";
 import { ArchiveIcon, UserActivityIcon, LayersIcon, ContrastIcon, DiceIcon, Intake } from "@plane/propel/icons";
@@ -22,6 +22,8 @@ export type TPowerKNavigationCommandKeys =
   | "nav_home"
   | "nav_inbox"
   | "nav_your_work"
+  // Evolury: minhas tarefas
+  | "nav_my_tasks"
   | "nav_account_settings"
   | "open_project"
   | "nav_projects_list"
@@ -125,6 +127,19 @@ export const usePowerKNavigationCommandsRecord = (): Record<TPowerKNavigationCom
       icon: UserActivityIcon,
       keySequence: "gy",
       action: (ctx) => handlePowerKNavigate(ctx, [ctx.params.workspaceSlug?.toString(), "profile", currentUser?.id]),
+      isEnabled: (ctx) => baseWorkspaceConditions(ctx) && hasWorkspaceMemberLevelPermissions(ctx),
+      isVisible: (ctx) => baseWorkspaceConditions(ctx) && hasWorkspaceMemberLevelPermissions(ctx),
+      closeOnSelect: true,
+    },
+    // Evolury: minhas tarefas
+    nav_my_tasks: {
+      id: "nav_my_tasks",
+      type: "action",
+      group: "navigation",
+      i18n_title: "power_k.navigation_actions.nav_my_tasks",
+      icon: ListTodo,
+      keySequence: "gt",
+      action: (ctx) => handlePowerKNavigate(ctx, [ctx.params.workspaceSlug?.toString(), "my-tasks"]),
       isEnabled: (ctx) => baseWorkspaceConditions(ctx) && hasWorkspaceMemberLevelPermissions(ctx),
       isVisible: (ctx) => baseWorkspaceConditions(ctx) && hasWorkspaceMemberLevelPermissions(ctx),
       closeOnSelect: true,

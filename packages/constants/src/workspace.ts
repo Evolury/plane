@@ -250,6 +250,14 @@ export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS: Record<string, IWorkspac
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
     highlight: (pathname: string, url: string) => pathname.includes(url),
   },
+  // Evolury: minhas tarefas — organização pessoal dos itens atribuídos
+  "my-tasks": {
+    key: "my_tasks",
+    labelTranslationKey: "sidebar.my_tasks",
+    href: `/my-tasks/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
+  },
   stickies: {
     key: "stickies",
     labelTranslationKey: "sidebar.stickies",

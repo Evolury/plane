@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Notițe",
     "your_work": "Munca ta",
+    "my_tasks": "Sarcinile mele",
     "projects": "Proiecte",
     "pages": "Documentație",
     "new_work_item": "Activitate nouă",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Actualizare plan",
     "plane_pro": "Plane Pro",
     "business": "Business"
+  },
+  "my_tasks": {
+    "empty_state": "Niciun element de lucru nu ți-a fost încă atribuit în acest spațiu de lucru."
   }
 }

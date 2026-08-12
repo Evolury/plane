@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { ListTodo } from "lucide-react";
 import {
   AnalyticsIcon,
   ArchiveIcon,
@@ -34,6 +35,9 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <AnalyticsIcon className={cn("size-4 flex-shrink-0", className)} />;
     case "your_work":
       return <YourWorkIcon className={cn("size-4 flex-shrink-0", className)} />;
+    // Evolury: minhas tarefas
+    case "my_tasks":
+      return <ListTodo className={cn("size-4 flex-shrink-0", className)} />;
     case "drafts":
       return <DraftIcon className={cn("size-4 flex-shrink-0", className)} />;
     case "archives":

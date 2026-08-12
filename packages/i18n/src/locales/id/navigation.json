@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Stickies",
     "your_work": "Pekerjaan anda",
+    "my_tasks": "Tugas saya",
     "projects": "Projek",
     "pages": "Halaman",
     "new_work_item": "Item kerja baru",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Tingkatkan paket",
     "plane_pro": "Plane Pro",
     "business": "Bisnis"
+  },
+  "my_tasks": {
+    "empty_state": "Belum ada item kerja yang ditugaskan kepada Anda di ruang kerja ini."
   }
 }

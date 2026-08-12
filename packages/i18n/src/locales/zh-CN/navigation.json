@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "便签",
     "your_work": "我的工作",
+    "my_tasks": "我的任务",
     "projects": "项目",
     "pages": "页面",
     "new_work_item": "新工作项",
@@ -30,5 +31,8 @@
     "upgrade_plan": "升级计划",
     "plane_pro": "Plane Pro",
     "business": "商业版"
+  },
+  "my_tasks": {
+    "empty_state": "此工作区中尚未有分配给您的工作项。"
   }
 }

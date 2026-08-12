@@ -50,6 +50,11 @@ export const usePersonalNavigationPreferences = () => {
         enabled: storePreferences.your_work?.is_pinned ?? DEFAULT_PERSONAL_PREFERENCES.items.your_work.enabled,
         sort_order: storePreferences.your_work?.sort_order ?? DEFAULT_PERSONAL_PREFERENCES.items.your_work.sort_order,
       },
+      // Evolury: minhas tarefas
+      my_tasks: {
+        enabled: storePreferences.my_tasks?.is_pinned ?? DEFAULT_PERSONAL_PREFERENCES.items.my_tasks.enabled,
+        sort_order: storePreferences.my_tasks?.sort_order ?? DEFAULT_PERSONAL_PREFERENCES.items.my_tasks.sort_order,
+      },
       drafts: {
         enabled: storePreferences.drafts?.is_pinned ?? DEFAULT_PERSONAL_PREFERENCES.items.drafts.enabled,
         sort_order: storePreferences.drafts?.sort_order ?? DEFAULT_PERSONAL_PREFERENCES.items.drafts.sort_order,

@@ -37,6 +37,13 @@ export type TStoreIssues = {
     issues: IProfileIssues;
     issuesFilter: IProfileIssuesFilter;
   };
+  // Evolury: minhas tarefas — na F2 a página usa o MyTasksStore próprio
+  // (use-my-tasks); esta entrada existe para o mapa continuar exaustivo sobre
+  // o enum. A F3 troca pelo store dedicado integrado aos layouts (ADR 0002).
+  [EIssuesStoreType.MY_TASKS]: defaultIssueStore & {
+    issues: IProfileIssues;
+    issuesFilter: IProfileIssuesFilter;
+  };
   [EIssuesStoreType.TEAM]: defaultIssueStore & {
     issues: IProjectIssues;
     issuesFilter: IProjectIssuesFilter;

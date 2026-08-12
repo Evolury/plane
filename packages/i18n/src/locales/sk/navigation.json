@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "Poznámky",
     "your_work": "Vaša práca",
+    "my_tasks": "Moje úlohy",
     "projects": "Projekty",
     "pages": "Stránky",
     "new_work_item": "Nová pracovná položka",
@@ -30,5 +31,8 @@
     "upgrade_plan": "Apgrejd plán",
     "plane_pro": "Plejn Pro",
     "business": "Biznis"
+  },
+  "my_tasks": {
+    "empty_state": "V tomto pracovnom priestore vám zatiaľ nie sú priradené žiadne pracovné položky."
   }
 }

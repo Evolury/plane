@@ -9,6 +9,7 @@
   "sidebar": {
     "stickies": "스티키",
     "your_work": "나의 작업",
+    "my_tasks": "내 작업",
     "projects": "프로젝트",
     "pages": "페이지",
     "new_work_item": "새 작업 항목",
@@ -30,5 +31,8 @@
     "upgrade_plan": "업그레이드 플랜",
     "plane_pro": "플레인 프로",
     "business": "비즈니스"
+  },
+  "my_tasks": {
+    "empty_state": "이 워크스페이스에서 아직 할당된 작업 항목이 없습니다."
   }
 }
