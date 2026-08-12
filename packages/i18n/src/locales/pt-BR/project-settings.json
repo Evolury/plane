@@ -11,7 +11,19 @@
       "delete_project": {
         "title": "Excluir projeto",
         "description": "Ao excluir um projeto, todos os dados e recursos dentro desse projeto serão removidos permanentemente e não poderão ser recuperados.",
-        "button": "Excluir meu projeto"
+        "button": "Excluir meu projeto",
+        "confirmation": {
+          "prefix": "Tem certeza de que deseja excluir o projeto",
+          "suffix": "? Todos os dados relacionados ao projeto serão removidos permanentemente. Esta ação não pode ser desfeita."
+        },
+        "enter_name": {
+          "prefix": "Digite o nome do projeto",
+          "suffix": "para continuar:"
+        },
+        "confirm_text": {
+          "prefix": "Para confirmar, digite",
+          "suffix": "abaixo:"
+        }
       },
       "toast": {
         "success": "Projeto atualizado com sucesso",
@@ -34,6 +46,14 @@
         "title": "Convidar membros",
         "sub_heading": "Convide membros para trabalhar em seu projeto.",
         "select_co_worker": "Selecionar colega de trabalho"
+      },
+      "leave_confirmation": {
+        "prefix": "Tem certeza de que deseja sair do projeto",
+        "suffix": "? Você poderá entrar no projeto novamente se for convidado ou se ele for público."
+      },
+      "remove_confirmation": {
+        "prefix": "Tem certeza de que deseja remover o membro",
+        "suffix": "? Essa pessoa não terá mais acesso a este projeto. Esta ação não pode ser desfeita."
       }
     },
     "states": {
@@ -63,7 +83,7 @@
     },
     "estimates": {
       "heading": "Estimativas",
-      "description": "Elas ajudam você a comunicar a complexidade e a carga de trabalho da equipe.",
+      "description": "Defina sistemas de estimativa para acompanhar e comunicar o esforço necessário em cada tarefa.",
       "label": "Estimativas",
       "title": "Habilitar estimativas para meu projeto",
       "enable_description": "Elas ajudam você a comunicar a complexidade e a carga de trabalho da equipe.",
@@ -186,6 +206,12 @@
           "prefix": "Excluir a estimativa",
           "suffix": "a removerá permanentemente de todas as tarefas. Essa ação não pode ser desfeita. Se você adicionar estimativas novamente, precisará atualizar todas as tarefas."
         }
+      },
+      "list_heading": "Lista de estimativas",
+      "archived": {
+        "heading": "Estimativas arquivadas",
+        "description": "As estimativas passaram por mudanças; estas são as estimativas de versões anteriores que não estavam em uso. Saiba mais sobre elas",
+        "read_more_link": "aqui."
       }
     },
     "automations": {

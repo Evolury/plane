@@ -66,16 +66,16 @@ export function ArchiveModuleModal(props: Props) {
   return (
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.LG}>
       <div className="px-5 py-4">
-        <h3 className="text-18 font-medium 2xl:text-20">Archive module {moduleName}</h3>
-        <p className="mt-3 text-13 text-secondary">
-          Are you sure you want to archive the module? All your archives can be restored later.
-        </p>
+        <h3 className="text-18 font-medium 2xl:text-20">
+          {t("module.archive.label")} {moduleName}
+        </h3>
+        <p className="mt-3 text-13 text-secondary">{t("module.archive.confirm_message")}</p>
         <div className="mt-3 flex justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={onClose}>
             {t("cancel")}
           </Button>
           <Button variant="primary" size="lg" tabIndex={1} onClick={handleArchiveModule} loading={isArchiving}>
-            {isArchiving ? "Archiving" : "Archive"}
+            {isArchiving ? t("common.archiving") : t("common.archive")}
           </Button>
         </div>
       </div>

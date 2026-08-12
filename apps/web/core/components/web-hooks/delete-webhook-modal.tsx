@@ -63,12 +63,7 @@ export function DeleteWebhookModal(props: IDeleteWebhook) {
       isSubmitting={isDeleting}
       isOpen={isOpen}
       title={t("ui.delete_webhook")}
-      content={
-        <>
-          Are you sure you want to delete this webhook? Future events will not be delivered to this webhook. This action
-          cannot be undone.
-        </>
-      }
+      content={t("workspace_settings.settings.webhooks.delete_confirmation")}
     />
   );
 }

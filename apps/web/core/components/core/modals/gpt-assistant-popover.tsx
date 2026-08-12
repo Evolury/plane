@@ -192,9 +192,9 @@ export function GptAssistantPopover(props: Props) {
   );
 
   const generateResponseButtonText = isSubmitting
-    ? "Generating response..."
+    ? t("ui.generating_response")
     : response === ""
-      ? "Generate response"
+      ? t("ui.generate_response")
       : t("ui.generate_again");
 
   return (
@@ -224,7 +224,7 @@ export function GptAssistantPopover(props: Props) {
           <div className="vertical-scroll-enable max-h-72 space-y-4 overflow-y-auto">
             {prompt && (
               <div className="text-13">
-                Content:
+                {t("ui.content")}:
                 <RichTextEditor
                   editable={false}
                   id="ai-assistant-content"
@@ -239,7 +239,7 @@ export function GptAssistantPopover(props: Props) {
             )}
             {response !== "" && (
               <div className="page-block-section max-h-[8rem] text-13">
-                Response:
+                {t("ui.response")}:
                 <RichTextEditor
                   editable={false}
                   id="ai-assistant-response"
@@ -251,12 +251,7 @@ export function GptAssistantPopover(props: Props) {
                 />
               </div>
             )}
-            {invalidResponse && (
-              <div className="text-13 text-danger-primary">
-                No response could be generated. This may be due to insufficient content or task information. Please try
-                again.
-              </div>
-            )}
+            {invalidResponse && <div className="text-13 text-danger-primary">{t("ui.no_ai_response_generated")}</div>}
           </div>
           <Controller
             control={control}
@@ -269,11 +264,11 @@ export function GptAssistantPopover(props: Props) {
                 value={value}
                 onChange={onChange}
                 ref={ref}
-                placeholder={`${
+                placeholder={
                   prompt && prompt !== ""
                     ? t("ui.tell_ai_what_action_to_perform_on_this_content")
-                    : "Ask AI anything..."
-                }`}
+                    : t("ui.ask_ai_anything")
+                }
                 className="w-full"
                 autoFocus
               />

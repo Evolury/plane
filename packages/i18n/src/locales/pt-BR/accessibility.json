@@ -29,6 +29,12 @@
       "hide_password": "Ocultar senha",
       "close_alert": "Fechar alerta",
       "close_popover": "Fechar popover"
+    },
+    "editor": {
+      "dismiss_content_limit_warning": "Dispensar aviso de limite de conteúdo"
+    },
+    "errors": {
+      "error_illustration": "Ilustração de erro"
     }
   }
 }

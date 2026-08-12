@@ -165,7 +165,7 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
                 className="relative flex h-6 w-6 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm hover:bg-layer-1"
                 onClick={handleSignOut}
               >
-                <Tooltip tooltipContent={"Sign out"} position="top" className="ml-2" isMobile={isMobile}>
+                <Tooltip tooltipContent={t("sign_out")} position="top" className="ml-2" isMobile={isMobile}>
                   <LogOut size={14} />
                 </Tooltip>
               </div>
@@ -173,12 +173,10 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
           </div>
           <div className="relative flex h-full w-full flex-grow flex-col items-center justify-center space-y-3">
             <div className="relative flex-shrink-0">
-              <img src={WorkSpaceNotAvailable} className="h-[220px] object-contain object-center" alt="Plane logo" />
+              <img src={WorkSpaceNotAvailable} className="h-[220px] object-contain object-center" alt="" />
             </div>
             <h3 className="text-center text-16 font-semibold">{t("ui.workspace_not_found")}</h3>
-            <p className="text-center text-13 text-secondary">
-              No workspace found with the URL. It may not exist or you lack authorization to view it.
-            </p>
+            <p className="text-center text-13 text-secondary">{t("ui.workspace_not_found_description")}</p>
             <div className="flex items-center justify-center gap-2 pt-4">
               {allWorkspaces && allWorkspaces.length > 0 && (
                 <Link href="/" className={cn(getButtonStyling("primary", "base"))}>
@@ -212,15 +210,12 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
           <div className="space-y-8 text-center">
             <div className="space-y-2">
               <h3 className="text-16 font-semibold">{t("ui.not_authorized")}</h3>
-              <p className="mx-auto w-1/2 text-13 text-secondary">
-                You{"'"}re not a member of this workspace. Please contact the workspace admin to get an invitation or
-                check your pending invitations.
-              </p>
+              <p className="mx-auto w-1/2 text-13 text-secondary">{t("ui.not_a_member_of_workspace_description")}</p>
             </div>
             <div className="flex items-center justify-center gap-2">
               <Link href="/invitations">
                 <span>
-                  <Button variant="secondary">Check pending invites</Button>
+                  <Button variant="secondary">{t("ui.check_pending_invites")}</Button>
                 </span>
               </Link>
               <Link href="/create-workspace">

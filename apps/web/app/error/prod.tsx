@@ -17,7 +17,9 @@ import { useTranslation } from "@plane/i18n";
 const linkMap = [
   {
     key: "mail_to",
-    label: "Contact Support",
+    // Evolury: label vira chave de i18n, como o item `status` ja fazia — o
+    // literal em ingles caia no t() e voltava cru por nao existir chave.
+    label: "ui.contact_support",
     value: "mailto:support@plane.so",
   },
   {
@@ -53,16 +55,17 @@ export function ProdErrorComponent({ onGoHome }: ProdErrorComponentProps) {
             src={maintenanceModeImage}
             height="176"
             width="288"
-            alt="ProjectSettingImg"
+            alt={t("aria_labels.errors.error_illustration")}
             className="h-full w-full object-fill object-center"
           />
         </div>
         <div className="relative mt-4 flex w-full flex-col gap-4">
           <div className="flex flex-col gap-2.5">
-            <h1 className="text-left text-18 font-semibold text-primary">&#x1F6A7; Looks like something went wrong!</h1>
+            <h1 className="text-left text-18 font-semibold text-primary">
+              &#x1F6A7; {t("ui.looks_like_something_went_wrong")}
+            </h1>
             <span className="text-left text-14 font-medium text-secondary">
-              We track these errors automatically and working on getting things back up and running. If the problem
-              persists feel free to contact us. In the meantime, try refreshing.
+              {t("ui.errors_tracked_automatically_description")}
             </span>
           </div>
 

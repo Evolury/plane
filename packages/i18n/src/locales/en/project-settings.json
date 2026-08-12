@@ -11,7 +11,19 @@
       "delete_project": {
         "title": "Delete project",
         "description": "When deleting a project, all of the data and resources within that project will be permanently removed and cannot be recovered.",
-        "button": "Delete my project"
+        "button": "Delete my project",
+        "confirmation": {
+          "prefix": "Are you sure you want to delete project",
+          "suffix": "? All of the data related to the project will be permanently removed. This action cannot be undone."
+        },
+        "enter_name": {
+          "prefix": "Enter the project name",
+          "suffix": "to continue:"
+        },
+        "confirm_text": {
+          "prefix": "To confirm, type",
+          "suffix": "below:"
+        }
       },
       "toast": {
         "success": "Project updated successfully",
@@ -34,6 +46,14 @@
         "title": "Invite members",
         "sub_heading": "Invite members to work on your project.",
         "select_co_worker": "Select co-worker"
+      },
+      "leave_confirmation": {
+        "prefix": "Are you sure you want to leave the project",
+        "suffix": "? You will be able to join the project if invited again or if it's public."
+      },
+      "remove_confirmation": {
+        "prefix": "Are you sure you want to remove member-",
+        "suffix": "? They will no longer have access to this project. This action cannot be undone."
       }
     },
     "states": {
@@ -186,6 +206,12 @@
           "prefix": "Deleting the estimate",
           "suffix": "system will remove it from all work items permanently. This action cannot be undone. If you add estimates again, you will need to update all the work items."
         }
+      },
+      "list_heading": "Estimates list",
+      "archived": {
+        "heading": "Archived estimates",
+        "description": "Estimates have gone through a change, these are the estimates you had in your older versions which were not in use. Read more about them",
+        "read_more_link": "here."
       }
     },
     "automations": {

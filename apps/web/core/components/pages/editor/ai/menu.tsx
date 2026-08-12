@@ -32,34 +32,35 @@ type Props = {
   workspaceSlug: string;
 };
 
+// Evolury: rotulos do menu e dos tons resolvidos por chave de i18n
 const MENU_ITEMS: {
   icon: LucideIcon;
   key: AI_EDITOR_TASKS;
-  label: string;
+  i18n_label: string;
 }[] = [
   {
     key: AI_EDITOR_TASKS.ASK_ANYTHING,
     icon: Sparkles,
-    label: "Ask Pi",
+    i18n_label: "ui.ask_pi",
   },
 ];
 
 const TONES_LIST = [
   {
     key: "default",
-    label: "Default",
+    i18n_label: "ui.ai_tone.default",
     casual_score: 5,
     formal_score: 5,
   },
   {
     key: "professional",
-    label: "💼 Professional",
+    i18n_label: "ui.ai_tone.professional",
     casual_score: 0,
     formal_score: 10,
   },
   {
     key: "casual",
-    label: "😃 Casual",
+    i18n_label: "ui.ai_tone.casual",
     casual_score: 10,
     formal_score: 0,
   },
@@ -179,7 +180,7 @@ export function EditorAIMenu(props: Props) {
               >
                 <span className="flex flex-shrink-0 items-center gap-2 truncate">
                   <item.icon className="size-3 flex-shrink-0" />
-                  {item.label}
+                  {t(item.i18n_label)}
                 </span>
                 <ChevronRightIcon
                   className={cn("pointer-events-none size-3 flex-shrink-0 opacity-0 transition-opacity", {
@@ -245,7 +246,7 @@ export function EditorAIMenu(props: Props) {
                           <CornerDownRight className="size-4 text-tertiary" />
                         </button>
                       </Tooltip>
-                      <Tooltip tooltipContent="Re-generate response">
+                      <Tooltip tooltipContent={t("ui.re_generate_response")}>
                         <button
                           type="button"
                           className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
@@ -267,7 +268,7 @@ export function EditorAIMenu(props: Props) {
                   </div>
                 ) : (
                   <p className="text-13 text-secondary">
-                    {activeTask ? LOADING_TEXTS[activeTask] : t("ui.pi_is_writing")}...
+                    {activeTask ? t(LOADING_TEXTS[activeTask]) : t("ui.pi_is_writing")}...
                   </p>
                 )}
               </div>
@@ -288,7 +289,7 @@ export function EditorAIMenu(props: Props) {
                       handleToneChange(tone.key);
                     }}
                   >
-                    {tone.label}
+                    {t(tone.i18n_label)}
                   </button>
                 ))}
               </div>
@@ -301,9 +302,7 @@ export function EditorAIMenu(props: Props) {
           <span className="grid size-4 flex-shrink-0 place-items-center">
             <TriangleAlert className="size-3" />
           </span>
-          <p className="flex-shrink-0 text-11 font-medium">
-            By using this feature, you consent to sharing the message with a 3rd party service.
-          </p>
+          <p className="flex-shrink-0 text-11 font-medium">{t("ui.third_party_consent")}</p>
         </div>
       )}
     </div>

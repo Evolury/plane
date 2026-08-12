@@ -54,7 +54,9 @@ export const ConfirmWorkspaceMemberRemove = observer(function ConfirmWorkspaceMe
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
             <h3 className="text-h5-medium leading-6 text-primary">
-              {currentUser?.id === userDetails.id ? "Leave workspace?" : `Remove ${userDetails?.display_name}?`}
+              {currentUser?.id === userDetails.id
+                ? t("workspace_settings.settings.members.leave_title")
+                : t("remove_member_confirmation_title", { name: userDetails?.display_name ?? "" })}
             </h3>
             <div className="mt-2">
               {currentUser?.id === userDetails.id ? (
@@ -62,10 +64,11 @@ export const ConfirmWorkspaceMemberRemove = observer(function ConfirmWorkspaceMe
                   {t("workspace_settings.settings.members.leave_confirmation")}
                 </p>
               ) : (
+                // Evolury: nome do membro em negrito no meio da frase — padrão prefix/suffix do repo
                 <p className="text-body-xs-regular text-secondary">
-                  {/* TODO: Add translation here */}
-                  Are you sure you want to remove member- <span className="font-bold">{userDetails?.display_name}</span>
-                  ? They will no longer have access to this workspace. This action cannot be undone.
+                  {t("workspace_settings.settings.members.remove_confirmation.prefix")}{" "}
+                  <span className="font-bold">{userDetails?.display_name}</span>
+                  {t("workspace_settings.settings.members.remove_confirmation.suffix")}
                 </p>
               )}
             </div>

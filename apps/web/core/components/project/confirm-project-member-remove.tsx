@@ -63,19 +63,24 @@ export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMember
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
             <h3 className="text-16 leading-6 font-medium text-primary">
-              {isCurrentUser ? t("ui.leave_project_2") : `Remove ${data?.display_name}?`}
+              {isCurrentUser
+                ? t("ui.leave_project_2")
+                : t("remove_member_confirmation_title", { name: data?.display_name ?? "" })}
             </h3>
             <div className="mt-2">
+              {/* Evolury: nome do projeto/membro em negrito no meio da frase — padrão prefix/suffix do repo */}
               <p className="text-13 text-secondary">
                 {isCurrentUser ? (
                   <>
-                    Are you sure you want to leave the <span className="font-bold">{currentProjectDetails?.name}</span>{" "}
-                    project? You will be able to join the project if invited again or if it{"'"}s public.
+                    {t("project_settings.members.leave_confirmation.prefix")}{" "}
+                    <span className="font-bold">{currentProjectDetails?.name}</span>
+                    {t("project_settings.members.leave_confirmation.suffix")}
                   </>
                 ) : (
                   <>
-                    Are you sure you want to remove member- <span className="font-bold">{data?.display_name}</span>?
-                    They will no longer have access to this project. This action cannot be undone.
+                    {t("project_settings.members.remove_confirmation.prefix")}{" "}
+                    <span className="font-bold">{data?.display_name}</span>
+                    {t("project_settings.members.remove_confirmation.suffix")}
                   </>
                 )}
               </p>
@@ -88,7 +93,13 @@ export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMember
           {t("cancel")}
         </Button>
         <Button variant="error-fill" size="lg" tabIndex={1} onClick={handleDeletion} loading={isDeleteLoading}>
-          {isCurrentUser ? (isDeleteLoading ? "Leaving..." : "Leave") : isDeleteLoading ? "Removing..." : "Remove"}
+          {isCurrentUser
+            ? isDeleteLoading
+              ? t("leaving")
+              : t("leave")
+            : isDeleteLoading
+              ? t("removing")
+              : t("remove")}
         </Button>
       </div>
     </ModalCore>
