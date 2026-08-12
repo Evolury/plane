@@ -3,6 +3,42 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.2.0] — 2026-08-12
+
+### Terminologia "Tarefa"
+
+O work item passa a se chamar **tarefa** em todo o produto em português
+(ADR 0003, `docs/evolury/decisoes/0003-terminologia-tarefa-pt-br.md`):
+
+- 559 strings do locale pt-BR renomeadas com revisão de concordância de
+  gênero ("nova tarefa", "nenhuma tarefa encontrada", "subtarefa", "tipos
+  de tarefa"); demais idiomas mantêm seus termos nativos. Chaves de i18n,
+  código, API e banco permanecem `issue`/`work_item` — mudança só na camada
+  de tradução.
+- ~45 textos herdados do upstream fixos em inglês (feed de atividade,
+  modais de confirmação, gráficos de ciclo, tooltips, tour, convites)
+  viraram chaves de tradução — 44 chaves novas nos 19 idiomas. Botões do
+  modal de exclusão e breadcrumbs de Arquivos/Ciclos/Módulos também
+  deixaram de ser fixos em inglês.
+
+### Minhas atividades
+
+- "Seu trabalho" renomeada para **"Minhas atividades"** (sidebar, página
+  `/profile`, Power-K e "Personalizar navegação") e reposicionada abaixo de
+  "Minhas tarefas". Para preferências já criadas, a migração 0126 troca a
+  ordem dos dois itens preservando reordenações manuais.
+
+### Minhas tarefas — etapa pelo popover e ordenação
+
+- Seletor de etapa pessoal no popover de responsáveis (F7, espelho do
+  Asana): em qualquer janela do work item, o responsável logado vê e troca
+  a própria etapa na linha "Você" — só para si, sem tocar o estado real.
+- Etapas ordenadas por grupo global em todo lugar (quadro, lista e painel),
+  com backlog antes de concluído; correção do drag no painel que gerava
+  sequência fora de ordem.
+- Nome do usuário não é mais espremido pelo seletor de etapa no popover de
+  responsáveis.
+
 ## [1.1.0] — 2026-08-12
 
 ### Minhas tarefas
