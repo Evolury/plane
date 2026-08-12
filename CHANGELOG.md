@@ -3,6 +3,39 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.1.0] — 2026-08-12
+
+### Minhas tarefas
+
+Organização pessoal dos work items atribuídos, nos moldes do My Tasks do
+Asana — a primeira funcionalidade própria do produto, documentada de ponta a
+ponta em `docs/evolury/funcionalidades/minhas-tarefas/`.
+
+- Página "Minhas tarefas" na sidebar (abaixo de "Seu trabalho"), com comando
+  no Power-K (`gt`) e entrada no "Personalizar navegação".
+- Etapas pessoais por usuário e workspace, baseadas nos grupos globais: seed
+  de 5 no primeiro acesso, painel de gestão (criar, editar, excluir com
+  migração para a padrão, reordenar, marcar padrão) reusando a UI de estados
+  de projeto.
+- Todo item atribuído aparece na etapa padrão até ser movido; mover é
+  organização pessoal — não altera o estado real, não gera atividade, webhook
+  ou notificação (ADR 0001).
+- Layouts lista e kanban com drag entre etapas e ordenação manual pessoal
+  (o sort real do item nunca é tocado), filtros ricos, propriedades de
+  exibição e empty states ilustrados.
+- Backend aditivo: duas tabelas novas, cinco endpoints sempre restritos ao
+  próprio usuário, 31 testes de contrato; matriz de compatibilidade com 23
+  verificações executada e assinada.
+
+### Melhorias e correções
+
+- Valores dos filtros ricos (prioridade, grupo de estado) traduzidos em todas
+  as páginas — antes apareciam em inglês.
+- Ilustração pt-BR ("Meus post-its") no empty state dos stickies.
+- Correção de contrato na paginação agrupada da nova listagem: resposta vazia
+  agora carrega todas as chaves de grupo (antes o front ficava em
+  "carregando" eterno).
+
 ## [1.0.0] — 2026-08-11
 
 Primeira versão como produto independente. Consolida o trabalho feito sobre o
