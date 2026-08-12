@@ -18,7 +18,12 @@ import { createFilterConfig, getMultiSelectConfig, createOperatorConfigEntry } f
 /**
  * Priority filter specific params
  */
-export type TCreatePriorityFilterParams = TCreateFilterConfigParams & IFilterIconConfig<TIssuePriorities>;
+export type TCreatePriorityFilterParams = TCreateFilterConfigParams &
+  IFilterIconConfig<TIssuePriorities> & {
+    // Evolury: rótulo traduzido por opção — mesmo mecanismo do `label` de
+    // TCreateFilterConfigParams (o app injeta; utils não depende de i18n)
+    getOptionLabel?: (priority: TIssuePriorities) => string;
+  };
 
 /**
  * Helper to get the priority multi select config
@@ -33,7 +38,7 @@ export const getPriorityMultiSelectConfig = (
     {
       items: ISSUE_PRIORITIES,
       getId: (priority) => priority.key,
-      getLabel: (priority) => priority.title,
+      getLabel: (priority) => params.getOptionLabel?.(priority.key) ?? priority.title,
       getValue: (priority) => priority.key,
       getIconData: (priority) => priority.key,
     },

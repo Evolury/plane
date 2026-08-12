@@ -157,6 +157,8 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         isEnabled: isFilterEnabled("state_group"),
         filterIcon: StatePropertyIcon,
         getOptionIcon: (stateGroupKey) => <StateGroupIcon stateGroup={stateGroupKey} />,
+        // Evolury: valores traduzidos (backlog → Backlog, started → Iniciado etc.)
+        getOptionLabel: (group) => t(`workspace_projects.state.${group}`),
         ...operatorConfigs,
       }),
     [isFilterEnabled, operatorConfigs, t]
@@ -312,6 +314,8 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         isEnabled: isFilterEnabled("priority"),
         filterIcon: PriorityPropertyIcon,
         getOptionIcon: (priority) => <PriorityIcon priority={priority} />,
+        // Evolury: valores traduzidos (urgent → Urgente etc.)
+        getOptionLabel: (priority) => t(priority),
         ...operatorConfigs,
       }),
     [isFilterEnabled, operatorConfigs, t]

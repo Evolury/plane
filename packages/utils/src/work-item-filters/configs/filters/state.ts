@@ -17,7 +17,11 @@ import { createFilterConfig, getMultiSelectConfig, createOperatorConfigEntry } f
 /**
  * State group filter specific params
  */
-export type TCreateStateGroupFilterParams = TCreateFilterConfigParams & IFilterIconConfig<TStateGroups>;
+export type TCreateStateGroupFilterParams = TCreateFilterConfigParams &
+  IFilterIconConfig<TStateGroups> & {
+    // Evolury: rótulo traduzido por opção (o app injeta; utils não depende de i18n)
+    getOptionLabel?: (group: TStateGroups) => string;
+  };
 
 /**
  * Helper to get the state group multi select config
@@ -32,7 +36,7 @@ export const getStateGroupMultiSelectConfig = (
     {
       items: Object.values(STATE_GROUPS),
       getId: (state) => state.key,
-      getLabel: (state) => state.label,
+      getLabel: (state) => params.getOptionLabel?.(state.key) ?? state.label,
       getValue: (state) => state.key,
       getIconData: (state) => state.key,
     },

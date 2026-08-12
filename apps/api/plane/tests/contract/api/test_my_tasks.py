@@ -421,6 +421,42 @@ class TestMyTasksMove:
         assert response.status_code == status.HTTP_200_OK
         assert IssueActivity.objects.filter(issue=assigned_issue).count() == activity_count_before
 
+    def test_hard_delete_cascades_association(self, session_client, workspace, create_user, assigned_issue):
+        """Hard delete do work item remove a associação em cascata — sem
+        linha órfã (linha 8 da matriz de compatibilidade)."""
+        stages = seed_stages(workspace, create_user)
+        session_client.post(
+            MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
+            {"stage_id": str(stages["Hoje"].id)},
+            format="json",
+        )
+        assert WorkStageIssue.objects.filter(issue_id=assigned_issue.id).count() == 1
+        assigned_issue.delete(soft=False)
+        assert WorkStageIssue.all_objects.filter(issue_id=assigned_issue.id).count() == 0
+
+    def test_reassignment_restores_previous_stage(
+        self, session_client, workspace, project, create_user, assigned_issue
+    ):
+        """Desatribuído some da listagem; reatribuído volta à etapa em que
+        estava — a associação sobrevive de propósito (linha 9 da matriz)."""
+        stages = seed_stages(workspace, create_user)
+        session_client.post(
+            MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
+            {"stage_id": str(stages["Hoje"].id)},
+            format="json",
+        )
+        # desatribui
+        IssueAssignee.objects.filter(issue=assigned_issue, assignee=create_user).delete()
+        response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
+        assert response.data["results"] == []
+        # reatribui
+        IssueAssignee.objects.create(
+            issue=assigned_issue, assignee=create_user, project=project, workspace=workspace
+        )
+        response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
+        result = response.data["results"][0]
+        assert result["my_task_stage_id"] == stages["Hoje"].id
+
     def test_move_does_not_touch_issue_state(self, session_client, workspace, create_user, assigned_issue):
         """Overlay pessoal: mover para uma etapa do grupo "concluído" não muda
         o estado real do work item (ADR 0001)."""
