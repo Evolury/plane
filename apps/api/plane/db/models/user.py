@@ -115,27 +115,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     bot_type = models.CharField(max_length=30, verbose_name="Bot Type", blank=True, null=True)
 
     # timezone
-    # Evolury: só os fusos do Brasil (ADR 0006). O upstream aceitava qualquer
-    # zona do pytz e nascia em UTC — três horas à frente de Brasília, errado
-    # para todo usuário do produto. As choices são validadas pelo DRF, então
-    # também barram um cliente antigo que tente gravar outra zona.
+    # Evolury: só os fusos do Brasil, um por offset (ADR 0006). O upstream
+    # aceitava qualquer zona do pytz e nascia em UTC — três horas à frente de
+    # Brasília, errado para todo usuário do produto. As choices são validadas
+    # pelo DRF, então também barram um cliente antigo que tente gravar outra
+    # zona. As demais zonas brasileiras só diferem em regras de horário de
+    # verão anteriores a 2019, quando o país o aboliu.
     BRAZIL_TIMEZONES = [
-        "America/Noronha",
-        "America/Sao_Paulo",
-        "America/Bahia",
-        "America/Fortaleza",
-        "America/Recife",
-        "America/Maceio",
-        "America/Belem",
-        "America/Santarem",
-        "America/Araguaina",
-        "America/Manaus",
-        "America/Cuiaba",
-        "America/Campo_Grande",
-        "America/Porto_Velho",
-        "America/Boa_Vista",
-        "America/Rio_Branco",
-        "America/Eirunepe",
+        "America/Noronha",  # UTC-02:00
+        "America/Sao_Paulo",  # UTC-03:00
+        "America/Manaus",  # UTC-04:00
+        "America/Rio_Branco",  # UTC-05:00
     ]
     USER_TIMEZONE_CHOICES = tuple(zip(BRAZIL_TIMEZONES, BRAZIL_TIMEZONES))
     user_timezone = models.CharField(max_length=255, default="America/Sao_Paulo", choices=USER_TIMEZONE_CHOICES)
