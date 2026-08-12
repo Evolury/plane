@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-# Django imports
-from django.db.models import Q
-
 # Third Party imports
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -23,8 +20,11 @@ class ProjectStatesEndpoint(BaseAPIView):
         if not deploy_board:
             return Response({"error": "Invalid anchor"}, status=status.HTTP_404_NOT_FOUND)
 
+        # Evolury: o recorte era por nome ("Triage"), que a migração 0127
+        # renomeia. O manager padrão de State já exclui o grupo de triagem,
+        # então o filtro por nome era redundante — e passaria a não filtrar
+        # nada. A exclusão continua garantida pelo manager.
         states = State.objects.filter(
-            ~Q(name="Triage"),
             workspace__slug=deploy_board.workspace.slug,
             project_id=deploy_board.project_id,
         ).values("name", "group", "color", "id", "sequence")
