@@ -37,6 +37,8 @@
     "stages": {
       "title": "Étapes",
       "description": "Créez, modifiez et réorganisez vos étapes personnelles. Supprimer une étape déplace ses éléments vers l'étape par défaut."
-    }
+    },
+    "stage_label": "Étape",
+    "empty_title": "Rien ne vous est encore assigné"
   }
 }

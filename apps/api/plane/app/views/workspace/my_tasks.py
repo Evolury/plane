@@ -325,11 +325,23 @@ class MyTasksIssuesEndpoint(BaseAPIView):
                 count_filter=count_filter,
                 total_count_queryset=total_issue_queryset,
             )
+            def ensure_all_groups(results):
+                # Com página vazia o process_results devolve {} sem as chaves
+                # dos grupos, e o store do front nunca sai do estado
+                # "carregando" (groupedIssueIds fica undefined — achado da
+                # validação visual da F5). O contrato desta resposta é: toda
+                # etapa declarada aparece, mesmo zerada.
+                if isinstance(results, dict):
+                    for stage_id in stage_ids:
+                        results.setdefault(str(stage_id), {"results": [], "total_results": 0})
+                return results
+
             return self.paginate(
                 request=request,
                 on_results=on_results,
                 paginator=paginator,
                 group_by_field_name="my_task_stage_id",
+                controller=ensure_all_groups,
             )
 
         return self.paginate(

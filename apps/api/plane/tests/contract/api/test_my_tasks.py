@@ -322,6 +322,21 @@ class TestMyTasksIssues:
         default_group = results[str(stages["Recém-atribuídas"].id)]
         assert [item["id"] for item in default_group["results"]] == [assigned_issue.id]
 
+    def test_grouped_response_always_carries_all_stage_keys(
+        self, session_client, workspace, create_user
+    ):
+        """Mesmo sem nenhum item, a resposta agrupada traz todas as etapas
+        com listas vazias — sem isso o front fica eternamente em
+        "carregando" (groupedIssueIds nunca é populado)."""
+        stages = seed_stages(workspace, create_user)
+        response = session_client.get(
+            ISSUES_URL.format(slug=workspace.slug), {"group_by": "my_task_stage_id"}
+        )
+        assert response.status_code == status.HTTP_200_OK
+        results = response.data["results"]
+        assert set(results.keys()) == {str(stage.id) for stage in stages.values()}
+        assert all(group["results"] == [] for group in results.values())
+
     def test_removed_project_member_issues_disappear(
         self, session_client, workspace, project, create_user, assigned_issue
     ):

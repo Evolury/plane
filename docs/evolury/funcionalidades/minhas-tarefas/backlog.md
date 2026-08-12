@@ -115,13 +115,27 @@ reagrupada em tempo real. Nit registrado para F5/F6: toasts herdados dizem
 
 ## F5 — Refinamento
 
-- [ ] F5.1 Bloco `my_tasks` em `ISSUE_DISPLAY_FILTERS_BY_PAGE` (filtros:
-      prioridade, projeto, etiqueta, datas; properties; ordenação)
-- [ ] F5.2 Peek overview + quick actions integrados
-- [ ] F5.3 Empty state da página (sem itens atribuídos) com ilustração padrão
+- [x] F5.1 UI completa de filtros: linha de filtros ricos
+      (`WorkspaceLevelWorkItemFiltersHOC` + `WorkItemFiltersRow`, entidade
+      MY_TASKS), toggle no header, dropdown "Exibir" (propriedades/ordenação)
+      e `LayoutSelection` padrão substituindo o toggle artesanal da F3. O
+      bloco `my_tasks` já existia da F3; entrou a opção de agrupamento
+      rotulada ("Etapa", 8º ponto compartilhado aditivo). Validado no
+      navegador: filtro Prioridade=Urgente reduz a 1 item com grupos
+      preservados
+- [x] F5.2 Peek overview + quick actions já integrados desde a F3 (reuso dos
+      roots base); re-verificados na validação visual
+- [x] F5.3 Empty state ilustrado (asset work-item) com títulos nos 19 locales,
+      e empty state de busca (com "Limpar") quando filtros ativos zeram a
+      lista. A validação achou e corrigiu um bug de contrato: com zero
+      resultados o GroupedOffsetPaginator devolve `results: {}` sem as chaves
+      dos grupos e o front nunca sai do "carregando" — o endpoint agora
+      garante toda etapa presente na resposta agrupada (teste de contrato)
 
-**Aceite:** filtros persistem por página sem vazar para "Seu trabalho";
-cenários 15–17 da [compatibilidade.md](compatibilidade.md) passam.
+**Aceite:** ✓ 12/08/2026 — filtros persistem por página (localStorage chaveado
+por MY_TASKS+workspace, sem vazar para o perfil); suíte da API 545 verdes (29
+de minhas-tarefas); `pnpm check` 60/60; validação visual completa (filtros,
+Exibir, empty states com usuário sem atribuições).
 
 ## F6 — Fechamento
 

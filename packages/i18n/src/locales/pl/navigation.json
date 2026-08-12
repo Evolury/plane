@@ -37,6 +37,8 @@
     "stages": {
       "title": "Etapy",
       "description": "Twórz, edytuj i zmieniaj kolejność swoich osobistych etapów. Usunięcie etapu przenosi jego elementy do etapu domyślnego."
-    }
+    },
+    "stage_label": "Etap",
+    "empty_title": "Nic nie zostało Ci jeszcze przypisane"
   }
 }

@@ -37,6 +37,8 @@
     "stages": {
       "title": "Etapas",
       "description": "Crea, edita y reordena tus etapas personales. Eliminar una etapa mueve sus elementos a la etapa predeterminada."
-    }
+    },
+    "stage_label": "Etapa",
+    "empty_title": "Aún no hay nada asignado a ti"
   }
 }
