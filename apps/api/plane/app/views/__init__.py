@@ -83,6 +83,13 @@ from .workspace.cycle import WorkspaceCyclesEndpoint
 from .workspace.quick_link import QuickLinkViewSet
 from .workspace.sticky import WorkspaceStickyViewSet
 
+# Evolury: etapas pessoais de "Minhas tarefas"
+from .workspace.my_tasks import (
+    WorkStageViewSet,
+    MyTasksIssuesEndpoint,
+    MyTasksIssueMoveEndpoint,
+)
+
 from .state.base import StateViewSet, IntakeStateEndpoint
 from .view.base import (
     WorkspaceViewViewSet,

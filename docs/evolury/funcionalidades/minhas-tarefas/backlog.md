@@ -23,19 +23,23 @@ Decide a única incerteza técnica do projeto ([arquitetura.md](arquitetura.md),
 
 ## F1 — Backend
 
-- [ ] F1.1 Modelos `WorkStage` e `WorkStageIssue` + migrations (comentário
-      `Evolury:`, numeração após a última do upstream)
-- [ ] F1.2 Seed idempotente das 5 etapas padrão no primeiro `GET /stages/`
-- [ ] F1.3 CRUD de etapas + `mark-default` transacional + exclusão com migração
-      de associações
-- [ ] F1.4 `GET /my-tasks/issues/` — consulta-base do perfil restrita a
-      atribuídos, `stage_id` anotado
-- [ ] F1.5 `POST /issues/<id>/move/` — upsert de associação + `sort_order`
-- [ ] F1.6 Suíte pytest completa (lista em [arquitetura.md](arquitetura.md),
-      "Testes")
+- [x] F1.1 Modelos `WorkStage` e `WorkStageIssue` + migration `0125_evolury_work_stages`
+      (validada com `makemigrations --check`)
+- [x] F1.2 Seed idempotente das 5 etapas padrão no primeiro `GET /stages/` (e
+      na listagem de issues), com corrida absorvida pela constraint de nome
+- [x] F1.3 CRUD de etapas + `mark-default` transacional + exclusão com migração
+      de associações para a padrão
+- [x] F1.4 `GET /my-tasks/issues/` — consulta-base do perfil restrita a
+      atribuídos, `my_task_stage_id` anotado com Coalesce para a padrão e
+      paginação agrupada (paginator construído no endpoint; a
+      ISSUE_GROUP_BY_ALLOWLIST fica intacta de propósito)
+- [x] F1.5 `POST /issues/<id>/move/` — upsert de associação + `sort_order`
+- [x] F1.6 Suíte pytest: 27 testes de contrato
 
-**Aceite:** suíte verde na stack `docker-compose-test.yml`; nenhuma rota aceita
-operar sobre outro usuário; `move` não gera atividade/webhook (teste explícito).
+**Aceite:** ✓ 11/08/2026 — suíte completa da API verde na stack
+`docker-compose-test.yml` (543 testes, 27 novos); toda rota filtra
+`owner=request.user`; `move` não gera atividade nem toca o estado real (testes
+explícitos).
 
 ## F2 — Fundação frontend
 
