@@ -198,7 +198,11 @@
     "copy_link": "Copia link dell'elemento di lavoro",
     "delete": {
       "label": "Elimina elemento di lavoro",
-      "error": "Errore nell'eliminazione dell'elemento di lavoro"
+      "error": "Errore nell'eliminazione dell'elemento di lavoro",
+      "confirmation": {
+        "prefix": "Sei sicuro di voler eliminare l'{entity}",
+        "suffix": "? Tutti i dati relativi all'{entity} saranno rimossi in modo permanente. Questa azione non può essere annullata."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Clicca per votare contro",
       "click_to_view_upvotes": "Clicca per vedere i voti a favore",
       "click_to_view_downvotes": "Clicca per vedere i voti contro"
-    }
+    },
+    "count_tooltip": "{count, plural, one {C'è # elemento di lavoro} other {Ci sono # elementi di lavoro}} in questo progetto",
+    "archived": {
+      "label": "Elementi di lavoro archiviati",
+      "count_tooltip": "{count, plural, one {C'è # elemento di lavoro} other {Ci sono # elementi di lavoro}} negli archivi del progetto"
+    },
+    "view": "Visualizza elemento di lavoro"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Per vedere tutti gli elementi di lavoro, cancella tutti i filtri applicati.",
         "action": "Cancella filtri"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# sotto-elemento di lavoro} other {# sotto-elementi di lavoro}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Titolo Epic",
       "required": "Il titolo dell'Epic è obbligatorio."
-    }
+    },
+    "view": "Visualizza Epic",
+    "all": "Tutti gli Epic"
   }
 }

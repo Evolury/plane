@@ -21,7 +21,8 @@
     "in_your_timezone": "Di zona waktu Anda",
     "transfer_work_items": "Transfer {count} item kerja",
     "transfer": {
-      "no_cycles_available": "Tidak ada siklus lain yang tersedia untuk mentransfer item pekerjaan."
+      "no_cycles_available": "Tidak ada siklus lain yang tersedia untuk mentransfer item pekerjaan.",
+      "no_current_cycle": "Anda tidak memiliki siklus saat ini. Buat satu untuk mentransfer item kerja."
     },
     "date_range": "Rentang tanggal",
     "add_date": "Tambah tanggal",
@@ -36,7 +37,10 @@
       "current": "Sekarang",
       "labels": "Label",
       "trailing": "Tertinggal",
-      "leading": "Memimpin"
+      "leading": "Memimpin",
+      "pending_points": "Poin tertunda",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {item kerja ditutup} other {item kerja ditutup}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# item kerja yang dibatalkan dikecualikan dari laporan ini.} other {# item kerja yang dibatalkan dikecualikan dari laporan ini.}}"
     },
     "upcoming_cycle": {
       "label": "Siklus mendatang"
@@ -413,6 +417,12 @@
           "message": "Terjadi kesalahan."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Proyek ini beserta item kerja, siklus, modul, dan halamannya akan diarsipkan. Item kerjanya tidak akan muncul di pencarian. Hanya admin proyek yang dapat memulihkan proyek."
+    },
+    "restore_modal": {
+      "description": "Memulihkan proyek akan mengaktifkannya dan membuatnya terlihat oleh semua anggota proyek. Apakah Anda yakin ingin melanjutkan?"
     }
   }
 }

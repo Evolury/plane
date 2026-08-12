@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Arbeitselement ablehnen",
-        "content": "Möchten Sie das Arbeitselement {value} wirklich ablehnen?"
+        "content": "Möchten Sie das Arbeitselement {value} wirklich ablehnen?",
+        "confirmation": {
+          "prefix": "Sind Sie sicher, dass Sie das Arbeitselement",
+          "suffix": " ablehnen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+        }
       },
       "delete": {
         "title": "Arbeitselement löschen",
         "content": "Möchten Sie das Arbeitselement {value} wirklich löschen?",
-        "success": "Arbeitselement erfolgreich gelöscht"
+        "success": "Arbeitselement erfolgreich gelöscht",
+        "confirmation": {
+          "prefix": "Sind Sie sicher, dass Sie das Arbeitselement",
+          "suffix": " löschen möchten? Das Arbeitselement wird nur aus dem Intake gelöscht und diese Aktion kann nicht rückgängig gemacht werden."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Wählen Sie ein Arbeitselement, um Details anzuzeigen."
       }
+    },
+    "filters": {
+      "status": "Status des Arbeitselements"
     }
   }
 }

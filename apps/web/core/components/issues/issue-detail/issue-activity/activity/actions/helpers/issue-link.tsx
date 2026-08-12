@@ -36,7 +36,9 @@ export function IssueLink(props: TIssueLink) {
   });
   return (
     <Tooltip
-      tooltipContent={activity.issue_detail ? activity.issue_detail.name : "This work item has been deleted"}
+      tooltipContent={
+        activity.issue_detail ? activity.issue_detail.name : t("activity_log.this_work_item_has_been_deleted")
+      }
       isMobile={isMobile}
     >
       <a

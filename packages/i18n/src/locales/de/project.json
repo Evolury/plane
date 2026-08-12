@@ -21,7 +21,8 @@
     "in_your_timezone": "In Ihrer Zeitzone",
     "transfer_work_items": "Übertragen von {count} Arbeitselementen",
     "transfer": {
-      "no_cycles_available": "Keine anderen Zyklen verfügbar, um Arbeitselemente zu übertragen."
+      "no_cycles_available": "Keine anderen Zyklen verfügbar, um Arbeitselemente zu übertragen.",
+      "no_current_cycle": "Sie haben keinen aktuellen Zyklus. Bitte erstellen Sie einen, um die Arbeitselemente zu übertragen."
     },
     "date_range": "Datumsbereich",
     "add_date": "Datum hinzufügen",
@@ -36,7 +37,10 @@
       "current": "Aktuell",
       "labels": "Labels",
       "trailing": "Rückstand",
-      "leading": "Vorsprung"
+      "leading": "Vorsprung",
+      "pending_points": "Ausstehende Punkte",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {Arbeitselement} other {Arbeitselemente}} abgeschlossen",
+      "cancelled_work_items_excluded": "{count, plural, one {# abgebrochenes Arbeitselement ist von diesem Bericht ausgeschlossen.} other {# abgebrochene Arbeitselemente sind von diesem Bericht ausgeschlossen.}}"
     },
     "upcoming_cycle": {
       "label": "Bevorstehender Zyklus"
@@ -413,6 +417,12 @@
           "message": "Etwas ist schief gelaufen."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Dieses Projekt und seine Arbeitselemente, Zyklen, Module und Seiten werden archiviert. Seine Arbeitselemente erscheinen nicht in der Suche. Nur Projektadministratoren können das Projekt wiederherstellen."
+    },
+    "restore_modal": {
+      "description": "Durch das Wiederherstellen wird das Projekt aktiviert und für alle Projektmitglieder sichtbar. Möchten Sie wirklich fortfahren?"
     }
   }
 }

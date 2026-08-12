@@ -53,6 +53,12 @@
       "label_max_char": "Tên nhãn không nên vượt quá 255 ký tự",
       "toast": {
         "error": "Đã xảy ra lỗi khi cập nhật nhãn"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Bạn có chắc chắn muốn xóa",
+          "suffix": "? Thao tác này sẽ xóa nhãn khỏi tất cả mục công việc và khỏi mọi chế độ xem đang lọc theo nhãn này."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Chuyển đổi hệ thống ước tính",
       "current": "Hệ thống ước tính hiện tại",
-      "select": "Chọn hệ thống ước tính"
+      "select": "Chọn hệ thống ước tính",
+      "delete": {
+        "confirmation": {
+          "prefix": "Việc xóa hệ thống ước tính",
+          "suffix": "sẽ xóa nó vĩnh viễn khỏi tất cả mục công việc. Hành động này không thể hoàn tác. Nếu bạn thêm lại ước tính, bạn sẽ cần cập nhật tất cả mục công việc."
+        }
+      }
     },
     "automations": {
       "label": "Tự động hóa",

@@ -168,13 +168,14 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
 
   const moduleStatus = MODULE_STATUS.find((status) => status.value === moduleDetails.status);
 
+  // Evolury: contagem do rodapé traduzida reusando o plural ICU de issue.label
   const issueCount = moduleDetails
     ? !moduleTotalIssues || moduleTotalIssues === 0
-      ? `0 work items`
+      ? `0 ${t("issue.label", { count: 0 })}`
       : moduleTotalIssues === moduleCompletedIssues
-        ? `${moduleTotalIssues} Work item${moduleTotalIssues > 1 ? `s` : ``}`
-        : `${moduleCompletedIssues}/${moduleTotalIssues} Work items`
-    : `0 work items`;
+        ? `${moduleTotalIssues} ${t("issue.label", { count: moduleTotalIssues })}`
+        : `${moduleCompletedIssues}/${moduleTotalIssues} ${t("issue.label", { count: moduleTotalIssues })}`
+    : `0 ${t("issue.label", { count: 0 })}`;
 
   const moduleLeadDetails = moduleDetails.lead_id ? getUserDetails(moduleDetails.lead_id) : undefined;
 

@@ -21,7 +21,8 @@
     "in_your_timezone": "내 시간대",
     "transfer_work_items": "{count}개의 작업 항목 이전",
     "transfer": {
-      "no_cycles_available": "작업 항목을 전송할 수 있는 다른 사이클이 없습니다."
+      "no_cycles_available": "작업 항목을 전송할 수 있는 다른 사이클이 없습니다.",
+      "no_current_cycle": "현재 사이클이 없습니다. 작업 항목을 전송하려면 사이클을 생성하세요."
     },
     "date_range": "날짜 범위",
     "add_date": "날짜 추가",
@@ -36,7 +37,10 @@
       "current": "현재",
       "labels": "레이블",
       "trailing": "뒤처짐",
-      "leading": "앞섬"
+      "leading": "앞섬",
+      "pending_points": "미완료 포인트",
+      "work_items_closed": "{closedCount}/{totalCount}{closedCount, plural, one {개의 작업 항목 닫힘} other {개의 작업 항목 닫힘}}",
+      "cancelled_work_items_excluded": "{count, plural, one {#개의 취소된 작업 항목은 이 보고서에서 제외됩니다.} other {#개의 취소된 작업 항목은 이 보고서에서 제외됩니다.}}"
     },
     "upcoming_cycle": {
       "label": "다가오는 주기"
@@ -413,6 +417,12 @@
           "message": "문제가 발생했습니다."
         }
       }
+    },
+    "archive_modal": {
+      "description": "이 프로젝트와 해당 작업 항목, 사이클, 모듈, 페이지가 아카이브됩니다. 해당 작업 항목은 검색에 표시되지 않습니다. 프로젝트 관리자만 프로젝트를 복원할 수 있습니다."
+    },
+    "restore_modal": {
+      "description": "프로젝트를 복원하면 프로젝트가 활성화되고 프로젝트의 모든 멤버에게 표시됩니다. 계속하시겠습니까?"
     }
   }
 }

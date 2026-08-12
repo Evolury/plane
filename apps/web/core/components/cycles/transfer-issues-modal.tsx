@@ -133,9 +133,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
             ) : (
               <div className="flex w-full items-center justify-center gap-4 p-5 text-13">
                 <AlertCircle className="h-3.5 w-3.5 text-secondary" />
-                <span className="text-center text-secondary">
-                  You don’t have any current cycle. Please create one to transfer the work items.
-                </span>
+                <span className="text-center text-secondary">{t("project_cycles.transfer.no_current_cycle")}</span>
               </div>
             )
           ) : (

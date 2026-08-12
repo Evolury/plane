@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "拒绝工作项",
-        "content": "您确定要拒绝工作项 {value} 吗？"
+        "content": "您确定要拒绝工作项 {value} 吗？",
+        "confirmation": {
+          "prefix": "您确定要拒绝工作项",
+          "suffix": "吗？此操作无法撤销。"
+        }
       },
       "delete": {
         "title": "删除工作项",
         "content": "您确定要删除工作项 {value} 吗？",
-        "success": "工作项删除成功"
+        "success": "工作项删除成功",
+        "confirmation": {
+          "prefix": "您确定要删除工作项",
+          "suffix": "吗？该工作项仅会从 Intake 中删除，且此操作无法撤销。"
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "选择一个工作项以查看其详细信息。"
       }
+    },
+    "filters": {
+      "status": "工作项状态"
     }
   }
 }

@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Rifiuta elemento di lavoro",
-        "content": "Sei sicuro di voler rifiutare l'elemento di lavoro {value}?"
+        "content": "Sei sicuro di voler rifiutare l'elemento di lavoro {value}?",
+        "confirmation": {
+          "prefix": "Sei sicuro di voler rifiutare l'elemento di lavoro",
+          "suffix": "? Questa azione non può essere annullata."
+        }
       },
       "delete": {
         "title": "Elimina elemento di lavoro",
         "content": "Sei sicuro di voler eliminare l'elemento di lavoro {value}?",
-        "success": "Elemento di lavoro eliminato con successo"
+        "success": "Elemento di lavoro eliminato con successo",
+        "confirmation": {
+          "prefix": "Sei sicuro di voler eliminare l'elemento di lavoro",
+          "suffix": "? L'elemento di lavoro sarà eliminato solo dall'Intake e questa azione non può essere annullata."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Seleziona un elemento di lavoro per visualizzarne i dettagli."
       }
+    },
+    "filters": {
+      "status": "Stato dell'elemento di lavoro"
     }
   }
 }

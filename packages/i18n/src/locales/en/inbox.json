@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Decline work item",
-        "content": "Are you sure you want to decline work item {value}?"
+        "content": "Are you sure you want to decline work item {value}?",
+        "confirmation": {
+          "prefix": "Are you sure you want to decline work item",
+          "suffix": "? This action cannot be undone."
+        }
       },
       "delete": {
         "title": "Delete work item",
         "content": "Are you sure you want to delete work item {value}?",
-        "success": "Work item deleted successfully"
+        "success": "Work item deleted successfully",
+        "confirmation": {
+          "prefix": "Are you sure you want to delete work item",
+          "suffix": "? The work item will only be deleted from the intake and this action cannot be undone."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Select a work item to view its details."
       }
+    },
+    "filters": {
+      "status": "Work item Status"
     }
   }
 }

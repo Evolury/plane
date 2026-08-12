@@ -98,13 +98,13 @@ export const BASE_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {
   }),
   None: () => ({
     action: null,
-    value: "the work item and assigned it to you.",
+    value: translate("activity_log.the_work_item_and_assigned_it_to_you"),
     showConnector: false,
   }),
   // Fields below only define value - action falls through to default handler
   attachment: () => ({
     action: null,
-    value: "the work item",
+    value: translate("activity_log.the_work_item"),
     showConnector: true,
   }),
   description: ({ newValue }) => ({

@@ -53,6 +53,12 @@
       "label_max_char": "Le nom de l’étiquette ne doit pas dépasser 255 caractères",
       "toast": {
         "error": "Erreur lors de la mise à jour de l’étiquette"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Êtes-vous sûr de vouloir supprimer",
+          "suffix": " ? Cela supprimera l’étiquette de tous les éléments de travail et de toutes les vues où elle est utilisée comme filtre."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Changer de système d'estimation",
       "current": "Système d'estimation actuel",
-      "select": "Sélectionner un système d'estimation"
+      "select": "Sélectionner un système d'estimation",
+      "delete": {
+        "confirmation": {
+          "prefix": "La suppression de l’estimation",
+          "suffix": "la retirera définitivement de tous les éléments de travail. Cette action ne peut pas être annulée. Si vous ajoutez à nouveau des estimations, vous devrez mettre à jour tous les éléments de travail."
+        }
+      }
     },
     "automations": {
       "label": "Automatisations",

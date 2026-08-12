@@ -292,8 +292,18 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
         message: <>{getBooleanActionText(newValue)} time tracking</>,
       };
     case "is_issue_type_enabled":
+      // Evolury: i18n com mensagem completa para não concatenar verbo EN fixo com tradução
       return {
-        message: <>{getBooleanActionText(newValue)} work item types</>,
+        message:
+          newValue === "true" ? (
+            translate("activity_log.enabled_work_item_types")
+          ) : newValue === "false" ? (
+            translate("activity_log.disabled_work_item_types")
+          ) : (
+            <>
+              {verb} {translate("work_item_types.label_lowercase")}
+            </>
+          ),
       };
     default:
       return {

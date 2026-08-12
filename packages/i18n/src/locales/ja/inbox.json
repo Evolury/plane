@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "作業項目を却下",
-        "content": "作業項目{value}を却下してもよろしいですか？"
+        "content": "作業項目{value}を却下してもよろしいですか？",
+        "confirmation": {
+          "prefix": "作業項目",
+          "suffix": "を却下してもよろしいですか？この操作は取り消せません。"
+        }
       },
       "delete": {
         "title": "作業項目を削除",
         "content": "作業項目{value}を削除してもよろしいですか？",
-        "success": "作業項目を削除しました"
+        "success": "作業項目を削除しました",
+        "confirmation": {
+          "prefix": "作業項目",
+          "suffix": "を削除してもよろしいですか？作業項目はIntakeからのみ削除され、この操作は取り消せません。"
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "詳細を表示する作業項目を選択してください。"
       }
+    },
+    "filters": {
+      "status": "作業項目のステータス"
     }
   }
 }

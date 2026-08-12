@@ -53,6 +53,12 @@
       "label_max_char": "标签名称不应超过255个字符",
       "toast": {
         "error": "更新标签时出错"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "您确定要删除",
+          "suffix": "吗？这将从所有工作项以及所有以该标签作为筛选条件的视图中移除该标签。"
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "切换估算系统",
       "current": "当前估算系统",
-      "select": "选择估算系统"
+      "select": "选择估算系统",
+      "delete": {
+        "confirmation": {
+          "prefix": "删除估算系统",
+          "suffix": "后，该估算将从所有工作项中永久移除。此操作无法撤销。如果您再次添加估算，则需要更新所有工作项。"
+        }
+      }
     },
     "automations": {
       "label": "自动化",

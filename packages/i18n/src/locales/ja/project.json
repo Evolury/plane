@@ -21,7 +21,8 @@
     "in_your_timezone": "あなたのタイムゾーン",
     "transfer_work_items": "作業項目を転送 {count}",
     "transfer": {
-      "no_cycles_available": "作業アイテムを転送できる他のサイクルがありません。"
+      "no_cycles_available": "作業アイテムを転送できる他のサイクルがありません。",
+      "no_current_cycle": "現在のサイクルがありません。作業項目を転送するには、サイクルを作成してください。"
     },
     "date_range": "日付範囲",
     "add_date": "日付を追加",
@@ -36,7 +37,10 @@
       "current": "現在",
       "labels": "ラベル",
       "trailing": "遅れ",
-      "leading": "リード"
+      "leading": "リード",
+      "pending_points": "未完了のポイント",
+      "work_items_closed": "{closedCount}/{totalCount}{closedCount, plural, one {件の作業項目がクローズ済み} other {件の作業項目がクローズ済み}}",
+      "cancelled_work_items_excluded": "{count, plural, one {#件のキャンセルされた作業項目はこのレポートから除外されています。} other {#件のキャンセルされた作業項目はこのレポートから除外されています。}}"
     },
     "upcoming_cycle": {
       "label": "今後のサイクル"
@@ -413,6 +417,12 @@
           "message": "問題が発生しました。"
         }
       }
+    },
+    "archive_modal": {
+      "description": "このプロジェクトとその作業項目、サイクル、モジュール、ページがアーカイブされます。作業項目は検索に表示されなくなります。プロジェクトを復元できるのはプロジェクト管理者のみです。"
+    },
+    "restore_modal": {
+      "description": "プロジェクトを復元すると、プロジェクトが有効になり、プロジェクトのすべてのメンバーに表示されるようになります。続行してもよろしいですか？"
     }
   }
 }

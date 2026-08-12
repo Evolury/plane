@@ -53,6 +53,12 @@
       "label_max_char": "Nazwa etykiety nie może mieć więcej niż 255 znaków",
       "toast": {
         "error": "Błąd podczas aktualizacji etykiety"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Czy na pewno chcesz usunąć",
+          "suffix": "? Spowoduje to usunięcie etykiety ze wszystkich elementów pracy oraz ze wszystkich widoków, w których etykieta jest używana jako filtr."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Przełącz system szacowania",
       "current": "Obecny system szacowania",
-      "select": "Wybierz system szacowania"
+      "select": "Wybierz system szacowania",
+      "delete": {
+        "confirmation": {
+          "prefix": "Usunięcie szacunku",
+          "suffix": "spowoduje trwałe usunięcie go ze wszystkich elementów pracy. Tej akcji nie można cofnąć. Jeśli ponownie dodasz szacunki, konieczna będzie aktualizacja wszystkich elementów pracy."
+        }
+      }
     },
     "automations": {
       "label": "Automatyzacja",

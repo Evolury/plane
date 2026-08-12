@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Sie können dieses Arbeitselement in den Entwürfen speichern, um später darauf zurückzukommen.",
+    "leave_project_confirmation_prefix": "Sind Sie sicher, dass Sie das Projekt",
+    "leave_project_confirmation_suffix": "verlassen möchten? Alle mit Ihnen verknüpften Arbeitselemente werden unzugänglich.",
+    "workspace_invitation_description": "Ihr Arbeitsbereich ist der Ort, an dem Sie Projekte erstellen, an Ihren Arbeitselementen zusammenarbeiten und verschiedene Arbeitsströme in Ihrem Plane-Konto organisieren.",
+    "view_work_items_here_description": "Arbeitselemente helfen Ihnen, einzelne Arbeitsschritte zu verfolgen. Mit Arbeitselementen behalten Sie im Blick, was gerade passiert, wer daran arbeitet und was erledigt ist.",
+    "only_work_items_within_current_project_can_be_selected": "Es können nur Arbeitselemente aus dem aktuellen Projekt ausgewählt werden.",
+    "work_items_description_long": "Das Arbeitselement ist der Grundbaustein von Plane. Die meisten Konzepte in Plane sind mit Arbeitselementen und ihren Eigenschaften verknüpft.",
+    "views_description_long": "Erstellen Sie benutzerdefinierte Filter, um nur die Arbeitselemente anzuzeigen, die für Sie wichtig sind. Speichern und teilen Sie Ihre Filter mit nur wenigen Klicks."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "ein Arbeitselement",
+    "converted": "konvertierte",
+    "to_a_work_item": "in ein Arbeitselement",
+    "marked": "markierte",
+    "is_blocking_work_item": "als blockierend für Arbeitselement",
+    "removed_being_blocked_by_prefix": "entfernte die Blockierung von",
+    "being_blocked_by_work_item": "durch Arbeitselement",
+    "enabled_work_item_types": "aktivierte Arbeitselementtypen",
+    "disabled_work_item_types": "deaktivierte Arbeitselementtypen",
+    "created_work_item_via": "erstellte das Arbeitselement über",
+    "the_work_item_and_assigned_it_to_you": "das Arbeitselement und wies es Ihnen zu.",
+    "the_work_item": "das Arbeitselement"
   },
   "validation": {
     "name_required": "Name is required",

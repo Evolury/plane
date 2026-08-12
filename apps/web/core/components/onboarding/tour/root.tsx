@@ -39,8 +39,8 @@ const TOUR_STEPS: {
   {
     key: "work-items",
     title: "ui.plan_with_work_items",
-    description:
-      "The work item is the building block of the Plane. Most concepts in Plane are either associated with work items and their properties.",
+    // Evolury: descrição vira chave i18n (é resolvida com t() na renderização)
+    description: "ui.work_items_description_long",
     image: IssuesTour,
     nextStep: "cycles",
   },
@@ -63,8 +63,8 @@ const TOUR_STEPS: {
   {
     key: "views",
     title: "Views",
-    description:
-      "Create custom filters to display only the work items that matter to you. Save and share your filters in just a few clicks.",
+    // Evolury: descrição vira chave i18n (é resolvida com t() na renderização)
+    description: "ui.views_description_long",
     image: ViewsTour,
     prevStep: "modules",
     nextStep: "pages",

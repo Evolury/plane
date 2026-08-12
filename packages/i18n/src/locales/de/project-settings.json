@@ -53,6 +53,12 @@
       "label_max_char": "Der Labelname darf nicht mehr als 255 Zeichen enthalten",
       "toast": {
         "error": "Fehler beim Aktualisieren des Labels"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Sind Sie sicher, dass Sie",
+          "suffix": " löschen möchten? Dadurch wird das Label von allen Arbeitselementen und aus allen Ansichten entfernt, in denen nach dem Label gefiltert wird."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Schätzsystem wechseln",
       "current": "Aktuelles Schätzsystem",
-      "select": "Wählen Sie ein Schätzsystem"
+      "select": "Wählen Sie ein Schätzsystem",
+      "delete": {
+        "confirmation": {
+          "prefix": "Das Löschen der Schätzung",
+          "suffix": "entfernt sie dauerhaft aus allen Arbeitselementen. Diese Aktion kann nicht rückgängig gemacht werden. Wenn Sie erneut Schätzungen hinzufügen, müssen Sie alle Arbeitselemente aktualisieren."
+        }
+      }
     },
     "automations": {
       "label": "Automatisierungen",

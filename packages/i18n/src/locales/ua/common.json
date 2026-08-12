@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Ви можете зберегти цю робочу одиницю в Чернетках, щоб повернутися до неї пізніше.",
+    "leave_project_confirmation_prefix": "Ви впевнені, що хочете покинути проєкт -",
+    "leave_project_confirmation_suffix": "? Усі пов'язані з вами робочі одиниці стануть недоступними.",
+    "workspace_invitation_description": "Робочий простір — це місце, де ви створюватимете проєкти, співпрацюватимете над робочими одиницями та організовуватимете різні напрями роботи у своєму обліковому записі Plane.",
+    "view_work_items_here_description": "Робочі одиниці допомагають відстежувати окремі частини роботи. За допомогою робочих одиниць стежте за тим, що відбувається, хто над цим працює і що вже зроблено.",
+    "only_work_items_within_current_project_can_be_selected": "Можна вибрати лише робочі одиниці поточного проєкту.",
+    "work_items_description_long": "Робоча одиниця — основний будівельний блок Plane. Більшість концепцій у Plane пов'язані з робочими одиницями та їхніми властивостями.",
+    "views_description_long": "Створюйте власні фільтри, щоб бачити лише ті робочі одиниці, які важливі для вас. Зберігайте фільтри та діліться ними за кілька кліків."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "робочу одиницю",
+    "converted": "перетворив",
+    "to_a_work_item": "на робочу одиницю",
+    "marked": "позначив, що",
+    "is_blocking_work_item": "блокує робочу одиницю",
+    "removed_being_blocked_by_prefix": "зняв блокування з",
+    "being_blocked_by_work_item": "з боку робочої одиниці",
+    "enabled_work_item_types": "увімкнув типи робочих одиниць",
+    "disabled_work_item_types": "вимкнув типи робочих одиниць",
+    "created_work_item_via": "створив робочу одиницю через",
+    "the_work_item_and_assigned_it_to_you": "робочу одиницю та призначив її вам.",
+    "the_work_item": "робочу одиницю"
   },
   "validation": {
     "name_required": "Name is required",

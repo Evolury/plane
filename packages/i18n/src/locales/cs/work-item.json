@@ -198,7 +198,11 @@
     "copy_link": "Kopírovat odkaz na pracovní položku",
     "delete": {
       "label": "Smazat pracovní položku",
-      "error": "Chyba při mazání pracovní položky"
+      "error": "Chyba při mazání pracovní položky",
+      "confirmation": {
+        "prefix": "Opravdu chcete smazat {entity}",
+        "suffix": "? Všechna data spojená s entitou {entity} budou trvale odstraněna. Tuto akci nelze vrátit zpět."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Klikněte pro hlasování dolů",
       "click_to_view_upvotes": "Klikněte pro zobrazení hlasů nahoru",
       "click_to_view_downvotes": "Klikněte pro zobrazení hlasů dolů"
-    }
+    },
+    "count_tooltip": "V tomto projektu {count, plural, one {je # pracovní položka} few {jsou # pracovní položky} other {je # pracovních položek}}",
+    "archived": {
+      "label": "Archivované pracovní položky",
+      "count_tooltip": "V archivu projektu {count, plural, one {je # pracovní položka} few {jsou # pracovní položky} other {je # pracovních položek}}"
+    },
+    "view": "Zobrazit pracovní položku"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Chcete-li zobrazit všechny pracovní položky, odstraňte všechny použité filtry.",
         "action": "Odstranit filtry"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# podřízená pracovní položka} few {# podřízené pracovní položky} other {# podřízených pracovních položek}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Název epiku",
       "required": "Název epiku je povinný."
-    }
+    },
+    "view": "Zobrazit epik",
+    "all": "Všechny epiky"
   }
 }

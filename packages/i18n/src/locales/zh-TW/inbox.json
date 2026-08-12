@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "拒絕工作事項",
-        "content": "您確定要拒絕工作事項 {value} 嗎？"
+        "content": "您確定要拒絕工作事項 {value} 嗎？",
+        "confirmation": {
+          "prefix": "您確定要拒絕工作事項",
+          "suffix": "嗎？此操作無法復原。"
+        }
       },
       "delete": {
         "title": "刪除工作事項",
         "content": "您確定要刪除工作事項 {value} 嗎？",
-        "success": "工作事項刪除成功"
+        "success": "工作事項刪除成功",
+        "confirmation": {
+          "prefix": "您確定要刪除工作事項",
+          "suffix": "嗎？該工作事項僅會從 Intake 中刪除，且此操作無法復原。"
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "選擇工作事項以檢視其詳細資訊。"
       }
+    },
+    "filters": {
+      "status": "工作事項狀態"
     }
   }
 }

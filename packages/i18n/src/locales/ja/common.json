@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "この作業項目を下書きに保存しておけば、後で再開できます。",
+    "leave_project_confirmation_prefix": "プロジェクト",
+    "leave_project_confirmation_suffix": "から退出してもよろしいですか？あなたに関連付けられているすべての作業項目にアクセスできなくなります。",
+    "workspace_invitation_description": "ワークスペースは、プロジェクトを作成し、作業項目で共同作業を行い、Planeアカウント内のさまざまな業務の流れを整理する場所です。",
+    "view_work_items_here_description": "作業項目は、個々の作業を追跡するのに役立ちます。作業項目を使えば、何が起きているのか、誰が取り組んでいるのか、何が完了したのかを把握できます。",
+    "only_work_items_within_current_project_can_be_selected": "現在のプロジェクト内の作業項目のみ選択できます。",
+    "work_items_description_long": "作業項目はPlaneの基本的な構成要素です。Planeのほとんどの概念は、作業項目とそのプロパティに関連付けられています。",
+    "views_description_long": "カスタムフィルターを作成して、重要な作業項目だけを表示できます。数クリックでフィルターを保存して共有できます。"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "作業項目",
+    "converted": "が",
+    "to_a_work_item": "を作業項目に変換しました",
+    "marked": "が",
+    "is_blocking_work_item": "が次の作業項目をブロックしていることをマークしました:",
+    "removed_being_blocked_by_prefix": "が",
+    "being_blocked_by_work_item": "に対する次の作業項目によるブロックを解除しました:",
+    "enabled_work_item_types": "が作業項目タイプを有効にしました",
+    "disabled_work_item_types": "が作業項目タイプを無効にしました",
+    "created_work_item_via": "が次を経由して作業項目を作成しました:",
+    "the_work_item_and_assigned_it_to_you": "が作業項目を作成し、あなたに割り当てました。",
+    "the_work_item": "作業項目"
   },
   "validation": {
     "name_required": "Name is required",

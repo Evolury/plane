@@ -21,7 +21,8 @@
     "in_your_timezone": "在您的時區",
     "transfer_work_items": "轉移 {count} 工作事項",
     "transfer": {
-      "no_cycles_available": "沒有其他可用的週期來轉移工作項目。"
+      "no_cycles_available": "沒有其他可用的週期來轉移工作項目。",
+      "no_current_cycle": "您沒有目前的週期。請建立一個週期以轉移工作事項。"
     },
     "date_range": "日期範圍",
     "add_date": "新增日期",
@@ -36,7 +37,10 @@
       "current": "目前",
       "labels": "標籤",
       "trailing": "落後",
-      "leading": "領先"
+      "leading": "領先",
+      "pending_points": "待處理點數",
+      "work_items_closed": "已關閉 {closedCount}/{totalCount} {closedCount, plural, one {個工作事項} other {個工作事項}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# 個已取消的工作事項未包含在此報告中。} other {# 個已取消的工作事項未包含在此報告中。}}"
     },
     "upcoming_cycle": {
       "label": "即將到來的週期"
@@ -413,6 +417,12 @@
           "message": "發生錯誤。"
         }
       }
+    },
+    "archive_modal": {
+      "description": "此專案及其工作事項、週期、模組和頁面將被封存。其工作事項將不會出現在搜尋中。只有專案管理員可以還原該專案。"
+    },
+    "restore_modal": {
+      "description": "還原專案將啟用該專案，並使專案的所有成員都能看到它。您確定要繼續嗎？"
     }
   }
 }

@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Odrzuć element pracy",
-        "content": "Czy na pewno chcesz odrzucić element pracy {value}?"
+        "content": "Czy na pewno chcesz odrzucić element pracy {value}?",
+        "confirmation": {
+          "prefix": "Czy na pewno chcesz odrzucić element pracy",
+          "suffix": "? Tej akcji nie można cofnąć."
+        }
       },
       "delete": {
         "title": "Usuń element pracy",
         "content": "Czy na pewno chcesz usunąć element pracy {value}?",
-        "success": "Element pracy usunięto pomyślnie"
+        "success": "Element pracy usunięto pomyślnie",
+        "confirmation": {
+          "prefix": "Czy na pewno chcesz usunąć element pracy",
+          "suffix": "? Element pracy zostanie usunięty tylko z Intake, a tej akcji nie można cofnąć."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Wybierz element pracy, aby zobaczyć szczegóły."
       }
+    },
+    "filters": {
+      "status": "Status elementu pracy"
     }
   }
 }

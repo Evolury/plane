@@ -198,7 +198,11 @@
     "copy_link": "Link zum Arbeitselement kopieren",
     "delete": {
       "label": "Arbeitselement löschen",
-      "error": "Fehler beim Löschen des Arbeitselements"
+      "error": "Fehler beim Löschen des Arbeitselements",
+      "confirmation": {
+        "prefix": "Sind Sie sicher, dass Sie das {entity}",
+        "suffix": " löschen möchten? Alle mit dem {entity} verbundenen Daten werden dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Klicken zum Runterstimmen",
       "click_to_view_upvotes": "Klicken um Hochstimmen anzuzeigen",
       "click_to_view_downvotes": "Klicken um Runterstimmen anzuzeigen"
-    }
+    },
+    "count_tooltip": "Es gibt {count, plural, one {# Arbeitselement} other {# Arbeitselemente}} in diesem Projekt",
+    "archived": {
+      "label": "Archivierte Arbeitselemente",
+      "count_tooltip": "Es gibt {count, plural, one {# Arbeitselement} other {# Arbeitselemente}} im Archiv des Projekts"
+    },
+    "view": "Arbeitselement anzeigen"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Um alle Arbeitselemente anzuzeigen, entfernen Sie alle angewendeten Filter.",
         "action": "Filter entfernen"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# Unterarbeitselement} other {# Unterarbeitselemente}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Epic-Titel",
       "required": "Ein Titel für das Epic ist erforderlich."
-    }
+    },
+    "view": "Epic anzeigen",
+    "all": "Alle Epics"
   }
 }

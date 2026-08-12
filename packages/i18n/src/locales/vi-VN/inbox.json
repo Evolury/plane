@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Từ chối mục công việc",
-        "content": "Bạn có chắc chắn muốn từ chối mục công việc {value} không?"
+        "content": "Bạn có chắc chắn muốn từ chối mục công việc {value} không?",
+        "confirmation": {
+          "prefix": "Bạn có chắc chắn muốn từ chối mục công việc",
+          "suffix": "? Hành động này không thể hoàn tác."
+        }
       },
       "delete": {
         "title": "Xóa mục công việc",
         "content": "Bạn có chắc chắn muốn xóa mục công việc {value} không?",
-        "success": "Đã xóa mục công việc thành công"
+        "success": "Đã xóa mục công việc thành công",
+        "confirmation": {
+          "prefix": "Bạn có chắc chắn muốn xóa mục công việc",
+          "suffix": "? Mục công việc sẽ chỉ bị xóa khỏi Intake và hành động này không thể hoàn tác."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Chọn một mục công việc để xem chi tiết."
       }
+    },
+    "filters": {
+      "status": "Trạng thái mục công việc"
     }
   }
 }

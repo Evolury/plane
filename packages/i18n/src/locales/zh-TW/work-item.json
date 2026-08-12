@@ -198,7 +198,11 @@
     "copy_link": "複製工作事項連結",
     "delete": {
       "label": "刪除工作事項",
-      "error": "刪除工作事項時發生錯誤"
+      "error": "刪除工作事項時發生錯誤",
+      "confirmation": {
+        "prefix": "您確定要刪除{entity}",
+        "suffix": "嗎？與該{entity}相關的所有資料將被永久移除。此操作無法復原。"
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "點擊反對",
       "click_to_view_upvotes": "點擊查看贊成票",
       "click_to_view_downvotes": "點擊查看反對票"
-    }
+    },
+    "count_tooltip": "此專案中有 {count, plural, one {# 個工作事項} other {# 個工作事項}}",
+    "archived": {
+      "label": "已封存的工作事項",
+      "count_tooltip": "專案封存中有 {count, plural, one {# 個工作事項} other {# 個工作事項}}"
+    },
+    "view": "檢視工作事項"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "要查看所有工作事項，請清除所有應用過的過濾器。",
         "action": "清除過濾器"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# 個子工作事項} other {# 個子工作事項}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Epic 標題",
       "required": "Epic 標題為必填。"
-    }
+    },
+    "view": "檢視 Epic",
+    "all": "所有 Epic"
   }
 }

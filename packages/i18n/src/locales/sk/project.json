@@ -21,7 +21,8 @@
     "in_your_timezone": "Váš časový pásmo",
     "transfer_work_items": "Presunúť {count} pracovných položiek",
     "transfer": {
-      "no_cycles_available": "Nie sú k dispozícii žiadne iné cykly na prenos pracovných položiek."
+      "no_cycles_available": "Nie sú k dispozícii žiadne iné cykly na prenos pracovných položiek.",
+      "no_current_cycle": "Nemáte žiadny aktuálny cyklus. Vytvorte ho, aby ste mohli preniesť pracovné položky."
     },
     "date_range": "Dátumový rozsah",
     "add_date": "Pridať dátum",
@@ -36,7 +37,10 @@
       "current": "Aktuálne",
       "labels": "Štítky",
       "trailing": "Oneskorenie",
-      "leading": "Náskok"
+      "leading": "Náskok",
+      "pending_points": "Zostávajúce body",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {uzavretá pracovná položka} few {uzavreté pracovné položky} other {uzavretých pracovných položiek}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# zrušená pracovná položka je vylúčená z tohto prehľadu.} few {# zrušené pracovné položky sú vylúčené z tohto prehľadu.} other {# zrušených pracovných položiek je vylúčených z tohto prehľadu.}}"
     },
     "upcoming_cycle": {
       "label": "Nadchádzajúci cyklus"
@@ -413,6 +417,12 @@
           "message": "Niečo sa pokazilo."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Tento projekt a jeho pracovné položky, cykly, moduly a stránky budú archivované. Jeho pracovné položky sa nebudú zobrazovať vo vyhľadávaní. Projekt môžu obnoviť iba správcovia projektu."
+    },
+    "restore_modal": {
+      "description": "Obnovenie projektu ho aktivuje a zviditeľní pre všetkých členov projektu. Ste si istí, že chcete pokračovať?"
     }
   }
 }

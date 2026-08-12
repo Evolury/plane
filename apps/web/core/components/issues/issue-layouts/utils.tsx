@@ -128,7 +128,8 @@ export const getGroupByColumns = ({
     return [
       {
         id: "All Issues",
-        name: `All ${isEpic ? "Epics" : "work items"}`,
+        // Evolury: cabeçalho do grupo traduzido (translate pois não é componente)
+        name: isEpic ? translate("epic.all") : translate("issue.all"),
         payload: {},
         icon: undefined,
       },

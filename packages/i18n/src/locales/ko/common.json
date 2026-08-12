@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "이 작업 항목을 초안에 저장해 두면 나중에 다시 작업할 수 있습니다.",
+    "leave_project_confirmation_prefix": "프로젝트",
+    "leave_project_confirmation_suffix": "을(를) 떠나시겠습니까? 회원님과 연결된 모든 작업 항목에 접근할 수 없게 됩니다.",
+    "workspace_invitation_description": "워크스페이스는 프로젝트를 생성하고, 작업 항목에서 협업하며, Plane 계정의 다양한 업무 흐름을 구성하는 공간입니다.",
+    "view_work_items_here_description": "작업 항목은 개별 업무를 추적하는 데 도움이 됩니다. 작업 항목을 통해 무슨 일이 진행 중인지, 누가 작업하고 있는지, 무엇이 완료되었는지 파악할 수 있습니다.",
+    "only_work_items_within_current_project_can_be_selected": "현재 프로젝트 내의 작업 항목만 선택할 수 있습니다.",
+    "work_items_description_long": "작업 항목은 Plane의 기본 구성 요소입니다. Plane의 대부분의 개념은 작업 항목과 그 속성에 연관되어 있습니다.",
+    "views_description_long": "커스텀 필터를 만들어 중요한 작업 항목만 표시하세요. 몇 번의 클릭만으로 필터를 저장하고 공유할 수 있습니다."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "작업 항목",
+    "converted": "님이",
+    "to_a_work_item": "을(를) 작업 항목으로 변환했습니다",
+    "marked": "님이",
+    "is_blocking_work_item": "이(가) 다음 작업 항목을 차단하고 있다고 표시했습니다:",
+    "removed_being_blocked_by_prefix": "님이",
+    "being_blocked_by_work_item": "에 대한 다음 작업 항목의 차단을 해제했습니다:",
+    "enabled_work_item_types": "님이 작업 항목 유형을 활성화했습니다",
+    "disabled_work_item_types": "님이 작업 항목 유형을 비활성화했습니다",
+    "created_work_item_via": "님이 다음을 통해 작업 항목을 생성했습니다:",
+    "the_work_item_and_assigned_it_to_you": "님이 작업 항목을 생성하고 회원님에게 할당했습니다.",
+    "the_work_item": "작업 항목"
   },
   "validation": {
     "name_required": "Name is required",

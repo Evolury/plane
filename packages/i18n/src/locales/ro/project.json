@@ -21,7 +21,8 @@
     "in_your_timezone": "În fusul tău orar",
     "transfer_work_items": "Transferați {count} elemente de lucru",
     "transfer": {
-      "no_cycles_available": "Nu există alte cicluri disponibile pentru a transfera elemente de lucru."
+      "no_cycles_available": "Nu există alte cicluri disponibile pentru a transfera elemente de lucru.",
+      "no_current_cycle": "Nu ai niciun ciclu curent. Creează unul pentru a transfera activitățile."
     },
     "date_range": "Interval de date",
     "add_date": "Adaugă data",
@@ -36,7 +37,10 @@
       "current": "Curent",
       "labels": "Etichete",
       "trailing": "Întârziat",
-      "leading": "Avansat"
+      "leading": "Avansat",
+      "pending_points": "Puncte rămase",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {activitate închisă} few {activități închise} other {de activități închise}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# activitate anulată este exclusă din acest raport.} few {# activități anulate sunt excluse din acest raport.} other {# de activități anulate sunt excluse din acest raport.}}"
     },
     "upcoming_cycle": {
       "label": "Ciclu viitor"
@@ -413,6 +417,12 @@
           "message": "Ceva nu a funcționat."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Acest proiect și activitățile, ciclurile, modulele și paginile sale vor fi arhivate. Activitățile sale nu vor apărea în căutare. Doar administratorii proiectului pot restaura proiectul."
+    },
+    "restore_modal": {
+      "description": "Restaurarea unui proiect îl va activa și îl va face vizibil pentru toți membrii proiectului. Ești sigur că vrei să continui?"
     }
   }
 }

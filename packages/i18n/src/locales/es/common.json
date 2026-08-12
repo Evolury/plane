@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Puedes guardar este elemento de trabajo en Borradores para volver a él más tarde.",
+    "leave_project_confirmation_prefix": "¿Estás seguro de que quieres abandonar el proyecto -",
+    "leave_project_confirmation_suffix": "? Todos los elementos de trabajo asociados a ti quedarán inaccesibles.",
+    "workspace_invitation_description": "Tu espacio de trabajo es donde crearás proyectos, colaborarás en tus elementos de trabajo y organizarás diferentes flujos de trabajo en tu cuenta de Plane.",
+    "view_work_items_here_description": "Los elementos de trabajo te ayudan a hacer seguimiento de cada parte del trabajo. Con ellos, sabrás qué está pasando, quién está trabajando en ello y qué está terminado.",
+    "only_work_items_within_current_project_can_be_selected": "Solo se pueden seleccionar elementos de trabajo del proyecto actual.",
+    "work_items_description_long": "El elemento de trabajo es el componente básico de Plane. La mayoría de los conceptos de Plane están asociados a los elementos de trabajo y sus propiedades.",
+    "views_description_long": "Crea filtros personalizados para mostrar solo los elementos de trabajo que te importan. Guarda y comparte tus filtros en solo unos clics."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "un elemento de trabajo",
+    "converted": "convirtió",
+    "to_a_work_item": "en un elemento de trabajo",
+    "marked": "marcó que",
+    "is_blocking_work_item": "está bloqueando el elemento de trabajo",
+    "removed_being_blocked_by_prefix": "eliminó el bloqueo de",
+    "being_blocked_by_work_item": "por el elemento de trabajo",
+    "enabled_work_item_types": "habilitó los tipos de elementos de trabajo",
+    "disabled_work_item_types": "deshabilitó los tipos de elementos de trabajo",
+    "created_work_item_via": "creó el elemento de trabajo a través de",
+    "the_work_item_and_assigned_it_to_you": "el elemento de trabajo y te lo asignó.",
+    "the_work_item": "el elemento de trabajo"
   },
   "validation": {
     "name_required": "Name is required",

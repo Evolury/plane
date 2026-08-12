@@ -198,7 +198,11 @@
     "copy_link": "İş öğesi bağlantısını kopyala",
     "delete": {
       "label": "İş öğesini sil",
-      "error": "İş öğesi silinirken hata oluştu"
+      "error": "İş öğesi silinirken hata oluştu",
+      "confirmation": {
+        "prefix": "{entity} silmek istediğinizden emin misiniz",
+        "suffix": "? {entity} ile ilgili tüm veriler kalıcı olarak kaldırılacak. Bu işlem geri alınamaz."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Olumsuz oy vermek için tıklayın",
       "click_to_view_upvotes": "Olumlu oyları görüntülemek için tıklayın",
       "click_to_view_downvotes": "Olumsuz oyları görüntülemek için tıklayın"
-    }
+    },
+    "count_tooltip": "Bu projede {count, plural, one {# iş öğesi} other {# iş öğesi}} var",
+    "archived": {
+      "label": "Arşivlenmiş iş öğeleri",
+      "count_tooltip": "Projenin arşivinde {count, plural, one {# iş öğesi} other {# iş öğesi}} var"
+    },
+    "view": "İş öğesini görüntüle"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Tüm iş öğelerini görmek için tüm uygulanan filtreleri temizleyin.",
         "action": "Filtreleri temizle"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# alt iş öğesi} other {# alt iş öğesi}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Epik Başlığı",
       "required": "Epik başlığı gereklidir."
-    }
+    },
+    "view": "Epiği görüntüle",
+    "all": "Tüm Epikler"
   }
 }

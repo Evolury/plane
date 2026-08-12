@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Tolak item kerja",
-        "content": "Apakah Anda yakin ingin menolak item kerja {value}?"
+        "content": "Apakah Anda yakin ingin menolak item kerja {value}?",
+        "confirmation": {
+          "prefix": "Apakah Anda yakin ingin menolak item kerja",
+          "suffix": "? Tindakan ini tidak dapat dibatalkan."
+        }
       },
       "delete": {
         "title": "Hapus item kerja",
         "content": "Apakah Anda yakin ingin menghapus item kerja {value}?",
-        "success": "Item kerja berhasil dihapus"
+        "success": "Item kerja berhasil dihapus",
+        "confirmation": {
+          "prefix": "Apakah Anda yakin ingin menghapus item kerja",
+          "suffix": "? Item kerja hanya akan dihapus dari Intake dan tindakan ini tidak dapat dibatalkan."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Pilih item kerja untuk melihat detailnya."
       }
+    },
+    "filters": {
+      "status": "Status item kerja"
     }
   }
 }

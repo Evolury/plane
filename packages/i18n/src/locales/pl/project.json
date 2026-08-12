@@ -21,7 +21,8 @@
     "in_your_timezone": "W Twojej strefie czasowej",
     "transfer_work_items": "Przenieś {count} elementów pracy",
     "transfer": {
-      "no_cycles_available": "Brak innych cykli dostępnych do przeniesienia elementów pracy."
+      "no_cycles_available": "Brak innych cykli dostępnych do przeniesienia elementów pracy.",
+      "no_current_cycle": "Nie masz żadnego bieżącego cyklu. Utwórz go, aby przenieść elementy pracy."
     },
     "date_range": "Zakres dat",
     "add_date": "Dodaj datę",
@@ -36,7 +37,10 @@
       "current": "Obecny",
       "labels": "Etykiety",
       "trailing": "Opóźnienie",
-      "leading": "Wyprzedzenie"
+      "leading": "Wyprzedzenie",
+      "pending_points": "Pozostałe punkty",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {zamknięty element pracy} few {zamknięte elementy pracy} many {zamkniętych elementów pracy} other {zamkniętego elementu pracy}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# anulowany element pracy został wykluczony z tego raportu.} few {# anulowane elementy pracy zostały wykluczone z tego raportu.} many {# anulowanych elementów pracy zostało wykluczonych z tego raportu.} other {# anulowanego elementu pracy zostało wykluczone z tego raportu.}}"
     },
     "upcoming_cycle": {
       "label": "Nadchodzący cykl"
@@ -413,6 +417,12 @@
           "message": "Coś poszło nie tak."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Ten projekt oraz jego elementy pracy, cykle, moduły i strony zostaną zarchiwizowane. Jego elementy pracy nie będą pojawiać się w wyszukiwaniu. Tylko administratorzy projektu mogą przywrócić projekt."
+    },
+    "restore_modal": {
+      "description": "Przywrócenie projektu aktywuje go i sprawi, że będzie widoczny dla wszystkich członków projektu. Czy na pewno chcesz kontynuować?"
     }
   }
 }

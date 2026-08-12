@@ -198,7 +198,11 @@
     "copy_link": "작업 항목 링크 복사",
     "delete": {
       "label": "작업 항목 삭제",
-      "error": "작업 항목 삭제 중 오류 발생"
+      "error": "작업 항목 삭제 중 오류 발생",
+      "confirmation": {
+        "prefix": "{entity}",
+        "suffix": "을(를) 삭제하시겠습니까? {entity}과(와) 관련된 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "클릭하여 비추천",
       "click_to_view_upvotes": "클릭하여 추천 목록 보기",
       "click_to_view_downvotes": "클릭하여 비추천 목록 보기"
-    }
+    },
+    "count_tooltip": "이 프로젝트에는 {count, plural, one {#개의 작업 항목} other {#개의 작업 항목}}이 있습니다",
+    "archived": {
+      "label": "아카이브된 작업 항목",
+      "count_tooltip": "프로젝트 아카이브에는 {count, plural, one {#개의 작업 항목} other {#개의 작업 항목}}이 있습니다"
+    },
+    "view": "작업 항목 보기"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "모든 작업 항목을 보려면 모든 적용된 필터를 지우세요.",
         "action": "필터 지우기"
       }
-    }
+    },
+    "count_label": "{count, plural, one {#개의 하위 작업 항목} other {#개의 하위 작업 항목}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "에픽 제목",
       "required": "에픽 제목이 필요합니다."
-    }
+    },
+    "view": "에픽 보기",
+    "all": "모든 에픽"
   }
 }
