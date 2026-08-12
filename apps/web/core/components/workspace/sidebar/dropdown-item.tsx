@@ -113,9 +113,9 @@ const SidebarDropdownItem = observer(function SidebarDropdownItem(props: TProps)
                   className="flex gap-1.5 rounded-md border border-strong bg-layer-2 px-2.5 py-1.5 text-secondary transition-colors hover:border-strong hover:text-secondary hover:shadow-raised-100"
                 >
                   <UserPlus className="my-auto h-4 w-4 flex-shrink-0" />
-                  <span className="my-auto text-13 font-medium whitespace-nowrap">
-                    {t("project_settings.members.invite_members.title")}
-                  </span>
+                  {/* Evolury: só "Convidar" — o botão é estreito e o ícone já
+                      diz de quem se trata; "membros" segue no título do modal */}
+                  <span className="my-auto text-13 font-medium whitespace-nowrap">{t("common.invite")}</span>
                 </Link>
               )}
             </div>
