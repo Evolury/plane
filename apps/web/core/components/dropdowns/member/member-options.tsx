@@ -134,7 +134,9 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
     <Combobox.Options data-prevent-outside-click static>
       <div
         className={cn(
-          "z-30 my-1 w-48 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 py-2.5 text-11 shadow-raised-200 focus:outline-none",
+          "z-30 my-1 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 py-2.5 text-11 shadow-raised-200 focus:outline-none",
+          // Evolury: mais largo quando a linha "Você" carrega o seletor de etapa (F7)
+          workItemId ? "w-64" : "w-48",
           optionsClassName
         )}
         ref={setPopperElement}
@@ -179,12 +181,15 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
                     >
                       {({ selected }) => (
                         <>
-                          <span className="flex-grow truncate">{option.content}</span>
-                          {/* Evolury: etapa de minhas tarefas na linha do usuário
-                              logado, quando ele é responsável pelo item (F7) */}
-                          {workItemId && selected && currentUser?.id === option.value && (
-                            <MyTasksStageSelect workItemId={workItemId} />
-                          )}
+                          {/* Evolury: seletor de etapa imediatamente após o fim
+                              do nome (F7); com nomes longos, nome e chip truncam
+                              proporcionalmente no popover alargado */}
+                          <span className="flex min-w-0 flex-grow items-center gap-1.5">
+                            <span className="min-w-0 flex-shrink truncate">{option.content}</span>
+                            {workItemId && selected && currentUser?.id === option.value && (
+                              <MyTasksStageSelect workItemId={workItemId} />
+                            )}
+                          </span>
                           {selected && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" />}
                           {isUserSuspended(option.value, workspaceSlug?.toString()) && (
                             <Pill variant={EPillVariant.DEFAULT} size={EPillSize.XS} className="border-none">
