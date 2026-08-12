@@ -33,6 +33,10 @@
     "business": "Business"
   },
   "my_tasks": {
-    "empty_state": "No work items assigned to you in this workspace yet."
+    "empty_state": "No work items assigned to you in this workspace yet.",
+    "stages": {
+      "title": "Stages",
+      "description": "Create, edit and reorder your personal stages. Deleting a stage moves its work items to the default stage."
+    }
   }
 }

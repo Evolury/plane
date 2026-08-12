@@ -9,9 +9,10 @@
 // O agrupamento é fixo por etapa (spec); só o layout troca aqui — a linha
 // completa de filtros/propriedades chega na F5.
 
+import { useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-import { LayoutGrid, List, ListTodo } from "lucide-react";
+import { LayoutGrid, List, ListTodo, Settings2 } from "lucide-react";
 // plane imports
 import { EIssueFilterType } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
@@ -21,6 +22,7 @@ import { Breadcrumbs, Header } from "@plane/ui";
 import { cn } from "@plane/utils";
 // components
 import { BreadcrumbLink } from "@/components/common/breadcrumb-link";
+import { MyTasksStagesPanel } from "@/components/my-tasks/stages-panel";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
 
@@ -36,6 +38,8 @@ export const MyTasksHeader = observer(function MyTasksHeader() {
   const {
     issuesFilter: { issueFilters, updateFilters },
   } = useIssues(EIssuesStoreType.MY_TASKS);
+  // states
+  const [isStagesPanelOpen, setIsStagesPanelOpen] = useState(false);
   // derived values
   const activeLayout = issueFilters?.displayFilters?.layout ?? "list";
 
@@ -58,6 +62,15 @@ export const MyTasksHeader = observer(function MyTasksHeader() {
         </div>
       </Header.LeftItem>
       <Header.RightItem>
+        <button
+          type="button"
+          onClick={() => setIsStagesPanelOpen(true)}
+          className="flex items-center gap-1.5 rounded-sm bg-layer-1 px-2 py-1 text-12 font-medium text-secondary hover:text-primary"
+        >
+          <Settings2 className="size-3.5" />
+          {t("my_tasks.stages.title")}
+        </button>
+        <MyTasksStagesPanel isOpen={isStagesPanelOpen} onClose={() => setIsStagesPanelOpen(false)} />
         <div className="flex items-center gap-0.5 rounded-sm bg-layer-1 p-0.5">
           {LAYOUT_OPTIONS.map((option) => (
             <button

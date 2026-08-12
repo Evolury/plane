@@ -33,6 +33,10 @@
     "business": "Biznes"
   },
   "my_tasks": {
-    "empty_state": "W tej przestrzeni roboczej nie przypisano Ci jeszcze żadnych elementów pracy."
+    "empty_state": "W tej przestrzeni roboczej nie przypisano Ci jeszcze żadnych elementów pracy.",
+    "stages": {
+      "title": "Etapy",
+      "description": "Twórz, edytuj i zmieniaj kolejność swoich osobistych etapów. Usunięcie etapu przenosi jego elementy do etapu domyślnego."
+    }
   }
 }

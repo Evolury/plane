@@ -94,15 +94,24 @@ agrupamentos arrastáveis que não estava no rastreio da F0 (7º ponto).
 
 ## F4 — Gestão de etapas
 
-- [ ] F4.1 Painel "Etapas" na página — espelho adaptado de `project-states/`
-      (lista por grupo, cores, arrasto para reordenar)
-- [ ] F4.2 Criar/editar/excluir com validações (nome único, padrão não
-      excluível) e modal de exclusão informando a migração
-- [ ] F4.3 Marcar como padrão
-- [ ] F4.4 Estados de carregamento e empty states
+- [x] F4.1 Painel "Etapas" na página (modal via botão no header). Melhor que o
+      previsto: em vez de cópia adaptada, a família `project-states/` é
+      REUSADA — o `GroupList` é parametrizado por callbacks e só lê campos
+      comuns, então um adaptador `TWorkStage↔IState`
+      (sequence↔sort_order, default↔is_default) bastou; zero cópia das ~1100
+      linhas e paridade de UX por construção
+- [x] F4.2 Criar/editar/excluir pela UI reusada; validações do backend F1
+      (nome único 400, padrão não excluível 400 — o componente já trata) e o
+      modal de exclusão herdado
+- [x] F4.3 Marcar como padrão (mark-default transacional da F1); excluir ou
+      trocar a padrão refaz a listagem sem reload
+- [x] F4.4 Loading/empty herdados do GroupList; painel com scroll interno
 
-**Aceite:** paridade de UX com a tela de estados de projeto; excluir etapa com
-itens os move para a padrão na UI sem reload.
+**Aceite:** ✓ 12/08/2026 — paridade por reuso; validação visual em stack
+planedev: painel renderiza os 5 grupos com as etapas, criação de "Delegadas"
+confirmada na UI (toast) e no banco, opções de hover presentes, página ao fundo
+reagrupada em tempo real. Nit registrado para F5/F6: toasts herdados dizem
+"estado" onde a página diz "etapa" (chaves da família reusada).
 
 ## F5 — Refinamento
 

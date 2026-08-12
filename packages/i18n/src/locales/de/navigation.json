@@ -33,6 +33,10 @@
     "business": "Business"
   },
   "my_tasks": {
-    "empty_state": "Dir sind in diesem Workspace noch keine Arbeitselemente zugewiesen."
+    "empty_state": "Dir sind in diesem Workspace noch keine Arbeitselemente zugewiesen.",
+    "stages": {
+      "title": "Phasen",
+      "description": "Erstelle, bearbeite und sortiere deine persönlichen Phasen. Beim Löschen einer Phase wandern ihre Elemente in die Standardphase."
+    }
   }
 }

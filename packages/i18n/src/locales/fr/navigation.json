@@ -33,6 +33,10 @@
     "business": "Business"
   },
   "my_tasks": {
-    "empty_state": "Aucun élément de travail ne vous est encore assigné dans cet espace de travail."
+    "empty_state": "Aucun élément de travail ne vous est encore assigné dans cet espace de travail.",
+    "stages": {
+      "title": "Étapes",
+      "description": "Créez, modifiez et réorganisez vos étapes personnelles. Supprimer une étape déplace ses éléments vers l'étape par défaut."
+    }
   }
 }

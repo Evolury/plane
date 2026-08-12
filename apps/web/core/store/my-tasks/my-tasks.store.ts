@@ -46,6 +46,10 @@ export interface IMyTasksStore {
   fetchStages: (workspaceSlug: string) => Promise<void>;
   fetchIssues: (workspaceSlug: string) => Promise<void>;
   moveIssue: (workspaceSlug: string, issueId: string, stageId: string, sortOrder?: number) => Promise<void>;
+  createStage: (workspaceSlug: string, data: Partial<TWorkStage>) => Promise<TWorkStage>;
+  updateStage: (workspaceSlug: string, stageId: string, data: Partial<TWorkStage>) => Promise<TWorkStage>;
+  deleteStage: (workspaceSlug: string, stageId: string) => Promise<void>;
+  markStageAsDefault: (workspaceSlug: string, stageId: string) => Promise<void>;
 }
 
 export class MyTasksStore implements IMyTasksStore {
@@ -68,6 +72,10 @@ export class MyTasksStore implements IMyTasksStore {
       fetchStages: action,
       fetchIssues: action,
       moveIssue: action,
+      createStage: action,
+      updateStage: action,
+      deleteStage: action,
+      markStageAsDefault: action,
     });
     this.myTasksService = new MyTasksService();
   }
@@ -127,6 +135,31 @@ export class MyTasksStore implements IMyTasksStore {
       });
       throw error;
     }
+  };
+
+  // CRUD de etapas (painel de gestão, F4). Cada operação ressincroniza o
+  // stageMap pelo fetch — contexto de gestão, 1 request extra é irrelevante e
+  // evita divergência com constraints do servidor (nome único, padrão única).
+  createStage = async (workspaceSlug: string, data: Partial<TWorkStage>) => {
+    const stage = await this.myTasksService.createStage(workspaceSlug, data);
+    await this.fetchStages(workspaceSlug);
+    return stage;
+  };
+
+  updateStage = async (workspaceSlug: string, stageId: string, data: Partial<TWorkStage>) => {
+    const stage = await this.myTasksService.updateStage(workspaceSlug, stageId, data);
+    await this.fetchStages(workspaceSlug);
+    return stage;
+  };
+
+  deleteStage = async (workspaceSlug: string, stageId: string) => {
+    await this.myTasksService.deleteStage(workspaceSlug, stageId);
+    await this.fetchStages(workspaceSlug);
+  };
+
+  markStageAsDefault = async (workspaceSlug: string, stageId: string) => {
+    await this.myTasksService.markStageAsDefault(workspaceSlug, stageId);
+    await this.fetchStages(workspaceSlug);
   };
 
   moveIssue = async (workspaceSlug: string, issueId: string, stageId: string, sortOrder?: number) => {

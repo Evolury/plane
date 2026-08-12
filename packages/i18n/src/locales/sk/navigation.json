@@ -33,6 +33,10 @@
     "business": "Biznis"
   },
   "my_tasks": {
-    "empty_state": "V tomto pracovnom priestore vám zatiaľ nie sú priradené žiadne pracovné položky."
+    "empty_state": "V tomto pracovnom priestore vám zatiaľ nie sú priradené žiadne pracovné položky.",
+    "stages": {
+      "title": "Fázy",
+      "description": "Vytvárajte, upravujte a preusporadúvajte svoje osobné fázy. Odstránením fázy sa jej položky presunú do predvolenej fázy."
+    }
   }
 }
