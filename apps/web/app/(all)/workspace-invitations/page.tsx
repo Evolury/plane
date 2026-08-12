@@ -86,18 +86,19 @@ function WorkspaceInvitationPage() {
               <h2 className="text-18 uppercase">{t("ui.invitation_not_found")}</h2>
             </div>
           ) : (
+            // Evolury: titulo interpolado via ICU em vez de template literal
             <EmptySpace
-              title={`You have been invited to ${invitationDetail.workspace.name}`}
+              title={t("ui.you_have_been_invited_to_workspace", { workspace: invitationDetail.workspace.name })}
               description={t("ui.workspace_invitation_description")}
             >
-              <EmptySpaceItem Icon={CheckIcon} title="Accept" action={handleAccept} />
-              <EmptySpaceItem Icon={CloseIcon} title="Ignore" action={handleReject} />
+              <EmptySpaceItem Icon={CheckIcon} title={t("ui.accept")} action={handleAccept} />
+              <EmptySpaceItem Icon={CloseIcon} title={t("ui.ignore")} action={handleReject} />
             </EmptySpace>
           )
         ) : error || invitationDetail?.responded_at ? (
           invitationDetail?.accepted ? (
             <EmptySpace
-              title={`You are already a member of ${invitationDetail.workspace.name}`}
+              title={t("ui.you_are_already_a_member_of_workspace", { workspace: invitationDetail.workspace.name })}
               description={t("ui.workspace_invitation_description")}
             >
               <EmptySpaceItem Icon={Boxes} title={t("ui.continue_to_home")} href="/" />

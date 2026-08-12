@@ -125,6 +125,7 @@
     "multiple": "Vários",
     "menu_bulleted_list": "Lista com marcadores",
     "menu_numbered_list": "Lista numerada",
-    "menu_quote": "Citação"
+    "menu_quote": "Citação",
+    "invalid_url": "Informe uma URL válida"
   }
 }

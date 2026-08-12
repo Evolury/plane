@@ -10,6 +10,9 @@ import React, { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
 import { useOutsideClickDetector } from "@plane/hooks";
+// Evolury: o pacote passou a poder traduzir (ADR 0008) — o placeholder
+// aparecia em inglês em toda a interface
+import { translate } from "@plane/i18n";
 import { CheckIcon, SearchIcon, ChevronDownIcon } from "@plane/propel/icons";
 // plane imports
 // local imports
@@ -159,7 +162,7 @@ export function CustomSearchSelect(props: ICustomSearchSelectProps) {
                         className="w-full bg-transparent py-1 text-11 text-secondary placeholder:text-placeholder focus:outline-none"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search"
+                        placeholder={translate("search")}
                         displayValue={(assigned: any) => assigned?.name}
                       />
                     </div>

@@ -125,6 +125,7 @@
     "multiple": "Multiple",
     "menu_bulleted_list": "Bulleted list",
     "menu_numbered_list": "Numbered list",
-    "menu_quote": "Quote"
+    "menu_quote": "Quote",
+    "invalid_url": "Please enter a valid URL"
   }
 }

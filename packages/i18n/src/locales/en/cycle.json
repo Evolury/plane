@@ -20,7 +20,11 @@
   },
   "cycle": {
     "label": "{count, plural, one {Cycle} other {Cycles}}",
-    "no_cycle": "No cycle"
+    "no_cycle": "No cycle",
+    "archive": {
+      "label": "Archive cycle",
+      "confirm_message": "Are you sure you want to archive the cycle? All your archives can be restored later."
+    }
   },
   "active_cycle_analytics": {
     "empty_state": {

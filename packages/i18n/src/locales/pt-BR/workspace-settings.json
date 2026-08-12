@@ -45,6 +45,11 @@
         "pending_invites": "Convites pendentes",
         "invitations_sent_successfully": "Convites enviados com sucesso",
         "leave_confirmation": "Tem certeza de que deseja sair do espaço de trabalho? Você não terá mais acesso a este espaço de trabalho. Esta ação não pode ser desfeita.",
+        "leave_title": "Sair do espaço de trabalho?",
+        "remove_confirmation": {
+          "prefix": "Tem certeza de que deseja remover o membro",
+          "suffix": "? Essa pessoa não terá mais acesso a este espaço de trabalho. Esta ação não pode ser desfeita."
+        },
         "details": {
           "full_name": "Nome completo",
           "display_name": "Nome de exibição",
@@ -102,6 +107,9 @@
         "description": "Automatize notificações para serviços externos quando ocorrerem eventos do projeto.",
         "title": "Webhooks",
         "add_webhook": "Adicionar webhook",
+        "danger_zone": "Zona de perigo",
+        "delete_description": "Depois de excluído, um webhook não pode ser restaurado. Eventos futuros não serão mais entregues a este webhook.",
+        "delete_confirmation": "Tem certeza de que deseja excluir este webhook? Eventos futuros não serão entregues a este webhook. Esta ação não pode ser desfeita.",
         "modal": {
           "title": "Criar webhook",
           "details": "Detalhes do webhook",

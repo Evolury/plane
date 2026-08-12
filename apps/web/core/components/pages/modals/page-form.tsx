@@ -119,16 +119,14 @@ export function PageForm(props: Props) {
               type="text"
               value={formData.name}
               onChange={(e) => handleFormData("name", e.target.value)}
-              placeholder="Title"
+              placeholder={t("title")}
               className="w-full resize-none text-14"
               tabIndex={getIndex("name")}
               required
               autoFocus
             />
             {isTitleLengthMoreThan255Character && (
-              <span className="text-11 text-danger-primary">
-                Max length of the name should be less than 255 characters
-              </span>
+              <span className="text-11 text-danger-primary">{t("title_should_be_less_than_255_characters")}</span>
             )}
           </div>
         </div>
@@ -155,7 +153,7 @@ export function PageForm(props: Props) {
             disabled={isTitleLengthMoreThan255Character}
             tabIndex={getIndex("submit")}
           >
-            {isSubmitting ? "Creating" : t("ui.create_page_2")}
+            {isSubmitting ? t("creating") : t("ui.create_page_2")}
           </Button>
         </div>
       </div>

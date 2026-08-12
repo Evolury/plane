@@ -4,6 +4,8 @@
  * See the LICENSE file for details.
  */
 
+// Evolury: o pacote passou a poder traduzir (ADR 0008)
+import { translate } from "@plane/i18n";
 import type { Editor } from "@tiptap/core";
 
 import { useCallback, useRef, useState } from "react";
@@ -121,7 +123,7 @@ export function BubbleMenuLinkSelector(props: Props) {
         </div>
         {error && (
           <p className="animate-in fade-in slide-in-from-top-0 pointer-events-none my-1 px-2 text-11 text-danger-primary">
-            Please enter a valid URL
+            {translate("editor.invalid_url")}
           </p>
         )}
       </div>

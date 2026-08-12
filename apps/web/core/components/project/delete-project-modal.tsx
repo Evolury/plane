@@ -89,14 +89,18 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
           </span>
         </div>
         <span>
+          {/* Evolury: nome do projeto em negrito no meio da frase — padrão prefix/suffix do repo */}
           <p className="text-13 leading-7 text-secondary">
-            Are you sure you want to delete project <span className="font-semibold break-words">{project?.name}</span>?
-            All of the data related to the project will be permanently removed. This action cannot be undone
+            {t("project_settings.general.delete_project.confirmation.prefix")}{" "}
+            <span className="font-semibold break-words">{project?.name}</span>
+            {t("project_settings.general.delete_project.confirmation.suffix")}
           </p>
         </span>
         <div className="text-secondary">
           <p className="text-13 break-words">
-            Enter the project name <span className="font-medium text-primary">{project?.name}</span> to continue:
+            {t("project_settings.general.delete_project.enter_name.prefix")}{" "}
+            <span className="font-medium text-primary">{project?.name}</span>{" "}
+            {t("project_settings.general.delete_project.enter_name.suffix")}
           </p>
           <Controller
             control={control}
@@ -118,8 +122,11 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
           />
         </div>
         <div className="text-secondary">
+          {/* Evolury: "delete my project" fica em inglês de propósito — é o texto exato comparado em `canDelete` */}
           <p className="text-13">
-            To confirm, type <span className="font-medium text-primary">delete my project</span> below:
+            {t("project_settings.general.delete_project.confirm_text.prefix")}{" "}
+            <span className="font-medium text-primary">delete my project</span>{" "}
+            {t("project_settings.general.delete_project.confirm_text.suffix")}
           </p>
           <Controller
             control={control}
@@ -145,7 +152,7 @@ export function DeleteProjectModal(props: DeleteProjectModal) {
             {t("cancel")}
           </Button>
           <Button variant="error-fill" size="lg" type="submit" disabled={!canDelete} loading={isSubmitting}>
-            {isSubmitting ? "Deleting" : t("project_settings.general.delete_project.title")}
+            {isSubmitting ? t("deleting") : t("project_settings.general.delete_project.title")}
           </Button>
         </div>
       </form>

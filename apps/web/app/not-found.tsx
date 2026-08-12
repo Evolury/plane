@@ -28,11 +28,8 @@ function PageNotFound() {
             <img src={Image404} className="h-full w-full object-contain" alt={t("ui.404_page_not_found")} />
           </div>
           <div className="space-y-2">
-            <h3 className="text-16 font-semibold">Oops! Something went wrong.</h3>
-            <p className="text-13 text-secondary">
-              Sorry, the page you are looking for cannot be found. It may have been removed, had its name changed, or is
-              temporarily unavailable.
-            </p>
+            <h3 className="text-16 font-semibold">{t("ui.oops_something_went_wrong")}</h3>
+            <p className="text-13 text-secondary">{t("ui.page_not_found_description")}</p>
           </div>
           <Link href="/">
             <span className="flex justify-center">

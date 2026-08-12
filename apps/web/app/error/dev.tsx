@@ -89,12 +89,14 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
           <Card variant={ECardVariant.WITH_SHADOW} className="!p-6 transition-none">
             <div className="space-y-4">
               <div>
-                <h2 className="mb-2 text-20 font-semibold text-danger-primary">Error</h2>
+                <h2 className="mb-2 text-20 font-semibold text-danger-primary">{t("ui.error_label")}</h2>
                 <div className="bg-subtle-1 h-px w-full" />
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-13 font-medium tracking-wide text-tertiary uppercase">Message</h3>
+                <h3 className="text-13 font-medium tracking-wide text-tertiary uppercase">
+                  {t("ui.error_message_label")}
+                </h3>
                 <div className="rounded-md bg-layer-1 p-4">
                   <p className="text-13 font-medium text-primary">{error.message}</p>
                 </div>
@@ -119,11 +121,8 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
             <div className="flex items-start gap-3">
               <InfoFillIcon className="mt-0.5 size-5 flex-shrink-0 text-tertiary" />
               <div className="space-y-1">
-                <p className="text-13 font-medium text-secondary">Development Mode</p>
-                <p className="text-11 text-tertiary">
-                  This detailed error view is only visible in development. In production, users will see a friendly
-                  error page.
-                </p>
+                <p className="text-13 font-medium text-secondary">{t("ui.development_mode")}</p>
+                <p className="text-11 text-tertiary">{t("ui.dev_error_view_description")}</p>
               </div>
             </div>
           </Card>
@@ -150,9 +149,7 @@ export function DevErrorComponent({ error, onGoHome, onReload }: DevErrorCompone
             </div>
 
             <div className="rounded-md bg-layer-1 p-4">
-              <p className="text-13 text-secondary">
-                An unknown error occurred. Please try refreshing the page or contact support if the problem persists.
-              </p>
+              <p className="text-13 text-secondary">{t("ui.unknown_error_description")}</p>
             </div>
 
             <ErrorActions onGoHome={onGoHome} onReload={onReload} />
