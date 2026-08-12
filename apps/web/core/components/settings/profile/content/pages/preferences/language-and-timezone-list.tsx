@@ -10,7 +10,6 @@ import { useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 // components
 import { TimezoneSelect } from "@/components/global";
-import { StartOfWeekPreference } from "@/components/profile/start-of-week-preference";
 import { SettingsControlItem } from "@/components/settings/control-item";
 // hooks
 import { useUser } from "@/hooks/store/user";
@@ -39,20 +38,14 @@ export const ProfileSettingsLanguageAndTimezonePreferencesList = observer(
       }
     };
 
-    // Evolury: a seleção de idioma saiu daqui — o produto é pt-BR único
-    // (ADR 0004). Fuso horário e início da semana continuam configuráveis.
+    // Evolury: idioma (ADR 0004) e início da semana (ADR 0005) saíram
+    // daqui — são globais e fixos. Só o fuso horário segue configurável.
     return (
       <div className="flex flex-col gap-y-1">
         <SettingsControlItem
           title={t("timezone")}
           description={t("timezone_setting")}
           control={<TimezoneSelect value={user?.user_timezone || "Asia/Kolkata"} onChange={handleTimezoneChange} />}
-        />
-        <StartOfWeekPreference
-          option={{
-            title: t("ui.first_day_of_week"),
-            description: t("ui.calendar_appearance_note"),
-          }}
         />
       </div>
     );

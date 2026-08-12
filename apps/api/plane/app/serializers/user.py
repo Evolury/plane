@@ -202,11 +202,12 @@ class ProfileSerializer(BaseSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
-        # Evolury: idioma único pt-BR (ADR 0004). Sem seletor na interface,
-        # mas o PATCH do perfil aceita o corpo inteiro — deixar o campo
-        # gravável permitiria mudar o idioma por fora da UI e o valor ficaria
-        # no banco sem tela que o corrigisse.
-        read_only_fields = ["user", "language"]
+        # Evolury: idioma único pt-BR (ADR 0004) e semana sempre começando no
+        # domingo (ADR 0005). Sem seletor na interface, mas o PATCH do perfil
+        # aceita o corpo inteiro — deixar os campos graváveis permitiria
+        # mudá-los por fora da UI e o valor ficaria no banco sem tela que o
+        # corrigisse.
+        read_only_fields = ["user", "language", "start_of_the_week"]
 
 
 class AccountSerializer(BaseSerializer):
