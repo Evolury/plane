@@ -12,9 +12,7 @@ import type { I_THEME_OPTION } from "@plane/constants";
 import { THEME_OPTIONS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { setPromiseToast } from "@plane/propel/toast";
-import { applyCustomTheme } from "@plane/utils";
 // components
-import { CustomThemeSelector } from "@/components/core/theme/custom-theme-selector";
 import { ThemeSwitch } from "@/components/core/theme/theme-switch";
 import { SettingsControlItem } from "@/components/settings/control-item";
 // hooks
@@ -45,20 +43,6 @@ export const ThemeSwitcher = observer(function ThemeSwitcher(props: {
       try {
         setTheme(themeOption.value);
 
-        // If switching to custom theme and user has saved custom colors, apply them immediately
-        if (
-          themeOption.value === "custom" &&
-          userProfile?.theme?.primary &&
-          userProfile?.theme?.background &&
-          userProfile?.theme?.darkPalette !== undefined
-        ) {
-          applyCustomTheme(
-            userProfile.theme.primary,
-            userProfile.theme.background,
-            userProfile.theme.darkPalette ? "dark" : "light"
-          );
-        }
-
         const updatePromise = updateUserTheme({ theme: themeOption.value });
         setPromiseToast(updatePromise, {
           loading: "Updating theme...",
@@ -83,6 +67,7 @@ export const ThemeSwitcher = observer(function ThemeSwitcher(props: {
 
   if (!userProfile) return null;
 
+  // Evolury: só claro e escuro além da preferência do sistema (ADR 0007)
   return (
     <>
       <SettingsControlItem
@@ -97,7 +82,6 @@ export const ThemeSwitcher = observer(function ThemeSwitcher(props: {
           />
         }
       />
-      {userProfile.theme?.theme === "custom" && <CustomThemeSelector />}
     </>
   );
 });

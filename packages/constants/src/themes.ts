@@ -4,7 +4,9 @@
  * See the LICENSE file for details.
  */
 
-export const THEMES = ["light", "dark", "light-contrast", "dark-contrast", "custom"];
+// Evolury: só claro e escuro (ADR 0007) — alto contraste e tema
+// personalizado saíram das preferências
+export const THEMES = ["light", "dark"];
 
 export interface I_THEME_OPTION {
   key: string;
@@ -50,39 +52,6 @@ export const THEME_OPTIONS: I_THEME_OPTION[] = [
       border: "#2E3234",
       color1: "#191B1B",
       color2: "#3C85D9",
-    },
-  },
-  {
-    key: "light_contrast",
-    value: "light-contrast",
-    i18n_label: "Light high contrast",
-    type: "light",
-    icon: {
-      border: "#000000",
-      color1: "#FFFFFF",
-      color2: "#3F76FF",
-    },
-  },
-  {
-    key: "dark_contrast",
-    value: "dark-contrast",
-    i18n_label: "Dark high contrast",
-    type: "dark",
-    icon: {
-      border: "#FFFFFF",
-      color1: "#030303",
-      color2: "#3A8BE9",
-    },
-  },
-  {
-    key: "custom",
-    value: "custom",
-    i18n_label: "Custom theme",
-    type: "light",
-    icon: {
-      border: "#FFC9C9",
-      color1: "#FFF7F7",
-      color2: "#FF5151",
     },
   },
 ];
