@@ -25,6 +25,7 @@ export const SpreadsheetAssigneeColumn = observer(function SpreadsheetAssigneeCo
     <div className="h-11 border-b-[0.5px] border-subtle">
       <MemberDropdown
         value={issue?.assignee_ids ?? []}
+        workItemId={issue.id}
         onChange={(data) => {
           onChange(
             issue,

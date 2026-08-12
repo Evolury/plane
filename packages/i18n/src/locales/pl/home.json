@@ -73,5 +73,10 @@
       "start_subscription": "Rozpocznij subskrypcję",
       "explore_business_features": "Poznaj funkcje Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Dzień dobry",
+    "afternoon": "Dzień dobry",
+    "evening": "Dobry wieczór"
   }
 }

@@ -73,5 +73,10 @@
       "start_subscription": "开始订阅",
       "explore_business_features": "探索Business功能"
     }
+  },
+  "home_greeting": {
+    "morning": "早上好",
+    "afternoon": "下午好",
+    "evening": "晚上好"
   }
 }

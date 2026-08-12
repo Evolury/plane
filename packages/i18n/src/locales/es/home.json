@@ -73,5 +73,10 @@
       "start_subscription": "Iniciar suscripción",
       "explore_business_features": "Explorar funciones Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas noches"
   }
 }

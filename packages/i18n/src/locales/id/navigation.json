@@ -39,6 +39,7 @@
       "description": "Buat, ubah, dan susun ulang tahapan pribadi Anda. Menghapus tahapan memindahkan itemnya ke tahapan default."
     },
     "stage_label": "Tahapan",
-    "empty_title": "Belum ada yang ditugaskan kepada Anda"
+    "empty_title": "Belum ada yang ditugaskan kepada Anda",
+    "stage_in_my_tasks": "Tahapan di Tugas saya"
   }
 }

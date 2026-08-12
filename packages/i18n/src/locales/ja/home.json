@@ -73,5 +73,10 @@
       "start_subscription": "サブスクリプションを開始",
       "explore_business_features": "Business機能を探索"
     }
+  },
+  "home_greeting": {
+    "morning": "おはようございます",
+    "afternoon": "こんにちは",
+    "evening": "こんばんは"
   }
 }

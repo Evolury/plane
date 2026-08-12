@@ -87,6 +87,7 @@ from .workspace.sticky import WorkspaceStickyViewSet
 from .workspace.my_tasks import (
     WorkStageViewSet,
     MyTasksIssuesEndpoint,
+    MyTasksIssueStageEndpoint,
     MyTasksIssueMoveEndpoint,
 )
 

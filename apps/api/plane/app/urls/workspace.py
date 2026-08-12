@@ -38,6 +38,7 @@ from plane.app.views import (
     # Evolury: etapas pessoais de "Minhas tarefas"
     WorkStageViewSet,
     MyTasksIssuesEndpoint,
+    MyTasksIssueStageEndpoint,
     MyTasksIssueMoveEndpoint,
     WorkspaceUserPreferenceViewSet,
 )
@@ -281,6 +282,11 @@ urlpatterns = [
         "workspaces/<str:slug>/my-tasks/issues/",
         MyTasksIssuesEndpoint.as_view(),
         name="workspace-my-tasks-issues",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/issues/<uuid:issue_id>/stage/",
+        MyTasksIssueStageEndpoint.as_view(),
+        name="workspace-my-tasks-issue-stage",
     ),
     path(
         "workspaces/<str:slug>/my-tasks/issues/<uuid:issue_id>/move/",

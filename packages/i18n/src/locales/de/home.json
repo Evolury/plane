@@ -73,5 +73,10 @@
       "start_subscription": "Abonnement starten",
       "explore_business_features": "Business-Funktionen entdecken"
     }
+  },
+  "home_greeting": {
+    "morning": "Guten Morgen",
+    "afternoon": "Guten Tag",
+    "evening": "Guten Abend"
   }
 }

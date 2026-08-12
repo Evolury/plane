@@ -73,5 +73,10 @@
       "start_subscription": "구독 시작",
       "explore_business_features": "Business 기능 살펴보기"
     }
+  },
+  "home_greeting": {
+    "morning": "좋은 아침입니다",
+    "afternoon": "좋은 오후입니다",
+    "evening": "좋은 저녁입니다"
   }
 }

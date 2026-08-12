@@ -32,6 +32,7 @@ STAGE_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/"
 MARK_DEFAULT_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-default/"
 ISSUES_URL = "/api/workspaces/{slug}/my-tasks/issues/"
 MOVE_URL = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/move/"
+STAGE_URL_ISSUE = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/stage/"
 
 
 @pytest.fixture
@@ -343,6 +344,39 @@ class TestMyTasksIssues:
         ProjectMember.objects.filter(project=project, member=create_user).update(is_active=False)
         response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
         assert response.data["results"] == []
+
+
+@pytest.mark.contract
+class TestMyTasksIssueStage:
+    def test_unplaced_issue_returns_default_stage(self, session_client, workspace, create_user, assigned_issue):
+        response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
+        assert response.status_code == status.HTTP_200_OK
+        default = WorkStage.objects.get(workspace=workspace, owner=create_user, is_default=True)
+        assert response.data["stage_id"] == str(default.id)
+
+    def test_moved_issue_returns_its_stage(self, session_client, workspace, create_user, assigned_issue):
+        stages = seed_stages(workspace, create_user)
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, stage=stages["Hoje"], issue=assigned_issue
+        )
+        response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
+        assert response.data["stage_id"] == str(stages["Hoje"].id)
+
+    def test_not_assigned_is_not_found(self, session_client, workspace, project, create_user):
+        unassigned = Issue.objects.create(
+            name="Unassigned", project=project, workspace=workspace, created_by=create_user
+        )
+        response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=unassigned.id))
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_first_access_seeds_stages(self, session_client, workspace, create_user, assigned_issue):
+        """O endpoint garante o seed: usuário que nunca abriu a página já
+        recebe a etapa padrão pelo popover."""
+        assert WorkStage.objects.filter(owner=create_user).count() == 0
+        response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
+        assert response.status_code == status.HTTP_200_OK
+        assert WorkStage.objects.filter(owner=create_user).count() == 5
+        assert response.data["stage_id"] is not None
 
 
 @pytest.mark.contract

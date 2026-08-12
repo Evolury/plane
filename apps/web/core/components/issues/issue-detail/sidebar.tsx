@@ -102,6 +102,7 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
               <MemberDropdown
                 value={issue?.assignee_ids ?? undefined}
                 onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { assignee_ids: val })}
+                workItemId={issueId}
                 disabled={!isEditable}
                 projectId={projectId?.toString() ?? ""}
                 placeholder={t("issue.add.assignee")}

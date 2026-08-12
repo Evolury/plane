@@ -39,6 +39,7 @@
       "description": "Kişisel aşamalarınızı oluşturun, düzenleyin ve yeniden sıralayın. Bir aşamayı silmek, öğelerini varsayılan aşamaya taşır."
     },
     "stage_label": "Aşama",
-    "empty_title": "Henüz size atanmış bir şey yok"
+    "empty_title": "Henüz size atanmış bir şey yok",
+    "stage_in_my_tasks": "Görevlerim içindeki aşama"
   }
 }

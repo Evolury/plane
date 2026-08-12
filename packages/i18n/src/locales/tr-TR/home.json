@@ -73,5 +73,10 @@
       "start_subscription": "Aboneliği başlat",
       "explore_business_features": "Business özelliklerini keşfet"
     }
+  },
+  "home_greeting": {
+    "morning": "Günaydın",
+    "afternoon": "İyi günler",
+    "evening": "İyi akşamlar"
   }
 }

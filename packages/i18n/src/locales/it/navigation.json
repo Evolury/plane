@@ -39,6 +39,7 @@
       "description": "Crea, modifica e riordina le tue fasi personali. Eliminando una fase, i suoi elementi passano alla fase predefinita."
     },
     "stage_label": "Fase",
-    "empty_title": "Non ti è stato ancora assegnato nulla"
+    "empty_title": "Non ti è stato ancora assegnato nulla",
+    "stage_in_my_tasks": "Fase in Le mie attività"
   }
 }

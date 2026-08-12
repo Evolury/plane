@@ -73,5 +73,10 @@
       "start_subscription": "Mulai berlangganan",
       "explore_business_features": "Jelajahi fitur Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Selamat pagi",
+    "afternoon": "Selamat siang",
+    "evening": "Selamat malam"
   }
 }
