@@ -35,6 +35,10 @@ from plane.app.views import (
     UserRecentVisitViewSet,
     WorkspaceHomePreferenceViewSet,
     WorkspaceStickyViewSet,
+    # Evolury: etapas pessoais de "Minhas tarefas"
+    WorkStageViewSet,
+    MyTasksIssuesEndpoint,
+    MyTasksIssueMoveEndpoint,
     WorkspaceUserPreferenceViewSet,
 )
 
@@ -256,5 +260,31 @@ urlpatterns = [
         "workspaces/<str:slug>/sidebar-preferences/",
         WorkspaceUserPreferenceViewSet.as_view(),
         name="workspace-user-preference",
+    ),
+    # Evolury: etapas pessoais de "Minhas tarefas"
+    path(
+        "workspaces/<str:slug>/my-tasks/stages/",
+        WorkStageViewSet.as_view({"get": "list", "post": "create"}),
+        name="workspace-my-tasks-stages",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/stages/<uuid:pk>/",
+        WorkStageViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="workspace-my-tasks-stage",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/stages/<uuid:pk>/mark-default/",
+        WorkStageViewSet.as_view({"post": "mark_default"}),
+        name="workspace-my-tasks-stage-mark-default",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/issues/",
+        MyTasksIssuesEndpoint.as_view(),
+        name="workspace-my-tasks-issues",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/issues/<uuid:issue_id>/move/",
+        MyTasksIssueMoveEndpoint.as_view(),
+        name="workspace-my-tasks-issue-move",
     ),
 ]

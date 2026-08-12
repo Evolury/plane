@@ -29,6 +29,9 @@ from .workspace import (
     WorkspaceHomePreferenceSerializer,
     StickySerializer,
 )
+
+# Evolury: etapas pessoais de "Minhas tarefas"
+from .work_stage import WorkStageSerializer, WorkStageIssueSerializer
 from .project import (
     ProjectSerializer,
     ProjectListSerializer,

@@ -21,6 +21,6 @@ Tudo o que a Evolury constrói por cima da base herdada é documentado em
 - [evolury/decisoes/](evolury/decisoes/) — decisões de arquitetura (ADRs), numeradas e imutáveis
 - [evolury/funcionalidades/](evolury/funcionalidades/) — uma pasta por funcionalidade própria, da especificação ao backlog
 
-| Funcionalidade                                                            | Status                                                            |
-| ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| [minhas-tarefas](evolury/funcionalidades/minhas-tarefas/especificacao.md) | Em desenvolvimento — F0 concluída (ADR 0002); próxima: F1 backend |
+| Funcionalidade                                                            | Status                                                                                  |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [minhas-tarefas](evolury/funcionalidades/minhas-tarefas/especificacao.md) | Em desenvolvimento — F0–F1 concluídas (backend completo); próxima: F2 fundação frontend |

@@ -89,4 +89,7 @@ from .device import Device, DeviceSession
 
 from .sticky import Sticky
 
+# Evolury: etapas pessoais de "Minhas tarefas"
+from .work_stage import WorkStage, WorkStageIssue, DEFAULT_WORK_STAGES
+
 from .description import Description, DescriptionVersion
