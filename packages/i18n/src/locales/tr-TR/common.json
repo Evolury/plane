@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "İş öğeleri, işin her bir parçasını takip etmenize yardımcı olur. İş öğeleriyle neler olduğunu, üzerinde kimin çalıştığını ve nelerin tamamlandığını takip edin.",
     "only_work_items_within_current_project_can_be_selected": "Yalnızca geçerli projedeki iş öğeleri seçilebilir.",
     "work_items_description_long": "İş öğesi, Plane'in temel yapı taşıdır. Plane'deki kavramların çoğu, iş öğeleri ve özellikleriyle ilişkilidir.",
-    "views_description_long": "Yalnızca sizin için önemli olan iş öğelerini görüntülemek için özel filtreler oluşturun. Filtrelerinizi birkaç tıklamayla kaydedin ve paylaşın."
+    "views_description_long": "Yalnızca sizin için önemli olan iş öğelerini görüntülemek için özel filtreler oluşturun. Filtrelerinizi birkaç tıklamayla kaydedin ve paylaşın.",
+    "untitled_label": "Başlıksız etiket"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "iş öğesi tiplerini devre dışı bıraktı",
     "created_work_item_via": "iş öğesini şu kaynak üzerinden oluşturdu:",
     "the_work_item_and_assigned_it_to_you": "iş öğesini oluşturdu ve size atadı.",
-    "the_work_item": "iş öğesi"
+    "the_work_item": "iş öğesi",
+    "created_prefix": "şunu oluşturdu:",
+    "deleted_prefix": "şunu sildi:",
+    "removed_prefix": "şunu kaldırdı:",
+    "marked_prefix": "şunu işaretledi:",
+    "added_this": "şunu ekledi:",
+    "link": "bağlantı",
+    "to_an_epic": "Epik'e dönüştürdü",
+    "to_the_module": "şu modüle ekledi:",
+    "from_the_cycle": "şu döngüden:",
+    "from_the_module": "şu modülden:",
+    "relates_to": "şununla ilişkili:",
+    "is_being_blocked_by": "şu iş öğesi tarafından engelleniyor:",
+    "as_duplicate_of": "şunun kopyası olarak:",
+    "added_this_project": "bu projeyi ",
+    "removed_this_project": "bu projeyi kaldırdı "
   },
   "validation": {
     "name_required": "Name is required",

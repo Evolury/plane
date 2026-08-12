@@ -211,9 +211,12 @@ export function NotificationContent({
     <>
       {renderTriggerName()}
       <span className="text-tertiary">{renderAction()} </span>
-      {verb !== translate("activity_log.deleted") && (
+      {/* Evolury: `verb` vem cru da API ("deleted"), então comparar com
+          translate() dava sempre verdadeiro em pt e o bloco nunca era ocultado
+          numa exclusão. Comparação literal + conector traduzido. */}
+      {verb !== "deleted" && (
         <>
-          {showConnector && <span className="text-tertiary">to </span>}
+          {showConnector && <span className="text-tertiary">{translate("activity_log.prep_in")}</span>}
           <span className="font-medium text-primary">{renderValue()}</span>
           {notificationField === "comment" && renderCommentBox && (
             <div className="origin-left scale-75">

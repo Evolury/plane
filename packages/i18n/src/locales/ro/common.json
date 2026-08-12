@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Activitățile te ajută să urmărești fiecare parte a muncii. Cu ajutorul activităților, știi ce se întâmplă, cine lucrează la ce și ce este finalizat.",
     "only_work_items_within_current_project_can_be_selected": "Pot fi selectate doar activități din proiectul curent.",
     "work_items_description_long": "Activitatea este elementul de bază al Plane. Majoritatea conceptelor din Plane sunt asociate cu activitățile și proprietățile lor.",
-    "views_description_long": "Creează filtre personalizate pentru a afișa doar activitățile care contează pentru tine. Salvează și partajează filtrele în doar câteva clicuri."
+    "views_description_long": "Creează filtre personalizate pentru a afișa doar activitățile care contează pentru tine. Salvează și partajează filtrele în doar câteva clicuri.",
+    "untitled_label": "Etichetă fără titlu"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "a dezactivat tipurile de activități",
     "created_work_item_via": "a creat activitatea prin",
     "the_work_item_and_assigned_it_to_you": "activitatea și ți-a atribuit-o.",
-    "the_work_item": "activitatea"
+    "the_work_item": "activitatea",
+    "created_prefix": "a creat",
+    "deleted_prefix": "a șters",
+    "removed_prefix": "a eliminat",
+    "marked_prefix": "a marcat",
+    "added_this": "a adăugat acest",
+    "link": "link",
+    "to_an_epic": "într-o sarcină majoră",
+    "to_the_module": "în modulul",
+    "from_the_cycle": "din ciclul",
+    "from_the_module": "din modulul",
+    "relates_to": "are legătură cu",
+    "is_being_blocked_by": "este blocată de",
+    "as_duplicate_of": "ca duplicat al",
+    "added_this_project": "a adăugat acest proiect ",
+    "removed_this_project": "a eliminat acest proiect "
   },
   "validation": {
     "name_required": "Name is required",
