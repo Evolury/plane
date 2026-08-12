@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Item kerja membantu Anda melacak setiap bagian pekerjaan. Dengan item kerja, pantau apa yang sedang berlangsung, siapa yang mengerjakannya, dan apa yang sudah selesai.",
     "only_work_items_within_current_project_can_be_selected": "Hanya item kerja dalam proyek saat ini yang dapat dipilih.",
     "work_items_description_long": "Item kerja adalah unit dasar Plane. Sebagian besar konsep di Plane terkait dengan item kerja dan propertinya.",
-    "views_description_long": "Buat filter kustom untuk menampilkan hanya item kerja yang penting bagi Anda. Simpan dan bagikan filter Anda hanya dengan beberapa klik."
+    "views_description_long": "Buat filter kustom untuk menampilkan hanya item kerja yang penting bagi Anda. Simpan dan bagikan filter Anda hanya dengan beberapa klik.",
+    "untitled_label": "Label tanpa judul"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "menonaktifkan tipe item kerja",
     "created_work_item_via": "membuat item kerja melalui",
     "the_work_item_and_assigned_it_to_you": "item kerja dan menugaskannya kepada Anda.",
-    "the_work_item": "item kerja"
+    "the_work_item": "item kerja",
+    "created_prefix": "membuat",
+    "deleted_prefix": "menghapus",
+    "removed_prefix": "menghapus",
+    "marked_prefix": "menandai",
+    "added_this": "menambahkan",
+    "link": "tautan",
+    "to_an_epic": "menjadi Epik",
+    "to_the_module": "ke modul",
+    "from_the_cycle": "dari siklus",
+    "from_the_module": "dari modul",
+    "relates_to": "terkait dengan",
+    "is_being_blocked_by": "diblokir oleh",
+    "as_duplicate_of": "sebagai duplikat dari",
+    "added_this_project": "menambahkan proyek ini ",
+    "removed_this_project": "menghapus proyek ini "
   },
   "validation": {
     "name_required": "Name is required",

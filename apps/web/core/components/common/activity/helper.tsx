@@ -166,11 +166,12 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
           <>
             {newValue ? (
               <>
-                set the estimate point to <span className="font-medium text-primary">{newValue}</span>
+                {translate("activity_log.set_estimate")}
+                <span className="font-medium text-primary">{newValue}</span>
               </>
             ) : (
               <>
-                removed the estimate point
+                {translate("activity_log.removed_estimate")}
                 {oldValue && (
                   <>
                     {" "}
@@ -186,10 +187,16 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       return {
         message: (
           <>
+            {/* Evolury: `verb` vem cru da API ("removed"), então comparar com
+                translate() nunca casava em pt e o ramo de remoção jamais era
+                escolhido. Comparação literal + mensagem inteira traduzida, em
+                vez de colar verbo em inglês com texto traduzido. */}
             <span>
-              {verb} this project {verb === translate("activity_log.removed") ? "from" : "to"} the cycle{" "}
+              {verb === "removed"
+                ? `${translate("activity_log.removed_this_project")}${translate("activity_log.from_the_cycle")} `
+                : `${translate("activity_log.added_this_project")}${translate("ui.activity_to_the_cycle")} `}
             </span>
-            {verb !== translate("activity_log.removed") ? (
+            {verb !== "removed" ? (
               <a
                 href={`/${workspaceDetail?.slug}/projects/${activity.project}/cycles/${activity.new_identifier}`}
                 target="_blank"
@@ -208,13 +215,14 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       return {
         message: (
           <>
+            {/* Evolury: mesma correção do bloco de ciclos */}
             <span>
-              {verb} this project {verb === translate("activity_log.removed") ? "from" : "to"} the module{" "}
+              {verb === "removed"
+                ? `${translate("activity_log.removed_this_project")}${translate("activity_log.from_the_module")} `
+                : `${translate("activity_log.added_this_project")}${translate("activity_log.to_the_module")} `}
             </span>
             <span className="font-medium text-primary">
-              {verb === translate("activity_log.removed")
-                ? oldValue
-                : newValue || translate("activity_log.unknown_module")}
+              {verb === "removed" ? oldValue : newValue || translate("activity_log.unknown_module")}
             </span>
           </>
         ),
@@ -223,8 +231,9 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
       return {
         message: (
           <>
-            {verb} the label{" "}
-            <span className="font-medium text-primary">{newValue || oldValue || "Untitled label"}</span>
+            {/* Evolury: idem — verbo cru em inglês virou mensagem traduzida */}
+            {verb === "removed" ? translate("activity_log.removed_label") : translate("activity_log.added_label")}
+            <span className="font-medium text-primary">{newValue || oldValue || translate("ui.untitled_label")}</span>
           </>
         ),
       };

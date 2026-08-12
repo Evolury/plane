@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "工作项帮助您跟踪各项具体工作。借助工作项，随时了解正在发生什么、谁在负责以及哪些已完成。",
     "only_work_items_within_current_project_can_be_selected": "只能选择当前项目中的工作项。",
     "work_items_description_long": "工作项是 Plane 的基本构成单元。Plane 中的大多数概念都与工作项及其属性相关联。",
-    "views_description_long": "创建自定义筛选条件，仅显示对您重要的工作项。只需几次点击即可保存并分享您的筛选条件。"
+    "views_description_long": "创建自定义筛选条件，仅显示对您重要的工作项。只需几次点击即可保存并分享您的筛选条件。",
+    "untitled_label": "未命名标签"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "禁用了工作项类型",
     "created_work_item_via": "通过以下方式创建了工作项：",
     "the_work_item_and_assigned_it_to_you": "工作项并将其分配给您。",
-    "the_work_item": "工作项"
+    "the_work_item": "工作项",
+    "created_prefix": "创建了",
+    "deleted_prefix": "删除了",
+    "removed_prefix": "移除了",
+    "marked_prefix": "标记了",
+    "added_this": "添加了此",
+    "link": "链接",
+    "to_an_epic": "转换为史诗",
+    "to_the_module": "到模块",
+    "from_the_cycle": "与以下周期的关联：",
+    "from_the_module": "与以下模块的关联：",
+    "relates_to": "关联到",
+    "is_being_blocked_by": "正在被以下工作项阻止：",
+    "as_duplicate_of": "与以下工作项的重复关系：",
+    "added_this_project": "添加了此项目",
+    "removed_this_project": "移除了此项目"
   },
   "validation": {
     "name_required": "Name is required",

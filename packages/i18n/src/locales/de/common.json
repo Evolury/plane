@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Arbeitselemente helfen Ihnen, einzelne Arbeitsschritte zu verfolgen. Mit Arbeitselementen behalten Sie im Blick, was gerade passiert, wer daran arbeitet und was erledigt ist.",
     "only_work_items_within_current_project_can_be_selected": "Es können nur Arbeitselemente aus dem aktuellen Projekt ausgewählt werden.",
     "work_items_description_long": "Das Arbeitselement ist der Grundbaustein von Plane. Die meisten Konzepte in Plane sind mit Arbeitselementen und ihren Eigenschaften verknüpft.",
-    "views_description_long": "Erstellen Sie benutzerdefinierte Filter, um nur die Arbeitselemente anzuzeigen, die für Sie wichtig sind. Speichern und teilen Sie Ihre Filter mit nur wenigen Klicks."
+    "views_description_long": "Erstellen Sie benutzerdefinierte Filter, um nur die Arbeitselemente anzuzeigen, die für Sie wichtig sind. Speichern und teilen Sie Ihre Filter mit nur wenigen Klicks.",
+    "untitled_label": "Label ohne Titel"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "deaktivierte Arbeitselementtypen",
     "created_work_item_via": "erstellte das Arbeitselement über",
     "the_work_item_and_assigned_it_to_you": "das Arbeitselement und wies es Ihnen zu.",
-    "the_work_item": "das Arbeitselement"
+    "the_work_item": "das Arbeitselement",
+    "created_prefix": "erstellte",
+    "deleted_prefix": "löschte",
+    "removed_prefix": "entfernte",
+    "marked_prefix": "markierte",
+    "added_this": "ergänzte diesen",
+    "link": "Link",
+    "to_an_epic": "in ein Epic",
+    "to_the_module": "zum Modul",
+    "from_the_cycle": "aus dem Zyklus",
+    "from_the_module": "aus dem Modul",
+    "relates_to": "als verwandt mit",
+    "is_being_blocked_by": "als blockiert durch",
+    "as_duplicate_of": "als Duplikat von",
+    "added_this_project": "ergänzte dieses Projekt ",
+    "removed_this_project": "entfernte dieses Projekt "
   },
   "validation": {
     "name_required": "Name is required",

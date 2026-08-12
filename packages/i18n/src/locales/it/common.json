@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Gli elementi di lavoro ti aiutano a tenere traccia delle singole attività. Con gli elementi di lavoro sai cosa sta succedendo, chi ci sta lavorando e cosa è stato completato.",
     "only_work_items_within_current_project_can_be_selected": "È possibile selezionare solo gli elementi di lavoro del progetto corrente.",
     "work_items_description_long": "L'elemento di lavoro è l'unità di base di Plane. La maggior parte dei concetti di Plane è associata agli elementi di lavoro e alle loro proprietà.",
-    "views_description_long": "Crea filtri personalizzati per visualizzare solo gli elementi di lavoro che ti interessano. Salva e condividi i tuoi filtri in pochi clic."
+    "views_description_long": "Crea filtri personalizzati per visualizzare solo gli elementi di lavoro che ti interessano. Salva e condividi i tuoi filtri in pochi clic.",
+    "untitled_label": "Etichetta senza titolo"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "ha disabilitato i tipi di elemento di lavoro",
     "created_work_item_via": "ha creato l'elemento di lavoro tramite",
     "the_work_item_and_assigned_it_to_you": "l'elemento di lavoro e te l'ha assegnato.",
-    "the_work_item": "l'elemento di lavoro"
+    "the_work_item": "l'elemento di lavoro",
+    "created_prefix": "ha creato",
+    "deleted_prefix": "ha eliminato",
+    "removed_prefix": "ha rimosso",
+    "marked_prefix": "ha contrassegnato",
+    "added_this": "ha aggiunto questo",
+    "link": "link",
+    "to_an_epic": "in una Epic",
+    "to_the_module": "al modulo",
+    "from_the_cycle": "dal ciclo",
+    "from_the_module": "dal modulo",
+    "relates_to": "è correlato a",
+    "is_being_blocked_by": "è bloccato da",
+    "as_duplicate_of": "come duplicato di",
+    "added_this_project": "ha aggiunto questo progetto ",
+    "removed_this_project": "ha rimosso questo progetto "
   },
   "validation": {
     "name_required": "Name is required",

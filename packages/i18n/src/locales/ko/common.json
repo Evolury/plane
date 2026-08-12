@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "작업 항목은 개별 업무를 추적하는 데 도움이 됩니다. 작업 항목을 통해 무슨 일이 진행 중인지, 누가 작업하고 있는지, 무엇이 완료되었는지 파악할 수 있습니다.",
     "only_work_items_within_current_project_can_be_selected": "현재 프로젝트 내의 작업 항목만 선택할 수 있습니다.",
     "work_items_description_long": "작업 항목은 Plane의 기본 구성 요소입니다. Plane의 대부분의 개념은 작업 항목과 그 속성에 연관되어 있습니다.",
-    "views_description_long": "커스텀 필터를 만들어 중요한 작업 항목만 표시하세요. 몇 번의 클릭만으로 필터를 저장하고 공유할 수 있습니다."
+    "views_description_long": "커스텀 필터를 만들어 중요한 작업 항목만 표시하세요. 몇 번의 클릭만으로 필터를 저장하고 공유할 수 있습니다.",
+    "untitled_label": "제목 없는 레이블"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "님이 작업 항목 유형을 비활성화했습니다",
     "created_work_item_via": "님이 다음을 통해 작업 항목을 생성했습니다:",
     "the_work_item_and_assigned_it_to_you": "님이 작업 항목을 생성하고 회원님에게 할당했습니다.",
-    "the_work_item": "작업 항목"
+    "the_work_item": "작업 항목",
+    "created_prefix": "님이 다음을 생성했습니다:",
+    "deleted_prefix": "님이 다음을 삭제했습니다:",
+    "removed_prefix": "님이 다음을 해제했습니다:",
+    "marked_prefix": "님이 다음을 중복으로 표시했습니다:",
+    "added_this": "님이 다음을 추가했습니다:",
+    "link": "링크",
+    "to_an_epic": "을(를) 에픽으로 변환했습니다",
+    "to_the_module": "을(를) 다음 모듈에 추가했습니다:",
+    "from_the_cycle": "대상 사이클:",
+    "from_the_module": "대상 모듈:",
+    "relates_to": "이(가) 다음 작업 항목과 관련되어 있다고 표시했습니다:",
+    "is_being_blocked_by": "이(가) 다음 작업 항목에 의해 차단되고 있다고 표시했습니다:",
+    "as_duplicate_of": "중복 원본:",
+    "added_this_project": "님이 이 프로젝트",
+    "removed_this_project": "님이 이 프로젝트의 연결을 해제했습니다 "
   },
   "validation": {
     "name_required": "Name is required",

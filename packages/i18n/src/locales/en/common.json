@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Work items help you track individual pieces of work. With work items, keep track of what's going on, who is working on it, and what's done.",
     "only_work_items_within_current_project_can_be_selected": "Only work items within the current project can be selected.",
     "work_items_description_long": "The work item is the building block of the Plane. Most concepts in Plane are either associated with work items and their properties.",
-    "views_description_long": "Create custom filters to display only the work items that matter to you. Save and share your filters in just a few clicks."
+    "views_description_long": "Create custom filters to display only the work items that matter to you. Save and share your filters in just a few clicks.",
+    "untitled_label": "Untitled label"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "disabled work item types",
     "created_work_item_via": "created the work item via",
     "the_work_item_and_assigned_it_to_you": "the work item and assigned it to you.",
-    "the_work_item": "the work item"
+    "the_work_item": "the work item",
+    "created_prefix": "created",
+    "deleted_prefix": "deleted",
+    "removed_prefix": "removed",
+    "marked_prefix": "marked",
+    "added_this": "added this",
+    "link": "link",
+    "to_an_epic": "to an epic",
+    "to_the_module": "to the module",
+    "from_the_cycle": "from the cycle",
+    "from_the_module": "from the module",
+    "relates_to": "relates to",
+    "is_being_blocked_by": "is being blocked by",
+    "as_duplicate_of": "as a duplicate of",
+    "added_this_project": "added this project ",
+    "removed_this_project": "removed this project "
   },
   "validation": {
     "name_required": "Name is required",

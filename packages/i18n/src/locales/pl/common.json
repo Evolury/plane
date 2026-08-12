@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Elementy pracy pomagają śledzić poszczególne części pracy. Dzięki elementom pracy wiesz, co się dzieje, kto nad tym pracuje i co zostało zrobione.",
     "only_work_items_within_current_project_can_be_selected": "Można wybrać tylko elementy pracy z bieżącego projektu.",
     "work_items_description_long": "Element pracy to podstawowy budulec Plane. Większość pojęć w Plane jest powiązana z elementami pracy i ich właściwościami.",
-    "views_description_long": "Twórz niestandardowe filtry, aby wyświetlać tylko te elementy pracy, które są dla ciebie ważne. Zapisuj i udostępniaj filtry za pomocą zaledwie kilku kliknięć."
+    "views_description_long": "Twórz niestandardowe filtry, aby wyświetlać tylko te elementy pracy, które są dla ciebie ważne. Zapisuj i udostępniaj filtry za pomocą zaledwie kilku kliknięć.",
+    "untitled_label": "Etykieta bez tytułu"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "wyłączył(a) typy elementów pracy",
     "created_work_item_via": "utworzył(a) element pracy przez",
     "the_work_item_and_assigned_it_to_you": "element pracy i przypisał(a) go do ciebie.",
-    "the_work_item": "element pracy"
+    "the_work_item": "element pracy",
+    "created_prefix": "utworzył(a)",
+    "deleted_prefix": "usunął(-ęła)",
+    "removed_prefix": "usunął(-ęła)",
+    "marked_prefix": "oznaczył(a)",
+    "added_this": "dodał(a) ten",
+    "link": "link",
+    "to_an_epic": "na Epik",
+    "to_the_module": "do modułu",
+    "from_the_cycle": "z cyklu",
+    "from_the_module": "z modułu",
+    "relates_to": "jest powiązany z",
+    "is_being_blocked_by": "jest blokowany przez",
+    "as_duplicate_of": "jako duplikat",
+    "added_this_project": "dodał(a) ten projekt ",
+    "removed_this_project": "usunął(-ęła) ten projekt "
   },
   "validation": {
     "name_required": "Name is required",

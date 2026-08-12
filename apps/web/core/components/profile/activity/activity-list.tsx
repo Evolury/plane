@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { History, MessageSquare } from "lucide-react";
 // plane imports
+import { useTranslation } from "@plane/i18n";
 import type { IUserActivityResponse } from "@plane/types";
 import { calculateTimeAgo, getFileURL } from "@plane/utils";
 // components
@@ -25,6 +26,8 @@ type Props = {
 
 export const ActivityList = observer(function ActivityList(props: Props) {
   const { activity } = props;
+  // i18n
+  const { t } = useTranslation();
   // params
   const { workspaceSlug } = useParams();
   // store hooks
@@ -71,8 +74,9 @@ export const ActivityList = observer(function ActivityList(props: Props) {
                             ? activityItem.actor_detail.first_name + " Bot"
                             : activityItem.actor_detail.display_name}
                         </div>
-                        <p className="mt-0.5 text-11 text-secondary">
-                          Commented {calculateTimeAgo(activityItem.created_at)}
+                        {/* Evolury: i18n do rótulo do comentário; a chave é minúscula, daí o first-letter:uppercase */}
+                        <p className="mt-0.5 text-11 text-secondary first-letter:uppercase">
+                          {t("activity_log.commented")} {calculateTimeAgo(activityItem.created_at)}
                         </p>
                       </div>
                       <div className="issue-comments-section p-0">
@@ -102,7 +106,8 @@ export const ActivityList = observer(function ActivityList(props: Props) {
               ) &&
               !activityItem.field ? (
                 <span>
-                  created <IssueLink activity={activityItem} />
+                  {/* Evolury: i18n do verbo que antecede o link da tarefa */}
+                  {t("activity_log.created_prefix")} <IssueLink activity={activityItem} />
                 </span>
               ) : (
                 <ActivityMessage activity={activityItem} showIssue />
@@ -154,8 +159,9 @@ export const ActivityList = observer(function ActivityList(props: Props) {
                                 className="inline"
                               >
                                 <span className="text-gray font-medium">
+                                  {/* Evolury: i18n do autor da atividade */}
                                   {currentUser?.id === activityItem.actor_detail.id
-                                    ? "You"
+                                    ? t("you")
                                     : activityItem.actor_detail.display_name}
                                 </span>
                               </Link>

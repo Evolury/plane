@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Pracovné položky vám pomáhajú sledovať jednotlivé časti práce. Vďaka pracovným položkám viete, čo sa deje, kto na čom pracuje a čo je hotové.",
     "only_work_items_within_current_project_can_be_selected": "Vybrať možno iba pracovné položky z aktuálneho projektu.",
     "work_items_description_long": "Pracovná položka je základným stavebným prvkom Plane. Väčšina konceptov v Plane je spojená s pracovnými položkami a ich vlastnosťami.",
-    "views_description_long": "Vytvárajte vlastné filtre a zobrazujte iba tie pracovné položky, ktoré sú pre vás dôležité. Ukladajte a zdieľajte svoje filtre niekoľkými kliknutiami."
+    "views_description_long": "Vytvárajte vlastné filtre a zobrazujte iba tie pracovné položky, ktoré sú pre vás dôležité. Ukladajte a zdieľajte svoje filtre niekoľkými kliknutiami.",
+    "untitled_label": "Štítok bez názvu"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "zakázal(a) typy pracovných položiek",
     "created_work_item_via": "vytvoril(a) pracovnú položku cez",
     "the_work_item_and_assigned_it_to_you": "pracovnú položku a priradil(a) vám ju.",
-    "the_work_item": "pracovnú položku"
+    "the_work_item": "pracovnú položku",
+    "created_prefix": "vytvoril(a)",
+    "deleted_prefix": "odstránil(a)",
+    "removed_prefix": "odobral(a)",
+    "marked_prefix": "označil(a)",
+    "added_this": "pridal(a) tento",
+    "link": "odkaz",
+    "to_an_epic": "na epiku",
+    "to_the_module": "do modulu",
+    "from_the_cycle": "z cyklu",
+    "from_the_module": "z modulu",
+    "relates_to": "súvisí s",
+    "is_being_blocked_by": "je blokovaná pracovnou položkou",
+    "as_duplicate_of": "ako duplikát",
+    "added_this_project": "pridal(a) tento projekt ",
+    "removed_this_project": "odobral(a) tento projekt "
   },
   "validation": {
     "name_required": "Name is required",

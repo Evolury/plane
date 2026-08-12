@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Робочі одиниці допомагають відстежувати окремі частини роботи. За допомогою робочих одиниць стежте за тим, що відбувається, хто над цим працює і що вже зроблено.",
     "only_work_items_within_current_project_can_be_selected": "Можна вибрати лише робочі одиниці поточного проєкту.",
     "work_items_description_long": "Робоча одиниця — основний будівельний блок Plane. Більшість концепцій у Plane пов'язані з робочими одиницями та їхніми властивостями.",
-    "views_description_long": "Створюйте власні фільтри, щоб бачити лише ті робочі одиниці, які важливі для вас. Зберігайте фільтри та діліться ними за кілька кліків."
+    "views_description_long": "Створюйте власні фільтри, щоб бачити лише ті робочі одиниці, які важливі для вас. Зберігайте фільтри та діліться ними за кілька кліків.",
+    "untitled_label": "Мітка без назви"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "вимкнув типи робочих одиниць",
     "created_work_item_via": "створив робочу одиницю через",
     "the_work_item_and_assigned_it_to_you": "робочу одиницю та призначив її вам.",
-    "the_work_item": "робочу одиницю"
+    "the_work_item": "робочу одиницю",
+    "created_prefix": "створив",
+    "deleted_prefix": "видалив",
+    "removed_prefix": "вилучив",
+    "marked_prefix": "позначив",
+    "added_this": "додав це",
+    "link": "посилання",
+    "to_an_epic": "на епік",
+    "to_the_module": "до модуля",
+    "from_the_cycle": "з циклу",
+    "from_the_module": "з модуля",
+    "relates_to": "пов'язана з",
+    "is_being_blocked_by": "блокується робочою одиницею",
+    "as_duplicate_of": "як дублікат",
+    "added_this_project": "додав цей проєкт ",
+    "removed_this_project": "вилучив цей проєкт "
   },
   "validation": {
     "name_required": "Name is required",

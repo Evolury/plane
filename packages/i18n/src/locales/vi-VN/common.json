@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "Mục công việc giúp bạn theo dõi từng phần công việc riêng lẻ. Với mục công việc, hãy nắm bắt những gì đang diễn ra, ai đang thực hiện và những gì đã hoàn thành.",
     "only_work_items_within_current_project_can_be_selected": "Chỉ có thể chọn các mục công việc trong dự án hiện tại.",
     "work_items_description_long": "Mục công việc là khối xây dựng cơ bản của Plane. Hầu hết các khái niệm trong Plane đều gắn liền với mục công việc và các thuộc tính của chúng.",
-    "views_description_long": "Tạo bộ lọc tùy chỉnh để chỉ hiển thị những mục công việc quan trọng với bạn. Lưu và chia sẻ bộ lọc của bạn chỉ với vài cú nhấp chuột."
+    "views_description_long": "Tạo bộ lọc tùy chỉnh để chỉ hiển thị những mục công việc quan trọng với bạn. Lưu và chia sẻ bộ lọc của bạn chỉ với vài cú nhấp chuột.",
+    "untitled_label": "Nhãn không tiêu đề"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "đã tắt loại mục công việc",
     "created_work_item_via": "đã tạo mục công việc qua",
     "the_work_item_and_assigned_it_to_you": "mục công việc và giao nó cho bạn.",
-    "the_work_item": "mục công việc"
+    "the_work_item": "mục công việc",
+    "created_prefix": "đã tạo",
+    "deleted_prefix": "đã xóa",
+    "removed_prefix": "đã gỡ",
+    "marked_prefix": "đã đánh dấu",
+    "added_this": "đã thêm",
+    "link": "liên kết",
+    "to_an_epic": "thành Sử thi",
+    "to_the_module": "vào mô-đun",
+    "from_the_cycle": "khỏi chu kỳ",
+    "from_the_module": "khỏi mô-đun",
+    "relates_to": "liên quan đến",
+    "is_being_blocked_by": "đang bị chặn bởi mục công việc",
+    "as_duplicate_of": "là bản trùng lặp của",
+    "added_this_project": "đã thêm dự án này ",
+    "removed_this_project": "đã gỡ dự án này "
   },
   "validation": {
     "name_required": "Name is required",

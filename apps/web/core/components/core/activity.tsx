@@ -33,9 +33,10 @@ import {
   RelatedIcon,
   WorkItemsIcon,
 } from "@plane/propel/icons";
+import { ISSUE_PRIORITIES } from "@plane/constants";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { IIssueActivity } from "@plane/types";
-import { renderFormattedDate, generateWorkItemLink, capitalizeFirstLetter } from "@plane/utils";
+import { renderFormattedDate, generateWorkItemLink } from "@plane/utils";
 // helpers
 import { useLabel } from "@/hooks/store/use-label";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -159,6 +160,8 @@ const activityDetails: {
     icon: React.ReactNode;
   };
 } = {
+  // Evolury: os blocos `showIssue` usavam conectores crus em inglês (" to ", " from ", " of ", " for ")
+  // colados ao link da tarefa; agora usam as preposições traduzidas prep_in/prep_from.
   assignees: {
     message: (activity, showIssue) => {
       if (activity.old_value === "")
@@ -168,8 +171,8 @@ const activityDetails: {
             <UserLink activity={activity} />
             {showIssue && (
               <>
-                {" "}
-                to <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -181,8 +184,8 @@ const activityDetails: {
             <UserLink activity={activity} />
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -195,13 +198,13 @@ const activityDetails: {
       if (activity.new_value === "restore")
         return (
           <>
-            restored <IssueLink activity={activity} />
+            {translate("activity_log.restored_work_item")} <IssueLink activity={activity} />
           </>
         );
       else
         return (
           <>
-            archived <IssueLink activity={activity} />
+            {translate("activity_log.archived_work_item")} <IssueLink activity={activity} />
           </>
         );
     },
@@ -212,11 +215,11 @@ const activityDetails: {
       if (activity.verb === "created")
         return (
           <>
-            uploaded a new attachment
+            {translate("activity_log.uploaded_attachment")}
             {showIssue && (
               <>
-                {" "}
-                to <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -224,11 +227,11 @@ const activityDetails: {
       else
         return (
           <>
-            removed an attachment
+            {translate("activity_log.removed_attachment")}
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -239,11 +242,11 @@ const activityDetails: {
   description: {
     message: (activity, showIssue) => (
       <>
-        updated the description
+        {translate("activity_log.updated_description")}
         {showIssue && (
           <>
-            {" "}
-            of <IssueLink activity={activity} />
+            {translate("activity_log.prep_from")}
+            <IssueLink activity={activity} />
           </>
         )}
       </>
@@ -255,11 +258,11 @@ const activityDetails: {
       if (!activity.new_value)
         return (
           <>
-            removed the estimate point
+            {translate("activity_log.removed_estimate")}
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -267,11 +270,12 @@ const activityDetails: {
       else
         return (
           <>
-            set the estimate point to {activity.new_value}
+            {translate("activity_log.set_estimate")}
+            {activity.new_value}
             {showIssue && (
               <>
-                {" "}
-                for <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -284,19 +288,20 @@ const activityDetails: {
       if (activity.verb === "created")
         return (
           <>
-            created <IssueLink activity={activity} />
+            {translate("activity_log.created_prefix")} <IssueLink activity={activity} />
           </>
         );
       else if (activity.verb === "converted")
         return (
           <>
-            converted <IssueLink activity={activity} /> to an epic
+            {translate("activity_log.converted")} <IssueLink activity={activity} />{" "}
+            {translate("activity_log.to_an_epic")}
           </>
         );
       else
         return (
           <>
-            {translate("activity_log.deleted")} <IssueLink activity={activity} />
+            {translate("activity_log.deleted_prefix")} <IssueLink activity={activity} />
           </>
         );
     },
@@ -307,7 +312,7 @@ const activityDetails: {
       if (activity.verb === "created")
         return (
           <>
-            created <IssueLink activity={activity} />
+            {translate("activity_log.created_prefix")} <IssueLink activity={activity} />
           </>
         );
       else if (activity.verb === "converted")
@@ -321,7 +326,7 @@ const activityDetails: {
       else
         return (
           <>
-            {translate("activity_log.deleted")} <IssueLink activity={activity} />
+            {translate("activity_log.deleted_prefix")} <IssueLink activity={activity} />
           </>
         );
     },
@@ -332,15 +337,15 @@ const activityDetails: {
       if (activity.old_value === "")
         return (
           <span className="overflow-hidden">
-            added a new label{" "}
+            {translate("activity_log.added_label")}
             <span className="inline-flex items-center gap-2 rounded-full border border-strong px-2 py-0.5 text-11">
               <LabelPill labelId={activity.new_identifier ?? ""} workspaceSlug={workspaceSlug} />
               <span className="line-clamp-1 flex-shrink font-medium break-all text-primary">{activity.new_value}</span>
             </span>
             {showIssue && (
               <span className="">
-                {" "}
-                to <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </span>
             )}
           </span>
@@ -348,15 +353,15 @@ const activityDetails: {
       else
         return (
           <>
-            removed the label{" "}
+            {translate("activity_log.removed_label")}
             <span className="inline-flex items-center gap-2 rounded-full border border-strong px-2 py-0.5 text-11">
               <LabelPill labelId={activity.old_identifier ?? ""} workspaceSlug={workspaceSlug} />
               <span className="line-clamp-1 flex-shrink font-medium break-all text-primary">{activity.old_value}</span>
             </span>
             {showIssue && (
               <span>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </span>
             )}
           </>
@@ -365,43 +370,44 @@ const activityDetails: {
     icon: <TagIcon size={12} className="text-secondary" aria-hidden="true" />,
   },
   link: {
+    // Evolury: o verbo da atividade vem cru da API ("updated"); comparar com translate() nunca casava fora do inglês.
     message: (activity, showIssue) => {
       if (activity.verb === "created")
         return (
           <>
-            added this{" "}
+            {translate("activity_log.added_this")}{" "}
             <a
               href={`${activity.new_value}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
             >
-              link
+              {translate("activity_log.link")}
             </a>
             {showIssue && (
               <>
-                {" "}
-                to <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
         );
-      else if (activity.verb === translate("activity_log.updated"))
+      else if (activity.verb === "updated")
         return (
           <>
-            updated the{" "}
+            {translate("activity_log.updated_the")}{" "}
             <a
               href={`${activity.old_value}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
             >
-              link
+              {translate("activity_log.link")}
             </a>
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -409,19 +415,19 @@ const activityDetails: {
       else
         return (
           <>
-            removed this{" "}
+            {translate("activity_log.removed_this")}{" "}
             <a
               href={`${activity.old_value}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
             >
-              link
+              {translate("activity_log.link")}
             </a>
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -430,12 +436,14 @@ const activityDetails: {
     icon: <Link2Icon size={12} className="text-secondary" aria-hidden="true" />,
   },
   cycles: {
+    // Evolury: o verbo da atividade vem cru da API ("updated"); comparar com translate() nunca casava fora do inglês.
     message: (activity, showIssue, workspaceSlug) => {
       if (activity.verb === "created")
         return (
           <>
             <span className="flex-shrink-0">
-              added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+              {translate("activity_log.added")}{" "}
+              {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
               <span className="whitespace-nowrap">{translate("ui.activity_to_the_cycle")}</span>{" "}
             </span>
             <a
@@ -448,7 +456,7 @@ const activityDetails: {
             </a>
           </>
         );
-      else if (activity.verb === translate("activity_log.updated"))
+      else if (activity.verb === "updated")
         return (
           <>
             <span className="flex-shrink-0 whitespace-nowrap">{translate("activity_log.set_cycle")} </span>
@@ -465,7 +473,8 @@ const activityDetails: {
       else
         return (
           <>
-            {translate("activity_log.removed")} <IssueLink activity={activity} /> from the cycle{" "}
+            {translate("activity_log.removed_prefix")} <IssueLink activity={activity} />{" "}
+            {translate("activity_log.from_the_cycle")}{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/cycles/${activity.old_identifier}`}
               target="_blank"
@@ -480,12 +489,14 @@ const activityDetails: {
     icon: <CycleIcon height={12} width={12} className="text-secondary" aria-hidden="true" />,
   },
   modules: {
+    // Evolury: o verbo da atividade vem cru da API ("updated"); comparar com translate() nunca casava fora do inglês.
     message: (activity, showIssue, workspaceSlug) => {
       if (activity.verb === "created")
         return (
           <>
-            added {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} to the
-            module{" "}
+            {translate("activity_log.added")}{" "}
+            {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            {translate("activity_log.to_the_module")}{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.new_identifier}`}
               target="_blank"
@@ -496,10 +507,10 @@ const activityDetails: {
             </a>
           </>
         );
-      else if (activity.verb === translate("activity_log.updated"))
+      else if (activity.verb === "updated")
         return (
           <>
-            set the module to{" "}
+            {translate("activity_log.set_module")}{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.new_identifier}`}
               target="_blank"
@@ -513,7 +524,8 @@ const activityDetails: {
       else
         return (
           <>
-            {translate("activity_log.removed")} <IssueLink activity={activity} /> from the module{" "}
+            {translate("activity_log.removed_prefix")} <IssueLink activity={activity} />{" "}
+            {translate("activity_log.from_the_module")}{" "}
             <a
               href={`/${workspaceSlug}/projects/${activity.project}/modules/${activity.old_identifier}`}
               target="_blank"
@@ -530,11 +542,12 @@ const activityDetails: {
   name: {
     message: (activity, showIssue) => (
       <>
-        set the title to <span className="break-all">{activity.new_value}</span>
+        {translate("activity_log.set_name")}
+        <span className="break-all">{activity.new_value}</span>
         {showIssue && (
           <>
-            {" "}
-            of <IssueLink activity={activity} />
+            {translate("activity_log.prep_in")}
+            <IssueLink activity={activity} />
           </>
         )}
       </>
@@ -550,8 +563,8 @@ const activityDetails: {
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -563,8 +576,8 @@ const activityDetails: {
             <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>
             {showIssue && (
               <>
-                {" "}
-                for <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -575,14 +588,17 @@ const activityDetails: {
   priority: {
     message: (activity, showIssue) => (
       <>
-        set the priority to{" "}
+        {translate("activity_log.set_priority")}
+        {/* Evolury: o valor vem cru da API ("urgent", "high"…); traduz pelo i18n_title de ISSUE_PRIORITIES */}
         <span className="font-medium text-primary">
-          {activity.new_value ? capitalizeFirstLetter(activity.new_value) : "None"}
+          {activity.new_value
+            ? translate(ISSUE_PRIORITIES.find((p) => p.key === activity.new_value)?.i18n_title ?? activity.new_value)
+            : translate("common.none")}
         </span>
         {showIssue && (
           <>
-            {" "}
-            for <IssueLink activity={activity} />
+            {translate("activity_log.prep_in")}
+            <IssueLink activity={activity} />
           </>
         )}
       </>
@@ -590,18 +606,21 @@ const activityDetails: {
     icon: <SignalMediumIcon size={12} className="text-secondary" aria-hidden="true" />,
   },
   relates_to: {
+    // Evolury: i18n em fragmentos por causa do link no meio da frase
     message: (activity, showIssue) => {
       if (activity.old_value === "")
         return (
           <>
-            marked that {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
-            relates to <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            {translate("activity_log.marked")}{" "}
+            {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            {translate("activity_log.relates_to")}{" "}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed the relation from{" "}
+            {translate("activity_log.removed_the_relation_from")}{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
@@ -639,9 +658,12 @@ const activityDetails: {
     message: (activity, showIssue) => {
       if (activity.old_value === "")
         return (
+          // Evolury: i18n em fragmentos por causa do link no meio da frase
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is being
-            blocked by <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            {translate("activity_log.marked")}{" "}
+            {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            {translate("activity_log.is_being_blocked_by")}{" "}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
@@ -665,19 +687,24 @@ const activityDetails: {
     icon: <BlockedIcon height="12" width="12" className="text-secondary" />,
   },
   duplicate: {
+    // Evolury: i18n em fragmentos por causa do link no meio da frase
     message: (activity, showIssue) => {
       if (activity.old_value === "")
         return (
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as
-            duplicate of <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            {translate("activity_log.marked_prefix")}{" "}
+            {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            {translate("activity_log.as_duplicate_of")}{" "}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} as a
-            duplicate of <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
+            {translate("activity_log.removed_prefix")}{" "}
+            {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")}{" "}
+            {translate("activity_log.as_duplicate_of")}{" "}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
     },
@@ -690,8 +717,8 @@ const activityDetails: {
         <span className="font-medium break-all text-primary">{activity.new_value}</span>
         {showIssue && (
           <>
-            {" "}
-            for <IssueLink activity={activity} />
+            {translate("activity_log.prep_in")}
+            <IssueLink activity={activity} />
           </>
         )}
       </>
@@ -703,11 +730,11 @@ const activityDetails: {
       if (!activity.new_value)
         return (
           <>
-            removed the start date
+            {translate("activity_log.removed_start_date")}
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -715,14 +742,14 @@ const activityDetails: {
       else
         return (
           <>
-            set the start date to{" "}
+            {translate("activity_log.set_start_date")}
             <span className="font-medium whitespace-nowrap text-primary">
               {renderFormattedDate(activity.new_value)}
             </span>
             {showIssue && (
               <>
-                {" "}
-                for <IssueLink activity={activity} />
+                {translate("activity_log.prep_in")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -735,11 +762,11 @@ const activityDetails: {
       if (!activity.new_value)
         return (
           <>
-            removed the due date
+            {translate("activity_log.removed_due_date")}
             {showIssue && (
               <>
-                {" "}
-                from <IssueLink activity={activity} />
+                {translate("activity_log.prep_from")}
+                <IssueLink activity={activity} />
               </>
             )}
           </>
@@ -747,12 +774,13 @@ const activityDetails: {
       else
         return (
           <>
-            set the due date to{" "}
+            {translate("activity_log.set_due_date")}
             <span className="font-medium whitespace-nowrap text-primary">
               {renderFormattedDate(activity.new_value)}
             </span>
             {showIssue && (
               <>
+                {translate("activity_log.prep_in")}
                 <IssueLink activity={activity} />
               </>
             )}

@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "工作事項可協助您追蹤各項具體工作。藉助工作事項，隨時掌握正在發生什麼、誰在負責以及哪些已完成。",
     "only_work_items_within_current_project_can_be_selected": "只能選擇目前專案中的工作事項。",
     "work_items_description_long": "工作事項是 Plane 的基本構成單元。Plane 中的大多數概念都與工作事項及其屬性相關聯。",
-    "views_description_long": "建立自訂篩選條件，僅顯示對您重要的工作事項。只需點擊幾下即可儲存並分享您的篩選條件。"
+    "views_description_long": "建立自訂篩選條件，僅顯示對您重要的工作事項。只需點擊幾下即可儲存並分享您的篩選條件。",
+    "untitled_label": "未命名標籤"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "停用了工作事項類型",
     "created_work_item_via": "透過以下方式建立了工作事項：",
     "the_work_item_and_assigned_it_to_you": "工作事項並將其指派給您。",
-    "the_work_item": "工作事項"
+    "the_work_item": "工作事項",
+    "created_prefix": "建立了",
+    "deleted_prefix": "刪除了",
+    "removed_prefix": "移除了",
+    "marked_prefix": "標記了",
+    "added_this": "新增了此",
+    "link": "連結",
+    "to_an_epic": "轉換為史詩",
+    "to_the_module": "到模組",
+    "from_the_cycle": "與以下週期的關聯：",
+    "from_the_module": "與以下模組的關聯：",
+    "relates_to": "關聯到",
+    "is_being_blocked_by": "正在被以下工作事項阻礙：",
+    "as_duplicate_of": "與以下工作事項的重複關係：",
+    "added_this_project": "新增了此專案",
+    "removed_this_project": "移除了此專案"
   },
   "validation": {
     "name_required": "Name is required",

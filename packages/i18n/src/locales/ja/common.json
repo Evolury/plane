@@ -1594,7 +1594,8 @@
     "view_work_items_here_description": "作業項目は、個々の作業を追跡するのに役立ちます。作業項目を使えば、何が起きているのか、誰が取り組んでいるのか、何が完了したのかを把握できます。",
     "only_work_items_within_current_project_can_be_selected": "現在のプロジェクト内の作業項目のみ選択できます。",
     "work_items_description_long": "作業項目はPlaneの基本的な構成要素です。Planeのほとんどの概念は、作業項目とそのプロパティに関連付けられています。",
-    "views_description_long": "カスタムフィルターを作成して、重要な作業項目だけを表示できます。数クリックでフィルターを保存して共有できます。"
+    "views_description_long": "カスタムフィルターを作成して、重要な作業項目だけを表示できます。数クリックでフィルターを保存して共有できます。",
+    "untitled_label": "無題のラベル"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1675,7 +1676,22 @@
     "disabled_work_item_types": "が作業項目タイプを無効にしました",
     "created_work_item_via": "が次を経由して作業項目を作成しました:",
     "the_work_item_and_assigned_it_to_you": "が作業項目を作成し、あなたに割り当てました。",
-    "the_work_item": "作業項目"
+    "the_work_item": "作業項目",
+    "created_prefix": "が次を作成しました:",
+    "deleted_prefix": "が次を削除しました:",
+    "removed_prefix": "が次を解除しました:",
+    "marked_prefix": "が次を重複としてマークしました:",
+    "added_this": "が次を追加しました:",
+    "link": "リンク",
+    "to_an_epic": "をエピックに変換しました",
+    "to_the_module": "を次のモジュールに追加しました:",
+    "from_the_cycle": "対象サイクル:",
+    "from_the_module": "対象モジュール:",
+    "relates_to": "が次の作業項目に関連していることをマークしました:",
+    "is_being_blocked_by": "が次の作業項目によってブロックされていることをマークしました:",
+    "as_duplicate_of": "重複元:",
+    "added_this_project": "がこのプロジェクト",
+    "removed_this_project": "がこのプロジェクトの関連を解除しました "
   },
   "validation": {
     "name_required": "Name is required",
