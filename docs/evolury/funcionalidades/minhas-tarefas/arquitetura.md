@@ -103,10 +103,12 @@ apps/web/core/components/my-tasks/
 apps/web/core/services/my-tasks.service.ts # cliente da API acima
 ```
 
-A gestão de etapas é cópia adaptada de
-`apps/web/core/components/project-states/` (mesma UX, store diferente). Cópia,
-e não parametrização do original: mantém o arquivo herdado intocado e a
-divergência auditável — mesma razão registrada no commit da marca Evolury.
+A gestão de etapas REUSA a família `apps/web/core/components/project-states/`
+diretamente (decidido na F4, melhor que a cópia planejada): o `GroupList` é
+parametrizado por callbacks e não toca stores de projeto, então o painel
+(`components/my-tasks/stages-panel.tsx`) só precisa de um adaptador
+`TWorkStage↔IState` (sequence↔sort_order, default↔is_default) — zero cópia e
+zero mudança no código herdado.
 
 ### O ponto crítico: agrupamento por etapa nos layouts
 

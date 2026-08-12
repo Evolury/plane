@@ -33,6 +33,10 @@
     "business": "Business"
   },
   "my_tasks": {
-    "empty_state": "Nessun elemento di lavoro ti è ancora assegnato in questo spazio di lavoro."
+    "empty_state": "Nessun elemento di lavoro ti è ancora assegnato in questo spazio di lavoro.",
+    "stages": {
+      "title": "Fasi",
+      "description": "Crea, modifica e riordina le tue fasi personali. Eliminando una fase, i suoi elementi passano alla fase predefinita."
+    }
   }
 }

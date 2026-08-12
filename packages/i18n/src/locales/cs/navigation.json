@@ -33,6 +33,10 @@
     "business": "Byznys"
   },
   "my_tasks": {
-    "empty_state": "V tomto pracovním prostoru vám zatím nejsou přiřazeny žádné pracovní položky."
+    "empty_state": "V tomto pracovním prostoru vám zatím nejsou přiřazeny žádné pracovní položky.",
+    "stages": {
+      "title": "Fáze",
+      "description": "Vytvářejte, upravujte a přeuspořádávejte své osobní fáze. Smazáním fáze se její položky přesunou do výchozí fáze."
+    }
   }
 }

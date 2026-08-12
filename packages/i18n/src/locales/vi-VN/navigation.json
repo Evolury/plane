@@ -33,6 +33,10 @@
     "business": "Doanh nghiệp"
   },
   "my_tasks": {
-    "empty_state": "Chưa có mục công việc nào được giao cho bạn trong không gian làm việc này."
+    "empty_state": "Chưa có mục công việc nào được giao cho bạn trong không gian làm việc này.",
+    "stages": {
+      "title": "Giai đoạn",
+      "description": "Tạo, chỉnh sửa và sắp xếp lại các giai đoạn cá nhân của bạn. Xóa một giai đoạn sẽ chuyển các mục của nó sang giai đoạn mặc định."
+    }
   }
 }

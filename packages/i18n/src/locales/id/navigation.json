@@ -33,6 +33,10 @@
     "business": "Bisnis"
   },
   "my_tasks": {
-    "empty_state": "Belum ada item kerja yang ditugaskan kepada Anda di ruang kerja ini."
+    "empty_state": "Belum ada item kerja yang ditugaskan kepada Anda di ruang kerja ini.",
+    "stages": {
+      "title": "Tahapan",
+      "description": "Buat, ubah, dan susun ulang tahapan pribadi Anda. Menghapus tahapan memindahkan itemnya ke tahapan default."
+    }
   }
 }

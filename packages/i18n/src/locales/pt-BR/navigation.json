@@ -33,6 +33,10 @@
     "business": "Business"
   },
   "my_tasks": {
-    "empty_state": "Nenhum item de trabalho atribuído a você neste espaço de trabalho ainda."
+    "empty_state": "Nenhum item de trabalho atribuído a você neste espaço de trabalho ainda.",
+    "stages": {
+      "title": "Etapas",
+      "description": "Crie, edite e reordene suas etapas pessoais. Excluir uma etapa move os itens dela para a etapa padrão."
+    }
   }
 }

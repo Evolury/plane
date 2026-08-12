@@ -33,6 +33,10 @@
     "business": "Biznis"
   },
   "my_tasks": {
-    "empty_state": "Bu çalışma alanında size henüz atanmış iş öğesi yok."
+    "empty_state": "Bu çalışma alanında size henüz atanmış iş öğesi yok.",
+    "stages": {
+      "title": "Aşamalar",
+      "description": "Kişisel aşamalarınızı oluşturun, düzenleyin ve yeniden sıralayın. Bir aşamayı silmek, öğelerini varsayılan aşamaya taşır."
+    }
   }
 }
