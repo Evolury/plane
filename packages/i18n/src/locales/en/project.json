@@ -21,7 +21,8 @@
     "in_your_timezone": "In your timezone",
     "transfer_work_items": "Transfer {count} work items",
     "transfer": {
-      "no_cycles_available": "No other cycles available to transfer work items to."
+      "no_cycles_available": "No other cycles available to transfer work items to.",
+      "no_current_cycle": "You don’t have any current cycle. Please create one to transfer the work items."
     },
     "date_range": "Date range",
     "add_date": "Add date",
@@ -36,7 +37,10 @@
       "current": "Current",
       "labels": "Labels",
       "trailing": "Trailing",
-      "leading": "Leading"
+      "leading": "Leading",
+      "pending_points": "Pending points",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {work item} other {work items}} closed",
+      "cancelled_work_items_excluded": "{count, plural, one {# cancelled work item is excluded from this report.} other {# cancelled work items are excluded from this report.}}"
     },
     "upcoming_cycle": {
       "label": "Upcoming cycle"
@@ -413,6 +417,12 @@
           "message": "Something went wrong."
         }
       }
+    },
+    "archive_modal": {
+      "description": "This project and its work items, cycles, modules, and pages will be archived. Its work items won't appear in search. Only project admins can restore the project."
+    },
+    "restore_modal": {
+      "description": "Restoring a project will activate it and make it visible to all members of the project. Are you sure you want to continue?"
     }
   }
 }

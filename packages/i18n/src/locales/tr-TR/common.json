@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Daha sonra geri dönebilmek için bu iş öğesini Taslaklar'a kaydedebilirsiniz.",
+    "leave_project_confirmation_prefix": "Şu projeden ayrılmak istediğinizden emin misiniz -",
+    "leave_project_confirmation_suffix": "? Sizinle ilişkili tüm iş öğeleri erişilemez hale gelecektir.",
+    "workspace_invitation_description": "Çalışma alanınız, Plane hesabınızda projeler oluşturacağınız, iş öğeleriniz üzerinde iş birliği yapacağınız ve farklı iş akışlarını düzenleyeceğiniz yerdir.",
+    "view_work_items_here_description": "İş öğeleri, işin her bir parçasını takip etmenize yardımcı olur. İş öğeleriyle neler olduğunu, üzerinde kimin çalıştığını ve nelerin tamamlandığını takip edin.",
+    "only_work_items_within_current_project_can_be_selected": "Yalnızca geçerli projedeki iş öğeleri seçilebilir.",
+    "work_items_description_long": "İş öğesi, Plane'in temel yapı taşıdır. Plane'deki kavramların çoğu, iş öğeleri ve özellikleriyle ilişkilidir.",
+    "views_description_long": "Yalnızca sizin için önemli olan iş öğelerini görüntülemek için özel filtreler oluşturun. Filtrelerinizi birkaç tıklamayla kaydedin ve paylaşın."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "bir iş öğesi",
+    "converted": "şu öğeyi",
+    "to_a_work_item": "iş öğesine dönüştürdü",
+    "marked": "şunu işaretledi:",
+    "is_blocking_work_item": "şu iş öğesini engelliyor:",
+    "removed_being_blocked_by_prefix": "engellemeyi kaldırdı:",
+    "being_blocked_by_work_item": "artık şu iş öğesi tarafından engellenmiyor:",
+    "enabled_work_item_types": "iş öğesi tiplerini etkinleştirdi",
+    "disabled_work_item_types": "iş öğesi tiplerini devre dışı bıraktı",
+    "created_work_item_via": "iş öğesini şu kaynak üzerinden oluşturdu:",
+    "the_work_item_and_assigned_it_to_you": "iş öğesini oluşturdu ve size atadı.",
+    "the_work_item": "iş öğesi"
   },
   "validation": {
     "name_required": "Name is required",

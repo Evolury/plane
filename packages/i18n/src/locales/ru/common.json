@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Вы можете сохранить этот рабочий элемент в Черновиках, чтобы вернуться к нему позже.",
+    "leave_project_confirmation_prefix": "Вы уверены, что хотите покинуть проект -",
+    "leave_project_confirmation_suffix": "? Все связанные с вами рабочие элементы станут недоступны.",
+    "workspace_invitation_description": "Рабочее пространство — это место, где вы будете создавать проекты, совместно работать над рабочими элементами и организовывать различные направления работы в вашем аккаунте Plane.",
+    "view_work_items_here_description": "Рабочие элементы помогают отслеживать отдельные части работы. С помощью рабочих элементов вы знаете, что происходит, кто над чем работает и что уже сделано.",
+    "only_work_items_within_current_project_can_be_selected": "Можно выбрать только рабочие элементы из текущего проекта.",
+    "work_items_description_long": "Рабочий элемент — это основной строительный блок Plane. Большинство концепций в Plane связано с рабочими элементами и их свойствами.",
+    "views_description_long": "Создавайте настраиваемые фильтры, чтобы отображать только важные для вас рабочие элементы. Сохраняйте фильтры и делитесь ими всего в несколько кликов."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "рабочий элемент",
+    "converted": "преобразовал(а)",
+    "to_a_work_item": "в рабочий элемент",
+    "marked": "отметил(а), что",
+    "is_blocking_work_item": "блокирует рабочий элемент",
+    "removed_being_blocked_by_prefix": "снял(а) блокировку",
+    "being_blocked_by_work_item": "рабочим элементом",
+    "enabled_work_item_types": "включил(а) типы рабочих элементов",
+    "disabled_work_item_types": "отключил(а) типы рабочих элементов",
+    "created_work_item_via": "создал(а) рабочий элемент через",
+    "the_work_item_and_assigned_it_to_you": "рабочий элемент и назначил(а) его вам.",
+    "the_work_item": "рабочий элемент"
   },
   "validation": {
     "name_required": "Name is required",

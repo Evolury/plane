@@ -75,7 +75,7 @@ export function IssueLink({ activity }: { activity: IIssueActivity }) {
         </a>
       ) : (
         <span className="inline-flex items-center gap-1 font-medium whitespace-nowrap text-primary">
-          {" a work item"}{" "}
+          {/* Evolury: i18n do fallback quando o work item foi excluído */} {translate("activity_log.a_work_item")}{" "}
         </span>
       )}
     </Tooltip>
@@ -312,8 +312,10 @@ const activityDetails: {
         );
       else if (activity.verb === "converted")
         return (
+          // Evolury: i18n da conversão de épico em work item
           <>
-            converted <IssueLink activity={activity} /> to a work item
+            {translate("activity_log.converted")} <IssueLink activity={activity} />{" "}
+            {translate("activity_log.to_a_work_item")}
           </>
         );
       else
@@ -610,15 +612,23 @@ const activityDetails: {
     message: (activity, showIssue) => {
       if (activity.old_value === "")
         return (
+          // Evolury: i18n em fragmentos por causa do link no meio da frase
           <>
-            marked {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} is
-            blocking work item <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
+            {showIssue ? (
+              <>
+                {translate("activity_log.marked")} <IssueLink activity={activity} />{" "}
+                {translate("activity_log.is_blocking_work_item")}
+              </>
+            ) : (
+              translate("activity_log.marked_this_work_item_is_blocking_work_item")
+            )}{" "}
+            <span className="font-medium whitespace-nowrap text-primary">{activity.new_value}</span>.
           </>
         );
       else
         return (
           <>
-            removed the blocking work item{" "}
+            {translate("activity_log.removed_the_blocking_work_item")}{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );
@@ -636,9 +646,18 @@ const activityDetails: {
         );
       else
         return (
+          // Evolury: i18n em fragmentos por causa do link no meio da frase
           <>
-            removed {showIssue ? <IssueLink activity={activity} /> : translate("activity_log.this_work_item")} being
-            blocked by work item{" "}
+            {showIssue ? (
+              <>
+                {/* Evolury: chave própria — em pt o prefixo é verbo ("removeu o
+                    bloqueio de"), diferente do "removido" de activity_log.removed */}
+                {translate("activity_log.removed_being_blocked_by_prefix")} <IssueLink activity={activity} />{" "}
+                {translate("activity_log.being_blocked_by_work_item")}
+              </>
+            ) : (
+              translate("activity_log.removed_this_work_item_being_blocked_by_work_ite")
+            )}{" "}
             <span className="font-medium whitespace-nowrap text-primary">{activity.old_value}</span>.
           </>
         );

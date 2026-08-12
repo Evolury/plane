@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Odmítnout pracovní položku",
-        "content": "Opravdu chcete odmítnout pracovní položku {value}?"
+        "content": "Opravdu chcete odmítnout pracovní položku {value}?",
+        "confirmation": {
+          "prefix": "Opravdu chcete odmítnout pracovní položku",
+          "suffix": "? Tuto akci nelze vrátit zpět."
+        }
       },
       "delete": {
         "title": "Smazat pracovní položku",
         "content": "Opravdu chcete smazat pracovní položku {value}?",
-        "success": "Pracovní položka úspěšně smazána"
+        "success": "Pracovní položka úspěšně smazána",
+        "confirmation": {
+          "prefix": "Opravdu chcete smazat pracovní položku",
+          "suffix": "? Pracovní položka bude smazána pouze z Intake a tuto akci nelze vrátit zpět."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Vyberte pracovní položku pro zobrazení podrobností."
       }
+    },
+    "filters": {
+      "status": "Stav pracovní položky"
     }
   }
 }

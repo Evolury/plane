@@ -7,6 +7,8 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
+// plane imports
+import { useTranslation } from "@plane/i18n";
 // types
 import type { TIssue } from "@plane/types";
 // helpers
@@ -25,6 +27,7 @@ export const SpreadsheetSubIssueColumn = observer(function SpreadsheetSubIssueCo
   const router = useAppRouter();
   // hooks
   const { workspaceSlug } = useParams();
+  const { t } = useTranslation();
   // derived values
   const isEpic = issue?.is_epic;
   const subIssueCount = issue?.sub_issues_count ?? 0;
@@ -35,7 +38,7 @@ export const SpreadsheetSubIssueColumn = observer(function SpreadsheetSubIssueCo
     );
   };
 
-  const label = `${subIssueCount} sub-work item${subIssueCount !== 1 ? "s" : ""}`;
+  const label = t("sub_work_item.count_label", { count: subIssueCount });
 
   return (
     <Row

@@ -53,6 +53,12 @@
       "label_max_char": "Název štítku nesmí přesáhnout 255 znaků",
       "toast": {
         "error": "Chyba při aktualizaci štítku"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Opravdu chcete smazat",
+          "suffix": "? Tím se štítek odstraní ze všech pracovních položek i ze všech pohledů, kde se podle něj filtruje."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Přepnout systém odhadů",
       "current": "Aktuální systém odhadů",
-      "select": "Vyberte systém odhadů"
+      "select": "Vyberte systém odhadů",
+      "delete": {
+        "confirmation": {
+          "prefix": "Smazáním odhadu",
+          "suffix": "jej trvale odstraníte ze všech pracovních položek. Tuto akci nelze vrátit zpět. Pokud odhady znovu přidáte, budete muset všechny pracovní položky aktualizovat."
+        }
+      }
     },
     "automations": {
       "label": "Automatizace",

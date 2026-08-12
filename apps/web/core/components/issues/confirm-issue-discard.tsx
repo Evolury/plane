@@ -41,9 +41,7 @@ export function ConfirmIssueDiscard(props: Props) {
           <div className="mt-3 text-center sm:mt-0 sm:text-left">
             <h3 className="text-16 leading-6 font-medium text-primary">{t("ui.save_draft_q")}</h3>
             <div className="mt-2">
-              <p className="text-13 text-secondary">
-                You can save this work item to Drafts so you can come back to it later.{" "}
-              </p>
+              <p className="text-13 text-secondary">{t("ui.save_work_item_to_drafts_description")}</p>
             </div>
           </div>
         </div>

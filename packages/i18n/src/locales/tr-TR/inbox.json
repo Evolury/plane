@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "İş öğesini reddet",
-        "content": "{value} iş öğesini reddetmek istediğinizden emin misiniz?"
+        "content": "{value} iş öğesini reddetmek istediğinizden emin misiniz?",
+        "confirmation": {
+          "prefix": "İş öğesini reddetmek istediğinizden emin misiniz",
+          "suffix": "? Bu işlem geri alınamaz."
+        }
       },
       "delete": {
         "title": "İş öğesini sil",
         "content": "{value} iş öğesini silmek istediğinizden emin misiniz?",
-        "success": "İş öğesi başarıyla silindi"
+        "success": "İş öğesi başarıyla silindi",
+        "confirmation": {
+          "prefix": "İş öğesini silmek istediğinizden emin misiniz",
+          "suffix": "? İş öğesi yalnızca Intake'ten silinecek ve bu işlem geri alınamaz."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Detaylarını görüntülemek için bir iş öğesi seçin."
       }
+    },
+    "filters": {
+      "status": "İş öğesi durumu"
     }
   }
 }

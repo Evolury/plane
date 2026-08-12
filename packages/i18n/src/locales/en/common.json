@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "You can save this work item to Drafts so you can come back to it later.",
+    "leave_project_confirmation_prefix": "Are you sure you want to leave the project -",
+    "leave_project_confirmation_suffix": "? All of the work items associated with you will become inaccessible.",
+    "workspace_invitation_description": "Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account.",
+    "view_work_items_here_description": "Work items help you track individual pieces of work. With work items, keep track of what's going on, who is working on it, and what's done.",
+    "only_work_items_within_current_project_can_be_selected": "Only work items within the current project can be selected.",
+    "work_items_description_long": "The work item is the building block of the Plane. Most concepts in Plane are either associated with work items and their properties.",
+    "views_description_long": "Create custom filters to display only the work items that matter to you. Save and share your filters in just a few clicks."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "a work item",
+    "converted": "converted",
+    "to_a_work_item": "to a work item",
+    "marked": "marked",
+    "is_blocking_work_item": "is blocking work item",
+    "removed_being_blocked_by_prefix": "removed",
+    "being_blocked_by_work_item": "being blocked by work item",
+    "enabled_work_item_types": "enabled work item types",
+    "disabled_work_item_types": "disabled work item types",
+    "created_work_item_via": "created the work item via",
+    "the_work_item_and_assigned_it_to_you": "the work item and assigned it to you.",
+    "the_work_item": "the work item"
   },
   "validation": {
     "name_required": "Name is required",

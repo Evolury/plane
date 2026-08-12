@@ -53,6 +53,12 @@
       "label_max_char": "Label name should not exceed 255 characters",
       "toast": {
         "error": "Error while updating the label"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Are you sure you want to delete",
+          "suffix": "? This will remove the label from all the work items and from any views where the label is being filtered upon."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Switch estimate system",
       "current": "Current estimate system",
-      "select": "Select an estimate system"
+      "select": "Select an estimate system",
+      "delete": {
+        "confirmation": {
+          "prefix": "Deleting the estimate",
+          "suffix": "system will remove it from all work items permanently. This action cannot be undone. If you add estimates again, you will need to update all the work items."
+        }
+      }
     },
     "automations": {
       "label": "Automations",

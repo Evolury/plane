@@ -21,7 +21,8 @@
     "in_your_timezone": "在您的时区",
     "transfer_work_items": "转移 {count} 工作项",
     "transfer": {
-      "no_cycles_available": "没有其他可用的周期来转移工作项。"
+      "no_cycles_available": "没有其他可用的周期来转移工作项。",
+      "no_current_cycle": "您没有当前周期。请创建一个周期以转移工作项。"
     },
     "date_range": "日期范围",
     "add_date": "添加日期",
@@ -36,7 +37,10 @@
       "current": "当前",
       "labels": "标签",
       "trailing": "落后",
-      "leading": "领先"
+      "leading": "领先",
+      "pending_points": "待处理点数",
+      "work_items_closed": "已关闭 {closedCount}/{totalCount} {closedCount, plural, one {个工作项} other {个工作项}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# 个已取消的工作项未包含在此报告中。} other {# 个已取消的工作项未包含在此报告中。}}"
     },
     "upcoming_cycle": {
       "label": "即将到来的周期"
@@ -413,6 +417,12 @@
           "message": "出了些问题。"
         }
       }
+    },
+    "archive_modal": {
+      "description": "此项目及其工作项、周期、模块和页面将被归档。其工作项将不会出现在搜索中。只有项目管理员可以恢复该项目。"
+    },
+    "restore_modal": {
+      "description": "恢复项目将激活该项目，并使项目的所有成员都能看到它。您确定要继续吗？"
     }
   }
 }

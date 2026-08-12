@@ -21,7 +21,8 @@
     "in_your_timezone": "Saat diliminizde",
     "transfer_work_items": "{count} iş öğesini aktar",
     "transfer": {
-      "no_cycles_available": "İş öğelerini aktaracak başka döngü bulunamadı."
+      "no_cycles_available": "İş öğelerini aktaracak başka döngü bulunamadı.",
+      "no_current_cycle": "Geçerli bir döngünüz yok. İş öğelerini aktarmak için lütfen bir döngü oluşturun."
     },
     "date_range": "Tarih aralığı",
     "add_date": "Tarih ekle",
@@ -36,7 +37,10 @@
       "current": "Mevcut",
       "labels": "Etiketler",
       "trailing": "Geride",
-      "leading": "İlerde"
+      "leading": "İlerde",
+      "pending_points": "Bekleyen puanlar",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {iş öğesi} other {iş öğesi}} kapatıldı",
+      "cancelled_work_items_excluded": "{count, plural, one {# iptal edilen iş öğesi bu rapora dahil edilmemiştir.} other {# iptal edilen iş öğesi bu rapora dahil edilmemiştir.}}"
     },
     "upcoming_cycle": {
       "label": "Yaklaşan döngü"
@@ -413,6 +417,12 @@
           "message": "Bir şeyler ters gitti."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Bu proje ve içindeki iş öğeleri, döngüler, modüller ve sayfalar arşivlenecek. Projenin iş öğeleri aramada görünmeyecek. Projeyi yalnızca proje yöneticileri geri yükleyebilir."
+    },
+    "restore_modal": {
+      "description": "Bir projeyi geri yüklemek onu etkinleştirir ve projenin tüm üyeleri için görünür hale getirir. Devam etmek istediğinizden emin misiniz?"
     }
   }
 }

@@ -210,13 +210,7 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
               {/* select checkbox */}
               {projectId && canSelectIssues && !isEpic && (
                 <Tooltip
-                  tooltipContent={
-                    <>
-                      Only work items within the current
-                      <br />
-                      project can be selected.
-                    </>
-                  }
+                  tooltipContent={t("ui.only_work_items_within_current_project_can_be_selected")}
                   disabled={issue.project_id === projectId}
                 >
                   <div className="absolute left-1 grid w-3.5 flex-shrink-0 place-items-center">

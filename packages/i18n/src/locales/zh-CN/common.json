@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "您可以将此工作项保存到草稿，以便稍后再回来处理。",
+    "leave_project_confirmation_prefix": "您确定要退出项目 -",
+    "leave_project_confirmation_suffix": "吗？与您关联的所有工作项将无法访问。",
+    "workspace_invitation_description": "工作区是您在 Plane 账户中创建项目、协作处理工作项以及组织不同工作流的地方。",
+    "view_work_items_here_description": "工作项帮助您跟踪各项具体工作。借助工作项，随时了解正在发生什么、谁在负责以及哪些已完成。",
+    "only_work_items_within_current_project_can_be_selected": "只能选择当前项目中的工作项。",
+    "work_items_description_long": "工作项是 Plane 的基本构成单元。Plane 中的大多数概念都与工作项及其属性相关联。",
+    "views_description_long": "创建自定义筛选条件，仅显示对您重要的工作项。只需几次点击即可保存并分享您的筛选条件。"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "一个工作项",
+    "converted": "已将",
+    "to_a_work_item": "转换为工作项",
+    "marked": "标记了",
+    "is_blocking_work_item": "正在阻止工作项",
+    "removed_being_blocked_by_prefix": "解除了",
+    "being_blocked_by_work_item": "被以下工作项阻止的状态：",
+    "enabled_work_item_types": "启用了工作项类型",
+    "disabled_work_item_types": "禁用了工作项类型",
+    "created_work_item_via": "通过以下方式创建了工作项：",
+    "the_work_item_and_assigned_it_to_you": "工作项并将其分配给您。",
+    "the_work_item": "工作项"
   },
   "validation": {
     "name_required": "Name is required",

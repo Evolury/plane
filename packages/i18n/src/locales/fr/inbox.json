@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Refuser l’élément de travail",
-        "content": "Êtes-vous sûr de vouloir refuser l’élément de travail {value} ?"
+        "content": "Êtes-vous sûr de vouloir refuser l’élément de travail {value} ?",
+        "confirmation": {
+          "prefix": "Êtes-vous sûr de vouloir refuser l’élément de travail",
+          "suffix": " ? Cette action ne peut pas être annulée."
+        }
       },
       "delete": {
         "title": "Supprimer l’élément de travail",
         "content": "Êtes-vous sûr de vouloir supprimer l’élément de travail {value} ?",
-        "success": "Élément de travail supprimé avec succès"
+        "success": "Élément de travail supprimé avec succès",
+        "confirmation": {
+          "prefix": "Êtes-vous sûr de vouloir supprimer l’élément de travail",
+          "suffix": " ? L’élément de travail sera supprimé uniquement de l’Intake et cette action ne peut pas être annulée."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Sélectionnez un élément de travail pour voir ses détails."
       }
+    },
+    "filters": {
+      "status": "Statut de l’élément de travail"
     }
   }
 }

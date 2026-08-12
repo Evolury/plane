@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Bạn có thể lưu mục công việc này vào Bản nháp để quay lại xử lý sau.",
+    "leave_project_confirmation_prefix": "Bạn có chắc chắn muốn rời khỏi dự án -",
+    "leave_project_confirmation_suffix": "? Tất cả mục công việc liên kết với bạn sẽ không thể truy cập được nữa.",
+    "workspace_invitation_description": "Không gian làm việc là nơi bạn tạo dự án, cộng tác trên các mục công việc và tổ chức các luồng công việc khác nhau trong tài khoản Plane của bạn.",
+    "view_work_items_here_description": "Mục công việc giúp bạn theo dõi từng phần công việc riêng lẻ. Với mục công việc, hãy nắm bắt những gì đang diễn ra, ai đang thực hiện và những gì đã hoàn thành.",
+    "only_work_items_within_current_project_can_be_selected": "Chỉ có thể chọn các mục công việc trong dự án hiện tại.",
+    "work_items_description_long": "Mục công việc là khối xây dựng cơ bản của Plane. Hầu hết các khái niệm trong Plane đều gắn liền với mục công việc và các thuộc tính của chúng.",
+    "views_description_long": "Tạo bộ lọc tùy chỉnh để chỉ hiển thị những mục công việc quan trọng với bạn. Lưu và chia sẻ bộ lọc của bạn chỉ với vài cú nhấp chuột."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "một mục công việc",
+    "converted": "đã chuyển đổi",
+    "to_a_work_item": "thành mục công việc",
+    "marked": "đã đánh dấu",
+    "is_blocking_work_item": "đang chặn mục công việc",
+    "removed_being_blocked_by_prefix": "đã gỡ trạng thái bị chặn của",
+    "being_blocked_by_work_item": "bởi mục công việc",
+    "enabled_work_item_types": "đã bật loại mục công việc",
+    "disabled_work_item_types": "đã tắt loại mục công việc",
+    "created_work_item_via": "đã tạo mục công việc qua",
+    "the_work_item_and_assigned_it_to_you": "mục công việc và giao nó cho bạn.",
+    "the_work_item": "mục công việc"
   },
   "validation": {
     "name_required": "Name is required",

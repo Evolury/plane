@@ -198,7 +198,11 @@
     "copy_link": "Sao chép liên kết mục công việc",
     "delete": {
       "label": "Xóa mục công việc",
-      "error": "Đã xảy ra lỗi khi xóa mục công việc"
+      "error": "Đã xảy ra lỗi khi xóa mục công việc",
+      "confirmation": {
+        "prefix": "Bạn có chắc chắn muốn xóa {entity}",
+        "suffix": "? Tất cả dữ liệu liên quan đến {entity} sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Nhấp để bỏ phiếu chống",
       "click_to_view_upvotes": "Nhấp để xem phiếu thuận",
       "click_to_view_downvotes": "Nhấp để xem phiếu chống"
-    }
+    },
+    "count_tooltip": "Có {count, plural, one {# mục công việc} other {# mục công việc}} trong dự án này",
+    "archived": {
+      "label": "Mục công việc đã lưu trữ",
+      "count_tooltip": "Có {count, plural, one {# mục công việc} other {# mục công việc}} trong kho lưu trữ của dự án"
+    },
+    "view": "Xem mục công việc"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Để xem tất cả các mục công việc, hãy xóa tất cả các bộ lọc đã áp dụng.",
         "action": "Xóa bộ lọc"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# mục công việc con} other {# mục công việc con}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Tiêu đề sử thi",
       "required": "Tiêu đề sử thi là bắt buộc"
-    }
+    },
+    "view": "Xem sử thi",
+    "all": "Tất cả sử thi"
   }
 }

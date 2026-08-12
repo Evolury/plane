@@ -53,6 +53,12 @@
       "label_max_char": "Etiket adı 255 karakteri geçmemeli",
       "toast": {
         "error": "Etiket güncellenirken hata oluştu"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Etiketi silmek istediğinizden emin misiniz",
+          "suffix": "? Bu işlem, etiketi tüm iş öğelerinden ve etikete göre filtreleme yapılan tüm görünümlerden kaldıracaktır."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Estimasyon sistemini değiştir",
       "current": "Mevcut estimasyon sistemi",
-      "select": "Estimasyon sistemi seç"
+      "select": "Estimasyon sistemi seç",
+      "delete": {
+        "confirmation": {
+          "prefix": "Tahmin sistemi",
+          "suffix": "silindiğinde bu sistem tüm iş öğelerinden kalıcı olarak kaldırılır. Bu işlem geri alınamaz. Tahminleri yeniden eklerseniz tüm iş öğelerini güncellemeniz gerekir."
+        }
+      }
     },
     "automations": {
       "label": "Otomasyonlar",

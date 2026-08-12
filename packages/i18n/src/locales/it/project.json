@@ -21,7 +21,8 @@
     "in_your_timezone": "Nel tuo fuso orario",
     "transfer_work_items": "Trasferisci {count} elementi di lavoro",
     "transfer": {
-      "no_cycles_available": "Nessun altro ciclo disponibile per trasferire gli elementi di lavoro."
+      "no_cycles_available": "Nessun altro ciclo disponibile per trasferire gli elementi di lavoro.",
+      "no_current_cycle": "Non hai alcun ciclo corrente. Creane uno per trasferire gli elementi di lavoro."
     },
     "date_range": "Intervallo di date",
     "add_date": "Aggiungi data",
@@ -36,7 +37,10 @@
       "current": "Corrente",
       "labels": "Etichette",
       "trailing": "In ritardo",
-      "leading": "In anticipo"
+      "leading": "In anticipo",
+      "pending_points": "Punti in sospeso",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {elemento di lavoro chiuso} other {elementi di lavoro chiusi}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# elemento di lavoro annullato è escluso da questo report.} other {# elementi di lavoro annullati sono esclusi da questo report.}}"
     },
     "upcoming_cycle": {
       "label": "Ciclo in arrivo"
@@ -413,6 +417,12 @@
           "message": "Qualcosa è andato storto."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Questo progetto e i suoi elementi di lavoro, cicli, moduli e pagine saranno archiviati. I suoi elementi di lavoro non appariranno nella ricerca. Solo gli amministratori del progetto possono ripristinare il progetto."
+    },
+    "restore_modal": {
+      "description": "Il ripristino di un progetto lo attiverà e lo renderà visibile a tutti i membri del progetto. Sei sicuro di voler continuare?"
     }
   }
 }

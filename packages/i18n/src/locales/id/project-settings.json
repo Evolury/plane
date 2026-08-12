@@ -53,6 +53,12 @@
       "label_max_char": "Nama label tidak boleh lebih dari 255 karakter",
       "toast": {
         "error": "Kesalahan saat memperbarui label"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Apakah Anda yakin ingin menghapus",
+          "suffix": "? Ini akan menghapus label dari semua item kerja dan dari semua tampilan yang menggunakan label ini sebagai filter."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Alihkan sistem estimasi",
       "current": "Sistem estimasi saat ini",
-      "select": "Pilih sistem estimasi"
+      "select": "Pilih sistem estimasi",
+      "delete": {
+        "confirmation": {
+          "prefix": "Menghapus estimasi",
+          "suffix": "akan menghapusnya secara permanen dari semua item kerja. Tindakan ini tidak dapat dibatalkan. Jika Anda menambahkan estimasi lagi, Anda perlu memperbarui semua item kerja."
+        }
+      }
     },
     "automations": {
       "label": "Otomatisasi",

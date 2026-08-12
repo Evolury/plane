@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "您可以將此工作事項儲存到草稿，以便稍後再回來處理。",
+    "leave_project_confirmation_prefix": "您確定要離開專案 -",
+    "leave_project_confirmation_suffix": "嗎？與您關聯的所有工作事項將無法存取。",
+    "workspace_invitation_description": "工作區是您在 Plane 帳戶中建立專案、協作處理工作事項以及組織不同工作流的地方。",
+    "view_work_items_here_description": "工作事項可協助您追蹤各項具體工作。藉助工作事項，隨時掌握正在發生什麼、誰在負責以及哪些已完成。",
+    "only_work_items_within_current_project_can_be_selected": "只能選擇目前專案中的工作事項。",
+    "work_items_description_long": "工作事項是 Plane 的基本構成單元。Plane 中的大多數概念都與工作事項及其屬性相關聯。",
+    "views_description_long": "建立自訂篩選條件，僅顯示對您重要的工作事項。只需點擊幾下即可儲存並分享您的篩選條件。"
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "一個工作事項",
+    "converted": "已將",
+    "to_a_work_item": "轉換為工作事項",
+    "marked": "標記了",
+    "is_blocking_work_item": "正在阻礙工作事項",
+    "removed_being_blocked_by_prefix": "解除了",
+    "being_blocked_by_work_item": "被以下工作事項阻礙的狀態：",
+    "enabled_work_item_types": "啟用了工作事項類型",
+    "disabled_work_item_types": "停用了工作事項類型",
+    "created_work_item_via": "透過以下方式建立了工作事項：",
+    "the_work_item_and_assigned_it_to_you": "工作事項並將其指派給您。",
+    "the_work_item": "工作事項"
   },
   "validation": {
     "name_required": "Name is required",

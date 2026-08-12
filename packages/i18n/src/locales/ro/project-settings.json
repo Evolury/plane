@@ -53,6 +53,12 @@
       "label_max_char": "Numele etichetei nu trebuie să depășească 255 de caractere",
       "toast": {
         "error": "Eroare la actualizarea etichetei"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Ești sigur că vrei să ștergi",
+          "suffix": "? Eticheta va fi eliminată din toate activitățile și din toate perspectivele în care este folosită ca filtru."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Schimbă sistemul de estimări",
       "current": "Sistemul de estimări curent",
-      "select": "Selectează un sistem de estimări"
+      "select": "Selectează un sistem de estimări",
+      "delete": {
+        "confirmation": {
+          "prefix": "Ștergerea estimării",
+          "suffix": "o va elimina definitiv din toate activitățile. Această acțiune nu poate fi anulată. Dacă adaugi din nou estimări, va trebui să actualizezi toate activitățile."
+        }
+      }
     },
     "automations": {
       "label": "Automatizări",

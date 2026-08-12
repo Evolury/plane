@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Poți salva această activitate în Schițe pentru a reveni la ea mai târziu.",
+    "leave_project_confirmation_prefix": "Ești sigur că vrei să părăsești proiectul -",
+    "leave_project_confirmation_suffix": "? Toate activitățile asociate cu tine vor deveni inaccesibile.",
+    "workspace_invitation_description": "Spațiul tău de lucru este locul unde vei crea proiecte, vei colabora la activități și vei organiza diferite fluxuri de lucru în contul tău Plane.",
+    "view_work_items_here_description": "Activitățile te ajută să urmărești fiecare parte a muncii. Cu ajutorul activităților, știi ce se întâmplă, cine lucrează la ce și ce este finalizat.",
+    "only_work_items_within_current_project_can_be_selected": "Pot fi selectate doar activități din proiectul curent.",
+    "work_items_description_long": "Activitatea este elementul de bază al Plane. Majoritatea conceptelor din Plane sunt asociate cu activitățile și proprietățile lor.",
+    "views_description_long": "Creează filtre personalizate pentru a afișa doar activitățile care contează pentru tine. Salvează și partajează filtrele în doar câteva clicuri."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "o activitate",
+    "converted": "a convertit",
+    "to_a_work_item": "într-o activitate",
+    "marked": "a marcat că",
+    "is_blocking_work_item": "blochează activitatea",
+    "removed_being_blocked_by_prefix": "a eliminat blocarea",
+    "being_blocked_by_work_item": "de către activitatea",
+    "enabled_work_item_types": "a activat tipurile de activități",
+    "disabled_work_item_types": "a dezactivat tipurile de activități",
+    "created_work_item_via": "a creat activitatea prin",
+    "the_work_item_and_assigned_it_to_you": "activitatea și ți-a atribuit-o.",
+    "the_work_item": "activitatea"
   },
   "validation": {
     "name_required": "Name is required",

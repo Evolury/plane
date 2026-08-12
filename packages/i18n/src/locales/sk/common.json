@@ -1586,7 +1586,15 @@
     "what_role_are_you_working_on_choose_one": "What role are you working on? Choose one.",
     "wrong_e_mail_address": "Wrong e-mail address?",
     "you_have_unsaved_changes": "You have unsaved changes",
-    "your_plan": "Your plan"
+    "your_plan": "Your plan",
+    "save_work_item_to_drafts_description": "Túto pracovnú položku môžete uložiť do Konceptov, aby ste sa k nej mohli neskôr vrátiť.",
+    "leave_project_confirmation_prefix": "Ste si istí, že chcete opustiť projekt -",
+    "leave_project_confirmation_suffix": "? Všetky pracovné položky spojené s vami sa stanú nedostupnými.",
+    "workspace_invitation_description": "Váš pracovný priestor je miesto, kde budete vytvárať projekty, spolupracovať na pracovných položkách a organizovať rôzne oblasti práce vo svojom účte Plane.",
+    "view_work_items_here_description": "Pracovné položky vám pomáhajú sledovať jednotlivé časti práce. Vďaka pracovným položkám viete, čo sa deje, kto na čom pracuje a čo je hotové.",
+    "only_work_items_within_current_project_can_be_selected": "Vybrať možno iba pracovné položky z aktuálneho projektu.",
+    "work_items_description_long": "Pracovná položka je základným stavebným prvkom Plane. Väčšina konceptov v Plane je spojená s pracovnými položkami a ich vlastnosťami.",
+    "views_description_long": "Vytvárajte vlastné filtre a zobrazujte iba tie pracovné položky, ktoré sú pre vás dôležité. Ukladajte a zdieľajte svoje filtre niekoľkými kliknutiami."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1655,7 +1663,19 @@
     "this_work_item": "this work item",
     "updated": "updated",
     "updated_intake_work_item_status": "updated intake work item status.",
-    "updated_the_project_description": "updated the project description"
+    "updated_the_project_description": "updated the project description",
+    "a_work_item": "pracovná položka",
+    "converted": "skonvertoval(a)",
+    "to_a_work_item": "na pracovnú položku",
+    "marked": "označil(a), že",
+    "is_blocking_work_item": "blokuje pracovnú položku",
+    "removed_being_blocked_by_prefix": "odstránil(a) blokovanie",
+    "being_blocked_by_work_item": "pracovnou položkou",
+    "enabled_work_item_types": "povolil(a) typy pracovných položiek",
+    "disabled_work_item_types": "zakázal(a) typy pracovných položiek",
+    "created_work_item_via": "vytvoril(a) pracovnú položku cez",
+    "the_work_item_and_assigned_it_to_you": "pracovnú položku a priradil(a) vám ju.",
+    "the_work_item": "pracovnú položku"
   },
   "validation": {
     "name_required": "Name is required",

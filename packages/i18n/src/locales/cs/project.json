@@ -21,7 +21,8 @@
     "in_your_timezone": "V časovém pásmu",
     "transfer_work_items": "Převést {count} pracovních položek",
     "transfer": {
-      "no_cycles_available": "Žádné jiné cykly nejsou k dispozici pro přenos pracovních položek."
+      "no_cycles_available": "Žádné jiné cykly nejsou k dispozici pro přenos pracovních položek.",
+      "no_current_cycle": "Nemáte žádný aktuální cyklus. Vytvořte prosím nový pro přenos pracovních položek."
     },
     "date_range": "Období data",
     "add_date": "Přidat datum",
@@ -36,7 +37,10 @@
       "current": "Aktuální",
       "labels": "Štítky",
       "trailing": "Zpoždění",
-      "leading": "Předstih"
+      "leading": "Předstih",
+      "pending_points": "Nevyřízené body",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {uzavřená pracovní položka} few {uzavřené pracovní položky} other {uzavřených pracovních položek}}",
+      "cancelled_work_items_excluded": "{count, plural, one {# zrušená pracovní položka je z tohoto reportu vyloučena.} few {# zrušené pracovní položky jsou z tohoto reportu vyloučeny.} other {# zrušených pracovních položek je z tohoto reportu vyloučeno.}}"
     },
     "upcoming_cycle": {
       "label": "Nadcházející cyklus"
@@ -413,6 +417,12 @@
           "message": "Něco se pokazilo."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Tento projekt a jeho pracovní položky, cykly, moduly a stránky budou archivovány. Jeho pracovní položky se nebudou zobrazovat ve vyhledávání. Projekt mohou obnovit pouze správci projektu."
+    },
+    "restore_modal": {
+      "description": "Obnovením se projekt aktivuje a zviditelní pro všechny členy projektu. Opravdu chcete pokračovat?"
     }
   }
 }

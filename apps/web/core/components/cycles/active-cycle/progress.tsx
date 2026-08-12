@@ -55,9 +55,11 @@ export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: 
           <h3 className="text-14 font-semibold text-tertiary">{t("project_cycles.active_cycle.progress")}</h3>
           {cycle.total_issues > 0 && (
             <span className="flex gap-1 rounded-xs px-3 py-1 text-13 font-medium whitespace-nowrap text-placeholder">
-              {`${cycle.completed_issues + cycle.cancelled_issues}/${cycle.total_issues - cycle.cancelled_issues} ${
-                cycle.completed_issues + cycle.cancelled_issues > 1 ? t("issues") : t("common.work_item")
-              } closed`}
+              {/* Evolury: frase completa traduzida com plural ICU (antes o "closed" ficava em inglês) */}
+              {t("project_cycles.active_cycle.work_items_closed", {
+                closedCount: cycle.completed_issues + cycle.cancelled_issues,
+                totalCount: cycle.total_issues - cycle.cancelled_issues,
+              })}
             </span>
           )}
         </div>
@@ -96,9 +98,10 @@ export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: 
           {cycle.cancelled_issues > 0 && (
             <span className="flex items-center gap-2 text-13 text-tertiary">
               <span>
-                {`${cycle.cancelled_issues} cancelled ${
-                  cycle.cancelled_issues > 1 ? "work items are" : "work item is"
-                } excluded from this report.`}{" "}
+                {/* Evolury: frase completa traduzida com plural ICU */}
+                {t("project_cycles.active_cycle.cancelled_work_items_excluded", {
+                  count: cycle.cancelled_issues,
+                })}{" "}
               </span>
             </span>
           )}

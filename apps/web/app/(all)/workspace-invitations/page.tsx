@@ -88,7 +88,7 @@ function WorkspaceInvitationPage() {
           ) : (
             <EmptySpace
               title={`You have been invited to ${invitationDetail.workspace.name}`}
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description={t("ui.workspace_invitation_description")}
             >
               <EmptySpaceItem Icon={CheckIcon} title="Accept" action={handleAccept} />
               <EmptySpaceItem Icon={CloseIcon} title="Ignore" action={handleReject} />
@@ -98,14 +98,14 @@ function WorkspaceInvitationPage() {
           invitationDetail?.accepted ? (
             <EmptySpace
               title={`You are already a member of ${invitationDetail.workspace.name}`}
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description={t("ui.workspace_invitation_description")}
             >
               <EmptySpaceItem Icon={Boxes} title={t("ui.continue_to_home")} href="/" />
             </EmptySpace>
           ) : (
             <EmptySpace
               title={t("ui.invitation_link_inactive")}
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description={t("ui.workspace_invitation_description")}
               link={{ text: t("ui.or_start_from_an_empty_project"), href: "/" }}
             >
               {!currentUser ? (

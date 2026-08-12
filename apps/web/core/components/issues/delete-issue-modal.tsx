@@ -93,9 +93,8 @@ export const DeleteIssueModal = observer(function DeleteIssueModal(props: Props)
           onClose();
         })
         .catch((errors) => {
-          const isPermissionError =
-            errors?.error ===
-            `Only admin or creator can delete the ${isSubIssue ? "sub-work item" : isEpic ? "epic" : "work item"}`;
+          // Evolury: comparação com a chave i18n, como nos modais irmãos; o backend só retorna a variante "work item"
+          const isPermissionError = errors?.error === t("ui.only_admin_or_creator_can_delete_the_work_item");
           const currentError = isPermissionError
             ? PROJECT_ERROR_MESSAGES.permissionError
             : PROJECT_ERROR_MESSAGES.issueDeleteError;
@@ -114,15 +113,19 @@ export const DeleteIssueModal = observer(function DeleteIssueModal(props: Props)
       handleSubmit={handleIssueDelete}
       isSubmitting={isDeleting}
       isOpen={isOpen}
+      primaryButtonText={{
+        loading: t("deleting"),
+        default: t("delete"),
+      }}
+      secondaryButtonText={t("cancel")}
       title={t("entity.delete.label", { entity: isEpic ? t("common.epic") : t("common.work_item") })}
       content={
         <>
-          {/* TODO: Translate here */}
-          {`Are you sure you want to delete ${isEpic ? "epic" : "work item"} `}
+          {t("issue.delete.confirmation.prefix", { entity: isEpic ? t("common.epic") : t("common.work_item") })}{" "}
           <span className="font-medium break-words text-primary">
             {projectDetails?.identifier}-{issue?.sequence_id}
           </span>
-          {` ? All of the data related to the ${isEpic ? "epic" : "work item"} will be permanently removed. This action cannot be undone.`}
+          {t("issue.delete.confirmation.suffix", { entity: isEpic ? t("common.epic") : t("common.work_item") })}
         </>
       }
     />

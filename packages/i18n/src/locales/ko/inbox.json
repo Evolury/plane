@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "작업 항목 거절",
-        "content": "작업 항목 {value}을(를) 거절하시겠습니까?"
+        "content": "작업 항목 {value}을(를) 거절하시겠습니까?",
+        "confirmation": {
+          "prefix": "작업 항목",
+          "suffix": "을(를) 거절하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+        }
       },
       "delete": {
         "title": "작업 항목 삭제",
         "content": "작업 항목 {value}을(를) 삭제하시겠습니까?",
-        "success": "작업 항목이 성공적으로 삭제되었습니다"
+        "success": "작업 항목이 성공적으로 삭제되었습니다",
+        "confirmation": {
+          "prefix": "작업 항목",
+          "suffix": "을(를) 삭제하시겠습니까? 작업 항목은 Intake에서만 삭제되며 이 작업은 되돌릴 수 없습니다."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "작업 항목의 세부 정보를 보려면 선택하세요."
       }
+    },
+    "filters": {
+      "status": "작업 항목 상태"
     }
   }
 }

@@ -53,6 +53,12 @@
       "label_max_char": "Il nome dell'etichetta non deve superare i 255 caratteri",
       "toast": {
         "error": "Errore durante l'aggiornamento dell'etichetta"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "Sei sicuro di voler eliminare",
+          "suffix": "? Questo rimuoverà l'etichetta da tutti gli elementi di lavoro e da tutte le viste in cui viene usata come filtro."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Cambia sistema di stime",
       "current": "Sistema di stime attuale",
-      "select": "Seleziona un sistema di stime"
+      "select": "Seleziona un sistema di stime",
+      "delete": {
+        "confirmation": {
+          "prefix": "L'eliminazione della stima",
+          "suffix": "la rimuoverà definitivamente da tutti gli elementi di lavoro. Questa azione non può essere annullata. Se aggiungi di nuovo le stime, dovrai aggiornare tutti gli elementi di lavoro."
+        }
+      }
     },
     "automations": {
       "label": "Automatizzazioni",

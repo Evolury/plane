@@ -94,9 +94,7 @@ export function ArchiveRestoreProjectModal(props: Props) {
           {archive ? "Archive" : "Restore"} {projectDetails.name}
         </h3>
         <p className="mt-3 text-13 text-secondary">
-          {archive
-            ? "This project and its work items, cycles, modules, and pages will be archived. Its work items won't appear in search. Only project admins can restore the project."
-            : "Restoring a project will activate it and make it visible to all members of the project. Are you sure you want to continue?"}
+          {archive ? t("project.archive_modal.description") : t("project.restore_modal.description")}
         </p>
         <div className="mt-3 flex justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={onClose}>

@@ -198,7 +198,11 @@
     "copy_link": "Copy work item link",
     "delete": {
       "label": "Delete work item",
-      "error": "Error deleting work item"
+      "error": "Error deleting work item",
+      "confirmation": {
+        "prefix": "Are you sure you want to delete {entity}",
+        "suffix": "? All of the data related to the {entity} will be permanently removed. This action cannot be undone."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Click to downvote",
       "click_to_view_upvotes": "Click to view upvotes",
       "click_to_view_downvotes": "Click to view downvotes"
-    }
+    },
+    "count_tooltip": "There are {count, plural, one {# work item} other {# work items}} in this project",
+    "archived": {
+      "label": "Archived work items",
+      "count_tooltip": "There are {count, plural, one {# work item} other {# work items}} in project's archives"
+    },
+    "view": "View work item"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "To see all work items, clear all applied filters.",
         "action": "Clear filters"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# sub-work item} other {# sub-work items}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Epic Title",
       "required": "Epic title is required."
-    }
+    },
+    "view": "View epic",
+    "all": "All Epics"
   }
 }

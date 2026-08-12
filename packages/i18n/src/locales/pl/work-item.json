@@ -198,7 +198,11 @@
     "copy_link": "Kopiuj link do elementu pracy",
     "delete": {
       "label": "Usuń element pracy",
-      "error": "Błąd podczas usuwania elementu pracy"
+      "error": "Błąd podczas usuwania elementu pracy",
+      "confirmation": {
+        "prefix": "Czy na pewno chcesz usunąć {entity}",
+        "suffix": "? Wszystkie dane, które zawiera {entity}, zostaną trwale usunięte. Tej akcji nie można cofnąć."
+      }
     },
     "subscription": {
       "actions": {
@@ -266,7 +270,13 @@
       "click_to_downvote": "Kliknij, aby zagłosować przeciw",
       "click_to_view_upvotes": "Kliknij, aby zobaczyć głosy za",
       "click_to_view_downvotes": "Kliknij, aby zobaczyć głosy przeciw"
-    }
+    },
+    "count_tooltip": "Ten projekt zawiera {count, plural, one {# element pracy} few {# elementy pracy} many {# elementów pracy} other {# elementu pracy}}",
+    "archived": {
+      "label": "Zarchiwizowane elementy pracy",
+      "count_tooltip": "Archiwum projektu zawiera {count, plural, one {# element pracy} few {# elementy pracy} many {# elementów pracy} other {# elementu pracy}}"
+    },
+    "view": "Zobacz element pracy"
   },
   "sub_work_item": {
     "update": {
@@ -288,7 +298,8 @@
         "description": "Aby zobaczyć wszystkie elementy pracy, wyczyść wszystkie zastosowane filtry.",
         "action": "Wyczyść filtry"
       }
-    }
+    },
+    "count_label": "{count, plural, one {# podrzędny element pracy} few {# podrzędne elementy pracy} many {# podrzędnych elementów pracy} other {# podrzędnego elementu pracy}}"
   },
   "issue_relation": {
     "empty_state": {
@@ -421,6 +432,8 @@
     "title": {
       "label": "Tytuł epiku",
       "required": "Tytuł epiku jest wymagany."
-    }
+    },
+    "view": "Zobacz epik",
+    "all": "Wszystkie epiki"
   }
 }

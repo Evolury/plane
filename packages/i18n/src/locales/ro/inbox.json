@@ -25,12 +25,20 @@
     "modals": {
       "decline": {
         "title": "Respinge activitatea",
-        "content": "Ești sigur că vrei să respingi activitatea {value}?"
+        "content": "Ești sigur că vrei să respingi activitatea {value}?",
+        "confirmation": {
+          "prefix": "Ești sigur că vrei să respingi activitatea",
+          "suffix": "? Această acțiune nu poate fi anulată."
+        }
       },
       "delete": {
         "title": "Șterge activitatea",
         "content": "Ești sigur că vrei să ștergi activitatea {value}?",
-        "success": "Activitatea a fost ștersă cu succes"
+        "success": "Activitatea a fost ștersă cu succes",
+        "confirmation": {
+          "prefix": "Ești sigur că vrei să ștergi activitatea",
+          "suffix": "? Activitatea va fi ștearsă doar din Intake, iar această acțiune nu poate fi anulată."
+        }
       }
     },
     "errors": {
@@ -82,6 +90,9 @@
       "detail": {
         "title": "Selectează o cerere pentru a-i vedea detaliile."
       }
+    },
+    "filters": {
+      "status": "Starea activității"
     }
   }
 }

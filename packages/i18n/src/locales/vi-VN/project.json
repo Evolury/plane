@@ -21,7 +21,8 @@
     "in_your_timezone": "Trong múi giờ của bạn",
     "transfer_work_items": "Chuyển {count} mục công việc",
     "transfer": {
-      "no_cycles_available": "Không có chu kỳ nào khác để chuyển mục công việc."
+      "no_cycles_available": "Không có chu kỳ nào khác để chuyển mục công việc.",
+      "no_current_cycle": "Bạn không có chu kỳ hiện tại nào. Vui lòng tạo một chu kỳ để chuyển các mục công việc."
     },
     "date_range": "Khoảng thời gian",
     "add_date": "Thêm ngày",
@@ -36,7 +37,10 @@
       "current": "Hiện tại",
       "labels": "Nhãn",
       "trailing": "Chậm tiến độ",
-      "leading": "Vượt tiến độ"
+      "leading": "Vượt tiến độ",
+      "pending_points": "Điểm chờ xử lý",
+      "work_items_closed": "{closedCount}/{totalCount} {closedCount, plural, one {mục công việc} other {mục công việc}} đã đóng",
+      "cancelled_work_items_excluded": "{count, plural, one {# mục công việc đã hủy bị loại khỏi báo cáo này.} other {# mục công việc đã hủy bị loại khỏi báo cáo này.}}"
     },
     "upcoming_cycle": {
       "label": "Chu kỳ sắp tới"
@@ -413,6 +417,12 @@
           "message": "Đã xảy ra lỗi."
         }
       }
+    },
+    "archive_modal": {
+      "description": "Dự án này cùng các mục công việc, chu kỳ, mô-đun và trang của nó sẽ được lưu trữ. Các mục công việc của dự án sẽ không xuất hiện trong tìm kiếm. Chỉ quản trị viên dự án mới có thể khôi phục dự án."
+    },
+    "restore_modal": {
+      "description": "Khôi phục dự án sẽ kích hoạt dự án và hiển thị nó với tất cả thành viên của dự án. Bạn có chắc chắn muốn tiếp tục không?"
     }
   }
 }

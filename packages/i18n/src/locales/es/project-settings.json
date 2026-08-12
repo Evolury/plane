@@ -53,6 +53,12 @@
       "label_max_char": "El nombre de la etiqueta no debe exceder 255 caracteres",
       "toast": {
         "error": "Error al actualizar la etiqueta"
+      },
+      "delete": {
+        "confirmation": {
+          "prefix": "¿Estás seguro de que quieres eliminar",
+          "suffix": "? Esto eliminará la etiqueta de todos los elementos de trabajo y de todas las vistas donde se esté filtrando por ella."
+        }
       }
     },
     "estimates": {
@@ -174,7 +180,13 @@
       },
       "switch": "Cambiar sistema de estimaciones",
       "current": "Sistema de estimaciones actual",
-      "select": "Seleccionar un sistema de estimaciones"
+      "select": "Seleccionar un sistema de estimaciones",
+      "delete": {
+        "confirmation": {
+          "prefix": "Eliminar la estimación",
+          "suffix": "la eliminará permanentemente de todos los elementos de trabajo. Esta acción no se puede deshacer. Si vuelves a agregar estimaciones, tendrás que actualizar todos los elementos de trabajo."
+        }
+      }
     },
     "automations": {
       "label": "Automatizaciones",
