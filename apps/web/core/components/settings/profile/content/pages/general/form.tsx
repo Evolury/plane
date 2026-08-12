@@ -77,7 +77,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       email: user.email || "",
       role: profile.role || t("user_roles.product_or_project_manager"),
       language: profile.language || "en",
-      user_timezone: user.user_timezone || "Asia/Kolkata",
+      user_timezone: user.user_timezone || "America/Sao_Paulo",
     },
   });
   // derived values

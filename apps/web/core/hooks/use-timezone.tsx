@@ -54,17 +54,13 @@ const useTimezone = () => {
       </div>
     );
   };
+  // Evolury: sem a opção "UTC" avulsa — não é fuso do Brasil (ADR 0006)
   const options = [
     ...groupTimezones(timezones?.timezones || [])?.map((timezone) => ({
       value: timezone.value,
       query: `${timezone.value} ${timezone.label}, ${timezone.gmt_offset}, ${timezone.utc_offset}`,
       content: getTimeZoneLabel(timezone),
     })),
-    {
-      value: "UTC",
-      query: "utc, coordinated universal time",
-      content: "UTC",
-    },
   ];
 
   const selectedTimezone = (value: string | undefined) => options.find((option) => option.value === value)?.content;
