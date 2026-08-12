@@ -11,6 +11,7 @@
 
 import { action, computed, makeObservable, observable, runInAction } from "mobx";
 // plane imports
+import { MY_TASKS_STAGE_GROUP_ORDER } from "@plane/constants";
 import type { TWorkStage } from "@plane/types";
 // services
 import { MyTasksService } from "@/services/my-tasks.service";
@@ -81,7 +82,17 @@ export class MyTasksStore implements IMyTasksStore {
   }
 
   get sortedStages() {
-    return Object.values(this.stageMap).sort((a, b) => a.sort_order - b.sort_order);
+    // Ordem por grupo (MY_TASKS_STAGE_GROUP_ORDER) e, dentro do grupo, pelo
+    // sort_order — a mesma ordenação do painel de etapas. O painel reordena
+    // por arrasto calculando a posição entre as irmãs do MESMO grupo, então
+    // uma ordenação achatada divergiria dele (causa do bug de 12/08: etapa
+    // arrastada ao topo do backlog ganhou sort negativo e aparecia antes de
+    // tudo no quadro).
+    return Object.values(this.stageMap).sort((a, b) => {
+      const groupDiff = MY_TASKS_STAGE_GROUP_ORDER.indexOf(a.group) - MY_TASKS_STAGE_GROUP_ORDER.indexOf(b.group);
+      if (groupDiff !== 0) return groupDiff;
+      return a.sort_order - b.sort_order;
+    });
   }
 
   get defaultStage() {

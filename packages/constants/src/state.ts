@@ -57,6 +57,12 @@ export const STATE_GROUPS: {
   },
 };
 
+// Evolury: ordem dos grupos na página de minhas tarefas — o fluxo semântico
+// "agora → em seguida → depois → feito". Quadro, lista e painel de etapas
+// compartilham esta ordem; o sort_order das etapas vale DENTRO de cada grupo.
+// Backlog antes de concluído por definição de produto (12/08/2026).
+export const MY_TASKS_STAGE_GROUP_ORDER: TStateGroups[] = ["unstarted", "started", "backlog", "completed", "cancelled"];
+
 export const ARCHIVABLE_STATE_GROUPS = [STATE_GROUPS.completed.key, STATE_GROUPS.cancelled.key];
 export const COMPLETED_STATE_GROUPS = [STATE_GROUPS.completed.key];
 export const PENDING_STATE_GROUPS = [
