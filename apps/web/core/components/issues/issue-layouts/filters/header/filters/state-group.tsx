@@ -40,7 +40,7 @@ export const FilterStateGroup = observer(function FilterStateGroup(props: Props)
   return (
     <>
       <FilterHeader
-        title={`State group${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
+        title={`${t("common.state_group")}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
         isPreviewEnabled={previewEnabled}
         handleIsPreviewEnabled={() => setPreviewEnabled(!previewEnabled)}
       />
@@ -54,7 +54,7 @@ export const FilterStateGroup = observer(function FilterStateGroup(props: Props)
                   isChecked={appliedFilters?.includes(stateGroup.key) ? true : false}
                   onClick={() => handleUpdate(stateGroup.key)}
                   icon={<StateGroupIcon stateGroup={stateGroup.key} />}
-                  title={stateGroup.label}
+                  title={t(stateGroup.i18n_label)}
                 />
               ))}
               {filteredOptions.length > 5 && (

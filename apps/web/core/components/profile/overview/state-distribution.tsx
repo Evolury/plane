@@ -69,7 +69,8 @@ export function ProfileStateDistribution({ stateDistribution, userProfile }: Pro
                             STATE_GROUPS[group.state_group]?.color ?? "var(--background-color-accent-primary)",
                         }}
                       />
-                      <div className="whitespace-nowrap">{STATE_GROUPS[group.state_group].label}</div>
+                      {/* Evolury: rótulo traduzido — `label` é o texto cru em inglês */}
+                      <div className="whitespace-nowrap">{t(STATE_GROUPS[group.state_group].i18n_label)}</div>
                     </div>
                     <div>{group.state_count}</div>
                   </div>

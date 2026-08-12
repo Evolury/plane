@@ -12,8 +12,7 @@ import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-sc
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { EIssueFilterType, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import type { EIssuesStoreType } from "@plane/types";
-import { EIssueServiceType, EIssueLayoutTypes } from "@plane/types";
+import { EIssuesStoreType, EIssueServiceType, EIssueLayoutTypes } from "@plane/types";
 //hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useIssues } from "@/hooks/store/use-issues";
@@ -42,7 +41,9 @@ export type KanbanStoreType =
   | EIssuesStoreType.PROFILE
   | EIssuesStoreType.TEAM
   | EIssuesStoreType.TEAM_VIEW
-  | EIssuesStoreType.EPIC;
+  | EIssuesStoreType.EPIC
+  // Evolury: o quadro de "Minhas tarefas" também usa este root (ADR 0002)
+  | EIssuesStoreType.MY_TASKS;
 
 export interface IBaseKanBanLayout {
   QuickActions: FC<IQuickActionProps>;
@@ -245,22 +246,29 @@ export const BaseKanBanRoot = observer(function BaseKanBanRoot(props: IBaseKanBa
         isEpic={isEpic}
       />
       {/* drag and delete component */}
-      <div
-        className={`fixed left-1/2 -translate-x-1/2 ${
-          isDragging ? "z-40" : ""
-        } top-3 mx-3 flex w-72 items-center justify-center`}
-        ref={deleteAreaRef}
-      >
+      {/* Evolury: em "Minhas tarefas" arrastar é organização pessoal e nunca
+          toca o item real (ADR 0001) — oferecer a exclusão definitiva como
+          alvo do arrasto contradiz a página. A exclusão segue no menu de
+          ações do item. O alvo de drop só é registrado se o elemento existir,
+          então não renderizar basta. */}
+      {storeType !== EIssuesStoreType.MY_TASKS && (
         <div
-          className={`${
-            isDragging ? `opacity-100` : `opacity-0`
-          } flex w-full items-center justify-center rounded-sm border-2 border-danger-strong/20 bg-surface-1 px-3 py-5 text-11 font-medium text-danger-primary italic ${
-            isDragOverDelete ? "bg-danger-primary blur-2xl" : ""
-          } transition duration-300`}
+          className={`fixed left-1/2 -translate-x-1/2 ${
+            isDragging ? "z-40" : ""
+          } top-3 mx-3 flex w-72 items-center justify-center`}
+          ref={deleteAreaRef}
         >
-          {t("ui.drop_here_to_delete_the_work_item")}
+          <div
+            className={`${
+              isDragging ? `opacity-100` : `opacity-0`
+            } flex w-full items-center justify-center rounded-sm border-2 border-danger-strong/20 bg-surface-1 px-3 py-5 text-11 font-medium text-danger-primary italic ${
+              isDragOverDelete ? "bg-danger-primary blur-2xl" : ""
+            } transition duration-300`}
+          >
+            {t("ui.drop_here_to_delete_the_work_item")}
+          </div>
         </div>
-      </div>
+      )}
       <IssueLayoutHOC layout={EIssueLayoutTypes.KANBAN}>
         <div
           className={`horizontal-scrollbar relative flex scrollbar-lg h-full w-full bg-surface-2 ${sub_group_by ? "vertical-scrollbar overflow-y-auto" : "overflow-x-auto overflow-y-hidden"}`}

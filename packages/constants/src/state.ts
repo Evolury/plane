@@ -100,25 +100,30 @@ export const STATE_DISTRIBUTION = {
   },
 };
 
+// Evolury: `title` fica como fallback; os consumidores exibem `i18n_title`
 export const PROGRESS_STATE_GROUPS_DETAILS = [
   {
     key: "completed_issues",
     title: "Completed",
+    i18n_title: "workspace_projects.state.completed",
     color: "#16A34A",
   },
   {
     key: "started_issues",
     title: "Started",
+    i18n_title: "workspace_projects.state.started",
     color: "#F59E0B",
   },
   {
     key: "unstarted_issues",
     title: "Unstarted",
+    i18n_title: "workspace_projects.state.unstarted",
     color: "#3A3A3A",
   },
   {
     key: "backlog_issues",
     title: "Backlog",
+    i18n_title: "workspace_projects.state.backlog",
     color: "#A3A3A3",
   },
 ];

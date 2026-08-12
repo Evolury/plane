@@ -97,7 +97,7 @@
     },
     "total": "Total de {entity}",
     "started_work_items": "{entity} iniciados",
-    "backlog_work_items": "{entity} no backlog",
+    "backlog_work_items": "{entity} em espera",
     "un_started_work_items": "{entity} não iniciados",
     "completed_work_items": "{entity} concluídos",
     "project_insights": "Insights do projeto",
@@ -173,7 +173,7 @@
       "issue_delete": "Falha ao excluir a tarefa"
     },
     "state": {
-      "backlog": "Backlog",
+      "backlog": "Em espera",
       "unstarted": "Não iniciado",
       "started": "Iniciado",
       "completed": "Concluído",
