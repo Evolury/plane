@@ -39,6 +39,7 @@
       "description": "Create, edit and reorder your personal stages. Deleting a stage moves its work items to the default stage."
     },
     "stage_label": "Stage",
-    "empty_title": "Nothing assigned to you yet"
+    "empty_title": "Nothing assigned to you yet",
+    "stage_in_my_tasks": "Stage in My tasks"
   }
 }

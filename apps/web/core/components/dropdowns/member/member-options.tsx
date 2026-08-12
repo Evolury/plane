@@ -19,6 +19,7 @@ import type { IUserLite } from "@plane/types";
 import { Avatar } from "@plane/ui";
 import { cn, getFileURL, sortByCurrentUserThenSelected } from "@plane/utils";
 // hooks
+import { MyTasksStageSelect } from "@/components/my-tasks/stage-select";
 import { useMember } from "@/hooks/store/use-member";
 import { useUser } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -30,6 +31,9 @@ interface Props {
   memberIds?: string[];
   onDropdownOpen?: () => void;
   optionsClassName?: string;
+  // Evolury: work item cujos responsáveis o dropdown lista — habilita o
+  // seletor de etapa de minhas tarefas na linha do usuário logado (F7)
+  workItemId?: string;
   placement: Placement | undefined;
   referenceElement: HTMLButtonElement | null;
   value?: string[] | string | null;
@@ -45,6 +49,7 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
     placement,
     referenceElement,
     value,
+    workItemId,
   } = props;
   // router
   const { workspaceSlug } = useParams();
@@ -175,6 +180,11 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
                       {({ selected }) => (
                         <>
                           <span className="flex-grow truncate">{option.content}</span>
+                          {/* Evolury: etapa de minhas tarefas na linha do usuário
+                              logado, quando ele é responsável pelo item (F7) */}
+                          {workItemId && selected && currentUser?.id === option.value && (
+                            <MyTasksStageSelect workItemId={workItemId} />
+                          )}
                           {selected && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" />}
                           {isUserSuspended(option.value, workspaceSlug?.toString()) && (
                             <Pill variant={EPillVariant.DEFAULT} size={EPillSize.XS} className="border-none">

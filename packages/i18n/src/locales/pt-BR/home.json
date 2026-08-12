@@ -73,5 +73,10 @@
       "start_subscription": "Iniciar assinatura",
       "explore_business_features": "Explorar recursos Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Bom dia",
+    "afternoon": "Boa tarde",
+    "evening": "Boa noite"
   }
 }

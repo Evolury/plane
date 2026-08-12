@@ -39,6 +39,7 @@
       "description": "Vytvářejte, upravujte a přeuspořádávejte své osobní fáze. Smazáním fáze se její položky přesunou do výchozí fáze."
     },
     "stage_label": "Fáze",
-    "empty_title": "Zatím vám nebylo nic přiřazeno"
+    "empty_title": "Zatím vám nebylo nic přiřazeno",
+    "stage_in_my_tasks": "Fáze v Moje úkoly"
   }
 }

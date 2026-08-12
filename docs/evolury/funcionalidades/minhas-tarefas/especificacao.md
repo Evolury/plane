@@ -88,6 +88,22 @@ padrão da instância.
   notificações — a exceção de silêncio vale só para o movimento entre etapas.
 - Quick actions do card: as mesmas da página de perfil.
 
+## Etapa pela janela do work item (v1.2)
+
+Espelho do recurso do Asana: o responsável altera a etapa pessoal de um item
+sem sair do contexto dele.
+
+- No **popover de responsáveis** do work item (peek, página de detalhe e
+  dropdowns inline de lista/kanban/planilha/intake/relações), a linha
+  **"Você"** ganha um seletor com a etapa atual e todas as etapas do usuário.
+- Só aparece para quem **é responsável** pelo item (ao se atribuir, o seletor
+  surge em seguida — item nasce na etapa padrão implícita). Linhas de outros
+  usuários não mostram nada: cada um vê e altera apenas a própria organização.
+- Mudar a etapa ali usa o mesmo `move` da página: pessoal e silencioso
+  (ADR 0001).
+- A etapa efetiva é buscada sob demanda quando o popover abre (o payload de
+  work item fora da página não carrega a anotação).
+
 ## Fora de escopo do v1
 
 - Sincronizar etapa ↔ estado real (possível v2 como ação explícita no card).

@@ -39,6 +39,7 @@
       "description": "Vytvárajte, upravujte a preusporadúvajte svoje osobné fázy. Odstránením fázy sa jej položky presunú do predvolenej fázy."
     },
     "stage_label": "Fáza",
-    "empty_title": "Zatiaľ vám nebolo nič priradené"
+    "empty_title": "Zatiaľ vám nebolo nič priradené",
+    "stage_in_my_tasks": "Fáza v Moje úlohy"
   }
 }

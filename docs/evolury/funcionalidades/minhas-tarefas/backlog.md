@@ -156,3 +156,23 @@ Exibir, empty states com usuário sem atribuições).
 **Aceite:** ✓ 12/08/2026 — matriz assinada; `pnpm check` + pytest verdes;
 release v1.1.0 cortada pelo fluxo `release/` do VERSIONING.md (primeiro
 exercício do `check-version`).
+
+## F7 — Etapa pela janela do work item (pós-v1.1.0)
+
+Espelho do recurso do Asana (spec, "Etapa pela janela do work item").
+Decisões de escopo com o produto em 12/08/2026: todas as janelas do work item;
+seletor só para responsáveis.
+
+- [x] F7.1 `GET /my-tasks/issues/<id>/stage/` — etapa efetiva (associação ou
+      padrão; 404 se não responsável), com seed garantido; 4 testes de
+      contrato (suíte my-tasks em 35)
+- [x] F7.2 `MyTasksStageSelect` autocontido + prop `workItemId` opcional no
+      `MemberDropdown` (threading types→base→options; chip na linha "Você"
+      com preventDefault/stopPropagation para não alternar a atribuição)
+- [x] F7.3 Prop nos 6 call sites de responsáveis: peek, detalhe, propriedades
+      inline (lista/kanban), planilha, intake e relações
+- [x] F7.4 i18n nos 19 locales; validação visual em planedev: chip
+      "Recém-atribuídas" → seleção "Hoje" → chip atualizado E a página de
+      minhas tarefas ao fundo reagrupada em tempo real; atividade vazia
+
+**Aceite:** ✓ 12/08/2026 — validado de ponta a ponta no navegador.

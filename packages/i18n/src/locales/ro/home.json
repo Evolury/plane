@@ -73,5 +73,10 @@
       "start_subscription": "Începe abonamentul",
       "explore_business_features": "Explorează funcțiile Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Bună dimineața",
+    "afternoon": "Bună ziua",
+    "evening": "Bună seara"
   }
 }

@@ -97,6 +97,7 @@ export const PeekOverviewProperties = observer(function PeekOverviewProperties(p
           <MemberDropdown
             value={issue?.assignee_ids ?? undefined}
             onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { assignee_ids: val })}
+            workItemId={issueId}
             disabled={disabled}
             projectId={projectId}
             placeholder={t("issue.add.assignee")}

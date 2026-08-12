@@ -353,6 +353,39 @@ class MyTasksIssuesEndpoint(BaseAPIView):
         )
 
 
+class MyTasksIssueStageEndpoint(BaseAPIView):
+    """Etapa efetiva de um work item para o usuário logado — associação quando
+    existe, etapa padrão quando não. Consumido pelo seletor no popover de
+    responsáveis (F7), buscado sob demanda quando o popover abre."""
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
+    def get(self, request, slug, issue_id):
+        # Mesmo recorte do move: precisa ser responsável e ter acesso ao projeto.
+        issue = Issue.issue_objects.filter(
+            pk=issue_id,
+            workspace__slug=slug,
+            assignees__in=[request.user],
+            issue_assignee__deleted_at__isnull=True,
+            project__project_projectmember__member=request.user,
+            project__project_projectmember__is_active=True,
+        ).first()
+        if issue is None:
+            return Response({"error": "Work item não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        workspace = Workspace.objects.get(slug=slug)
+        ensure_default_work_stages(workspace, request.user)
+
+        association = WorkStageIssue.objects.filter(owner=request.user, issue_id=issue_id).first()
+        if association is not None:
+            return Response({"stage_id": str(association.stage_id)}, status=status.HTTP_200_OK)
+
+        default_stage = WorkStage.objects.filter(workspace=workspace, owner=request.user, is_default=True).first()
+        return Response(
+            {"stage_id": str(default_stage.id) if default_stage else None},
+            status=status.HTTP_200_OK,
+        )
+
+
 class MyTasksIssueMoveEndpoint(BaseAPIView):
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def post(self, request, slug, issue_id):

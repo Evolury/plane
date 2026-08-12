@@ -73,5 +73,10 @@
       "start_subscription": "Оформити підписку",
       "explore_business_features": "Ознайомитися з функціями Business"
     }
+  },
+  "home_greeting": {
+    "morning": "Доброго ранку",
+    "afternoon": "Доброго дня",
+    "evening": "Доброго вечора"
   }
 }

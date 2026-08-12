@@ -60,6 +60,7 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
     showUserDetails = false,
     tabIndex,
     tooltipContent,
+    workItemId,
     value,
   } = props;
   // refs
@@ -184,6 +185,7 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
           placement={placement}
           referenceElement={referenceElement}
           value={value}
+          workItemId={workItemId}
         />
       )}
     </ComboDropDown>

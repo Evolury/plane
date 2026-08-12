@@ -67,6 +67,14 @@ export class MyTasksService extends APIService {
       });
   }
 
+  async getIssueStage(workspaceSlug: string, issueId: string): Promise<{ stage_id: string | null }> {
+    return this.get(`/api/workspaces/${workspaceSlug}/my-tasks/issues/${issueId}/stage/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
   async moveIssue(
     workspaceSlug: string,
     issueId: string,
