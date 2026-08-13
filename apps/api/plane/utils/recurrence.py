@@ -66,11 +66,12 @@ def _datas_por_dia_fixo(regra, fuso, depois_de: datetime):
     somar mês a mês faria 31/01 virar 28/02 e depois 28/03, perdendo o 31 que a
     pessoa pediu.
     """
-    passo = relativedelta(months=regra.interval) if regra.frequency == RecurrenceFrequency.MONTHLY else relativedelta(years=regra.interval)
+    mensal = regra.frequency == RecurrenceFrequency.MONTHLY
+    passo = relativedelta(months=regra.interval) if mensal else relativedelta(years=regra.interval)
     dia_pedido = regra.day_of_month or regra.start_date.day
     mes_base = (
         regra.start_date.replace(day=1)
-        if regra.frequency == RecurrenceFrequency.MONTHLY
+        if mensal
         else regra.start_date.replace(day=1, month=regra.month_of_year or regra.start_date.month)
     )
 
