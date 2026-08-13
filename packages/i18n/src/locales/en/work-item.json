@@ -455,7 +455,8 @@
     "monthly_mode": {
       "label": "In the month",
       "day_of_month": "On the day of the month",
-      "weekday_of_month": "On the weekday"
+      "weekday_of_month": "On the weekday",
+      "last_day": "On the last day of the month"
     },
     "week_of_month": {
       "first": "first",

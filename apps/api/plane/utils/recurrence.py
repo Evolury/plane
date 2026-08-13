@@ -68,7 +68,9 @@ def _datas_por_dia_fixo(regra, fuso, depois_de: datetime):
     """
     mensal = regra.frequency == RecurrenceFrequency.MONTHLY
     passo = relativedelta(months=regra.interval) if mensal else relativedelta(years=regra.interval)
-    dia_pedido = regra.day_of_month or regra.start_date.day
+    # "Último dia" é dia 31 com o encurtamento que já existe — 31 nunca passa
+    # do fim do mês, seja ele 28, 29, 30 ou 31.
+    dia_pedido = 31 if regra.monthly_mode == MonthlyMode.LAST_DAY else (regra.day_of_month or regra.start_date.day)
     mes_base = (
         regra.start_date.replace(day=1)
         if mensal

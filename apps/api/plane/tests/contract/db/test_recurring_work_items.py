@@ -14,7 +14,11 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from plane.bgtasks.recurring_work_item_task import agendar_proxima_data, processar_regra
+from plane.bgtasks.recurring_work_item_task import (
+    agendar_apos_conclusao,
+    agendar_proxima_data,
+    processar_regra,
+)
 from plane.db.models import (
     GenerationMode,
     Issue,
@@ -295,3 +299,101 @@ class TestGeracao:
 
         assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5)) is None
         assert Issue.objects.filter(project=projeto).count() == 0
+
+
+@pytest.mark.contract
+class TestUltimoDiaEAposConclusao:
+    @pytest.mark.django_db
+    def test_last_day_of_month_is_an_option_of_its_own(self, projeto, create_user):
+        """Ninguém pensa "dia 31" quando quer dizer "fecha o mês"."""
+        regra = _regra(
+            projeto,
+            create_user,
+            frequency=RecurrenceFrequency.MONTHLY,
+            monthly_mode=MonthlyMode.LAST_DAY,
+            start_date=date(2026, 1, 1),
+        )
+
+        datas = proximas_datas(regra, _em_sp(2026, 1, 1), quantidade=4)
+
+        assert [d.astimezone(SP).date() for d in datas] == [
+            date(2026, 1, 31),
+            date(2026, 2, 28),
+            date(2026, 3, 31),
+            date(2026, 4, 30),
+        ]
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_after_completion_starts_and_then_follows_the_completion(
+        self, _atividade, projeto, create_user
+    ):
+        """A agenda desse modo não está no calendário, está na conclusão."""
+        regra = _regra(
+            projeto,
+            create_user,
+            generation_mode=GenerationMode.AFTER_COMPLETION,
+            days_after_completion=15,
+            start_date=date(2026, 8, 17),
+        )
+        # A primeira ocorrência precisa de uma data, senão a série nunca começa.
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 17, 8, 0))
+        assert regra.next_run_at is not None
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+        assert tarefa is not None
+
+        regra.refresh_from_db()
+        # Sem conclusão, não há próxima data: nada é gerado no vazio.
+        assert regra.next_run_at is None
+
+        concluido = State.objects.get(project=projeto, group="completed")
+        with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 9, 1, 10, 0)):
+            agendar_apos_conclusao(issue_id=tarefa.id, novo_estado_id=concluido.id)
+
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 9, 16)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_late_completion_does_not_skip_a_period(self, _atividade, projeto, create_user):
+        """O defeito conhecido do Asana: concluir com atraso pulava um mês.
+
+        Aqui a data nova conta a partir da conclusão, então atrasar EMPURRA a
+        próxima — nunca some com ela.
+        """
+        regra = _regra(
+            projeto,
+            create_user,
+            generation_mode=GenerationMode.AFTER_COMPLETION,
+            days_after_completion=30,
+            start_date=date(2026, 8, 1),
+        )
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 1, 8, 0))
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 1, 8, 5))
+
+        concluido = State.objects.get(project=projeto, group="completed")
+        # Concluída com três dias de atraso.
+        with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 9, 3, 9, 0)):
+            agendar_apos_conclusao(issue_id=tarefa.id, novo_estado_id=concluido.id)
+
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 10, 3)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_completing_a_scheduled_occurrence_does_not_move_the_clock(
+        self, _atividade, projeto, create_user
+    ):
+        """No modo por agenda, concluir não mexe na agenda."""
+        regra = _regra(projeto, create_user)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+        regra.refresh_from_db()
+        antes = regra.next_run_at
+
+        concluido = State.objects.get(project=projeto, group="completed")
+        agendar_apos_conclusao(issue_id=tarefa.id, novo_estado_id=concluido.id)
+
+        regra.refresh_from_db()
+        assert regra.next_run_at == antes

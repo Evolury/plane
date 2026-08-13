@@ -29,6 +29,7 @@ from celery import shared_task
 
 # Module imports
 from plane.db.models import (
+    GenerationMode,
     Issue,
     IssueAssignee,
     IssueLabel,
@@ -38,7 +39,7 @@ from plane.db.models import (
 )
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.utils.exception_logger import log_exception
-from plane.utils.recurrence import proxima_data
+from plane.utils.recurrence import data_apos_conclusao, proxima_data
 
 
 def _estado_inicial(regra):
@@ -173,10 +174,53 @@ def agendar_proxima_data(regra, a_partir_de=None):
     """Recalcula e grava o `next_run_at` — usado ao criar e ao editar a regra."""
     referencia = a_partir_de or timezone.now()
     inicio = datetime.combine(regra.start_date, regra.time_of_day, tzinfo=ZoneInfo(regra.project.timezone))
-    # Regra que começa no futuro conta a partir do próprio começo; regra cujo
-    # horário de hoje já passou não gera retroativamente — atraso não acumula.
-    base = max(referencia, inicio.astimezone(ZoneInfo("UTC")) - timedelta(seconds=1))
-    proxima = proxima_data(regra, base)
+    inicio_utc = inicio.astimezone(ZoneInfo("UTC"))
+
+    if regra.generation_mode == GenerationMode.AFTER_COMPLETION:
+        # Nesse modo o calendário não manda: quem manda é a conclusão. Só a
+        # PRIMEIRA ocorrência precisa de uma data, senão a série nunca começa.
+        proxima = None if regra.occurrences_created else max(inicio_utc, referencia)
+    else:
+        # Regra que começa no futuro conta a partir do próprio começo; regra
+        # cujo horário de hoje já passou não gera retroativamente — atraso não
+        # acumula.
+        base = max(referencia, inicio_utc - timedelta(seconds=1))
+        proxima = proxima_data(regra, base)
+
     RecurringWorkItem.objects.filter(pk=regra.pk).update(next_run_at=proxima)
     regra.next_run_at = proxima
+    return proxima
+
+
+def agendar_apos_conclusao(issue_id, novo_estado_id):
+    """No modo "após a conclusão", concluir a ocorrência agenda a próxima.
+
+    Sem isto o modo existiria no formulário e nunca dispararia — a agenda dele
+    não está no calendário, está no momento em que alguém termina o trabalho.
+
+    Também é o que impede o defeito conhecido do Asana, onde concluir com
+    atraso pula um mês inteiro: aqui a data nova conta a partir da conclusão,
+    então atrasar empurra a próxima, nunca some com ela.
+    """
+    if not novo_estado_id:
+        return None
+    estado = State.all_objects.filter(pk=novo_estado_id).values("group").first()
+    if not estado or estado["group"] != "completed":
+        return None
+
+    ocorrencia = (
+        RecurringWorkItemOccurrence.objects.filter(issue_id=issue_id)
+        .select_related("recurring_work_item", "recurring_work_item__project")
+        .order_by("-scheduled_for")
+        .first()
+    )
+    if ocorrencia is None:
+        return None
+
+    regra = ocorrencia.recurring_work_item
+    if regra.generation_mode != GenerationMode.AFTER_COMPLETION or not regra.is_active:
+        return None
+
+    proxima = data_apos_conclusao(regra, timezone.now())
+    RecurringWorkItem.objects.filter(pk=regra.pk).update(next_run_at=proxima)
     return proxima

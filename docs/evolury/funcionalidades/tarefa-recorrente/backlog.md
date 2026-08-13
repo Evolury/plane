@@ -44,8 +44,12 @@ calma antes de existir gente dependendo dele.
 
 ## F3 — Integração
 
+- [x] F3.0 "Último dia do mês" como opção própria, conferida contra o Asana
+
 - [ ] F3.1 Rastro na tarefa gerada ("criada pela recorrência X")
-- [ ] F3.2 Modo "após conclusão" ligado ao botão de concluir (ADR 0009)
+- [x] F3.2 Modo "após conclusão" ligado ao botão de concluir (ADR 0009) — a
+      primeira ocorrência sai da data de início, e cada conclusão agenda a
+      seguinte; sem isto o modo existia no formulário e nunca disparava
 - [ ] F3.3 "Tornar esta tarefa recorrente", a partir de uma tarefa existente
 
 ## Ciclo seguinte

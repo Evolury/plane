@@ -80,6 +80,25 @@ aprovado; mandá-lo para a fila de entrada seria pedir aprovação de novo.
 webhook e notificação como qualquer tarefa — e atividade sem ator é buraco no
 histórico.
 
+### Conferido contra o Asana (13/08/2026)
+
+As regras mensais foram validadas contra a referência do pedido. O Asana tem
+"último dia do mês" como **opção própria**, e não como "dia 31" — e faz sentido:
+ninguém pensa "dia 31" quando quer dizer "fecha o mês". Aqui ela virou o modo
+`last_day`, que internamente é o dia 31 com o encurtamento que já existia.
+
+Ele também tem o n-ésimo dia da semana, que já tínhamos, com uma diferença a
+nosso favor: os relatos do fórum mostram gente pedindo a **última** semana, que
+nós já oferecemos desde o começo.
+
+E há um defeito conhecido lá que vale citar porque desenha a nossa regra: com
+recorrência dirigida pela conclusão, **concluir com atraso pula um período
+inteiro** — tarefa do dia 31 de maio concluída em 3 de junho reaparece em
+julho, sem passar por junho. Aqui isso não acontece por construção: no modo por
+agenda as datas saem da série, não da conclusão; e no modo após a conclusão a
+data nova conta a partir do momento em que a pessoa terminou, então atrasar
+**empurra** a próxima em vez de sumir com ela. Há teste para os dois casos.
+
 ## Alternativas consideradas
 
 - **Guardar RRULE cru**: menos código, tela impossível. Descartado.

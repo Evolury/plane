@@ -7,7 +7,7 @@
 // Evolury: tarefas recorrentes (ADR 0010).
 
 export type TRecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";
-export type TMonthlyMode = "day_of_month" | "weekday_of_month";
+export type TMonthlyMode = "day_of_month" | "last_day" | "weekday_of_month";
 export type TGenerationMode = "schedule" | "after_completion";
 export type TRecurrenceEndMode = "never" | "on_date" | "after_count";
 
