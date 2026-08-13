@@ -20,7 +20,7 @@ import { useIssues } from "@/hooks/store/use-issues";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
-import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
+import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 import useIssuePeekOverviewRedirection from "@/hooks/use-issue-peek-overview-redirection";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // components
@@ -57,8 +57,8 @@ export const CalendarIssueBlock = observer(
 
     const stateColor = getProjectStates(issue?.project_id)?.find((state) => state?.id == issue?.state_id)?.color || "";
     const projectIdentifier = getProjectIdentifierById(issue?.project_id);
-    // Evolury: tarefa concluída fica esmaecida (ADR 0009)
-    const isCompleted = useIsIssueCompleted(issue?.state_id);
+    // Evolury: tarefa encerrada muda de aparência (ADR 0009)
+    const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
 
     // handlers
     const handleIssuePeekOverview = (peekIssue: TIssue) =>
@@ -121,10 +121,10 @@ export const CalendarIssueBlock = observer(
                   className={cn(
                     "group/calendar-block flex h-10 w-full items-center justify-between gap-1.5 rounded-sm px-4 py-1.5 md:h-8 md:px-1",
                     {
-                      "border-accent-strong bg-surface-2 shadow-raised-200": isDragging,
                       "bg-surface-1 hover:bg-surface-2": !isDragging,
+                      ...estiloEncerrada,
+                      "border-accent-strong bg-surface-2 shadow-raised-200": isDragging,
                       "border border-accent-strong hover:border-accent-strong": getIsIssuePeeked(issue.id),
-                      "opacity-60": isCompleted,
                     }
                   )}
                 >

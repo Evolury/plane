@@ -13,9 +13,35 @@ import type { IState } from "@plane/types";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 
-export const useIsIssueCompleted = (stateId: string | null | undefined): boolean => {
+export const useIssueStateGroup = (stateId: string | null | undefined): string | undefined => {
   const { getStateById } = useProjectState();
-  return getStateById(stateId ?? undefined)?.group === "completed";
+  return getStateById(stateId ?? undefined)?.group;
+};
+
+export const useIsIssueCompleted = (stateId: string | null | undefined): boolean =>
+  useIssueStateGroup(stateId) === "completed";
+
+export const useIsIssueCancelled = (stateId: string | null | undefined): boolean =>
+  useIssueStateGroup(stateId) === "cancelled";
+
+/**
+ * Aparência de tarefa encerrada, em um lugar só.
+ *
+ * Concluída e cancelada saem as duas do fluxo de trabalho, então as duas ficam
+ * esmaecidas; a cancelada ganha um fundo levemente avermelhado, porque "não vai
+ * ser feita" não é a mesma notícia que "foi feita". Vale para QUALQUER etapa do
+ * grupo, não só para as que nascem com o projeto — é o grupo que manda, como em
+ * todo o resto do produto.
+ *
+ * Devolve o mapa de classes para espalhar no `cn`; espalhe ANTES das classes de
+ * seleção e arraste, que são transitórias e devem prevalecer.
+ */
+export const useClosedIssueStyles = (stateId: string | null | undefined): Record<string, boolean> => {
+  const grupo = useIssueStateGroup(stateId);
+  return {
+    "opacity-60": grupo === "completed" || grupo === "cancelled",
+    "bg-danger-subtle/50": grupo === "cancelled",
+  };
 };
 
 /**
