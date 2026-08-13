@@ -137,7 +137,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
               </div>
             )
           ) : (
-            <p className="text-center text-secondary">Loading...</p>
+            <p className="text-center text-secondary">{t("common.loading")}</p>
           )}
         </div>
       </div>

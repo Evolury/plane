@@ -40,7 +40,8 @@
       "project_subscribers_description": "Select members who will receive notifications for this project.",
       "guest_super_permissions": {
         "title": "Grant view access to all work items for guest users:",
-        "sub_heading": "This will allow guests to have view access to all the project work items."
+        "sub_heading": "This will allow guests to have view access to all the project work items.",
+        "heading": "Guest access"
       },
       "invite_members": {
         "title": "Invite members",
@@ -220,18 +221,18 @@
       "description": "Configure automated actions to streamline your project management workflow and reduce manual tasks.",
       "auto-archive": {
         "title": "Auto-archive closed work items",
-        "description": "Plane will auto archive work items that have been completed or canceled.",
+        "description": "Evotask will auto archive work items that have been completed or canceled.",
         "duration": "Auto-archive work items that are closed for"
       },
       "auto-close": {
         "title": "Auto-close work items",
-        "description": "Plane will automatically close work items that haven't been completed or canceled.",
+        "description": "Evotask will automatically close work items that haven't been completed or canceled.",
         "duration": "Auto-close work items that are inactive for",
         "auto_close_status": "Auto-close status"
       },
       "auto-remind": {
         "title": "Auto-reminders",
-        "description": "Plane will automatically send reminders via email and in-app notifications to keep your team on track with deadlines.",
+        "description": "Evotask will automatically send reminders via email and in-app notifications to keep your team on track with deadlines.",
         "duration": "Send reminder before"
       }
     },
@@ -409,7 +410,7 @@
         },
         "email": {
           "title": "Email",
-          "description": "Collect new work items from anyone who sends an email to a Plane email address.",
+          "description": "Collect new work items from anyone who sends an email to a Evotask email address.",
           "fieldName": "Email ID"
         },
         "form": {

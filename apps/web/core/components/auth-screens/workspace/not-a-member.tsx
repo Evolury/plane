@@ -19,15 +19,12 @@ export function NotAWorkspaceMember() {
         <div className="space-y-8 text-center">
           <div className="space-y-2">
             <h3 className="text-16 font-semibold">{t("ui.not_authorized")}</h3>
-            <p className="mx-auto w-1/2 text-13 text-secondary">
-              You{"'"}re not a member of this workspace. Please contact the workspace admin to get an invitation or
-              check your pending invitations.
-            </p>
+            <p className="mx-auto w-1/2 text-13 text-secondary">{t("ui.not_a_member_of_workspace_description")}</p>
           </div>
           <div className="flex items-center justify-center gap-2">
             <Link href="/invitations">
               <span>
-                <Button variant="secondary">Check pending invites</Button>
+                <Button variant="secondary">{t("ui.check_pending_invites")}</Button>
               </span>
             </Link>
             <Link href="/create-workspace">

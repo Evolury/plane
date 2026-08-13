@@ -43,7 +43,7 @@ export function CustomSearchSelect(props: ICustomSearchSelectProps) {
     optionsClassName = "",
     value,
     tabIndex,
-    noResultsMessage = "No matches found",
+    noResultsMessage = translate("common.search.no_matches_found"),
     defaultOpen = false,
   } = props;
   const [query, setQuery] = useState("");
@@ -219,7 +219,7 @@ export function CustomSearchSelect(props: ICustomSearchSelectProps) {
                           <p className="px-1.5 py-1 text-placeholder italic">{noResultsMessage}</p>
                         )
                       ) : (
-                        <p className="px-1.5 py-1 text-placeholder italic">Loading...</p>
+                        <p className="px-1.5 py-1 text-placeholder italic">{translate("common.loading")}</p>
                       )}
                     </div>
                     {footerOption}

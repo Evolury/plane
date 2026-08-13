@@ -90,7 +90,7 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
         <div className="flex items-center gap-1 text-tertiary">
           <LockIcon className="size-3" />
           <span className="font-medium">{t("auth.common.password.set_password")}</span>
-          <span>{`(Optional)`}</span>
+          <span>{`(${t("common.optional")})`}</span>
         </div>
         <div className="flex items-center gap-2 text-placeholder">
           <ChevronDownIcon className={chevronIconClasses} />
@@ -124,13 +124,13 @@ export function SetPasswordRoot({ onPasswordChange, onConfirmPasswordChange, dis
               id="confirm-password"
               value={passwordState.confirmPassword}
               onChange={(value) => handlePasswordChange("confirmPassword", value)}
-              placeholder="Confirm password"
+              placeholder={t("auth.common.password.confirm_password.placeholder")}
               className="transition-all duration-200"
             />
             {hasPasswordMismatch && (
               <p className="mt-1 text-11 text-danger-primary">{t("ui.passwords_do_not_match")}</p>
             )}
-            {isPasswordValid && <p className="mt-1 text-11 text-success-primary">✓ Passwords match</p>}
+            {isPasswordValid && <p className="mt-1 text-11 text-success-primary">✓ {t("ui.passwords_match")}</p>}
           </div>
         </div>
       </div>

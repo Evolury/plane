@@ -144,7 +144,7 @@ export function LabelCreate(props: ILabelCreate) {
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.name)}
-                placeholder="Title"
+                placeholder={t("title")}
                 className="w-full px-1.5 py-1 text-11"
                 disabled={isSubmitting}
               />

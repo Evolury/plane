@@ -38,23 +38,24 @@ export const ensurePixelString = <TDefault>(
   return value;
 };
 
+// Evolury: `label` guarda a chave i18n; quem renderiza traduz (ADR 0008)
 export const IMAGE_ALIGNMENT_OPTIONS: {
   label: string;
   value: TCustomImageAlignment;
   icon: LucideIcon;
 }[] = [
   {
-    label: "Left",
+    label: "editor.align_left",
     value: "left",
     icon: AlignLeft,
   },
   {
-    label: "Center",
+    label: "editor.align_center",
     value: "center",
     icon: AlignCenter,
   },
   {
-    label: "Right",
+    label: "editor.align_right",
     value: "right",
     icon: AlignRight,
   },

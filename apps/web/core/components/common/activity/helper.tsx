@@ -108,7 +108,7 @@ export const messages = (activity: TProjectActivity): { message: string | ReactN
           newValue === "restore"
             ? translate("activity_log.restored_the_project")
             : translate("activity_log.archived_the_project"),
-        customUserName: newValue === "archive" ? "Plane" : undefined,
+        customUserName: newValue === "archive" ? "Evotask" : undefined,
       };
     case "name":
       return {

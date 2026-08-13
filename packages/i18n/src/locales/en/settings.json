@@ -93,7 +93,8 @@
         "title": "Recent activity",
         "empty": "We couldn't find data. Kindly view your inputs",
         "button": "Download today's activity",
-        "button_loading": "Downloading"
+        "button_loading": "Downloading",
+        "page_title": "Profile - Activity"
       }
     },
     "actions": {
@@ -115,7 +116,7 @@
     "empty_state": {
       "activity": {
         "title": "No activities yet",
-        "description": "Get started by creating a new work item! Add details and properties to it. Explore more in Plane to see your activity."
+        "description": "Get started by creating a new work item! Add details and properties to it. Explore more in Evotask to see your activity."
       },
       "assigned": {
         "title": "No work items are assigned to you",

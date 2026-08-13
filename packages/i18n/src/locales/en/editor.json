@@ -126,6 +126,25 @@
     "menu_bulleted_list": "Bulleted list",
     "menu_numbered_list": "Numbered list",
     "menu_quote": "Quote",
-    "invalid_url": "Please enter a valid URL"
+    "invalid_url": "Please enter a valid URL",
+    "text_colors": "Text colors",
+    "header_column": "Header column",
+    "header_row": "Header row",
+    "insert_column_left": "Insert left",
+    "insert_column_right": "Insert right",
+    "insert_row_above": "Insert above",
+    "insert_row_below": "Insert below",
+    "duplicate": "Duplicate",
+    "clear_contents": "Clear contents",
+    "retry_duplication": "Retry duplication",
+    "align": "Align",
+    "align_left": "Left",
+    "align_center": "Center",
+    "align_right": "Right",
+    "download": "Download",
+    "download_image": "Download image",
+    "fullscreen_image_viewer": "Fullscreen image viewer",
+    "zoom_out": "Zoom out",
+    "remove_link": "Remove Link"
   }
 }

@@ -48,7 +48,7 @@ export const IssueAttachmentUpload = observer(function IssueAttachmentUpload(pro
   });
 
   const fileError =
-    fileRejections.length > 0 ? `Invalid file type or size (max ${maxFileSize / 1024 / 1024} MB)` : null;
+    fileRejections.length > 0 ? t("file_upload.invalid_file_type_or_size", { size: maxFileSize / 1024 / 1024 }) : null;
 
   return (
     <div
@@ -64,7 +64,7 @@ export const IssueAttachmentUpload = observer(function IssueAttachmentUpload(pro
         ) : fileError ? (
           <p className="text-center text-danger-primary">{fileError}</p>
         ) : isLoading ? (
-          <p className="text-center">Uploading...</p>
+          <p className="text-center">{t("common.uploading")}</p>
         ) : (
           <p className="text-center">{t("ui.click_or_drag_file")}</p>
         )}

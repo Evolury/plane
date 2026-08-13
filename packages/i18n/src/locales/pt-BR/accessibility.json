@@ -28,13 +28,19 @@
       "show_password": "Mostrar senha",
       "hide_password": "Ocultar senha",
       "close_alert": "Fechar alerta",
-      "close_popover": "Fechar popover"
+      "close_popover": "Fechar popover",
+      "provider_logo": "Logo do {provider}"
     },
     "editor": {
       "dismiss_content_limit_warning": "Dispensar aviso de limite de conteúdo"
     },
     "errors": {
-      "error_illustration": "Ilustração de erro"
+      "error_illustration": "Ilustração de erro",
+      "not_authorized_illustration": "Ilustração de acesso não autorizado"
+    },
+    "sidebar": {
+      "main": "Barra lateral principal",
+      "resize": "Redimensionar barra lateral"
     }
   }
 }

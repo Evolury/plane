@@ -17,12 +17,14 @@ const checkExpiry = (inputDateString: string) => {
   expiryDate.setDate(expiryDate.getDate() + 7);
   return expiryDate > currentDate;
 };
+// Evolury: só `content` é traduzido — `key` identifica a coluna internamente
+// e precisa continuar estável em inglês.
 export const useExportColumns = () => {
   const { t } = useTranslation();
   const columns = [
     {
       key: "Exported By",
-      content: "Exported By",
+      content: t("common.exported_by"),
       tdRender: (rowData: RowData) => {
         const { avatar_url, display_name, email } = rowData.initiated_by_detail;
         return (
@@ -56,11 +58,13 @@ export const useExportColumns = () => {
     {
       key: "Exported projects",
       content: t("ui.exported_projects"),
-      tdRender: (rowData: RowData) => <div className="text-13">{rowData.project.length} project(s)</div>,
+      tdRender: (rowData: RowData) => (
+        <div className="text-13">{t("common.project_count", { count: rowData.project.length })}</div>
+      ),
     },
     {
       key: "Format",
-      content: "Format",
+      content: t("workspace_settings.settings.exports.format"),
       tdRender: (rowData: RowData) => (
         <span className="text-13">
           {rowData.provider === "csv"
@@ -75,7 +79,7 @@ export const useExportColumns = () => {
     },
     {
       key: "Status",
-      content: "Status",
+      content: t("common.status"),
       tdRender: (rowData: RowData) => (
         <span
           className={`rounded-sm px-2 py-1 text-11 capitalize ${
@@ -96,7 +100,7 @@ export const useExportColumns = () => {
     },
     {
       key: "Download",
-      content: "Download",
+      content: t("common.download"),
       tdRender: (rowData: RowData) =>
         checkExpiry(rowData.created_at) ? (
           <>
@@ -104,7 +108,7 @@ export const useExportColumns = () => {
               <a target="_blank" href={rowData?.url} rel="noopener noreferrer">
                 <button className="flex w-full items-center gap-1 font-medium text-accent-primary">
                   <Download className="h-4 w-4" />
-                  <div>Download</div>
+                  <div>{t("common.download")}</div>
                 </button>
               </a>
             ) : (
@@ -112,7 +116,7 @@ export const useExportColumns = () => {
             )}
           </>
         ) : (
-          <div className="text-11 text-danger-primary">Expired</div>
+          <div className="text-11 text-danger-primary">{t("workspace_settings.settings.exports.expired")}</div>
         ),
     },
   ];

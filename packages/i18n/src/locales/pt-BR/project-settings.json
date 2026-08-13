@@ -40,7 +40,8 @@
       "project_subscribers_description": "Selecione os membros que receberão notificações deste projeto.",
       "guest_super_permissions": {
         "title": "Conceder acesso de visualização a todas as tarefas para usuários convidados:",
-        "sub_heading": "Isso permitirá que os convidados tenham acesso de visualização a todas as tarefas do projeto."
+        "sub_heading": "Isso permitirá que os convidados tenham acesso de visualização a todas as tarefas do projeto.",
+        "heading": "Acesso de convidados"
       },
       "invite_members": {
         "title": "Convidar membros",
@@ -220,18 +221,18 @@
       "description": "Configure ações automatizadas para otimizar seu fluxo de trabalho de gerenciamento de projetos e reduzir tarefas manuais.",
       "auto-archive": {
         "title": "Arquivar automaticamente tarefas fechadas",
-        "description": "O Plane arquivará automaticamente as tarefas que foram concluídas ou canceladas.",
+        "description": "O Evotask arquivará automaticamente as tarefas que foram concluídas ou canceladas.",
         "duration": "Arquivar automaticamente tarefas que estão fechadas por"
       },
       "auto-close": {
         "title": "Fechar automaticamente tarefas",
-        "description": "O Plane fechará automaticamente as tarefas que não foram concluídas ou canceladas.",
+        "description": "O Evotask fechará automaticamente as tarefas que não foram concluídas ou canceladas.",
         "duration": "Fechar automaticamente tarefas que estão inativos por",
         "auto_close_status": "Status de fechamento automático"
       },
       "auto-remind": {
         "title": "Avisos automáticos",
-        "description": "O Plane enviará avisos automáticos via e-mail e notificações no aplicativo para manter sua equipe no caminho dos prazos.",
+        "description": "O Evotask enviará avisos automáticos via e-mail e notificações no aplicativo para manter sua equipe no caminho dos prazos.",
         "duration": "Enviar aviso antes"
       }
     },
@@ -409,7 +410,7 @@
         },
         "email": {
           "title": "E-mail",
-          "description": "Colete novas tarefas de qualquer pessoa que envie um e-mail para um endereço Plane.",
+          "description": "Colete novas tarefas de qualquer pessoa que envie um e-mail para um endereço Evotask.",
           "fieldName": "ID do e-mail"
         },
         "form": {

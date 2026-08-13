@@ -52,7 +52,8 @@
       "5_days": "5 days",
       "1_week": "1 week",
       "2_weeks": "2 weeks",
-      "custom": "Custom"
+      "custom": "Custom",
+      "customize_title": "Customize snooze time"
     }
   }
 }

@@ -20,7 +20,7 @@ import { useIssueFilter } from "@/hooks/store/use-issue-filter";
 import type { Route } from "./+types/layout";
 import { translate } from "@plane/i18n";
 
-const DEFAULT_TITLE = "Plane";
+const DEFAULT_TITLE = "Evotask";
 const DEFAULT_DESCRIPTION = translate("ui.made_with_plane_an_ai_powered_work_management_pl");
 
 interface IssueMetadata {

@@ -141,7 +141,7 @@
     },
     "help_actions": {
       "open_keyboard_shortcuts": "Open keyboard shortcuts",
-      "open_plane_documentation": "Open Plane documentation",
+      "open_plane_documentation": "Open Evotask documentation",
       "join_forum": "Join our Forum",
       "report_bug": "Report a bug",
       "chat_with_us": "Chat with us"
@@ -188,6 +188,9 @@
       "miscellaneous": "Miscellaneous",
       "preferences": "Preferences",
       "help": "Help"
+    },
+    "context_indicator": {
+      "clear": "Clear context (Backspace)"
     }
   }
 }

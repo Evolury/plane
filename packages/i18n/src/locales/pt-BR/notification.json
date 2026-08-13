@@ -52,7 +52,8 @@
       "5_days": "5 dias",
       "1_week": "1 semana",
       "2_weeks": "2 semanas",
-      "custom": "Personalizado"
+      "custom": "Personalizado",
+      "customize_title": "Personalizar tempo de adiamento"
     }
   }
 }

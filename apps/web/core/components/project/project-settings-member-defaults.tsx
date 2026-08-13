@@ -164,7 +164,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
         )}
       </DefaultSettingItem>
       <DefaultSettingItem
-        title="Default Assignee"
+        title={t("project_settings.members.default_assignee")}
         description={t("project_settings.members.default_assignee_description")}
       >
         {currentProjectDetails ? (
@@ -189,7 +189,7 @@ export const ProjectSettingsMemberDefaults = observer(function ProjectSettingsMe
       </DefaultSettingItem>
       {currentProjectDetails && (
         <DefaultSettingItem
-          title="Guest access"
+          title={t("project_settings.members.guest_super_permissions.heading")}
           description={t("project_settings.members.guest_super_permissions.sub_heading")}
         >
           <div className="flex items-center justify-end">

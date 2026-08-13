@@ -5,6 +5,8 @@
  */
 
 import React from "react";
+// Evolury: texto padrão nasce no componente (ADR 0008)
+import { translate } from "@plane/i18n";
 import { cn } from "../utils";
 
 export interface AuthForgotPasswordProps {
@@ -17,7 +19,7 @@ export interface AuthForgotPasswordProps {
 export function AuthForgotPassword({
   onForgotPassword,
   className = "",
-  text = "Forgot your password?",
+  text = translate("auth.common.forgot_password"),
   disabled = false,
 }: AuthForgotPasswordProps) {
   const handleClick = (e: React.MouseEvent) => {

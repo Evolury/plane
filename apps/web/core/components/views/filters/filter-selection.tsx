@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 
+import { useTranslation } from "@plane/i18n";
 import { SearchIcon, CloseIcon } from "@plane/propel/icons";
 import type { TViewFilterProps, TViewFilters } from "@plane/types";
 import { EViewAccess } from "@plane/types";
@@ -28,6 +29,7 @@ export const ViewFiltersSelection = observer(function ViewFiltersSelection(props
   // states
   const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
   // store
+  const { t } = useTranslation();
   const { isMobile } = usePlatformOS();
 
   // handles filter update
@@ -62,7 +64,7 @@ export const ViewFiltersSelection = observer(function ViewFiltersSelection(props
           <input
             type="text"
             className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
-            placeholder="Search"
+            placeholder={t("common.search.label")}
             value={filtersSearchQuery}
             onChange={(e) => setFiltersSearchQuery(e.target.value)}
             // oxlint-disable-next-line jsx_a11y/no-autofocus
@@ -85,7 +87,7 @@ export const ViewFiltersSelection = observer(function ViewFiltersSelection(props
                 favorites: !filters.filters?.favorites,
               })
             }
-            title="Favorites"
+            title={t("favorites")}
           />
         </div>
 

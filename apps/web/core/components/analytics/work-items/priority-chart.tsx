@@ -95,7 +95,7 @@ const PriorityChart = observer(function PriorityChart(props: Props) {
       parsedBars = [
         {
           key: "count",
-          label: "Count",
+          label: t("common.count"),
           stackId: "bar-one",
           fill: (payload) => generateBarColor(payload.key, { x_axis, y_axis, group_by }, baseColors, workspaceStates),
           textClassName: "",
@@ -137,7 +137,7 @@ const PriorityChart = observer(function PriorityChart(props: Props) {
       parsedBars = [];
     }
     return parsedBars;
-  }, [chart_model, group_by, parsedData, resolvedTheme, workspaceStates, x_axis, y_axis]);
+  }, [chart_model, group_by, parsedData, resolvedTheme, t, workspaceStates, x_axis, y_axis]);
 
   const yAxisLabel = useMemo(
     () => ANALYTICS_Y_AXIS_VALUES.find((item) => item.value === props.y_axis)?.label ?? props.y_axis,
@@ -149,9 +149,11 @@ const PriorityChart = observer(function PriorityChart(props: Props) {
         const o = ANALYTICS_X_AXIS_VALUES.find((item) => item.value === props.x_axis);
         return o?.i18n_label ? t(o.i18n_label) : (o?.label ?? props.x_axis);
       })(),
-    [props.x_axis]
+    [props.x_axis, t]
   );
 
+  // Evolury: `key`/`label` do meta.export viram cabeçalho do CSV baixado, então
+  // seguem traduzidos junto com o header visível.
   const defaultColumns: ColumnDef<TChartDatum>[] = useMemo(
     () => [
       {
@@ -167,18 +169,18 @@ const PriorityChart = observer(function PriorityChart(props: Props) {
       },
       {
         accessorKey: "count",
-        header: () => <div className="text-right">Count</div>,
+        header: () => <div className="text-right">{t("common.count")}</div>,
         cell: ({ row }) => <div className="text-right">{row.original.count}</div>,
         meta: {
           export: {
-            key: "Count",
+            key: t("common.count"),
             value: (row) => row.original.count,
-            label: "Count",
+            label: t("common.count"),
           },
         },
       },
     ],
-    [xAxisLabel]
+    [t, xAxisLabel]
   );
 
   const columns: ColumnDef<TChartDatum>[] = useMemo(

@@ -208,7 +208,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
       })}
       role="dialog"
       aria-modal="true"
-      aria-label="Fullscreen image viewer"
+      aria-label={t("editor.fullscreen_image_viewer", "Fullscreen image viewer")}
     >
       <div
         ref={modalRef}
@@ -252,7 +252,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
               }}
               className="grid size-6 place-items-center text-white/60 transition-colors duration-200 hover:text-white disabled:text-white/30"
               disabled={magnification <= MIN_ZOOM}
-              aria-label="Zoom out"
+              aria-label={t("editor.zoom_out", "Zoom out")}
             >
               <Minus className="size-4" />
             </button>
@@ -278,7 +278,7 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
               type="button"
               onClick={() => window.open(downloadSrc, "_blank")}
               className="grid size-8 flex-shrink-0 place-items-center text-white/60 transition-colors duration-200 hover:text-white"
-              aria-label="Download image"
+              aria-label={t("editor.download_image", "Download image")}
             >
               <Download className="size-4" />
             </button>

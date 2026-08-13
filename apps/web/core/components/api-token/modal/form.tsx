@@ -189,7 +189,7 @@ export function CreateApiTokenForm(props: Props) {
                         >
                           <Calendar className="h-3 w-3" />
                           {value === "custom"
-                            ? "Custom date"
+                            ? t("common.custom_date")
                             : selectedOption
                               ? selectedOption.label
                               : t("ui.set_expiration_date")}
@@ -204,7 +204,7 @@ export function CreateApiTokenForm(props: Props) {
                           {option.label}
                         </CustomSelect.Option>
                       ))}
-                      <CustomSelect.Option value="custom">Custom</CustomSelect.Option>
+                      <CustomSelect.Option value="custom">{t("common.custom")}</CustomSelect.Option>
                     </CustomSelect>
                   );
                 }}

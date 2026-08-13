@@ -40,12 +40,13 @@ const defaultValues: Partial<TProjectPublishSettings> = {
   },
 };
 
+// Evolury: rótulos dos layouts publicados traduzidos em tempo de render
 const VIEW_OPTIONS: {
   key: TProjectPublishLayouts;
-  label: string;
+  i18nLabel: string;
 }[] = [
-  { key: "list", label: "List" },
-  { key: "kanban", label: "Kanban" },
+  { key: "list", i18nLabel: "issue.layouts.list" },
+  { key: "kanban", i18nLabel: "issue.layouts.kanban" },
 ];
 
 export const PublishProjectModal = observer(function PublishProjectModal(props: Props) {
@@ -245,7 +246,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
             )}
             <div className="space-y-4">
               <div className="relative flex items-center justify-between gap-2">
-                <div className="text-13">Views</div>
+                <div className="text-13">{t("views")}</div>
                 <Controller
                   control={control}
                   name="view_props"
@@ -253,7 +254,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                     <CustomSelect
                       value={value}
                       label={VIEW_OPTIONS.filter((o) => selectedLayouts.includes(o.key))
-                        .map((o) => o.label)
+                        .map((o) => t(o.i18nLabel))
                         .join(", ")}
                       onChange={(val: TProjectPublishLayouts) => {
                         if (selectedLayouts.length === 1 && selectedLayouts[0] === val) return;
@@ -271,7 +272,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                           value={option.key}
                           className="flex items-center justify-between gap-2"
                         >
-                          {option.label}
+                          {t(option.i18nLabel)}
                           {selectedLayouts.includes(option.key) && <CheckIcon className="size-3.5 flex-shrink-0" />}
                         </CustomSelect.Option>
                       ))}
@@ -280,7 +281,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                 />
               </div>
               <div className="relative flex items-center justify-between gap-2">
-                <div className="text-13">Allow comments</div>
+                <div className="text-13">{t("ui.allow_comments")}</div>
                 <Controller
                   control={control}
                   name="is_comments_enabled"
@@ -290,7 +291,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                 />
               </div>
               <div className="relative flex items-center justify-between gap-2">
-                <div className="text-13">Allow reactions</div>
+                <div className="text-13">{t("ui.allow_reactions")}</div>
                 <Controller
                   control={control}
                   name="is_reactions_enabled"
@@ -300,7 +301,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                 />
               </div>
               <div className="relative flex items-center justify-between gap-2">
-                <div className="text-13">Allow voting</div>
+                <div className="text-13">{t("ui.allow_voting")}</div>
                 <Controller
                   control={control}
                   name="is_votes_enabled"

@@ -7,6 +7,8 @@
 import { useEffect, useRef, useState } from "react";
 // plane imports
 import { useOutsideClickDetector } from "@plane/hooks";
+// Evolury: a barra da imagem nasce fora do provider de tradução do editor (ADR 0008)
+import { translate } from "@plane/i18n";
 import { ChevronDownIcon } from "@plane/propel/icons";
 import { Tooltip } from "@plane/propel/tooltip";
 // local imports
@@ -37,7 +39,7 @@ export function ImageAlignmentAction(props: Props) {
 
   return (
     <div ref={dropdownRef} className="relative h-full">
-      <Tooltip disabled={isTouchDevice} tooltipContent="Align">
+      <Tooltip disabled={isTouchDevice} tooltipContent={translate("editor.align")}>
         <button
           type="button"
           className="flex h-full items-center gap-1 text-white/60 transition-colors hover:text-white"
@@ -50,7 +52,7 @@ export function ImageAlignmentAction(props: Props) {
       {isDropdownOpen && (
         <div className="absolute top-full left-1/2 mt-0.5 flex h-7 -translate-x-1/2 items-center gap-2 rounded-sm bg-black/80 px-2">
           {IMAGE_ALIGNMENT_OPTIONS.map((option) => (
-            <Tooltip disabled={isTouchDevice} key={option.value} tooltipContent={option.label}>
+            <Tooltip disabled={isTouchDevice} key={option.value} tooltipContent={translate(option.label)}>
               <button
                 type="button"
                 className="grid h-full flex-shrink-0 place-items-center text-white/60 transition-colors hover:text-white"

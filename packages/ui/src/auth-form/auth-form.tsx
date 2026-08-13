@@ -6,6 +6,9 @@
 
 import React, { useState, useMemo } from "react";
 import { E_PASSWORD_STRENGTH } from "@plane/constants";
+// Evolury: o pacote passou a poder traduzir (ADR 0008) — os rótulos e textos
+// padrão deste formulário nascem aqui dentro, não chegam por propriedade
+import { translate } from "@plane/i18n";
 import { Button } from "../button/button";
 import { Spinner } from "../spinners/circular-spinner";
 import { cn } from "../utils";
@@ -117,17 +120,19 @@ export function AuthForm({
 
   const getSubmitButtonText = () => {
     if (submitButtonText) return submitButtonText;
-    return mode === "sign-in" ? "Sign In" : "Create Account";
+    return mode === "sign-in" ? translate("ui.sign_in") : translate("ui.create_account");
   };
 
   const getAlternateModeText = () => {
     if (alternateModeText) return alternateModeText;
-    return mode === "sign-in" ? "Don't have an account?" : "Already have an account?";
+    return mode === "sign-in"
+      ? translate("auth.common.dont_have_an_account")
+      : translate("auth.common.already_have_an_account");
   };
 
   const getAlternateModeButtonText = () => {
     if (alternateModeButtonText) return alternateModeButtonText;
-    return mode === "sign-in" ? "Sign Up" : "Sign In";
+    return mode === "sign-in" ? translate("auth.common.sign_up") : translate("ui.sign_in");
   };
 
   return (
@@ -137,10 +142,10 @@ export function AuthForm({
         id="email"
         name="email"
         type="email"
-        label="Email"
+        label={translate("auth.common.email.label")}
         value={formData.email}
         onChange={handleInputChange("email")}
-        placeholder="name@company.com"
+        placeholder={translate("auth.common.email.placeholder")}
         error={emailError}
         disabled={disabled}
         // autoComplete="email"
@@ -151,12 +156,14 @@ export function AuthForm({
       <AuthPasswordInput
         id="password"
         name="password"
-        label={mode === "sign-in" ? "Password" : "Set a password"}
+        label={
+          mode === "sign-in" ? translate("auth.common.password.label") : translate("auth.common.password.set_password")
+        }
         value={formData.password}
         onChange={handleInputChange("password")}
         onPasswordChange={handlePasswordChange}
         onPasswordStrengthChange={handlePasswordStrengthChange}
-        placeholder="Enter password"
+        placeholder={translate("auth.common.password.placeholder")}
         error={passwordError}
         showPasswordStrength={showPasswordStrength && mode === "sign-up"}
         disabled={disabled}

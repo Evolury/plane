@@ -116,8 +116,8 @@ export function CreateUpdateModuleLinkModal(props: Props) {
             </div>
             <div>
               <label htmlFor="title" className="mb-2 text-secondary">
-                Display title
-                <span className="block text-10">Optional</span>
+                {t("common.display_title")}
+                <span className="block text-10">{t("common.optional")}</span>
               </label>
               <Controller
                 control={control}

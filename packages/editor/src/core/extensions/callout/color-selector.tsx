@@ -5,6 +5,8 @@
  */
 
 import { Ban } from "lucide-react";
+// Evolury: o seletor renderiza fora do provider de tradução do editor (ADR 0008)
+import { translate } from "@plane/i18n";
 import { ChevronDownIcon } from "@plane/propel/icons";
 // plane utils
 import { cn } from "@plane/utils";
@@ -49,7 +51,7 @@ export function CalloutBlockColorSelector(props: Props) {
           )}
           disabled={disabled}
         >
-          <span className="text-12">Color</span>
+          <span className="text-12">{translate("editor.color")}</span>
           <ChevronDownIcon className="size-3 flex-shrink-0" />
         </button>
         {isOpen && (
