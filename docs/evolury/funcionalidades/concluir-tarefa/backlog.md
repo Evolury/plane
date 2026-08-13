@@ -60,29 +60,60 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
 
 ## T3 — Minhas tarefas
 
-- [ ] T3.1 Ao entrar no grupo concluído, mover a associação pessoal de cada
-      responsável para a etapa dele no grupo concluído
-- [ ] T3.2 Preservar quem já está numa etapa concluída (não reposicionar)
-- [ ] T3.3 Garantir a mão única: mover etapa pessoal continua sem alterar o
+- [x] T3.1 Ao entrar no grupo concluído, mover a associação pessoal de cada
+      responsável para a etapa dele no grupo concluído. O gancho fica em
+      `update_issue_activity`, o funil por onde passam TODOS os caminhos que
+      mudam estado — botão, seletor, arrastar, API externa, automação de
+      fechamento —, o mesmo de que notificações e webhooks já dependem.
+      Complemento na listagem: tarefa concluída **sem associação** aparece na
+      etapa de concluídas, o que cobre quem nunca moveu nada e o que foi
+      concluído antes de existirem etapas, sem migração
+- [x] T3.2 Preservar quem já está numa etapa concluída (não reposicionar)
+- [x] T3.3 Garantir a mão única: mover etapa pessoal continua sem alterar o
       estado real (regressão do ADR 0001)
-- [ ] T3.4 Tratamento visual de concluído também nesta página
+- [x] T3.4 Tratamento visual de concluído também nesta página — sai de graça,
+      a página usa os mesmos blocos de lista e quadro
 
 ## T4 — Configuração
 
-- [ ] T4.1 Seletor de estado de conclusão na página de Estados do projeto,
-      listando só os estados do grupo concluído
-- [ ] T4.2 Comportamento ao excluir o estado escolhido (volta ao automático)
+- [x] T4.1 Escolha do estado de conclusão na página de Estados do projeto, no
+      mesmo lugar do "Marcar como padrão" e só nos estados do grupo concluído —
+      é a mesma pergunta com outro sujeito. O rótulo mostra "Conclusão" também
+      quando o destino é o automático, em vez de deixar a resposta invisível
+- [x] T4.2 Comportamento ao excluir o estado escolhido (volta ao automático).
+      Some com a validação de entrada: o estado precisa ser do próprio projeto
+      e do grupo concluído — e o resolvedor ignora o que não for, como última
+      linha
+- [x] T4.3 (surgiu na validação) `completion_state` no endpoint de listagem de
+      projetos. A lista usa `.values()` com colunas fixas, não o serializer, e
+      é ela que alimenta o `projectMap` do front em qualquer página — sem o
+      campo, o botão **sempre** caía no destino automático e a configuração não
+      tinha efeito nenhum
 
 ## T5 — Validação e entrega
 
-- [ ] T5.1 Testes de contrato do backend e suíte completa
-- [ ] T5.2 `pnpm check`
-- [ ] T5.3 Visual na stack isolada: concluir e reabrir nos cinco layouts, em
-      massa, com subtarefas, em Minhas tarefas, e sem permissão
-- [ ] T5.4 Conferir que ciclo, módulo e gráficos refletem a conclusão sem
-      alteração de código (o objetivo do ADR 0009)
+- [x] T5.1 Testes de contrato do backend e suíte completa
+- [x] T5.2 `pnpm check`
+- [x] T5.3 Visual na stack isolada: concluir e reabrir, subtarefas, massa,
+      cinco layouts e Minhas tarefas
+- [x] T5.4 Conferir que ciclo, módulo e gráficos refletem a conclusão sem
+      alteração de código (o objetivo do ADR 0009). Confirmado no ciclo de
+      validação: 4 tarefas, 1 concluída, contada pelo grupo do estado — nenhuma
+      linha de código de ciclo foi tocada nesta entrega
 - [ ] T5.5 PR, CI, merge e deploy
 - [ ] T5.6 CHANGELOG + release
+
+## Dois enganos que só a tela pegou
+
+Ambos passavam nos testes e falhavam no uso — vale registrar o padrão.
+
+1. **UUID contra texto.** O reposicionamento em segundo plano recebe os ids do
+   payload JSON, ou seja, como TEXTO; os testes chamavam a função com objetos
+   `UUID`. A comparação de grupo dava sempre "nada mudou" e nada era
+   reposicionado. Agora há teste com id em texto, que é como o chamador real
+   funciona.
+2. **Campo ausente na listagem de projetos.** A configuração era gravada e lida
+   corretamente no banco, mas o front nunca a via. Ver T4.3.
 
 ## Achados fora de escopo
 

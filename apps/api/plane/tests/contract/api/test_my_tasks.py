@@ -259,6 +259,25 @@ class TestMyTasksIssues:
         result = response.data["results"][0]
         assert result["my_task_stage_id"] == stages["Recém-atribuídas"].id
 
+    def test_completed_issue_without_association_falls_into_the_completed_stage(
+        self, session_client, workspace, project, create_user, assigned_issue
+    ):
+        """Concluída e sem associação, a tarefa pertence à etapa de concluídas.
+
+        Vale para quem nunca moveu nada e para o que foi concluído antes de
+        existirem etapas — por isso a regra é resolvida na listagem, e não só
+        gravada na transição (ADR 0009).
+        """
+        stages = seed_stages(workspace, create_user)
+        assigned_issue.state = State.objects.create(
+            name="Concluído", color="#000000", group="completed", project=project, workspace=workspace
+        )
+        assigned_issue.save(update_fields=["state"])
+
+        response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
+        result = response.data["results"][0]
+        assert result["my_task_stage_id"] == stages["Concluídas"].id
+
     def test_moved_issue_is_annotated_with_its_stage(
         self, session_client, workspace, create_user, assigned_issue
     ):
@@ -454,6 +473,25 @@ class TestMyTasksMove:
         )
         assert response.status_code == status.HTTP_200_OK
         assert IssueActivity.objects.filter(issue=assigned_issue).count() == activity_count_before
+
+    def test_move_to_a_completed_stage_does_not_change_the_issue_state(
+        self, session_client, workspace, create_user, assigned_issue
+    ):
+        """A exceção do ADR 0009 é de MÃO ÚNICA.
+
+        Concluir reposiciona a etapa pessoal; arrastar para a etapa de
+        concluídas continua sem concluir nada no projeto.
+        """
+        stages = seed_stages(workspace, create_user)
+        estado_antes = assigned_issue.state_id
+        response = session_client.post(
+            MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
+            {"stage_id": str(stages["Concluídas"].id)},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.state_id == estado_antes
 
     def test_hard_delete_cascades_association(self, session_client, workspace, create_user, assigned_issue):
         """Hard delete do work item remove a associação em cascata — sem

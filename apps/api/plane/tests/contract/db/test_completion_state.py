@@ -82,6 +82,22 @@ class TestCompletionState:
         assert get_completion_state(vazio) is None
 
     @pytest.mark.django_db
+    def test_ignores_a_configured_state_from_another_project(self, workspace, create_user):
+        """Estado de outro projeto não vale como destino.
+
+        O serializer recusa gravar isso, mas o resolvedor é a última linha:
+        concluir jamais pode mover a tarefa para o estado de outro projeto.
+        """
+        vizinho = _projeto(workspace, create_user, "Vizinho 2", "VZ2")
+        emprestado = _estado(vizinho, workspace, "Concluído", "completed", 15000)
+        projeto = _projeto(workspace, create_user, "Alheio", "ALH")
+        proprio = _estado(projeto, workspace, "Concluído", "completed", 15000)
+        Project.objects.filter(pk=projeto.pk).update(completion_state=emprestado)
+        projeto.refresh_from_db()
+
+        assert get_completion_state(projeto) == proprio
+
+    @pytest.mark.django_db
     def test_deleting_the_configured_state_falls_back(self, workspace, create_user):
         """Excluído o estado escolhido, a resolução volta ao automático.
 

@@ -5,4 +5,5 @@
  */
 
 export * from "./mark-as-default";
+export * from "./mark-as-completion";
 export * from "./delete";

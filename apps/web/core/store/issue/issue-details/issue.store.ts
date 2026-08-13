@@ -188,6 +188,17 @@ export class IssueStore implements IIssueStore {
       currentStore.updateIssue(workspaceSlug, projectId, issueId, data),
       this.rootIssueDetailStore.activity.fetchActivities(workspaceSlug, projectId, issueId),
     ]);
+
+    // Evolury: concluir pelo peek precisa reagrupar "Minhas tarefas" (ADR 0009).
+    // O peek atualiza pelo store de projeto, que não é o store daquela página —
+    // e cada store mantém os próprios grupos. Sem este aviso, o cartão ficaria
+    // na etapa antiga até a próxima busca, mesmo já esmaecido como concluído.
+    this.rootIssueDetailStore.rootIssueStore.myTasksIssues.reposicionarSeConcluida(
+      workspaceSlug,
+      projectId,
+      issueId,
+      data
+    );
   };
 
   removeIssue = async (workspaceSlug: string, projectId: string, issueId: string) => {

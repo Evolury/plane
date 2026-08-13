@@ -64,6 +64,17 @@
       "empty_state": {
         "title": "Nenhum estado disponível para o grupo {groupKey}",
         "description": "Por favor, crie um novo estado"
+      },
+      "default": {
+        "label": "Padrão",
+        "mark": "Marcar como padrão",
+        "marking": "Marcando como padrão"
+      },
+      "completion": {
+        "label": "Conclusão",
+        "mark": "Marcar como conclusão",
+        "marking": "Marcando como conclusão",
+        "automatic_tooltip": "Para onde o botão de concluir move a tarefa. Sem escolha explícita, vale o primeiro estado deste grupo."
       }
     },
     "labels": {

@@ -190,6 +190,11 @@ class ProjectViewSet(BaseViewSet):
             "guest_view_all_features",
             "project_lead",
             "network",
+            # Evolury: destino do botão de concluir (ADR 0009). Esta lista é a
+            # que alimenta o projectMap do front em qualquer página, e o botão
+            # aparece em qualquer página — sem o campo aqui ele sempre caía no
+            # destino automático, ignorando a escolha do projeto.
+            "completion_state",
             "created_at",
             "updated_at",
             "created_by",

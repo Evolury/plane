@@ -21,6 +21,7 @@ from plane.db.models import (
     DeployBoard,
     ProjectPublicMember,
     IssueSequence,
+    StateGroup,
 )
 from plane.utils.content_validator import (
     validate_html_content,
@@ -73,6 +74,25 @@ class ProjectSerializer(BaseSerializer):
             )
 
         return identifier
+
+    def validate_completion_state(self, completion_state):
+        """Evolury: destino do botão de concluir (ADR 0009).
+
+        Precisa ser um estado DO PRÓPRIO projeto e do grupo concluído — sem
+        isto, um id trocado apontaria a conclusão para o estado de outro
+        projeto. O resolvedor também ignora um valor inválido, mas recusar na
+        entrada evita gravar a incoerência.
+        """
+        if completion_state is None:
+            return completion_state
+
+        if self.instance is None or completion_state.project_id != self.instance.id:
+            raise serializers.ValidationError(detail="COMPLETION_STATE_MUST_BELONG_TO_PROJECT")
+
+        if completion_state.group != StateGroup.COMPLETED.value:
+            raise serializers.ValidationError(detail="COMPLETION_STATE_MUST_BE_COMPLETED_GROUP")
+
+        return completion_state
 
     def validate(self, data):
         # Validate description content for security

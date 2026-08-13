@@ -21,8 +21,14 @@ def get_completion_state(project):
     # `State` é excluído logicamente, então o SET_NULL do banco nunca dispara:
     # depois de excluir o estado escolhido, o projeto continua apontando para
     # ele. Por isso o `deleted_at` entra na checagem, junto do grupo — que pode
-    # ter sido alterado depois da escolha.
-    if escolhido is not None and escolhido.deleted_at is None and escolhido.group == StateGroup.COMPLETED.value:
+    # ter sido alterado depois da escolha — e do projeto: nada de mover uma
+    # tarefa para o estado de OUTRO projeto, mesmo que alguém grave o id errado.
+    if (
+        escolhido is not None
+        and escolhido.deleted_at is None
+        and escolhido.project_id == project.id
+        and escolhido.group == StateGroup.COMPLETED.value
+    ):
         return escolhido
 
     return (

@@ -18,7 +18,7 @@ import copy
 
 # Django imports
 from django.db import IntegrityError, transaction
-from django.db.models import F, Func, OuterRef, Q, Subquery, UUIDField, Value
+from django.db.models import Case, F, Func, OuterRef, Q, Subquery, UUIDField, Value, When
 from django.db.models.functions import Coalesce
 
 # Third party imports
@@ -35,6 +35,7 @@ from plane.db.models import (
     FileAsset,
     Issue,
     IssueLink,
+    StateGroup,
     Workspace,
     WorkStage,
     WorkStageIssue,
@@ -215,6 +216,21 @@ class MyTasksIssuesEndpoint(BaseAPIView):
         # listagem (seed nunca rodou): itens sem associação ficam com etapa
         # nula até uma etapa padrão ser definida.
         default_stage_id = default_stage.id if default_stage else None
+        # Evolury: tarefa concluída sem associação pertence à etapa de
+        # concluídas, e não à padrão (ADR 0009). É a mesma exceção de mão única
+        # que reposiciona a associação existente ao concluir — resolvida aqui
+        # para valer também para quem nunca moveu nada e para o que foi
+        # concluído antes de existirem etapas.
+        completed_stage = (
+            WorkStage.objects.filter(
+                workspace=workspace,
+                owner=request.user,
+                group=StateGroup.COMPLETED.value,
+            )
+            .order_by("sort_order")
+            .first()
+        )
+        completed_stage_id = completed_stage.id if completed_stage else default_stage_id
 
         filters = issue_filters(request.query_params, "GET")
         order_by_param = request.GET.get("order_by", "-created_at")
@@ -251,7 +267,14 @@ class MyTasksIssuesEndpoint(BaseAPIView):
         issue_queryset = issue_queryset.annotate(
             my_task_stage_id=Coalesce(
                 Subquery(stage_subquery, output_field=UUIDField()),
-                Value(default_stage_id, output_field=UUIDField()),
+                Case(
+                    When(
+                        state__group=StateGroup.COMPLETED.value,
+                        then=Value(completed_stage_id, output_field=UUIDField()),
+                    ),
+                    default=Value(default_stage_id, output_field=UUIDField()),
+                    output_field=UUIDField(),
+                ),
             ),
             my_task_sort_order=Coalesce(Subquery(order_subquery), Value(65535.0)),
         )
