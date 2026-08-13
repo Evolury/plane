@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
 import { useEffect, useRef } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
@@ -104,6 +105,8 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
 
   // derived values
   const issue = issuesMap[issueId];
+  // Evolury: tratamento visual de concluída (ADR 0009)
+  const isCompleted = useIsIssueCompleted(issue?.state_id);
   const subIssuesCount = issue?.sub_issues_count ?? 0;
   const canEditIssueProperties = canEditProperties(issue?.project_id ?? undefined);
   const isDraggingAllowed = canDrag && canEditIssueProperties;
@@ -188,6 +191,8 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
             "last:border-b-transparent": !getIsIssuePeeked(issue.id) && !isIssueActive,
             "bg-accent-primary/5 hover:bg-accent-primary/10": isIssueSelected,
             "bg-layer-1": isCurrentBlockDragging,
+            // Evolury: concluída fica esmaecida, como no Asana
+            "opacity-60": isCompleted,
             "md:flex-row md:items-center": isSidebarCollapsed,
             "lg:flex-row lg:items-center": !isSidebarCollapsed,
           }

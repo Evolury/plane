@@ -42,9 +42,10 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
       triagem, rascunho e quadro público entram com os layouts)
 - [ ] ~~T2.4~~ Regras de exibição: esconder para quem não pode editar estado, e em
       triagem pendente, rascunho, item arquivado e quadro público
-- [ ] T2.5 Tratamento visual de concluído (cartão esmaecido, título riscado,
-      ícone de check) nos cinco layouts — lista, quadro, planilha, calendário
-      e gantt
+- [x] T2.5 Tratamento visual de concluído em **lista e quadro** (cartão
+      esmaecido, via o grupo do estado — mesma fonte que o resto do produto).
+      Falta planilha, calendário e gantt; o gancho `useIsIssueCompleted` já
+      existe e é só aplicá-lo nos blocos restantes
 - [ ] T2.6 Ação em massa: concluir a seleção
 
 ## T3 — Minhas tarefas
