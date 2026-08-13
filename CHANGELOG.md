@@ -3,6 +3,22 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.4.0] — 2026-08-13
+
+### Concluir sem abrir a tarefa
+
+- **Marca de conclusão no card**, ao lado do ID, na lista, no quadro e na
+  planilha — e em Minhas tarefas, que usa os mesmos blocos. Clicar conclui sem
+  abrir a tarefa. O ícone ocupa espaço fixo, como o slot do chevron de
+  subtarefas, para que os títulos continuem alinhados de linha a linha; fica
+  apagado enquanto a tarefa está aberta e verde quando concluída, na mesma
+  linguagem do ícone de estado que a página já usa. Calendário e cronograma
+  ficam de fora: os blocos ali são de uma linha só.
+- **Botão de concluir no início do cabeçalho da tarefa**, antes dos controles
+  de navegação — é a ação principal daquela tela.
+- A regra de conclusão (destino, confirmação de subtarefas, significado de
+  reabrir) passa a viver em um gancho único, usado pelas duas apresentações.
+
 ## [1.3.0] — 2026-08-13
 
 ### Concluir tarefa
