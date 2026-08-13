@@ -3,6 +3,33 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.6.0] — 2026-08-13
+
+### Minhas tarefas acompanha o ciclo inteiro
+
+A etapa pessoal só reagia à conclusão. Agora segue a mesma regra do projeto,
+traduzida para etapas: entrar no grupo concluído leva à etapa de conclusão,
+entrar no cancelado leva à de canceladas, e voltar para um grupo aberto devolve
+à etapa padrão — como uma tarefa recém-atribuída. Andar entre grupos abertos
+deixou de mexer em nada.
+
+- **Reabrir devolve à etapa padrão.** A decisão original dizia que reabrir não
+  desfazia o movimento, porque devolver à etapa anterior exigiria memória. O
+  destino não é a anterior: é a padrão, sem memória nenhuma (revisão no ADR 0009).
+- **Etapa "Canceladas" no seed**, sem a qual o cancelamento não teria onde
+  aterrissar. Quem já tinha etapas recebe a nova por migração.
+- **Marcação de qual etapa concluída é o destino** (`is_completion`), com a
+  mesma apresentação do "Marcar como padrão" no painel de etapas.
+- Correção: o "Marcar como conclusão" aparecia também no painel de etapas
+  pessoais, onde não fazia nada.
+
+### Cronograma em português
+
+Datas, dias, meses, trimestres e duração deixaram de sair em inglês
+("Aug 2026", "Week 32", "Th", "Q1", "9 days"). Os nomes passam a vir do locale
+ativo, pelos mesmos ajudantes que o calendário já usava — some a segunda lista
+de meses do código.
+
 ## [1.5.0] — 2026-08-13
 
 ### Cartão de tarefa
