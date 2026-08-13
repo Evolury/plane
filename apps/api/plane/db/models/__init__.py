@@ -92,5 +92,13 @@ from .sticky import Sticky
 
 # Evolury: etapas pessoais de "Minhas tarefas"
 from .work_stage import WorkStage, WorkStageIssue, DEFAULT_WORK_STAGES
+from .recurring_work_item import (
+    RecurringWorkItem,
+    RecurringWorkItemOccurrence,
+    RecurrenceFrequency,
+    RecurrenceEndMode,
+    MonthlyMode,
+    GenerationMode,
+)
 
 from .description import Description, DescriptionVersion
