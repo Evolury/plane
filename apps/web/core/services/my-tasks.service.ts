@@ -59,6 +59,14 @@ export class MyTasksService extends APIService {
       });
   }
 
+  async markStageAsCompletion(workspaceSlug: string, stageId: string): Promise<void> {
+    return this.post(`/api/workspaces/${workspaceSlug}/my-tasks/stages/${stageId}/mark-completion/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
   async getIssues(workspaceSlug: string, params: object = {}, config = {}): Promise<TIssuesResponse> {
     return this.get(`/api/workspaces/${workspaceSlug}/my-tasks/issues/`, { params }, config)
       .then((res) => res?.data)

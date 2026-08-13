@@ -63,7 +63,8 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
   const workspaceSlug = routerWorkspaceSlug?.toString();
   const { t } = useTranslation();
   // store hooks
-  const { sortedStages, createStage, updateStage, deleteStage, markStageAsDefault } = useMyTasks();
+  const { sortedStages, createStage, updateStage, deleteStage, markStageAsDefault, markStageAsCompletion } =
+    useMyTasks();
   const {
     issues: { fetchIssuesWithExistingPagination },
   } = useIssues(EIssuesStoreType.MY_TASKS);
@@ -109,9 +110,25 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
         await markStageAsDefault(workspaceSlug, stageId);
         refetchIssues();
       },
+      // Evolury: destino da tarefa concluída, do lado pessoal (ADR 0009). Sem
+      // marcação vale a primeira etapa do grupo, e a listagem é refeita porque
+      // a escolha muda onde as concluídas sem associação aparecem.
+      markStateAsCompletion: async (stageId: string) => {
+        if (!workspaceSlug) return;
+        await markStageAsCompletion(workspaceSlug, stageId);
+        refetchIssues();
+      },
+      getCompletionStateInfo: (stageId: string) => {
+        const concluidas = sortedStages.filter((etapa) => etapa.group === "completed");
+        const marcada = concluidas.find((etapa) => etapa.is_completion);
+        return {
+          isCompletion: (marcada ?? concluidas[0])?.id === stageId,
+          isExplicit: marcada?.id === stageId,
+        };
+      },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [workspaceSlug, createStage, updateStage, deleteStage, markStageAsDefault]
+    [workspaceSlug, createStage, updateStage, deleteStage, markStageAsDefault, markStageAsCompletion, sortedStages]
   );
 
   return (

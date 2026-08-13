@@ -36,4 +36,10 @@ export type TStateOperationsCallbacks = {
   deleteState: (stateId: string) => Promise<void>;
   moveStatePosition: (stateId: string, data: Partial<IState>) => Promise<void>;
   markStateAsDefault: (stateId: string) => Promise<void>;
+  // Evolury: destino da conclusão (ADR 0009). Opcionais porque cada tela
+  // responde de um jeito — o projeto grava em `completion_state`, "Minhas
+  // tarefas" marca a etapa pessoal — e o componente compartilhado não deve
+  // saber de nenhum dos dois.
+  markStateAsCompletion?: (stateId: string) => Promise<void>;
+  getCompletionStateInfo?: (stateId: string) => { isCompletion: boolean; isExplicit: boolean };
 };

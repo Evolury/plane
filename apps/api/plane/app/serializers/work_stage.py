@@ -16,9 +16,18 @@ class WorkStageSerializer(BaseSerializer):
     class Meta:
         model = WorkStage
         fields = "__all__"
-        # workspace/owner vêm sempre da rota e do request.user; is_default só
-        # muda pelo endpoint mark-default, que garante exatamente uma padrão.
-        read_only_fields = ["workspace", "owner", "is_default", "created_by", "updated_by", "deleted_at"]
+        # workspace/owner vêm sempre da rota e do request.user; is_default e
+        # is_completion só mudam pelos endpoints mark-default e
+        # mark-completion, que garantem exatamente uma de cada.
+        read_only_fields = [
+            "workspace",
+            "owner",
+            "is_default",
+            "is_completion",
+            "created_by",
+            "updated_by",
+            "deleted_at",
+        ]
 
 
 class WorkStageIssueSerializer(BaseSerializer):

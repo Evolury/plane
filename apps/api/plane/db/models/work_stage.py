@@ -58,6 +58,14 @@ DEFAULT_WORK_STAGES = [
         "sort_order": 55000,
         "group": StateGroup.COMPLETED.value,
         "is_default": False,
+        "is_completion": True,
+    },
+    {
+        "name": "Canceladas",
+        "color": "#DC2626",
+        "sort_order": 65000,
+        "group": StateGroup.CANCELLED.value,
+        "is_default": False,
     },
 ]
 
@@ -72,6 +80,10 @@ class WorkStage(BaseModel):
     # A etapa padrão é a "primeira etapa": todo item atribuído sem associação
     # pertence a ela implicitamente. Exatamente uma por usuário/workspace.
     is_default = models.BooleanField(default=False)
+    # Destino da tarefa concluída, entre as etapas do grupo concluído — a
+    # mesma pergunta que `Project.completion_state` responde do lado do
+    # projeto. Sem marcação, vale a primeira do grupo por `sort_order`.
+    is_completion = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -84,6 +96,11 @@ class WorkStage(BaseModel):
                 fields=["workspace", "owner"],
                 condition=Q(is_default=True, deleted_at__isnull=True),
                 name="work_stage_single_default_per_owner_when_deleted_at_null",
+            ),
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(is_completion=True, deleted_at__isnull=True),
+                name="work_stage_single_completion_per_owner_when_deleted_at_null",
             ),
         ]
         verbose_name = "Work Stage"

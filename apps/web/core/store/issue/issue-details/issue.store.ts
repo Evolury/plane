@@ -184,20 +184,24 @@ export class IssueStore implements IIssueStore {
         ? this.rootIssueDetailStore.rootIssueStore.projectEpics
         : this.rootIssueDetailStore.rootIssueStore.projectIssues;
 
+    // Lido antes da atualização: depois dela o mapa já tem o estado novo.
+    const estadoAnterior = this.rootIssueDetailStore.rootIssueStore.issues.getIssueById(issueId)?.state_id;
+
     await Promise.all([
       currentStore.updateIssue(workspaceSlug, projectId, issueId, data),
       this.rootIssueDetailStore.activity.fetchActivities(workspaceSlug, projectId, issueId),
     ]);
 
-    // Evolury: concluir pelo peek precisa reagrupar "Minhas tarefas" (ADR 0009).
+    // Evolury: mudar o estado pelo peek precisa reagrupar "Minhas tarefas" (ADR 0009).
     // O peek atualiza pelo store de projeto, que não é o store daquela página —
     // e cada store mantém os próprios grupos. Sem este aviso, o cartão ficaria
     // na etapa antiga até a próxima busca, mesmo já esmaecido como concluído.
-    this.rootIssueDetailStore.rootIssueStore.myTasksIssues.reposicionarSeConcluida(
+    this.rootIssueDetailStore.rootIssueStore.myTasksIssues.reposicionarPeloCiclo(
       workspaceSlug,
       projectId,
       issueId,
-      data
+      data,
+      estadoAnterior
     );
   };
 
