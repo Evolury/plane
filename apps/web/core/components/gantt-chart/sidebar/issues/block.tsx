@@ -5,6 +5,7 @@
  */
 
 import { observer } from "mobx-react";
+import { useTranslation } from "@plane/i18n";
 // plane imports
 import type { IGanttBlock } from "@plane/types";
 import { Row } from "@plane/ui";
@@ -29,6 +30,7 @@ type Props = {
 
 export const IssuesSidebarBlock = observer(function IssuesSidebarBlock(props: Props) {
   const { block, enableSelection, isDragging, selectionHelpers, isEpic = false } = props;
+  const { t } = useTranslation();
   // store hooks
   const { updateActiveBlockId, isBlockActive, getNumberOfDaysFromPosition } = useTimeLineChartStore();
   const { getIsIssuePeeked } = useIssueDetail();
@@ -86,9 +88,7 @@ export const IssuesSidebarBlock = observer(function IssuesSidebarBlock(props: Pr
           </div>
           {duration && (
             <div className="flex-shrink-0 text-13 text-secondary">
-              <span>
-                {duration} day{duration > 1 ? "s" : ""}
-              </span>
+              <span>{t("common.duration_in_days", { count: duration })}</span>
             </div>
           )}
         </div>
