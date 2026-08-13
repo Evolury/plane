@@ -349,6 +349,11 @@ export const coreRoutes: RouteConfigEntry[] = [
                 "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/automations/page.tsx"
               ),
             ]),
+            // Evolury: tarefas recorrentes (ADR 0010)
+            route(
+              ":workspaceSlug/settings/projects/:projectId/recurring",
+              "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/recurring/page.tsx"
+            ),
           ]),
         ]),
       ]),

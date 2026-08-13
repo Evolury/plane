@@ -33,14 +33,14 @@ calma antes de existir gente dependendo dele.
 
 ## F2 — Configurações
 
-- [ ] F2.1 Item "Tarefas recorrentes" na categoria Execução, só para admin
-- [ ] F2.2 Lista das regras do projeto, com próxima ocorrência visível
-- [ ] F2.3 Formulário de agenda e molde, reaproveitando as chaves órfãs
+- [x] F2.1 Item "Tarefas recorrentes" na categoria Execução, só para admin
+- [x] F2.2 Lista das regras do projeto, com próxima ocorrência visível
+- [x] F2.3 Formulário de agenda e molde, reaproveitando as chaves órfãs
       `recurring_work_items.*`
-- [ ] F2.4 Pré-visualização das próximas datas ("próximas: 18/08, 25/08, 01/09")
+- [x] F2.4 Pré-visualização das próximas datas ("próximas: 18/08, 25/08, 01/09")
       — é o que torna uma regra complexa confiável
 - [ ] F2.5 Aviso quando o responsável do molde não é mais membro do projeto
-- [ ] F2.6 Ligar/desligar a regra sem excluí-la
+- [x] F2.6 Ligar/desligar a regra sem excluí-la
 
 ## F3 — Integração
 

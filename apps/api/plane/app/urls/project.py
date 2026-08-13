@@ -5,6 +5,7 @@
 from django.urls import path
 
 from plane.app.views import (
+    RecurringWorkItemViewSet,
     ProjectViewSet,
     DeployBoardViewSet,
     ProjectInvitationsViewset,
@@ -128,5 +129,21 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/preferences/member/<uuid:member_id>/",
         ProjectMemberPreferenceEndpoint.as_view(),
         name="project-member-preference",
+    ),
+    # Evolury: tarefas recorrentes (ADR 0010)
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/",
+        RecurringWorkItemViewSet.as_view({"get": "list", "post": "create"}),
+        name="project-recurring-work-items",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/preview/",
+        RecurringWorkItemViewSet.as_view({"post": "preview"}),
+        name="project-recurring-work-items-preview",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/",
+        RecurringWorkItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="project-recurring-work-item",
     ),
 ]

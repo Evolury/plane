@@ -434,6 +434,85 @@
         "prefix": "Are you sure you want to delete recurring work item-",
         "suffix": "? All of the data related to the recurring work item will be permanently removed. This action cannot be undone."
       }
+    },
+    "frequency": {
+      "label": "Frequency",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "interval": {
+      "label": "Every",
+      "daily": "day(s)",
+      "weekly": "week(s)",
+      "monthly": "month(s)",
+      "yearly": "year(s)"
+    },
+    "weekdays": {
+      "label": "On"
+    },
+    "monthly_mode": {
+      "label": "In the month",
+      "day_of_month": "On the day of the month",
+      "weekday_of_month": "On the weekday"
+    },
+    "week_of_month": {
+      "first": "first",
+      "second": "second",
+      "third": "third",
+      "fourth": "fourth",
+      "last": "last"
+    },
+    "day_of_month": {
+      "label": "Day"
+    },
+    "month_of_year": {
+      "label": "Month"
+    },
+    "time_of_day": {
+      "label": "Time"
+    },
+    "start_date": {
+      "label": "Starts"
+    },
+    "end": {
+      "label": "Ends",
+      "never": "Never",
+      "on_date": "On a date",
+      "after_count": "After N occurrences",
+      "count_suffix": "occurrence(s)"
+    },
+    "generation": {
+      "label": "When to generate",
+      "schedule": "By schedule",
+      "after_completion": "After completion",
+      "days_after_completion": "day(s) after it is completed",
+      "skip_while_previous_open": "Do not create while the previous occurrence is open"
+    },
+    "template": {
+      "label": "What will be created",
+      "priority": "Priority",
+      "state": "Initial state",
+      "assignees": "Assignees",
+      "labels": "Labels",
+      "description": "Description"
+    },
+    "preview": {
+      "label": "Next occurrences",
+      "empty": "No dates scheduled with this configuration."
+    },
+    "list": {
+      "empty": "No recurring work items yet.",
+      "next": "Next",
+      "paused": "Paused",
+      "occurrences": "{count, plural, one {# occurrence created} other {# occurrences created}}"
+    },
+    "actions": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "edit": "Edit",
+      "delete": "Delete"
     }
   },
   "epic": {

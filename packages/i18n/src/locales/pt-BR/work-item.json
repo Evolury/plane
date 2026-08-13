@@ -434,6 +434,85 @@
         "prefix": "Tem certeza que deseja excluir a tarefa recorrente-",
         "suffix": "? Todos os dados relacionados à tarefa recorrente serão removidos permanentemente. Esta ação não pode ser desfeita."
       }
+    },
+    "frequency": {
+      "label": "Frequência",
+      "daily": "Diária",
+      "weekly": "Semanal",
+      "monthly": "Mensal",
+      "yearly": "Anual"
+    },
+    "interval": {
+      "label": "A cada",
+      "daily": "dia(s)",
+      "weekly": "semana(s)",
+      "monthly": "mês(es)",
+      "yearly": "ano(s)"
+    },
+    "weekdays": {
+      "label": "Nos dias"
+    },
+    "monthly_mode": {
+      "label": "No mês",
+      "day_of_month": "No dia do mês",
+      "weekday_of_month": "No dia da semana"
+    },
+    "week_of_month": {
+      "first": "primeira",
+      "second": "segunda",
+      "third": "terceira",
+      "fourth": "quarta",
+      "last": "última"
+    },
+    "day_of_month": {
+      "label": "Dia"
+    },
+    "month_of_year": {
+      "label": "Mês"
+    },
+    "time_of_day": {
+      "label": "Horário"
+    },
+    "start_date": {
+      "label": "Início"
+    },
+    "end": {
+      "label": "Término",
+      "never": "Nunca",
+      "on_date": "Em uma data",
+      "after_count": "Após N ocorrências",
+      "count_suffix": "ocorrência(s)"
+    },
+    "generation": {
+      "label": "Quando gerar",
+      "schedule": "Por agenda",
+      "after_completion": "Após a conclusão",
+      "days_after_completion": "dia(s) depois de concluída",
+      "skip_while_previous_open": "Não criar enquanto a ocorrência anterior estiver aberta"
+    },
+    "template": {
+      "label": "O que será criado",
+      "priority": "Prioridade",
+      "state": "Estado inicial",
+      "assignees": "Responsáveis",
+      "labels": "Etiquetas",
+      "description": "Descrição"
+    },
+    "preview": {
+      "label": "Próximas ocorrências",
+      "empty": "Nenhuma data prevista com esta configuração."
+    },
+    "list": {
+      "empty": "Nenhuma tarefa recorrente ainda.",
+      "next": "Próxima",
+      "paused": "Pausada",
+      "occurrences": "{count, plural, one {# ocorrência criada} other {# ocorrências criadas}}"
+    },
+    "actions": {
+      "pause": "Pausar",
+      "resume": "Retomar",
+      "edit": "Editar",
+      "delete": "Excluir"
     }
   },
   "epic": {
