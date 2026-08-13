@@ -10,17 +10,19 @@ Plano aprovado em 12/08/2026, com todas as recomendações.
 
 ## T1 — Backend: destino da conclusão
 
-- [ ] T1.1 Campo `completion_state` em `Project` (FK para `State`,
+- [x] T1.1 Campo `completion_state` em `Project` (FK para `State`,
       `on_delete=SET_NULL`), migração e serializer
-- [ ] T1.2 Resolvedor `get_completion_state(project)`: usa `completion_state`
+- [x] T1.2 Resolvedor `get_completion_state(project)`: usa `completion_state`
       quando definido; senão, o estado de menor `sequence` no grupo
       `completed` **do próprio projeto**
-- [ ] T1.3 Corrigir o escopo cruzado da automação existente: em
+- [x] T1.3 Corrigir o escopo cruzado da automação existente: em
       `issue_automation_task.close_old_issues`, o fallback
       `State.objects.filter(group="cancelled").first()` não filtra por projeto
       e pega o estado de qualquer projeto do banco
-- [ ] T1.4 Testes de contrato: resolvedor com e sem configuração, projeto sem
-      estado concluído, e o fallback da automação restrito ao projeto
+- [x] T1.4 Testes de contrato: resolvedor com e sem configuração, estado
+      configurado fora do grupo, projeto sem estado concluído, e exclusão do
+      estado escolhido — que revelou que `State` é excluído logicamente, então
+      o `SET_NULL` nunca dispara e o resolvedor precisa checar `deleted_at`
 
 Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
 
