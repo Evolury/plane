@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
@@ -172,6 +173,8 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
   const handleIssuePeekOverview = (issue: TIssue) => handleRedirection(workspaceSlug, issue, isMobile);
 
   const issue = issuesMap[issueId];
+  // Evolury: tratamento visual de concluída (ADR 0009)
+  const isCompleted = useIsIssueCompleted(issue?.state_id);
 
   const { setIsDragging: setIsKanbanDragging } = useKanbanView();
 
@@ -245,7 +248,11 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
       <div
         id={`issue-${issueId}`}
         // make Z-index higher at the beginning of drag, to have a issue drag image of issue block without any overlaps
-        className={cn("group/kanban-block relative mb-2", { "z-[1]": isCurrentBlockDragging })}
+        className={cn("group/kanban-block relative mb-2", {
+          "z-[1]": isCurrentBlockDragging,
+          // Evolury: concluída fica esmaecida (ADR 0009)
+          "opacity-60": isCompleted,
+        })}
         onDragStart={() => {
           if (isDragAllowed) setIsCurrentBlockDragging(true);
           else {
