@@ -14,7 +14,9 @@ import { PageHead } from "@/components/core/page-title";
 import { EAuthModes } from "@/helpers/authentication.helper";
 import { useInstance } from "@/hooks/store/use-instance";
 
-const authContentMap = {
+// Evolury: função, não constante — no escopo de módulo o translate() roda
+// antes do i18n inicializar e devolve a chave crua (ver nota em app/root.tsx)
+const getAuthContent = () => ({
   [EAuthModes.SIGN_IN]: {
     pageTitle: translate("auth.common.sign_up"),
     text: "auth.common.new_to_plane",
@@ -27,7 +29,7 @@ const authContentMap = {
     linkText: translate("ui.sign_in"),
     linkHref: "/sign-in",
   },
-};
+});
 
 type AuthHeaderProps = {
   type: EAuthModes;
@@ -42,17 +44,17 @@ export const AuthHeader = observer(function AuthHeader({ type }: AuthHeaderProps
 
   return (
     <AuthHeaderBase
-      pageTitle={t(authContentMap[type].pageTitle)}
+      pageTitle={t(getAuthContent()[type].pageTitle)}
       additionalAction={
         enableSignUpConfig && (
           <div className="flex flex-col items-end text-center text-13 font-medium text-tertiary sm:flex-row sm:items-center sm:gap-2">
-            <span className="text-body-sm-regular text-tertiary">{t(authContentMap[type].text)}</span>
+            <span className="text-body-sm-regular text-tertiary">{t(getAuthContent()[type].text)}</span>
             <Link
               data-ph-element={AUTH_TRACKER_ELEMENTS.NAVIGATE_TO_SIGN_UP}
-              href={authContentMap[type].linkHref}
+              href={getAuthContent()[type].linkHref}
               className="text-body-sm-semibold text-accent-primary hover:underline"
             >
-              {t(authContentMap[type].linkText)}
+              {t(getAuthContent()[type].linkText)}
             </Link>
           </div>
         )
