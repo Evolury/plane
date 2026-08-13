@@ -64,6 +64,17 @@
       "empty_state": {
         "title": "No states available for the {groupKey} group",
         "description": "Please create a new state"
+      },
+      "default": {
+        "label": "Default",
+        "mark": "Mark as default",
+        "marking": "Marking as default"
+      },
+      "completion": {
+        "label": "Completion",
+        "mark": "Mark as completion",
+        "marking": "Marking as completion",
+        "automatic_tooltip": "Where the Complete button sends work items. Without an explicit choice, the first state in this group is used."
       }
     },
     "labels": {

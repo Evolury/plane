@@ -46,6 +46,7 @@ export interface IMyTasksIssues extends IBaseIssuesStore {
   removeBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   archiveBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   bulkUpdateProperties: (workspaceSlug: string, projectId: string, data: TBulkOperationsPayload) => Promise<void>;
+  reposicionarSeConcluida: (workspaceSlug: string, projectId: string, issueId: string, data: Partial<TIssue>) => void;
   quickAddIssue: undefined;
 }
 
@@ -143,7 +144,9 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
     const isPersonalReorder = !isStageMove && mutatedKeys.length === 1 && mutatedKeys[0] === "sort_order";
 
     if (!isStageMove && !isPersonalReorder) {
-      return this.issueUpdate(workspaceSlug, projectId, issueId, data);
+      const resultado = await this.issueUpdate(workspaceSlug, projectId, issueId, data);
+      this.reposicionarSeConcluida(workspaceSlug, projectId, issueId, data);
+      return resultado;
     }
 
     const issueBeforeUpdate = clone(this.rootIssueStore.issues.getIssueById(issueId));
@@ -169,6 +172,33 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
       }
       throw error;
     }
+  };
+
+  /**
+   * Evolury: concluir daqui move o cartão para a etapa de concluídas na hora
+   * (ADR 0009).
+   *
+   * O reposicionamento de verdade é do servidor, no mesmo funil que trata
+   * todos os caminhos de mudança de estado — mas ele roda em segundo plano, e
+   * sem isto o cartão ficaria parado na etapa antiga até a próxima busca.
+   * Espelha a regra do backend: só na ENTRADA no grupo concluído, e sem mexer
+   * em quem já está numa etapa desse grupo.
+   *
+   * Só estado local (shouldSync=false): nenhuma requisição sai daqui.
+   */
+  reposicionarSeConcluida = (workspaceSlug: string, projectId: string, issueId: string, data: Partial<TIssue>) => {
+    if (!("state_id" in data) || !data.state_id) return;
+    const rootStore = this.rootIssueStore.rootStore;
+    if (rootStore.state.getStateById(data.state_id)?.group !== "completed") return;
+
+    const etapas = rootStore.myTasksStore.sortedStages;
+    const issue = this.rootIssueStore.issues.getIssueById(issueId);
+    const etapaAtual = etapas.find((etapa) => etapa.id === issue?.my_task_stage_id);
+    if (etapaAtual?.group === "completed") return;
+
+    const destino = etapas.find((etapa) => etapa.group === "completed");
+    if (!destino) return;
+    this.issueUpdate(workspaceSlug, projectId, issueId, { my_task_stage_id: destino.id }, false);
   };
 
   // Aliases como no ProfileIssues — não podem ser sobrescritos com outro nome

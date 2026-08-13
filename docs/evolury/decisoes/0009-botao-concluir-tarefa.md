@@ -59,6 +59,18 @@ tem atribuída. A direção única preserva o que motivou o ADR 0001 — organiz
 pessoal não vaza para o time —, enquanto deixa o fato compartilhado
 (a conclusão) se refletir na visão pessoal.
 
+Duas regras completam a exceção:
+
+- **Quem já está numa etapa do grupo concluído fica onde está.** Se a pessoa
+  escolheu uma etapa própria de concluídas, é dela a última palavra.
+- **Sem associação, a tarefa concluída pertence à etapa de concluídas.** Isso é
+  resolvido na listagem, não gravado — cobre quem nunca moveu nada e o que foi
+  concluído antes de a pessoa ter etapas, sem migração e sem inventar
+  associação para ninguém.
+
+Reabrir **não** desfaz o movimento: devolver a tarefa à etapa anterior exigiria
+guardar de onde ela veio, e mão única foi a decisão.
+
 ## Escopo
 
 Épicos e tarefas recorrentes **ficam de fora**, por não existirem nesta

@@ -13,7 +13,7 @@ import { EditIcon, StateGroupIcon } from "@plane/propel/icons";
 import type { IState, TStateOperationsCallbacks } from "@plane/types";
 // local imports
 import { useProjectState } from "@/hooks/store/use-project-state";
-import { StateDelete, StateMarksAsDefault } from "./options";
+import { StateDelete, StateMarksAsCompletion, StateMarksAsDefault } from "./options";
 
 type TBaseStateItemTitleProps = {
   stateCount: number;
@@ -63,6 +63,12 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
       </div>
       {!disabled && (
         <div className="hidden items-center gap-2 group-hover:flex">
+          {/* Evolury: destino do botão de concluir, só no grupo concluído (ADR 0009) */}
+          {state.group === "completed" && (
+            <div className="flex-shrink-0 text-11 transition-all">
+              <StateMarksAsCompletion state={state} />
+            </div>
+          )}
           {/* state mark as default option */}
           <div className="flex-shrink-0 text-11 transition-all">
             <StateMarksAsDefault

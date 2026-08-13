@@ -35,6 +35,7 @@ from plane.db.models import (
 from plane.settings.redis import redis_instance
 from plane.utils.exception_logger import log_exception
 from plane.utils.issue_relation_mapper import get_inverse_relation
+from plane.utils.personal_stage import sync_personal_stages_on_completion
 from plane.utils.uuid import is_valid_uuid
 
 
@@ -637,6 +638,20 @@ def update_issue_activity(
                 issue_activities=issue_activities,
                 epoch=epoch,
             )
+
+    # Evolury: a conclusão se reflete nas etapas pessoais de "Minhas tarefas"
+    # (ADR 0009). Fica aqui porque este é o funil por onde passam TODOS os
+    # caminhos que mudam estado — botão, seletor, arrastar, API externa,
+    # automação de fechamento —, o mesmo funil de que notificações e webhooks
+    # já dependem.
+    estado_novo = requested_data.get("state_id") or requested_data.get("state")
+    estado_antigo = (current_instance or {}).get("state_id") or (current_instance or {}).get("state")
+    if estado_novo and is_valid_uuid(estado_novo):
+        sync_personal_stages_on_completion(
+            issue_id=issue_id,
+            previous_state_id=estado_antigo if estado_antigo and is_valid_uuid(estado_antigo) else None,
+            new_state_id=estado_novo,
+        )
 
 
 def delete_issue_activity(
