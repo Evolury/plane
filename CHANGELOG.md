@@ -3,6 +3,20 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.5.0] — 2026-08-13
+
+### Cartão de tarefa
+
+- **Marca de conclusão à esquerda do ID**, na lista, no quadro e na planilha.
+  Na lista ela convive com a caixa de seleção múltipla, que só surge no hover.
+- **Tarefa cancelada ganha aparência própria**: esmaecida como a concluída, mas
+  com fundo levemente avermelhado — "não vai ser feita" não é a mesma notícia
+  que "foi feita". Vale para qualquer etapa do grupo cancelado, inclusive as
+  criadas depois pelo projeto.
+- **Não se conclui uma tarefa cancelada**: nem o botão do cabeçalho nem a marca
+  do card aparecem. Para voltar atrás existe o seletor de estado, que é onde a
+  decisão foi tomada.
+
 ## [1.4.0] — 2026-08-13
 
 ### Concluir sem abrir a tarefa
