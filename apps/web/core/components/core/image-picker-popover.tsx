@@ -343,7 +343,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                       </p>
                     )}
 
-                    <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
+                    <p className="text-13 text-secondary">{t("common.file_formats_supported")}</p>
 
                     <div className="flex h-12 items-start justify-end gap-2">
                       <Button

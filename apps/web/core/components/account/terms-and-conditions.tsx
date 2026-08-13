@@ -37,10 +37,11 @@ export function TermsAndConditions({ authType = EAuthModes.SIGN_IN }: TermsAndCo
   const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center">
+      {/* Evolury: frase montada por fragmentos traduzidos, já que os links ficam no meio dela */}
       <p className="text-center text-13 whitespace-pre-line text-tertiary">
-        {`${MESSAGES[authType]}, you understand and agree to \n our `}
-        <LegalLink href={LEGAL_LINKS.termsOfService}>{t("ui.terms_of_service")}</LegalLink> and{" "}
-        <LegalLink href={LEGAL_LINKS.privacyPolicy}>Privacy Policy</LegalLink>.
+        {`${MESSAGES[authType]}${t("ui.terms_agreement")}`}
+        <LegalLink href={LEGAL_LINKS.termsOfService}>{t("ui.terms_of_service")}</LegalLink> {t("ui.and")}{" "}
+        <LegalLink href={LEGAL_LINKS.privacyPolicy}>{t("ui.privacy_policy")}</LegalLink>.
       </p>
     </div>
   );

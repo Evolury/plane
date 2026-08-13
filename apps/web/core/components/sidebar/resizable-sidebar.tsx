@@ -194,7 +194,7 @@ export function ResizableSidebar({
           maxWidth: `${isCollapsed ? 0 : width}px`,
         }}
         role="complementary"
-        aria-label="Main sidebar"
+        aria-label={t("aria_labels.sidebar.main")}
         data-prevent-outside-click={isMobile}
       >
         <aside
@@ -217,7 +217,7 @@ export function ResizableSidebar({
             onDoubleClick={() => toggleCollapsed()}
             onMouseDown={(e) => startResizing(e)}
             role="separator"
-            aria-label="Resize sidebar"
+            aria-label={t("aria_labels.sidebar.resize")}
           />
         </aside>
       </div>
@@ -259,7 +259,7 @@ export function ResizableSidebar({
             onDoubleClick={() => toggleCollapsed()}
             onMouseDown={(e) => startResizing(e)}
             role="separator"
-            aria-label="Resize sidebar"
+            aria-label={t("aria_labels.sidebar.resize")}
           />
         </aside>
       </div>

@@ -5,6 +5,9 @@
  */
 
 import React from "react";
+// Evolury: o pacote passou a poder traduzir (ADR 0008) — rótulo acessível do
+// botão de dispensar nasce aqui dentro
+import { translate } from "@plane/i18n";
 import { cn } from "../utils";
 import type { TBannerVariant } from "./helper";
 import {
@@ -83,7 +86,7 @@ export const Banner = React.forwardRef(function Banner(
     if (!dismissible) return null;
 
     return (
-      <button onClick={handleDismiss} className={cn(dismissStyling)} aria-label="Dismiss banner">
+      <button onClick={handleDismiss} className={cn(dismissStyling)} aria-label={translate("ui.dismiss_banner")}>
         <svg
           width="16"
           height="16"

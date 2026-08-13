@@ -6,6 +6,8 @@
 
 import React, { useState } from "react";
 import type { E_PASSWORD_STRENGTH } from "@plane/constants";
+// Evolury: rótulo padrão nasce no componente (ADR 0008)
+import { translate } from "@plane/i18n";
 import { cn, getPasswordStrength } from "@plane/utils";
 import { PasswordStrengthIndicator } from "../form-fields/password/indicator";
 import { AuthInput } from "./auth-input";
@@ -22,7 +24,7 @@ export type TAuthPasswordInputProps = React.InputHTMLAttributes<HTMLInputElement
 };
 
 export function AuthPasswordInput({
-  label = "Password",
+  label = translate("auth.common.password.label"),
   error,
   showPasswordStrength = true,
   showPasswordToggle = true,

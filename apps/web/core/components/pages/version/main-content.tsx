@@ -92,7 +92,7 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
               <TriangleAlert className="size-10" />
             </span>
             <div>
-              <h6 className="text-16 font-semibold">Something went wrong!</h6>
+              <h6 className="text-16 font-semibold">{t("common.something_went_wrong")}</h6>
               <p className="text-13 text-tertiary">{t("toast.version_load_failed")}</p>
             </div>
             <Button variant="link" onClick={handleRetry} loading={isRetrying}>

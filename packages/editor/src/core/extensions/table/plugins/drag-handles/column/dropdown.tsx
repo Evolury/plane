@@ -9,6 +9,9 @@ import { TableMap } from "@tiptap/pm/tables";
 import { ArrowLeft, ArrowRight, ToggleRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 // extensions
+// Evolury: o dropdown vive num plugin do ProseMirror, fora do provider de
+// tradução do editor — daí `translate` e não o hook (ADR 0008)
+import { translate } from "@plane/i18n";
 import type { ISvgIcons } from "@plane/propel/icons";
 import { CopyIcon, TrashIcon, CloseIcon } from "@plane/propel/icons";
 import { findTable, getSelectedColumns } from "@/extensions/table/table/utilities/helpers";
@@ -16,6 +19,8 @@ import { findTable, getSelectedColumns } from "@/extensions/table/table/utilitie
 import { duplicateColumns } from "../actions";
 import { TableDragHandleDropdownColorSelector } from "../color-selector";
 
+// Evolury: `label` guarda a chave i18n; a tradução acontece no render, senão
+// congelaria no idioma ativo quando o módulo foi carregado
 const DROPDOWN_ITEMS: {
   key: string;
   label: string;
@@ -24,19 +29,19 @@ const DROPDOWN_ITEMS: {
 }[] = [
   {
     key: "insert-left",
-    label: "Insert left",
+    label: "editor.insert_column_left",
     icon: ArrowLeft,
     action: (editor) => editor.chain().focus().addColumnBefore().run(),
   },
   {
     key: "insert-right",
-    label: "Insert right",
+    label: "editor.insert_column_right",
     icon: ArrowRight,
     action: (editor) => editor.chain().focus().addColumnAfter().run(),
   },
   {
     key: "duplicate",
-    label: "Duplicate",
+    label: "editor.duplicate",
     icon: CopyIcon,
     action: (editor) => {
       const table = findTable(editor.state.selection);
@@ -51,13 +56,13 @@ const DROPDOWN_ITEMS: {
   },
   {
     key: "clear-contents",
-    label: "Clear contents",
+    label: "editor.clear_contents",
     icon: CloseIcon,
     action: (editor) => editor.chain().focus().clearSelectedCells().run(),
   },
   {
     key: "delete",
-    label: "Delete",
+    label: "common.delete",
     icon: TrashIcon,
     action: (editor) => editor.chain().focus().deleteColumn().run(),
   },
@@ -83,7 +88,7 @@ export function ColumnOptionsDropdown(props: Props) {
           onClose();
         }}
       >
-        <div className="flex-grow truncate">Header column</div>
+        <div className="flex-grow truncate">{translate("editor.header_column")}</div>
         <ToggleRight className="size-3 shrink-0" />
       </button>
       <hr className="my-2 border-subtle" />
@@ -101,7 +106,7 @@ export function ColumnOptionsDropdown(props: Props) {
           }}
         >
           <item.icon className="size-3 shrink-0" />
-          <div className="flex-grow truncate">{item.label}</div>
+          <div className="flex-grow truncate">{translate(item.label)}</div>
         </button>
       ))}
     </>

@@ -100,7 +100,7 @@ export const AnalyticsSelectParams = observer(function AnalyticsSelectParams(pro
                 </div>
               }
               options={groupByOptions}
-              placeholder="Group By"
+              placeholder={t("common.group_by")}
               allowNoValue
             />
           )}

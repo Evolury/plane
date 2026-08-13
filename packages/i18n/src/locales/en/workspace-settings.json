@@ -3,7 +3,7 @@
     "label": "Workspace settings",
     "page_label": "{workspace} - General settings",
     "key_created": "Key created",
-    "copy_key": "Copy and save this secret key in Plane Pages. You can't see this key after you hit Close. A CSV file containing the key has been downloaded.",
+    "copy_key": "Copy and save this secret key in Evotask Pages. You can't see this key after you hit Close. A CSV file containing the key has been downloaded.",
     "token_copied": "Token copied to clipboard.",
     "settings": {
       "general": {
@@ -100,7 +100,8 @@
               "message": "Export was unsuccessful. Please try again."
             }
           }
-        }
+        },
+        "expired": "Expired"
       },
       "webhooks": {
         "heading": "Webhooks",
@@ -156,7 +157,8 @@
           "secret_key_not_copied": {
             "message": "Error occurred while copying secret key."
           }
-        }
+        },
+        "enable": "Enable webhook"
       },
       "api_tokens": {
         "heading": "Access Tokens",
@@ -169,7 +171,7 @@
         "generating": "Generating",
         "delete": {
           "title": "Delete access token",
-          "description": "Any application using this token will no longer have the access to Plane data. This action cannot be undone.",
+          "description": "Any application using this token will no longer have the access to Evotask data. This action cannot be undone.",
           "success": {
             "title": "Success!",
             "message": "The token has been successfully deleted"
@@ -184,7 +186,7 @@
         "title": "Integrations",
         "heading": "Integrations",
         "description": "Connect with popular tools and services to sync your work across your entire workflow ecosystem.",
-        "page_title": "Work with your Plane data in available apps or your own.",
+        "page_title": "Work with your Evotask data in available apps or your own.",
         "page_description": "View all the integrations in use by this workspace or you."
       },
       "imports": {
@@ -266,7 +268,7 @@
       "project_states": {
         "title": "Project states",
         "heading": "See progress overview for all projects.",
-        "description": "Project States is a Plane-only feature for tracking progress of all your projects by any project property.",
+        "description": "Project States is a Evotask-only feature for tracking progress of all your projects by any project property.",
         "go_to_settings": "Go to settings"
       },
       "projects": {
@@ -311,14 +313,14 @@
         "install": "Install",
         "installed": "Installed",
         "configure": "Configure",
-        "app_available": "You have made this app available to use with a Plane workspace",
+        "app_available": "You have made this app available to use with a Evotask workspace",
         "app_credentials_regenrated": {
           "title": "App credentials successfully re-generated",
           "description": "Replace the client secret everywhere it's used. The previous secret is no longer valid."
         },
         "app_created": {
           "title": "App created successfully",
-          "description": "Use the credentials to install the app in a Plane workspace"
+          "description": "Use the credentials to install the app in a Evotask workspace"
         },
         "installed_apps": "Installed apps",
         "all_apps": "All apps",
@@ -359,10 +361,10 @@
         },
         "redirect_uris": {
           "label": "Redirect URIs (space separated)",
-          "description": "Users will be redirected to this path after they have authenticated with Plane.",
+          "description": "Users will be redirected to this path after they have authenticated with Evotask.",
           "placeholder": "https://example.com https://example.com/"
         },
-        "app_available_description": "Connect a Plane workspace to start using it",
+        "app_available_description": "Connect a Evotask workspace to start using it",
         "client_id_and_secret": "Client ID and Secret",
         "client_id_and_secret_description": "Copy and save this secret key in Pages. You can't see this key again after you hit Close.",
         "client_id_and_secret_download": "You can download a CSV with the key from here.",
@@ -411,12 +413,12 @@
         "workspace_permissions": "Workspace permissions",
         "workspace_permissions_description": "Workspace permissions are used to grant access to the workspace.",
         "with_the_permissions": "with the permissions",
-        "app_consent_title": "{app} is requesting access to your Plane workspace and profile.",
+        "app_consent_title": "{app} is requesting access to your Evotask workspace and profile.",
         "choose_workspace_to_connect_app_with": "Choose a workspace to connect the app with",
         "app_consent_workspace_permissions_title": "{app} would like",
         "app_consent_user_permissions_title": "{app} can also request a user's permission to the following resources. These permissions will be requested and authorized of and by a user only.",
         "app_consent_accept_title": "By accepting, you",
-        "app_consent_accept_1": "Grant the app access to your Plane data wherever you can use the app in or outside Plane",
+        "app_consent_accept_1": "Grant the app access to your Evotask data wherever you can use the app in or outside Evotask",
         "app_consent_accept_2": "Agree to {app}'s Privacy Policy and Terms Of Use",
         "accepting": "Accepting...",
         "accept": "Accept",
@@ -458,7 +460,7 @@
         "upload_and_save": "Upload & Save",
         "app_consent_no_access_title": "Request to install",
         "app_consent_no_access_description": "This app can only be installed after a workspace admin installs it. Contact your workspace admin to proceed.",
-        "app_consent_unapproved_title": "This app hasn't been reviewed or approved by Plane yet.",
+        "app_consent_unapproved_title": "This app hasn't been reviewed or approved by Evotask yet.",
         "app_consent_unapproved_description": "Make sure you trust this app before connecting it to your workspace.",
         "go_to_app": "Go to app",
         "enable_app_mentions": "Enable App Mentions",
@@ -483,12 +485,12 @@
         }
       },
       "plane-intelligence": {
-        "title": "Plane AI",
-        "heading": "Plane AI",
+        "title": "Evotask AI",
+        "heading": "Evotask AI",
         "description": "See your work get smarter and faster with AI that is natively connected to your work and knowledge base. "
       },
       "runners": {
-        "title": "Plane Runner",
+        "title": "Evotask Runner",
         "heading": "Scripts",
         "new_script": "New Script",
         "description": "Automate your workflows with custom scripts and automation rules."
@@ -497,7 +499,7 @@
     "empty_state": {
       "api_tokens": {
         "title": "No access tokens created",
-        "description": "Plane APIs can be used to integrate your data in Plane with any external system. Create a token to get started."
+        "description": "Evotask APIs can be used to integrate your data in Evotask with any external system. Create a token to get started."
       },
       "webhooks": {
         "title": "No webhooks added",
@@ -522,8 +524,8 @@
     "admin_instance_setup_sign_in": "Admin – Instance Setup & Sign-In",
     "allow_anyone_to_sign_up_even_without_an_invite": "Allow anyone to sign up even without an invite",
     "allow_members_to_create_accounts_with_passwords": "Allow members to create accounts with passwords and use it with their email addresses to sign in.",
-    "allow_members_to_log_in_or_sign_up_for_plane_wit": "Allow members to log in or sign up for Plane with their GitHub accounts.",
-    "allow_members_to_log_in_or_sign_up_for_plane_wit_2": "Allow members to log in or sign up for Plane with their Google accounts.",
+    "allow_members_to_log_in_or_sign_up_for_plane_wit": "Allow members to log in or sign up for Evotask with their GitHub accounts.",
+    "allow_members_to_log_in_or_sign_up_for_plane_wit_2": "Allow members to log in or sign up for Evotask with their Google accounts.",
     "allow_members_to_log_in_or_sign_up_to_plane_with": "Allow members to log in or sign up to plane with their GitLab accounts.",
     "allow_members_to_log_in_or_sign_up_to_plane_with_2": "Allow members to log in or sign up to plane with their Gitea accounts.",
     "allow_members_to_login_or_sign_up_to_plane_with": "Allow members to login or sign up to plane with their GitHub accounts.",
@@ -531,16 +533,16 @@
     "allow_members_to_login_or_sign_up_to_plane_with_3": "Allow members to login or sign up to plane with their Gitea accounts.",
     "artificial_intelligence_settings_god_mode": "Artificial Intelligence Settings - God Mode",
     "at_least_one_authentication_method_must_remain_e": "At least one authentication method must remain enabled. Please enable another method before disabling this one.",
-    "authentication_settings_plane_web": "Authentication Settings - Plane Web",
+    "authentication_settings_plane_web": "Authentication Settings - Evotask Web",
     "cannot_disable_authentication": "Cannot disable authentication",
     "change_the_name_of_your_instance_and_instance_ad": "Change the name of your instance and instance admin e-mail addresses. Enable or disable telemetry in your instance.",
     "configuration_saved": "Configuration saved",
     "configuration_saved_successfully": "Configuration saved successfully",
     "configure_authentication_modes_for_your_team_and": "Configure authentication modes for your team and restrict sign-ups to be invite only.",
     "configure_instance_wide_settings_to_secure_your": "Configure instance-wide settings to secure your instance",
-    "configure_your_ai_api_credentials_so_plane_ai_fe": "Configure your AI API credentials so Plane AI features are turned on for all your workspaces.",
+    "configure_your_ai_api_credentials_so_plane_ai_fe": "Configure your AI API credentials so Evotask AI features are turned on for all your workspaces.",
     "configure_your_openai_creds": "Configure your OpenAI creds.",
-    "configure_your_plane_instance_or_sign_in_to_the": "Configure your Plane instance or sign in to the admin portal.",
+    "configure_your_plane_instance_or_sign_in_to_the": "Configure your Evotask instance or sign in to the admin portal.",
     "configure_your_smtp_controls": "Configure your SMTP controls.",
     "create_workspace_god_mode": "Create Workspace - God Mode",
     "create_a_new_workspace_on_this_instance": "Create a new workspace on this instance.",
@@ -558,11 +560,11 @@
     "failed_to_send_email": "Failed to send email",
     "general_settings_god_mode": "General Settings - God Mode",
     "github_oauth_application_settings": "GitHub OAuth application settings",
-    "github_provided_details_for_plane": "GitHub-provided details for Plane",
-    "gitlab_provided_details_for_plane": "GitLab-provided details for Plane",
+    "github_provided_details_for_plane": "GitHub-provided details for Evotask",
+    "gitlab_provided_details_for_plane": "GitLab-provided details for Evotask",
     "gitea_oauth_application_settings": "Gitea OAuth application settings",
-    "gitea_provided_details_for_plane": "Gitea-provided details for Plane",
-    "google_provided_details_for_plane": "Google-provided details for Plane",
+    "gitea_provided_details_for_plane": "Gitea-provided details for Evotask",
+    "google_provided_details_for_plane": "Google-provided details for Evotask",
     "identify_your_instances_and_get_key_details": "Identify your instances and get key details.",
     "if_you_still_cannot_find_it_recheck_your_smtp_co": "If you still cannot find it, recheck your SMTP configuration and trigger a new test email.",
     "if_you_use_chatgpt_this_is_for_you": "If you use ChatGPT, this is for you.",
@@ -570,23 +572,23 @@
     "images_settings_god_mode": "Images Settings - God Mode",
     "instance_name": "Instance name",
     "let_your_users_search_and_choose_images_from_thi": "Let your users search and choose images from third-party libraries",
-    "log_in_or_sign_up_for_plane_using_codes_sent_via": "Log in or sign up for Plane using codes sent via email. You need to have set up SMTP to use this method.",
+    "log_in_or_sign_up_for_plane_using_codes_sent_via": "Log in or sign up for Evotask using codes sent via email. You need to have set up SMTP to use this method.",
     "manage_all_workspaces_on_this_instance": "Manage all workspaces on this instance.",
     "manage_authentication_modes_for_your_instance": "Manage authentication modes for your instance",
-    "manage_your_plane_instance": "Manage your Plane instance",
+    "manage_your_plane_instance": "Manage your Evotask instance",
     "misconfigs_can_lead_to_email_bounces_and_errors": "Misconfigs can lead to email bounces and errors.",
     "name_of_instance": "Name of instance",
     "no_email_security": "No email security",
     "open_source_project_management_tool_to_manage_wo": "Open-source project management tool to manage work items, sprints, and product roadmaps with peace of mind.",
     "openai_api_keys_page": "OpenAI API keys page",
-    "plane_provided_details_for_github": "Plane-provided details for GitHub",
-    "plane_provided_details_for_gitlab": "Plane-provided details for GitLab",
-    "plane_provided_details_for_gitea": "Plane-provided details for Gitea",
-    "plane_provided_details_for_google": "Plane-provided details for Google",
-    "post_setup_you_will_be_able_to_manage_this_plane": "Post setup you will be able to manage this Plane instance.",
+    "plane_provided_details_for_github": "Evotask-provided details for GitHub",
+    "plane_provided_details_for_gitlab": "Evotask-provided details for GitLab",
+    "plane_provided_details_for_gitea": "Evotask-provided details for Gitea",
+    "plane_provided_details_for_google": "Evotask-provided details for Google",
+    "post_setup_you_will_be_able_to_manage_this_plane": "Post setup you will be able to manage this Evotask instance.",
     "prevent_anyone_else_from_creating_a_workspace": "Prevent anyone else from creating a workspace.",
     "receiver_email": "Receiver email",
-    "redirect_to_plane": "Redirect to Plane",
+    "redirect_to_plane": "Redirect to Evotask",
     "secure_emails_from_your_own_instance": "Secure emails from your own instance",
     "see_all_workspaces_and_control_who_can_create_th": "See all workspaces and control who can create them.",
     "send_email": "Send email",
@@ -595,7 +597,7 @@
     "sending_email": "Sending email",
     "set_your_workspace_apos_s_url": "Set your workspace&apos;s URL",
     "settings_updated_successfully": "Settings updated successfully",
-    "setup_your_plane_instance": "Setup your Plane Instance",
+    "setup_your_plane_instance": "Setup your Evotask Instance",
     "some_error_occurred_while_creating_workspace_ple": "Some error occurred while creating workspace. Please try again.",
     "the_organization_github_id": "The organization github ID.",
     "the_unique_url_of_your_workspace": "The unique URL of your workspace",

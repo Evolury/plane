@@ -6,6 +6,7 @@
 
 import { observer } from "mobx-react";
 import { EIconSize } from "@plane/constants";
+import { useTranslation } from "@plane/i18n";
 import { StateGroupIcon, CloseIcon } from "@plane/propel/icons";
 import { Tag } from "@plane/ui";
 // hooks
@@ -14,6 +15,7 @@ import { useProjectState } from "@/hooks/store/use-project-state";
 
 export const InboxIssueAppliedFiltersState = observer(function InboxIssueAppliedFiltersState() {
   // hooks
+  const { t } = useTranslation();
   const { inboxFilters, handleInboxIssueFilters } = useProjectInbox();
   const { getStateById } = useProjectState();
   // derived values
@@ -28,7 +30,7 @@ export const InboxIssueAppliedFiltersState = observer(function InboxIssueApplied
   if (filteredValues.length === 0) return <></>;
   return (
     <Tag>
-      <div className="text-11 text-secondary">State</div>
+      <div className="text-11 text-secondary">{t("state")}</div>
       {filteredValues.map((value) => {
         const optionDetail = currentOptionDetail(value);
         if (!optionDetail) return <></>;

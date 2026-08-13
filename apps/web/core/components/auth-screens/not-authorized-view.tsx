@@ -34,7 +34,12 @@ export const NotAuthorizedView = observer(function NotAuthorizedView(props: Prop
     <DefaultLayout className={cn("bg-surface-1", className)}>
       <div className="flex h-full w-full flex-col items-center justify-center gap-y-5 text-center">
         <div className="h-44 w-72">
-          <img src={asset} className="h-[176px] w-[288px] object-contain" alt="ProjectSettingImg" />
+          {/* Evolury: texto alternativo descritivo e traduzido no lugar do identificador */}
+          <img
+            src={asset}
+            className="h-[176px] w-[288px] object-contain"
+            alt={t("aria_labels.errors.not_authorized_illustration")}
+          />
         </div>
         <h1 className="text-18 font-medium text-primary">{t("ui.not_authorized_view_page")}</h1>
         {actionButton}

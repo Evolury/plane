@@ -211,7 +211,7 @@ export function ExportPageModal(props: Props) {
           <h3 className="text-18 font-medium text-secondary">{t("ui.export_page")}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <h6 className="flex-shrink-0 text-13 text-secondary">Export format</h6>
+              <h6 className="flex-shrink-0 text-13 text-secondary">{t("page_editor.export.format")}</h6>
               <Controller
                 control={control}
                 name="export_format"
@@ -234,7 +234,7 @@ export function ExportPageModal(props: Props) {
               />
             </div>
             <div className="flex items-center justify-between gap-2">
-              <h6 className="flex-shrink-0 text-13 text-secondary">Include content</h6>
+              <h6 className="flex-shrink-0 text-13 text-secondary">{t("page_editor.export.include_content")}</h6>
               <Controller
                 control={control}
                 name="content_variety"
@@ -288,7 +288,7 @@ export function ExportPageModal(props: Props) {
             {t("cancel")}
           </Button>
           <Button variant="primary" size="lg" loading={isExporting} onClick={handleExport}>
-            {isExporting ? "Exporting" : "Export"}
+            {isExporting ? t("workspace_settings.settings.exports.exporting") : t("export")}
           </Button>
         </div>
       </div>

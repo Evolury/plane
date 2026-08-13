@@ -7,6 +7,8 @@
 import { Combobox } from "@headlessui/react";
 
 import React from "react";
+// Evolury: mensagem de lista vazia nasce no componente (ADR 0008)
+import { translate } from "@plane/i18n";
 import { CheckIcon } from "@plane/propel/icons";
 // helpers
 import { cn } from "../../utils";
@@ -83,7 +85,7 @@ export function DropdownOptions(props: IMultiSelectDropdownOptions | ISingleSele
                 </Combobox.Option>
               ))
             ) : (
-              <p className="px-1.5 py-1 text-placeholder italic">No matching results</p>
+              <p className="px-1.5 py-1 text-placeholder italic">{translate("common.search.no_matching_results")}</p>
             )
           ) : loader ? (
             <> {loader} </>

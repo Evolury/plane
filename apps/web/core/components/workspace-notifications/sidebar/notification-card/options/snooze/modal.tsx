@@ -118,7 +118,7 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
     <ModalCore isOpen={isOpen} handleClose={handleClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
       <form onSubmit={handleSubmit(onSubmit)} className="p-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-h5-medium leading-6 text-primary">Customize Snooze Time</h3>
+          <h3 className="text-h5-medium leading-6 text-primary">{t("notification.snooze.customize_title")}</h3>
 
           <div>
             <button type="button" onClick={handleClose}>
@@ -223,7 +223,7 @@ export function NotificationSnoozeModal(props: TNotificationSnoozeModal) {
               {t("cancel")}
             </Button>
             <Button variant="primary" size="lg" type="submit" loading={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
+              {isSubmitting ? t("common.submitting") : t("submit")}
             </Button>
           </div>
         </div>

@@ -146,9 +146,15 @@ export function LinkEditView({ viewProps }: LinkEditViewProps) {
       }}
       tabIndex={0}
     >
-      <InputView label="URL" placeholder="Enter or paste URL" value={localUrl} onChange={setLocalUrl} autoFocus />
       <InputView
-        label="Text"
+        label={t("link.modal.url.text", "URL")}
+        placeholder={t("editor.link_url", "Enter or paste a link")}
+        value={localUrl}
+        onChange={setLocalUrl}
+        autoFocus
+      />
+      <InputView
+        label={t("editor.text", "Text")}
         placeholder={t("editor.link_text", "Enter Text to display")}
         value={localText}
         onChange={handleTextChange}
@@ -157,7 +163,7 @@ export function LinkEditView({ viewProps }: LinkEditViewProps) {
       <div className="flex items-center gap-2 text-13 text-secondary">
         <Link2Off size={14} className="inline-block" />
         <button onClick={removeLink} className="cursor-pointer transition-colors hover:text-placeholder">
-          Remove Link
+          {t("editor.remove_link", "Remove Link")}
         </button>
       </div>
     </div>

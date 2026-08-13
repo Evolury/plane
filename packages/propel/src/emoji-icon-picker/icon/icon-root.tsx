@@ -6,6 +6,9 @@
 
 import React, { useEffect, useState } from "react";
 import { InfoIcon } from "lucide-react";
+// Evolury: o pacote passou a poder traduzir (ADR 0008) — a prop `contrastNote`
+// continua valendo, mas o padrão agora sai traduzido em vez de inglês
+import { translate } from "@plane/i18n";
 import { SearchIcon } from "../../icons";
 import { cn } from "../../utils/classname";
 import { adjustColorForContrast, DEFAULT_COLORS } from "../helper";
@@ -13,7 +16,7 @@ import { LucideIconsList } from "./lucide-root";
 import { MaterialIconList } from "./material-root";
 
 type IconRootProps = {
-  /** rótulo traduzido; sem ele, o texto em inglês é usado */
+  /** sobrescreve o aviso de contraste; sem ele, vale o texto traduzido padrão */
   contrastNote?: string;
   onChange: (value: { name: string; color: string }) => void;
   defaultColor: string;
@@ -54,7 +57,7 @@ export function IconRoot(props: IconRootProps) {
               <SearchIcon className="absolute bottom-3 left-2.5 h-3.5 w-3.5 text-placeholder" />
 
               <input
-                placeholder="Search"
+                placeholder={translate("search")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="block h-full w-full rounded-md border-[0.5px] border-none border-subtle bg-transparent p-0 px-3 py-2 text-16 placeholder-(--text-color-placeholder) focus:outline-none"
@@ -119,7 +122,7 @@ export function IconRoot(props: IconRootProps) {
         </div>
         <div className="flex h-6 w-full items-center gap-2 py-1 pr-3 pl-4">
           <InfoIcon className="h-3 w-3" />
-          <p className="text-11"> {props.contrastNote ?? "Colors will be adjusted to ensure sufficient contrast."}</p>
+          <p className="text-11"> {props.contrastNote ?? translate("ui.contrast_adjust_note")}</p>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-8 justify-items-center gap-1 px-2.5">

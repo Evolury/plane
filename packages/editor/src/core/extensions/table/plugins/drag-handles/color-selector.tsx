@@ -8,6 +8,9 @@ import { Disclosure } from "@headlessui/react";
 import type { Editor } from "@tiptap/core";
 import { Ban, Palette } from "lucide-react";
 // plane imports
+// Evolury: as alças da tabela vivem num plugin do ProseMirror, fora do provider
+// de tradução do editor — daí `translate` e não o hook (ADR 0008)
+import { translate } from "@plane/i18n";
 import { ChevronRightIcon } from "@plane/propel/icons";
 import { cn } from "@plane/utils";
 // constants
@@ -55,7 +58,7 @@ export function TableDragHandleDropdownColorSelector(props: Props) {
           <>
             <span className="flex items-center gap-2">
               <Palette className="size-3 shrink-0" />
-              Color
+              {translate("editor.color")}
             </span>
             <ChevronRightIcon
               className={cn("size-3 shrink-0 transition-transform duration-200", {
@@ -90,7 +93,7 @@ export function TableDragHandleDropdownColorSelector(props: Props) {
           </div>
         </div> */}
         <div className="space-y-1">
-          <p className="text-11 font-semibold text-tertiary">Background colors</p>
+          <p className="text-11 font-semibold text-tertiary">{translate("editor.background_colors")}</p>
           <div className="flex flex-wrap items-center gap-2">
             {COLORS_LIST.map((color) => (
               <button

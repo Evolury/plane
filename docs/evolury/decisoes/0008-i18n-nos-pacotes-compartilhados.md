@@ -23,9 +23,10 @@ para quem esquecesse) ou deixar o pacote traduzir.
 
 ## Decisão
 
-`@plane/ui` e `@plane/editor` passam a depender de `@plane/i18n` e traduzem os
-textos que nascem dentro deles, usando a função `translate` (não o hook, para
-não impor contexto a componentes que podem renderizar fora dele).
+`@plane/ui`, `@plane/editor` e `@plane/propel` passam a depender de
+`@plane/i18n` e traduzem os textos que nascem dentro deles, usando a função
+`translate` (não o hook, para não impor contexto a componentes que podem
+renderizar fora dele).
 
 O que sustenta a escolha aqui e não no upstream: **este fork tem um idioma
 só** (ADR 0004). A fronteira "pacote presentational sem i18n" existe para um
@@ -38,10 +39,16 @@ bibliotecas externas (i18next e React), de nenhum pacote interno.
 
 ## Consequências
 
-- Texto que nasce dentro de `ui`/`editor` deve usar `translate` e ter chave
-  nos dois locales, como em qualquer outro lugar do código.
-- `@plane/propel` segue sem a dependência: não foi encontrado texto preso lá.
-  Se aparecer, o caminho é o mesmo.
+- Texto que nasce dentro de `ui`/`editor`/`propel` deve usar `translate` e ter
+  chave nos dois locales, como em qualquer outro lugar do código.
+- `@plane/propel` entrou depois, quando a varredura achou texto preso lá: o
+  `aria-label` do botão de dispensar do `Banner`, o rótulo de leitor de tela do
+  `Spinner` e o placeholder de busca do seletor de ícones. O `IconRoot` tinha
+  ganhado antes uma prop `contrastNote` para receber o texto de fora, e nenhum
+  chamador a passava — o inglês continuava na tela. É o mesmo desfecho que
+  motivou a decisão: prop opcional em pacote presentational não traduz nada
+  sozinha. A prop continua existindo para quem quiser sobrescrever; o padrão
+  agora sai traduzido.
 - Componentes desses pacotes continuam aceitando texto por propriedade quando
   o conteúdo é do domínio de quem chama — a tradução interna é para o texto
   que pertence ao próprio componente.

@@ -82,7 +82,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("error"),
-        message: error.error || "Something went wrong",
+        message: error.error || t("common.something_went_wrong"),
       });
     } finally {
       setIsImageUploading(false);
@@ -111,7 +111,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
   return (
     <ModalCore isOpen={isOpen} handleClose={handleClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
       <div className="space-y-5 px-5 py-8 sm:p-6">
-        <h3 className="text-16 leading-6 font-medium text-primary">Upload image</h3>
+        <h3 className="text-16 leading-6 font-medium text-primary">{t("common.upload_image")}</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-center gap-3">
             <div
@@ -156,17 +156,17 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
             </p>
           )}
         </div>
-        <p className="my-4 text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
+        <p className="my-4 text-13 text-secondary">{t("common.file_formats_supported")}</p>
         <div className="flex items-center justify-between">
           <Button variant="error-fill" size="lg" onClick={handleImageRemove} disabled={!value} loading={isRemoving}>
-            {isRemoving ? "Removing" : "Remove"}
+            {isRemoving ? t("removing") : t("common.remove")}
           </Button>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="lg" onClick={handleClose}>
               {t("cancel")}
             </Button>
             <Button variant="primary" size="lg" onClick={handleSubmit} disabled={!image} loading={isImageUploading}>
-              {isImageUploading ? "Uploading" : t("workspace_settings.settings.applications.upload_and_save")}
+              {isImageUploading ? t("common.uploading") : t("workspace_settings.settings.applications.upload_and_save")}
             </Button>
           </div>
         </div>

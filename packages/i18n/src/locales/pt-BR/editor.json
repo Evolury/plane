@@ -126,6 +126,25 @@
     "menu_bulleted_list": "Lista com marcadores",
     "menu_numbered_list": "Lista numerada",
     "menu_quote": "Citação",
-    "invalid_url": "Informe uma URL válida"
+    "invalid_url": "Informe uma URL válida",
+    "text_colors": "Cores do texto",
+    "header_column": "Coluna de cabeçalho",
+    "header_row": "Linha de cabeçalho",
+    "insert_column_left": "Inserir à esquerda",
+    "insert_column_right": "Inserir à direita",
+    "insert_row_above": "Inserir acima",
+    "insert_row_below": "Inserir abaixo",
+    "duplicate": "Duplicar",
+    "clear_contents": "Limpar conteúdo",
+    "retry_duplication": "Tentar duplicar novamente",
+    "align": "Alinhar",
+    "align_left": "Esquerda",
+    "align_center": "Centro",
+    "align_right": "Direita",
+    "download": "Baixar",
+    "download_image": "Baixar imagem",
+    "fullscreen_image_viewer": "Visualizador de imagem em tela cheia",
+    "zoom_out": "Reduzir",
+    "remove_link": "Remover link"
   }
 }

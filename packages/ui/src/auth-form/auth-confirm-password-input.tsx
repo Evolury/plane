@@ -5,6 +5,8 @@
  */
 
 import React, { useState } from "react";
+// Evolury: rótulo e mensagens padrão nascem no componente (ADR 0008)
+import { translate } from "@plane/i18n";
 import { cn } from "@plane/utils";
 import { AuthInput } from "./auth-input";
 
@@ -21,7 +23,7 @@ export type TAuthConfirmPasswordInputProps = React.InputHTMLAttributes<HTMLInput
 
 export function AuthConfirmPasswordInput({
   password,
-  label = "Confirm Password",
+  label = translate("auth.common.password.confirm_password.label"),
   error,
   showPasswordToggle = true,
   containerClassName = "",
@@ -55,7 +57,7 @@ export function AuthConfirmPasswordInput({
 
   const getError = () => {
     if (error) return error;
-    if (showMatchError) return "Passwords don't match";
+    if (showMatchError) return translate("auth.common.password.errors.match");
     return "";
   };
 
@@ -75,7 +77,9 @@ export function AuthConfirmPasswordInput({
         onBlur={handleBlur}
         autoComplete="off"
       />
-      {confirmPassword && passwordsMatch && <p className="text-13 text-success-primary">Passwords match</p>}
+      {confirmPassword && passwordsMatch && (
+        <p className="text-13 text-success-primary">{translate("auth.common.password.match")}</p>
+      )}
     </div>
   );
 }

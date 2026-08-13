@@ -57,19 +57,27 @@ enum EProfileSetupSteps {
   USER_PERSONALIZATION = "USER_PERSONALIZATION",
 }
 
-const USER_ROLE = ["Individual contributor", "Senior Leader", "Manager", "Executive", "Freelancer", "Student"];
+// Evolury: o valor continua indo em inglês para a API; só o rótulo exibido é traduzido
+const USER_ROLE = [
+  { value: "Individual contributor", i18n_label: "user_roles.individual_contributor" },
+  { value: "Senior Leader", i18n_label: "user_roles.senior_leader" },
+  { value: "Manager", i18n_label: "user_roles.manager" },
+  { value: "Executive", i18n_label: "user_roles.executive" },
+  { value: "Freelancer", i18n_label: "user_roles.freelancer" },
+  { value: "Student", i18n_label: "user_roles.student" },
+];
 
 const USER_DOMAIN = [
-  "Engineering",
-  "Product",
-  "Marketing",
-  "Sales",
-  "Operations",
-  "Legal",
-  "Finance",
-  "Human Resources",
-  "Project",
-  "Other",
+  { value: "Engineering", i18n_label: "user_domains.engineering" },
+  { value: "Product", i18n_label: "user_domains.product" },
+  { value: "Marketing", i18n_label: "user_domains.marketing" },
+  { value: "Sales", i18n_label: "user_domains.sales" },
+  { value: "Operations", i18n_label: "user_domains.operations" },
+  { value: "Legal", i18n_label: "user_domains.legal" },
+  { value: "Finance", i18n_label: "user_domains.finance" },
+  { value: "Human Resources", i18n_label: "user_domains.human_resources" },
+  { value: "Project", i18n_label: "user_domains.project" },
+  { value: "Other", i18n_label: "user_domains.other" },
 ];
 
 const authService = new AuthService();
@@ -371,7 +379,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                 <>
                   <div className="space-y-1">
                     <label className="text-13 font-medium text-tertiary" htmlFor="password">
-                      Set a password ({t("common.optional")})
+                      {t("auth.common.password.set_password")} ({t("common.optional")})
                     </label>
                     <Controller
                       control={control}
@@ -424,7 +432,11 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                       rules={{
                         required: watch("password") ? true : false,
                         validate: (value) =>
-                          watch("password") ? (value === watch("password") ? true : "Passwords don't match") : true,
+                          watch("password")
+                            ? value === watch("password")
+                              ? true
+                              : t("auth.common.password.errors.match")
+                            : true,
                       }}
                       render={({ field: { value, onChange, ref } }) => (
                         <div className="relative flex items-center rounded-md">
@@ -482,17 +494,17 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     <div className="flex flex-wrap gap-2 overflow-auto py-2 break-all">
                       {USER_ROLE.map((userRole) => (
                         <div
-                          key={userRole}
+                          key={userRole.value}
                           className={cn(
                             "shrink-0 rounded border-[0.5px] px-3 py-1.5 text-13 font-medium hover:cursor-pointer hover:bg-surface-2",
                             {
-                              "border-accent-strong": value === userRole,
-                              "border-strong": value !== userRole,
+                              "border-accent-strong": value === userRole.value,
+                              "border-strong": value !== userRole.value,
                             }
                           )}
-                          onClick={() => onChange(userRole)}
+                          onClick={() => onChange(userRole.value)}
                         >
-                          {userRole}
+                          {t(userRole.i18n_label)}
                         </div>
                       ))}
                     </div>
@@ -517,23 +529,23 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                   render={({ field: { value, onChange } }) => (
                     <div className="flex flex-wrap gap-2 overflow-auto py-2 break-all">
                       {USER_DOMAIN.map((userDomain) => {
-                        const isSelected = value?.includes(userDomain) || false;
+                        const isSelected = value?.includes(userDomain.value) || false;
                         return (
                           <div
-                            key={userDomain}
+                            key={userDomain.value}
                             className={`flex-shrink-0 border-[0.5px] hover:cursor-pointer hover:bg-surface-2 ${
                               isSelected ? "border-accent-strong" : "border-strong"
                             } rounded px-3 py-1.5 text-13 font-medium`}
                             onClick={() => {
                               const currentValue = value || [];
                               if (isSelected) {
-                                onChange(currentValue.filter((item) => item !== userDomain));
+                                onChange(currentValue.filter((item) => item !== userDomain.value));
                               } else {
-                                onChange([...currentValue, userDomain]);
+                                onChange([...currentValue, userDomain.value]);
                               }
                             }}
                           >
-                            {userDomain}
+                            {t(userDomain.i18n_label)}
                           </div>
                         );
                       })}
@@ -545,7 +557,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
             </>
           )}
           <Button variant="primary" type="submit" size="xl" className="w-full" disabled={isButtonDisabled}>
-            {isSubmitting ? <Spinner height="20px" width="20px" /> : "Continue"}
+            {isSubmitting ? <Spinner height="20px" width="20px" /> : t("common.continue")}
           </Button>
         </form>
       </div>

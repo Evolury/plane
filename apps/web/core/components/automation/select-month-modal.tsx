@@ -50,7 +50,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <h3 className="text-16 leading-6 font-medium text-primary">Customize time range</h3>
+          <h3 className="text-16 leading-6 font-medium text-primary">{t("common.customize_time_range")}</h3>
           <div className="mt-8 flex items-center gap-2">
             <div className="flex w-full flex-col justify-center gap-1">
               {type === "auto-close" ? (
@@ -78,7 +78,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                           min={1}
                           max={12}
                         />
-                        <span className="absolute top-2.5 right-8 text-13 text-secondary">Months</span>
+                        <span className="absolute top-2.5 right-8 text-13 text-secondary">{t("common.months")}</span>
                       </div>
                     )}
                   />
@@ -112,7 +112,7 @@ export function SelectMonthModal({ type, initialValues, isOpen, handleClose, han
                           min={1}
                           max={12}
                         />
-                        <span className="absolute top-2.5 right-8 text-13 text-secondary">Months</span>
+                        <span className="absolute top-2.5 right-8 text-13 text-secondary">{t("common.months")}</span>
                       </div>
                     )}
                   />

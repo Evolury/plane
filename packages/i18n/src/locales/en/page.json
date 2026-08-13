@@ -115,6 +115,12 @@
   "page_editor": {
     "content_limit_banner": {
       "message": "Content limit reached and live sync is off. Create a new page or use nested pages to continue syncing."
+    },
+    "title_placeholder": "Untitled",
+    "offline": "Offline",
+    "export": {
+      "format": "Export format",
+      "include_content": "Include content"
     }
   }
 }

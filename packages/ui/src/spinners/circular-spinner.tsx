@@ -5,6 +5,8 @@
  */
 
 import * as React from "react";
+// Evolury: rótulo de leitor de tela nasce no componente (ADR 0008)
+import { translate } from "@plane/i18n";
 // helpers
 import { cn } from "../utils";
 
@@ -35,7 +37,7 @@ export function Spinner({ height = "32px", width = "32px", className = "" }: ISp
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">{translate("common.loading")}</span>
     </div>
   );
 }
