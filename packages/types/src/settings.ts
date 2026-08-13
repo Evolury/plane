@@ -30,7 +30,9 @@ export type TProjectSettingsTabs =
   | "states"
   | "labels"
   | "estimates"
-  | "automations";
+  | "automations"
+  // Evolury: tarefas recorrentes (ADR 0010)
+  | "recurring";
 export type TProjectSettingsItem = {
   key: TProjectSettingsTabs;
   i18n_label: string;

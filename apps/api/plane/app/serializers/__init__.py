@@ -32,6 +32,7 @@ from .workspace import (
 
 # Evolury: etapas pessoais de "Minhas tarefas"
 from .work_stage import WorkStageSerializer, WorkStageIssueSerializer
+from .recurring_work_item import RecurringWorkItemSerializer
 from .project import (
     ProjectSerializer,
     ProjectListSerializer,
