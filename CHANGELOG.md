@@ -3,6 +3,88 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.3.0] — 2026-08-13
+
+### Concluir tarefa
+
+Botão de concluir nos moldes do Asana, com todas as repercussões desenhadas
+antes de escrever código (ADR 0009,
+`docs/evolury/decisoes/0009-botao-concluir-tarefa.md`):
+
+- **O botão não é um caminho novo.** Ele dispara a mesma atualização de estado
+  que o seletor já fazia, então histórico, webhooks, notificações e contadores
+  de ciclo e módulo seguem corretos sem nenhuma adaptação — conferido na
+  validação: o ciclo relata a tarefa concluída sem que uma linha de código de
+  ciclo tenha sido tocada. O que o botão acrescenta é uma **regra de destino**.
+- **Destino configurável por projeto**, na página de Estados, ao lado do
+  "Marcar como padrão" e só nos estados do grupo concluído. Sem escolha
+  explícita vale o primeiro estado do grupo, e o rótulo mostra isso em vez de
+  deixar a resposta invisível. `default_state` não foi reaproveitado: ele
+  responde a outra pergunta ("estado dos itens novos").
+- **Sem interruptor de automação.** Automação é regra que roda sozinha; isto é
+  um botão que a pessoa aperta, e cujo efeito ela obteria pelo seletor.
+  Configurável é o destino, não a existência do botão.
+- **Confirmação ao concluir tarefa com subtarefas em aberto**, com três saídas:
+  cancelar, concluir só a tarefa pai ou concluir tudo junto.
+- **Conclusão em massa.** A seleção múltipla já existia inteira no código, mas
+  vinha desligada porque a única ação oferecida era uma faixa de upsell da
+  edição paga. Agora há ação real: a faixa deu lugar à barra de conclusão.
+- **Tarefa concluída fica esmaecida** nos cinco layouts, sempre pelo grupo do
+  estado — a mesma fonte que o resto do produto usa.
+- **Minhas tarefas** ganha exceção de mão única ao ADR 0001: ao entrar no grupo
+  concluído, a associação pessoal de cada responsável vai para a etapa dele de
+  concluídas; mover etapa pessoal continua sem alterar nada no projeto.
+
+### Português como idioma único
+
+O produto passa a ter um idioma só (ADR 0004,
+`docs/evolury/decisoes/0004-idioma-unico-pt-br.md`):
+
+- 17 idiomas sem uso removidos — 532 arquivos e 7,8 MB a menos —, mantendo o
+  inglês como fonte das chaves. O seletor de idioma sai da interface e das
+  preferências; a migração 0128 fixa `pt-BR` para quem já tinha outro escolhido.
+- Centenas de textos herdados que nunca passavam pelo i18n foram traduzidos,
+  incluindo os que só apareciam em telas específicas. Uma varredura sem filtro
+  encontrou 238 textos que a primeira auditoria tinha deixado passar.
+- `@plane/ui`, `@plane/editor` e `@plane/propel` passam a poder traduzir o texto
+  que nasce dentro deles (ADR 0008). A fronteira "pacote sem i18n" existe para
+  design system publicado; aqui os pacotes servem a um produto só, e o custo de
+  mantê-los mudos era inglês na cara do usuário.
+- Grupo `backlog` vira **"Em espera"**; nomes de estado padrão de projetos novos
+  nascem em português, com migração dos projetos existentes que ainda usavam os
+  nomes em inglês (migração 0127).
+
+### Evotask
+
+A plataforma passa a se chamar **Evotask** em todo o produto — interface,
+e-mails, metadados e documentação. Logo e identidade visual ficam para depois.
+
+### Padrões do Brasil
+
+- **Fuso horário fixo e sem escolha por usuário**: só os quatro fusos do Brasil,
+  uma opção por offset, nomeada pela cidade principal (migrações 0130 e 0131).
+  O Brasil não tem fuso único — daí a lista curta em vez da remoção.
+- **Semana começa no domingo**, globalmente e sem opção por usuário
+  (migração 0129, ADR 0005).
+- **Temas reduzidos a sistema, claro e escuro**, sem alto contraste nem
+  personalizado (migração 0132, ADR 0007).
+
+### Correções
+
+- Erro React #418 em produção: os metadados do documento saíam com chaves de
+  i18n cruas e o `HydrateFallback` divergia do HTML gerado no build. Duas causas
+  distintas, as duas corrigidas.
+- Serviço `live` em laço de reinício desde a poda das imagens de produção:
+  `intl-messageformat` é peer dependency de `i18next-icu` e sobrevivia por
+  hoisting. Passa a ser declarada em `@plane/i18n`, que é quem precisa dela em
+  runtime.
+- Feed de atividades comparava o verbo contra strings traduzidas, então em
+  português o ramo errado sempre vencia — em três lugares.
+- Automação de fechamento buscava o estado cancelado **sem filtrar por projeto**
+  e podia pegar o de qualquer projeto do banco.
+- Alerta fora de contexto ao arrastar tarefa entre etapas de Minhas tarefas.
+- Nome do usuário espremido pelo seletor de etapa no popover de responsáveis.
+
 ## [1.2.0] — 2026-08-12
 
 ### Terminologia "Tarefa"
