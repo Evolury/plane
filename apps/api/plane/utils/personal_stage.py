@@ -15,7 +15,14 @@ A regra é a mesma que o projeto usa nos seus estados, traduzida para etapas:
 
 - entrou no grupo concluído  → etapa de conclusão (a marcada, senão a primeira)
 - entrou no grupo cancelado  → primeira etapa do grupo cancelado
-- voltou para um grupo aberto → etapa padrão, como uma tarefa recém-atribuída
+- voltou para o estado PADRÃO do projeto → etapa padrão, como uma recém-atribuída
+- voltou para qualquer outro estado aberto → primeira etapa do grupo desse estado
+
+As duas últimas linhas parecem uma só, mas não são, e a diferença é o que a
+pessoa quis dizer. O botão de reabrir manda a tarefa para o estado padrão do
+projeto, e ali "de volta ao começo" é a resposta certa. Já quem escolhe
+"Em andamento" no campo de estado está dizendo onde a tarefa está — a etapa
+pessoal segue essa escolha, e não o começo da fila.
 """
 
 # Module imports
@@ -47,12 +54,24 @@ def _etapa_padrao(workspace_id, owner_id):
     return WorkStage.objects.filter(workspace_id=workspace_id, owner_id=owner_id, is_default=True).first()
 
 
-def _destino(grupo_novo, workspace_id, owner_id):
+def _primeira_do_grupo(grupo, workspace_id, owner_id):
+    return (
+        WorkStage.objects.filter(workspace_id=workspace_id, owner_id=owner_id, group=grupo)
+        .order_by("sort_order")
+        .first()
+    )
+
+
+def _destino(grupo_novo, estado_e_o_padrao, workspace_id, owner_id):
     if grupo_novo == StateGroup.COMPLETED.value:
         return _etapa_de_conclusao(workspace_id, owner_id)
     if grupo_novo == StateGroup.CANCELLED.value:
         return _etapa_de_cancelamento(workspace_id, owner_id)
-    return _etapa_padrao(workspace_id, owner_id)
+    if estado_e_o_padrao:
+        return _etapa_padrao(workspace_id, owner_id)
+    # Sem etapa naquele grupo, a padrão é o recuo — melhor do que sumir com a
+    # tarefa da tela.
+    return _primeira_do_grupo(grupo_novo, workspace_id, owner_id) or _etapa_padrao(workspace_id, owner_id)
 
 
 def sync_personal_stages_on_completion(issue_id, previous_state_id, new_state_id):
@@ -77,11 +96,15 @@ def sync_personal_stages_on_completion(issue_id, previous_state_id, new_state_id
         return 0
 
     procurados = [novo] + ([anterior] if anterior else [])
-    grupos = {
-        str(pk): grupo for pk, grupo in State.all_objects.filter(pk__in=procurados).values_list("pk", "group")
+    estados = {
+        str(linha["pk"]): linha
+        for linha in State.all_objects.filter(pk__in=procurados).values("pk", "group", "default")
     }
-    grupo_novo = grupos.get(novo)
-    grupo_anterior = grupos.get(anterior) if anterior else None
+    grupo_novo = (estados.get(novo) or {}).get("group")
+    grupo_anterior = (estados.get(anterior) or {}).get("group") if anterior else None
+    # O botão de reabrir devolve a tarefa ao estado padrão do projeto; é por
+    # isso que ele cai na etapa padrão, e o campo de estado não.
+    estado_e_o_padrao = bool((estados.get(novo) or {}).get("default"))
     if grupo_novo is None or grupo_novo == grupo_anterior:
         return 0
 
@@ -96,7 +119,7 @@ def sync_personal_stages_on_completion(issue_id, previous_state_id, new_state_id
     responsaveis = IssueAssignee.objects.filter(issue_id=issue_id).values_list("assignee_id", "workspace_id")
     movidas = 0
     for owner_id, workspace_id in responsaveis:
-        etapa = _destino(grupo_novo, workspace_id, owner_id)
+        etapa = _destino(grupo_novo, estado_e_o_padrao, workspace_id, owner_id)
         if etapa is None:
             continue
 

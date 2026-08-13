@@ -213,13 +213,20 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
     if (!encerrados.includes(grupoNovo) && !encerrados.includes(grupoAnterior ?? "")) return;
 
     const etapas = rootStore.myTasksStore.sortedStages;
+    // O botão de reabrir devolve a tarefa ao estado PADRÃO do projeto, e ali
+    // "de volta ao começo" é a resposta certa. Quem escolhe "Em andamento" no
+    // campo de estado está dizendo onde a tarefa está — a etapa segue a
+    // escolha, não o começo da fila.
+    const estadoEhOPadrao = !!rootStore.state.getStateById(data.state_id)?.default;
     const destino =
       grupoNovo === "completed"
         ? (etapas.find((etapa) => etapa.group === "completed" && etapa.is_completion) ??
           etapas.find((etapa) => etapa.group === "completed"))
         : grupoNovo === "cancelled"
           ? etapas.find((etapa) => etapa.group === "cancelled")
-          : etapas.find((etapa) => etapa.is_default);
+          : estadoEhOPadrao
+            ? etapas.find((etapa) => etapa.is_default)
+            : (etapas.find((etapa) => etapa.group === grupoNovo) ?? etapas.find((etapa) => etapa.is_default));
     if (!destino) return;
 
     // Quem já está numa etapa do grupo de destino escolheu ficar lá.

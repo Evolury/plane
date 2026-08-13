@@ -38,7 +38,8 @@ def estados(db, projeto, workspace):
     State.objects.filter(project=projeto).delete()
     return {
         "aberto": State.objects.create(
-            name="A fazer", group=StateGroup.UNSTARTED.value, project=projeto, workspace=workspace, color="#000"
+            name="A fazer", group=StateGroup.UNSTARTED.value, project=projeto, workspace=workspace,
+            color="#000", default=True,
         ),
         "concluido": State.objects.create(
             name="Concluído", group=StateGroup.COMPLETED.value, project=projeto, workspace=workspace, color="#000"
@@ -223,3 +224,43 @@ class TestPersonalStageOnCompletion:
 
         assert sync_personal_stages_on_completion(tarefa.id, estados["aberto"].id, em_andamento.id) == 0
         assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["hoje"].id
+
+    @pytest.mark.django_db
+    def test_reopening_by_the_state_field_follows_the_chosen_state(
+        self, tarefa, estados, etapas, workspace, create_user
+    ):
+        """Reabrir escolhendo "Em andamento" leva à etapa daquele grupo.
+
+        O botão de reabrir manda a tarefa para o estado PADRÃO, e ali "de volta
+        ao começo" é a resposta certa. Quem escolhe o estado no campo está
+        dizendo onde a tarefa está — a etapa pessoal segue a escolha.
+        """
+        em_andamento = State.objects.create(
+            name="Em andamento", group=StateGroup.STARTED.value,
+            project=tarefa.project, workspace=tarefa.workspace, color="#000",
+        )
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, issue=tarefa, stage=etapas["concluidas"]
+        )
+
+        movidas = sync_personal_stages_on_completion(tarefa.id, estados["concluido"].id, em_andamento.id)
+
+        assert movidas == 1
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["hoje"].id
+
+    @pytest.mark.django_db
+    def test_reopening_falls_back_to_the_default_stage_without_a_stage_in_the_group(
+        self, tarefa, estados, etapas, workspace, create_user
+    ):
+        """Sem etapa no grupo escolhido, a padrão é o recuo — nada some da tela."""
+        etapas["hoje"].delete()
+        em_andamento = State.objects.create(
+            name="Em andamento", group=StateGroup.STARTED.value,
+            project=tarefa.project, workspace=tarefa.workspace, color="#000",
+        )
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, issue=tarefa, stage=etapas["concluidas"]
+        )
+
+        assert sync_personal_stages_on_completion(tarefa.id, estados["concluido"].id, em_andamento.id) == 1
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["recem"].id
