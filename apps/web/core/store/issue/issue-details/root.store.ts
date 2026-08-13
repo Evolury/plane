@@ -86,6 +86,8 @@ export interface IIssueDetail
   isArchiveIssueModalOpen: string | null;
   isRelationModalOpen: TIssueRelationModal | null;
   isSubIssuesModalOpen: string | null;
+  // Evolury: confirmação de conclusão com subtarefas abertas (ADR 0009)
+  isCompletionModalOpen: string | null;
   attachmentDeleteModalId: string | null;
   // computed
   isAnyModalOpen: boolean;
@@ -102,6 +104,7 @@ export interface IIssueDetail
   toggleArchiveIssueModal: (value: string | null) => void;
   toggleRelationModal: (issueId: string | null, relationType: TIssueRelationTypes | null) => void;
   toggleSubIssuesModal: (value: string | null) => void;
+  toggleCompletionModal: (value: string | null) => void;
   toggleDeleteAttachmentModal: (attachmentId: string | null) => void;
   setOpenWidgets: (state: TWorkItemWidgets[]) => void;
   setLastWidgetAction: (action: TWorkItemWidgets) => void;
@@ -148,6 +151,7 @@ export class IssueDetail implements IIssueDetail {
   isArchiveIssueModalOpen: string | null = null;
   isRelationModalOpen: TIssueRelationModal | null = null;
   isSubIssuesModalOpen: string | null = null;
+  isCompletionModalOpen: string | null = null;
   attachmentDeleteModalId: string | null = null;
   // service type
   serviceType: TIssueServiceType;
@@ -178,6 +182,7 @@ export class IssueDetail implements IIssueDetail {
       isArchiveIssueModalOpen: observable.ref,
       isRelationModalOpen: observable.ref,
       isSubIssuesModalOpen: observable.ref,
+      isCompletionModalOpen: observable.ref,
       attachmentDeleteModalId: observable.ref,
       openWidgets: observable.ref,
       lastWidgetAction: observable.ref,
@@ -194,6 +199,7 @@ export class IssueDetail implements IIssueDetail {
       toggleArchiveIssueModal: action,
       toggleRelationModal: action,
       toggleSubIssuesModal: action,
+      toggleCompletionModal: action,
       toggleDeleteAttachmentModal: action,
       setOpenWidgets: action,
       setLastWidgetAction: action,
@@ -227,6 +233,7 @@ export class IssueDetail implements IIssueDetail {
       !!this.isArchiveIssueModalOpen ||
       !!this.isRelationModalOpen?.issueId ||
       !!this.isSubIssuesModalOpen ||
+      !!this.isCompletionModalOpen ||
       !!this.attachmentDeleteModalId
     );
   }
@@ -250,6 +257,11 @@ export class IssueDetail implements IIssueDetail {
   toggleRelationModal = (issueId: string | null, relationType: TIssueRelationTypes | null) =>
     (this.isRelationModalOpen = { issueId, relationType });
   toggleSubIssuesModal = (issueId: string | null) => (this.isSubIssuesModalOpen = issueId);
+
+  // Evolury: sem isto o peek se fecha ao primeiro clique dentro da confirmação
+  // — o modal é portado para fora do painel, então o detector de clique externo
+  // o trata como clique de fora (ADR 0009).
+  toggleCompletionModal = (issueId: string | null) => (this.isCompletionModalOpen = issueId);
   toggleDeleteAttachmentModal = (attachmentId: string | null) => (this.attachmentDeleteModalId = attachmentId);
   setOpenWidgets = (state: TWorkItemWidgets[]) => {
     this.openWidgets = state;

@@ -9,7 +9,7 @@
 // `update` que o seletor de estado já usa — por isso histórico, webhooks,
 // notificações e contadores de ciclo e módulo seguem corretos sem adaptação.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { CheckIcon, RotateCcw } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
@@ -43,10 +43,26 @@ export const CompletionToggle = observer(function CompletionToggle(props: TCompl
   const {
     issue: { getIssueById },
     subIssues: subIssuesStore,
+    toggleCompletionModal,
   } = useIssueDetail();
   // states
   const [subtarefasAbertas, setSubtarefasAbertas] = useState<TIssue[]>([]);
   const [concluindoTudo, setConcluindoTudo] = useState(false);
+
+  // O peek se fecha ao clique fora, e o modal é portado para fora do painel —
+  // avisar a loja é o que o mantém aberto enquanto a confirmação está na tela.
+  const abrirConfirmacao = (abertas: TIssue[]) => {
+    toggleCompletionModal(issueId);
+    setSubtarefasAbertas(abertas);
+  };
+
+  const fecharConfirmacao = () => {
+    toggleCompletionModal(null);
+    setSubtarefasAbertas([]);
+  };
+
+  // Desmontar com a marca acesa deixaria o peek preso aberto para sempre.
+  useEffect(() => () => toggleCompletionModal(null), [toggleCompletionModal]);
 
   const concluida = useIsIssueCompleted(stateId);
   const tarefa = getIssueById(issueId);
@@ -87,7 +103,7 @@ export const CompletionToggle = observer(function CompletionToggle(props: TCompl
       onChange(destino.id);
       return;
     }
-    setSubtarefasAbertas(abertas);
+    abrirConfirmacao(abertas);
   };
 
   const concluirTudo = async () => {
@@ -113,14 +129,14 @@ export const CompletionToggle = observer(function CompletionToggle(props: TCompl
       onChange(destino.id);
     } finally {
       setConcluindoTudo(false);
-      setSubtarefasAbertas([]);
+      fecharConfirmacao();
     }
   };
 
   const concluirSomenteEsta = () => {
     if (!destino) return;
     onChange(destino.id);
-    setSubtarefasAbertas([]);
+    fecharConfirmacao();
   };
 
   // Sem destino não há botão: projeto sem estado no grupo necessário.
@@ -132,7 +148,7 @@ export const CompletionToggle = observer(function CompletionToggle(props: TCompl
         isOpen={subtarefasAbertas.length > 0}
         openSubIssuesCount={subtarefasAbertas.length}
         isSubmitting={concluindoTudo}
-        onClose={() => setSubtarefasAbertas([])}
+        onClose={fecharConfirmacao}
         onCompleteAll={concluirTudo}
         onCompleteParentOnly={concluirSomenteEsta}
       />
