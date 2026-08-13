@@ -3,6 +3,16 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.6.1] — 2026-08-13
+
+### Correções
+
+- **Reabrir pelo campo de estado passa a seguir o estado escolhido.** A etapa
+  pessoal ia sempre para a padrão, mesmo quando a pessoa escolhia
+  "Em andamento". O botão de reabrir continua devolvendo a tarefa ao começo,
+  porque ele manda a tarefa para o estado padrão do projeto; qualquer outro
+  estado aberto é uma escolha, e a etapa segue o grupo dele.
+
 ## [1.6.0] — 2026-08-13
 
 ### Minhas tarefas acompanha o ciclo inteiro
