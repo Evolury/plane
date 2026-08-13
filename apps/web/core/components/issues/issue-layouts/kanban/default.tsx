@@ -172,6 +172,7 @@ export const KanBan = observer(function KanBan(props: IKanBan) {
                     group_by={group_by}
                     column_id={subList.id}
                     icon={subList.icon}
+                    headerClassName={subList.headerClassName}
                     title={subList.name}
                     count={getGroupIssueCount(subList.id, undefined, false) ?? 0}
                     issuePayload={subList.payload}

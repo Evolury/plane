@@ -175,6 +175,9 @@ const getMyTaskStageColumns = (): IGroupByColumn[] | undefined => {
       <span className="size-3 flex-shrink-0 rounded-full" style={{ backgroundColor: stage.color }} aria-hidden="true" />
     ),
     payload: { my_task_stage_id: stage.id },
+    // Evolury: a etapa cancelada tem a mesma aparência do estado cancelado no
+    // resto do produto — esmaecida com um tom de vermelho.
+    headerClassName: stage.group === "cancelled" ? "bg-danger-subtle/50" : undefined,
   }));
 };
 
