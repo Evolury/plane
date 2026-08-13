@@ -87,7 +87,16 @@ projeto traduzida para etapas:
 | --- | --- |
 | entrou no grupo concluído | etapa de conclusão (a marcada, senão a primeira) |
 | entrou no grupo cancelado | primeira etapa do grupo cancelado |
-| voltou para um grupo aberto | etapa padrão, como uma tarefa recém-atribuída |
+| voltou para o estado **padrão** do projeto | etapa padrão, como uma recém-atribuída |
+| voltou para qualquer outro estado aberto | primeira etapa do grupo desse estado |
+
+As duas últimas linhas parecem uma só, mas não são, e a diferença é o que a
+pessoa quis dizer. O **botão de reabrir** manda a tarefa para o estado padrão do
+projeto, e ali "de volta ao começo" é a resposta certa. Já quem escolhe
+"Em andamento" no **campo de estado** está dizendo onde a tarefa está — a etapa
+pessoal segue essa escolha, e não o começo da fila. É a mesma informação que
+distingue os dois caminhos no servidor, que não sabe (nem precisa saber) por
+qual controle da tela a mudança passou.
 
 Duas peças novas sustentam a tabela: **`WorkStage.is_completion`**, que responde
 "qual destas etapas concluídas é o destino" — a mesma pergunta que
