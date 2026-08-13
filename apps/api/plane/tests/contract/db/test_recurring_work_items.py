@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-"""Motor de recorrência (ADR 0010).
+"""Motor de recorrência (ADR 0010, revisão 13/08/2026).
 
-O que se fixa aqui é a agenda e a geração — as duas coisas que, erradas, só
-aparecem semanas depois, quando a tarefa não nasceu ou nasceu em dobro.
+O que se fixa aqui é a agenda, a cópia e o ciclo de vida da origem — as coisas
+que, erradas, só aparecem semanas depois, quando a tarefa não nasceu, nasceu em
+dobro, ou nasceu vencida.
 """
 
 from datetime import date, datetime, time
@@ -22,6 +23,7 @@ from plane.bgtasks.recurring_work_item_task import (
 from plane.db.models import (
     GenerationMode,
     Issue,
+    IssueAssignee,
     Project,
     ProjectMember,
     RecurrenceEndMode,
@@ -51,9 +53,22 @@ def projeto(db, workspace, create_user):
     return projeto
 
 
-def _regra(projeto, create_user, **campos):
+def _origem(projeto, create_user, **campos):
     padrao = dict(
         name="Relatório semanal",
+        project=projeto,
+        workspace=projeto.workspace,
+        created_by=create_user,
+    )
+    padrao.update(campos)
+    return Issue.objects.create(**padrao)
+
+
+def _regra(projeto, create_user, origem=None, **campos):
+    if origem is None:
+        origem = _origem(projeto, create_user)
+    padrao = dict(
+        source_issue=origem,
         frequency=RecurrenceFrequency.WEEKLY,
         interval=1,
         weekdays=[1],  # segunda; a semana do produto começa no domingo
@@ -65,6 +80,12 @@ def _regra(projeto, create_user, **campos):
     )
     padrao.update(campos)
     return RecurringWorkItem.objects.create(**padrao)
+
+
+def _concluir(tarefa):
+    tarefa.state = State.objects.get(project=tarefa.project, group="completed")
+    tarefa.save(update_fields=["state"])
+    return tarefa
 
 
 def _em_sp(ano, mes, dia, hora=8, minuto=0):
@@ -218,9 +239,14 @@ class TestAgenda:
 class TestGeracao:
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
-    def test_creates_the_work_item_from_the_template(self, _atividade, projeto, create_user):
-        regra = _regra(projeto, create_user, template_priority="high")
-        regra.template_assignees.add(create_user)
+    def test_copies_the_source_work_item(self, _atividade, projeto, create_user):
+        """A tarefa É o molde: nome, prioridade e responsáveis vêm dela."""
+        origem = _origem(projeto, create_user, priority="high", description_html="<p>como fazer</p>")
+        _concluir(origem)
+        IssueAssignee.objects.create(
+            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
+        )
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
 
         tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
@@ -228,15 +254,88 @@ class TestGeracao:
         assert tarefa is not None
         assert tarefa.name == "Relatório semanal"
         assert tarefa.priority == "high"
+        assert tarefa.description_html == "<p>como fazer</p>"
         assert tarefa.state.default is True
         assert list(tarefa.assignees.all()) == [create_user]
         assert RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra, issue=tarefa).count() == 1
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_dates_are_calculated_never_copied(self, _atividade, projeto, create_user):
+        """Nasce hoje, vence na data da agenda — nada herdado da origem."""
+        origem = _origem(projeto, create_user, start_date=date(2026, 1, 1), target_date=date(2026, 1, 5))
+        _concluir(origem)
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert tarefa.start_date == date(2026, 8, 17)
+        assert tarefa.target_date == date(2026, 8, 17)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_lead_time_creates_before_the_due_date(self, _atividade, projeto, create_user):
+        """A antecedência: nasce em D-3 com início D-3 e vencimento D."""
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, lead_time_days=3)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 17)
+
+        # Quatro dias antes ainda não dispara.
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 13, 8, 0)) is None
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 14, 8, 5))
+
+        assert tarefa is not None
+        assert tarefa.start_date == date(2026, 8, 14)
+        assert tarefa.target_date == date(2026, 8, 17)
+        regra.refresh_from_db()
+        # E o relógio vai para a semana seguinte — não fica preso na data
+        # ainda futura, tentando gerá-la de novo a cada rodada.
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 24)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_subtasks_come_along_open_and_dateless(self, _atividade, projeto, create_user):
+        """Um nível, abertas, sem data — data ausente não mente (ADR 0010)."""
+        origem = _origem(projeto, create_user)
+        filha = Issue.objects.create(
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Separar os números",
+            start_date=date(2026, 8, 1),
+            target_date=date(2026, 8, 2),
+            created_by=create_user,
+        )
+        _concluir(filha)
+        Issue.objects.create(
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=filha,
+            name="Neta não entra",
+            created_by=create_user,
+        )
+        _concluir(origem)
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        copias = Issue.objects.filter(parent=tarefa)
+        assert [c.name for c in copias] == ["Separar os números"]
+        copia = copias.get()
+        assert copia.start_date is None and copia.target_date is None
+        assert copia.state.group == "backlog"  # aberta, mesmo com a original concluída
+        assert Issue.objects.filter(parent=copia).count() == 0
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_running_twice_creates_one_work_item(self, _atividade, projeto, create_user):
         """Idempotência garantida pelo banco, não por confiança no relógio."""
-        regra = _regra(projeto, create_user)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
         previsto = regra.next_run_at
 
@@ -247,58 +346,103 @@ class TestGeracao:
         regra.next_run_at = previsto
         processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 6))
 
-        assert Issue.objects.filter(project=projeto).count() == 1
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 2  # origem + 1
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_delay_does_not_pile_up(self, _atividade, projeto, create_user):
         """Job fora do ar por duas semanas gera UMA tarefa, não três."""
-        regra = _regra(projeto, create_user)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
 
         processar_regra(regra, agora=_em_sp(2026, 9, 2, 10, 0))
 
-        assert Issue.objects.filter(project=projeto).count() == 1
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 2
         regra.refresh_from_db()
         # E a próxima data é a seguinte a AGORA, não a que ficou para trás.
         assert regra.next_run_at.astimezone(SP).date() == date(2026, 9, 7)
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_open_source_counts_as_open_work(self, _atividade, projeto, create_user):
+        """A origem é o item zero da série: aberta, a guarda segura a geração."""
+        regra = _regra(projeto, create_user)  # origem na etapa padrão, aberta
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5)) is None
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 1  # só a origem
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_does_not_generate_while_the_previous_is_open(self, _atividade, projeto, create_user):
         """A resposta ao quadro entupido de cópias da mesma coisa."""
-        regra = _regra(projeto, create_user)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
         processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
 
         regra.refresh_from_db()
         processar_regra(regra, agora=_em_sp(2026, 8, 24, 8, 5))
 
-        assert Issue.objects.filter(project=projeto).count() == 1
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 2
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_generates_again_once_the_previous_is_closed(self, _atividade, projeto, create_user):
-        regra = _regra(projeto, create_user)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
         primeira = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
-        primeira.state = State.objects.get(project=projeto, group="completed")
-        primeira.save(update_fields=["state"])
+        _concluir(primeira)
 
         regra.refresh_from_db()
         segunda = processar_regra(regra, agora=_em_sp(2026, 8, 24, 8, 5))
 
         assert segunda is not None
-        assert Issue.objects.filter(project=projeto).count() == 2
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 3
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_inactive_rule_generates_nothing(self, _atividade, projeto, create_user):
-        regra = _regra(projeto, create_user, is_active=False)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, is_active=False)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
 
         assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5)) is None
-        assert Issue.objects.filter(project=projeto).count() == 0
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 1
+
+
+@pytest.mark.contract
+class TestCicloDeVidaDaOrigem:
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_archived_source_pauses_the_rule(self, _atividade, projeto, create_user):
+        """Arquivar pausa: nada é gerado, e o relógio desliza para o futuro."""
+        origem = _concluir(_origem(projeto, create_user))
+        origem.archived_at = date(2026, 8, 16)
+        origem.save(update_fields=["archived_at"])
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5)) is None
+        assert Issue.objects.filter(project=projeto, parent__isnull=True).count() == 1
+        regra.refresh_from_db()
+        # Desarquivar retoma da próxima data — sem despejar o período perdido.
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 24)
+        assert regra.is_active is True
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_deleted_source_deletes_the_rule(self, _atividade, projeto, create_user):
+        """Excluir a origem exclui a regra — o job é a rede de segurança."""
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        origem.delete()  # exclusão lógica, como na interface
+
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5)) is None
+        assert RecurringWorkItem.objects.filter(pk=regra.pk).count() == 0
 
 
 @pytest.mark.contract
@@ -325,10 +469,11 @@ class TestUltimoDiaEAposConclusao:
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
-    def test_after_completion_starts_and_then_follows_the_completion(
-        self, _atividade, projeto, create_user
-    ):
-        """A agenda desse modo não está no calendário, está na conclusão."""
+    def test_completing_the_source_starts_the_series(self, _atividade, projeto, create_user):
+        """A agenda desse modo não está no calendário, está na conclusão.
+
+        A origem é o item zero: concluí-la marca a primeira ocorrência.
+        """
         regra = _regra(
             projeto,
             create_user,
@@ -336,23 +481,31 @@ class TestUltimoDiaEAposConclusao:
             days_after_completion=15,
             start_date=date(2026, 8, 17),
         )
-        # A primeira ocorrência precisa de uma data, senão a série nunca começa.
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 17, 8, 0))
-        assert regra.next_run_at is not None
-
-        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
-        assert tarefa is not None
-
-        regra.refresh_from_db()
-        # Sem conclusão, não há próxima data: nada é gerado no vazio.
+        # Enquanto ninguém concluir a origem, não há data nenhuma.
         assert regra.next_run_at is None
 
         concluido = State.objects.get(project=projeto, group="completed")
-        with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 9, 1, 10, 0)):
+        _concluir(regra.source_issue)
+        with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 8, 20, 10, 0)):
+            agendar_apos_conclusao(issue_id=regra.source_issue_id, novo_estado_id=concluido.id)
+
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 9, 4)
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 9, 4, 8, 5))
+        assert tarefa is not None
+        regra.refresh_from_db()
+        # Sem nova conclusão, não há próxima data: nada é gerado no vazio.
+        assert regra.next_run_at is None
+
+        # E concluir a ocorrência agenda a seguinte.
+        _concluir(tarefa)
+        with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 9, 10, 10, 0)):
             agendar_apos_conclusao(issue_id=tarefa.id, novo_estado_id=concluido.id)
 
         regra.refresh_from_db()
-        assert regra.next_run_at.astimezone(SP).date() == date(2026, 9, 16)
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 9, 25)
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
@@ -370,12 +523,12 @@ class TestUltimoDiaEAposConclusao:
             start_date=date(2026, 8, 1),
         )
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 1, 8, 0))
-        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 1, 8, 5))
 
         concluido = State.objects.get(project=projeto, group="completed")
-        # Concluída com três dias de atraso.
+        _concluir(regra.source_issue)
+        # Concluída com três dias de atraso sobre o planejado.
         with mock.patch("django.utils.timezone.now", return_value=_em_sp(2026, 9, 3, 9, 0)):
-            agendar_apos_conclusao(issue_id=tarefa.id, novo_estado_id=concluido.id)
+            agendar_apos_conclusao(issue_id=regra.source_issue_id, novo_estado_id=concluido.id)
 
         regra.refresh_from_db()
         assert regra.next_run_at.astimezone(SP).date() == date(2026, 10, 3)
@@ -386,7 +539,8 @@ class TestUltimoDiaEAposConclusao:
         self, _atividade, projeto, create_user
     ):
         """No modo por agenda, concluir não mexe na agenda."""
-        regra = _regra(projeto, create_user)
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
         tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
         regra.refresh_from_db()

@@ -7,6 +7,8 @@
 import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 // local imports
 import { CompletionCheck } from "../../completion-check";
+// Evolury: selo "esta tarefa se repete" (ADR 0010, revisão)
+import { RecurrenceBadge } from "@/components/recurring-work-items/badge";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
 import { useEffect, useRef } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
@@ -263,6 +265,9 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
                   )}
                 </div>
               )}
+
+              {/* Evolury: selo "esta tarefa se repete" (ADR 0010, revisão) */}
+              {issue.project_id && !isEpic && <RecurrenceBadge projectId={issue.project_id} issueId={issue.id} />}
 
               {/* sub-issues chevron */}
               <div className="grid size-4 flex-shrink-0 place-items-center">

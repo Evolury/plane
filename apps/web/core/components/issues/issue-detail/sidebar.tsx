@@ -37,6 +37,8 @@ import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 // components
 import { IssueParentSelectRoot } from "@/components/issues/parent-select-root";
+// Evolury: a recorrência mora na tarefa (ADR 0010, revisão)
+import { RecurrenceSection } from "@/components/recurring-work-items/section";
 import { SidebarPropertyListItem } from "@/components/common/layout/sidebar/property-list-item";
 import { IssueCycleSelect } from "./cycle-select";
 import { IssueLabel } from "./label";
@@ -249,6 +251,9 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
                 disabled={!isEditable}
               />
             </SidebarPropertyListItem>
+
+            {/* Evolury: a recorrência mora na tarefa (ADR 0010, revisão) */}
+            <RecurrenceSection workspaceSlug={workspaceSlug} projectId={projectId} issueId={issueId} />
           </div>
         </div>
       </div>

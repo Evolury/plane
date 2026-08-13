@@ -360,7 +360,7 @@
   "recurring_work_items": {
     "settings": {
       "heading": "Tarefas recorrentes",
-      "description": "Configure seu trabalho recorrente uma vez e nós cuidaremos das repetições. Você verá tudo aqui quando for necessário.",
+      "description": "As tarefas com recorrência ativa neste projeto. A recorrência é ativada na própria tarefa, na seção Repetir.",
       "new_recurring_work_item": "Nova tarefa recorrente",
       "update_recurring_work_item": "Atualizar tarefa recorrente",
       "form": {
@@ -504,16 +504,42 @@
       "empty": "Nenhuma data prevista com esta configuração."
     },
     "list": {
-      "empty": "Nenhuma tarefa recorrente ainda.",
+      "empty": "Nenhuma tarefa com recorrência ativa. Ative a recorrência na seção Repetir de uma tarefa.",
       "next": "Próxima",
       "paused": "Pausada",
-      "occurrences": "{count, plural, one {# ocorrência criada} other {# ocorrências criadas}}"
+      "occurrences": "{count, plural, one {# ocorrência criada} other {# ocorrências criadas}}",
+      "view_task": "Abrir tarefa"
     },
     "actions": {
       "pause": "Pausar",
       "resume": "Retomar",
       "edit": "Editar",
       "delete": "Excluir"
+    },
+    "section": {
+      "title": "Repetir",
+      "enable": "Ativar recorrência",
+      "active": "Recorrência ativa",
+      "paused": "Recorrência pausada",
+      "generated_by": "Gerada pela recorrência de {id}",
+      "generated_locked": "Tarefa gerada por recorrência não pode ter recorrência própria.",
+      "subtask_locked": "Subtarefa não pode ter recorrência própria.",
+      "source_badge": "Esta tarefa se repete",
+      "archived_paused": "Pausada — a tarefa de origem está arquivada",
+      "subtask_cap_warning": "Somente as primeiras {count} subtarefas serão copiadas em cada ocorrência."
+    },
+    "lead_time": {
+      "label": "Criar com antecedência de",
+      "days_suffix": "dia(s) antes do vencimento",
+      "overlap_warning": "Com esta antecedência, a próxima tarefa nasce antes de a anterior vencer — as ocorrências vão se sobrepor."
+    },
+    "initial_state": {
+      "label": "Ocorrência nasce na etapa",
+      "project_default": "Etapa padrão do projeto"
+    },
+    "disable_confirmation": {
+      "title": "Desativar recorrência",
+      "description": "A agenda desta tarefa será excluída. As tarefas já geradas continuam no projeto."
     }
   },
   "epic": {
