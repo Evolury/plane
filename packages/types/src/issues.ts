@@ -142,6 +142,8 @@ export interface IGroupByColumn {
   payload: Partial<TIssue>;
   isDropDisabled?: boolean;
   dropErrorMessage?: string;
+  /** Evolury: aparência própria do grupo — hoje só a etapa cancelada (ADR 0010) */
+  headerClassName?: string;
 }
 
 export interface IIssueMap {

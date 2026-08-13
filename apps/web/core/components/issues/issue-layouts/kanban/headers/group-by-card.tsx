@@ -14,6 +14,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssue, ISearchIssueResponse, TIssueKanbanFilters, TIssueGroupByOptions } from "@plane/types";
 // ui
 import { CustomMenu } from "@plane/ui";
+import { cn } from "@plane/utils";
 import { useTranslation } from "@plane/i18n";
 // components
 import { ExistingIssuesListModal } from "@/components/core/modals/existing-issues-list-modal";
@@ -27,6 +28,7 @@ interface IHeaderGroupByCard {
   group_by: TIssueGroupByOptions | undefined;
   column_id: string;
   icon?: React.ReactNode;
+  headerClassName?: string;
   title: string;
   count: number;
   collapsedGroups: TIssueKanbanFilters;
@@ -42,6 +44,7 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
     sub_group_by,
     column_id,
     icon,
+    headerClassName,
     title,
     count,
     collapsedGroups,
@@ -110,9 +113,11 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
         />
       )}
       <div
-        className={`relative flex flex-shrink-0 gap-1 py-1.5 ${
-          verticalAlignPosition ? `w-[44px] flex-col items-center` : `w-full flex-row items-center`
-        }`}
+        className={cn(
+          "relative flex flex-shrink-0 gap-1 py-1.5",
+          verticalAlignPosition ? "w-[44px] flex-col items-center" : "w-full flex-row items-center",
+          headerClassName
+        )}
       >
         <div className="flex size-5 flex-shrink-0 items-center justify-center overflow-hidden rounded-xs">
           {icon ? icon : <Circle width={14} strokeWidth={2} />}

@@ -29,6 +29,7 @@ interface IHeaderGroupByCard {
   groupID: string;
   groupBy: TIssueGroupByOptions;
   icon?: React.ReactNode;
+  headerClassName?: string;
   title: string;
   count: number;
   issuePayload: Partial<TIssue>;
@@ -44,6 +45,7 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
   const {
     groupID,
     icon,
+    headerClassName,
     title,
     count,
     issuePayload,
@@ -92,7 +94,7 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
 
   return (
     <>
-      <div className="group/list-header flex w-full flex-shrink-0 items-center gap-2 py-1.5">
+      <div className={cn("group/list-header flex w-full flex-shrink-0 items-center gap-2 py-1.5", headerClassName)}>
         {canSelectIssues && (
           <div className="absolute left-1 flex w-3.5 flex-shrink-0 items-center">
             <MultipleSelectGroupAction

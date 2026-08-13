@@ -272,6 +272,7 @@ export const ListGroup = observer(function ListGroup(props: Props) {
           groupID={group.id}
           groupBy={group_by}
           icon={group.icon}
+          headerClassName={group.headerClassName}
           title={group.name}
           count={groupIssueCount}
           issuePayload={group.payload}
