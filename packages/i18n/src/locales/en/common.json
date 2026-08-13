@@ -913,8 +913,9 @@
     "uploading": "Uploading",
     "submitting": "Submitting",
     "date_range": {
-      "after": "After:",
-      "before": "Before:"
+      "from": "From {date}",
+      "till": "Till {date}",
+      "between": "{start} to {end}"
     },
     "rename_folder": "Rename folder",
     "download": "Download",
@@ -923,7 +924,10 @@
     "project_count": "{count, plural, one {# project} other {# projects}}",
     "roles": "Roles",
     "pro_feature": "Pro feature",
-    "sub_group_by": "Sub-group by"
+    "sub_group_by": "Sub-group by",
+    "week_number": "Week {number}",
+    "duration_in_days": "{count, plural, one {# day} other {# days}}",
+    "week_short": "W{number}"
   },
   "chart": {
     "x_axis": "X-axis",

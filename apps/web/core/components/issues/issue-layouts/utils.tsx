@@ -742,16 +742,20 @@ export const getBlockViewDetails = (
     backgroundColor,
   };
 
+  // Evolury: a dica do bloco do cronograma vinha cravada em inglês
   if (isBlockVisibleOnChart && !isBlockComplete) {
     if (block?.start_date) {
-      message = `From ${renderFormattedDate(block.start_date)}`;
+      message = translate("common.date_range.from", { date: renderFormattedDate(block.start_date) });
       blockStyle.maskImage = `linear-gradient(to right, ${backgroundColor} 50%, transparent 95%)`;
     } else if (block?.target_date) {
-      message = `Till ${renderFormattedDate(block.target_date)}`;
+      message = translate("common.date_range.till", { date: renderFormattedDate(block.target_date) });
       blockStyle.maskImage = `linear-gradient(to left, ${backgroundColor} 50%, transparent 95%)`;
     }
   } else if (isBlockComplete) {
-    message = `${renderFormattedDate(block?.start_date)} to ${renderFormattedDate(block?.target_date)}`;
+    message = translate("common.date_range.between", {
+      start: renderFormattedDate(block?.start_date),
+      end: renderFormattedDate(block?.target_date),
+    });
   }
 
   return {

@@ -7,6 +7,7 @@
 // types
 import type { WeekMonthDataType, ChartDataType, TGanttViews } from "@plane/types";
 import { EStartOfTheWeek } from "@plane/types";
+import { getMonthName, getWeekDayName } from "@plane/utils";
 
 // constants
 export const generateWeeks = (startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY): WeekMonthDataType[] => [
@@ -14,39 +15,37 @@ export const generateWeeks = (startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUN
   ...weeks.slice(0, startOfWeek),
 ];
 
-export const weeks: WeekMonthDataType[] = [
-  { key: 0, shortTitle: "sun", title: "sunday", abbreviation: "Su" },
-  { key: 1, shortTitle: "mon", title: "monday", abbreviation: "M" },
-  { key: 2, shortTitle: "tue", title: "tuesday", abbreviation: "T" },
-  { key: 3, shortTitle: "wed", title: "wednesday", abbreviation: "W" },
-  { key: 4, shortTitle: "thurs", title: "thursday", abbreviation: "Th" },
-  { key: 5, shortTitle: "fri", title: "friday", abbreviation: "F" },
-  { key: 6, shortTitle: "sat", title: "saturday", abbreviation: "Sa" },
-];
-
-export const months: WeekMonthDataType[] = [
-  { key: 0, shortTitle: "jan", title: "january", abbreviation: "Jan" },
-  { key: 1, shortTitle: "feb", title: "february", abbreviation: "Feb" },
-  { key: 2, shortTitle: "mar", title: "march", abbreviation: "Mar" },
-  { key: 3, shortTitle: "apr", title: "april", abbreviation: "Apr" },
-  { key: 4, shortTitle: "may", title: "may", abbreviation: "May" },
-  { key: 5, shortTitle: "jun", title: "june", abbreviation: "Jun" },
-  { key: 6, shortTitle: "jul", title: "july", abbreviation: "Jul" },
-  { key: 7, shortTitle: "aug", title: "august", abbreviation: "Aug" },
-  { key: 8, shortTitle: "sept", title: "september", abbreviation: "Sept" },
-  { key: 9, shortTitle: "oct", title: "october", abbreviation: "Oct" },
-  { key: 10, shortTitle: "nov", title: "november", abbreviation: "Nov" },
-  { key: 11, shortTitle: "dec", title: "december", abbreviation: "Dec" },
-];
-
-export const quarters: WeekMonthDataType[] = [
-  { key: 0, shortTitle: "Q1", title: "Jan - Mar", abbreviation: "Q1" },
-  { key: 1, shortTitle: "Q2", title: "Apr - Jun", abbreviation: "Q2" },
-  { key: 2, shortTitle: "Q3", title: "Jul - Sept", abbreviation: "Q3" },
-  { key: 3, shortTitle: "Q4", title: "Oct - Dec", abbreviation: "Q4" },
-];
-
 export const charCapitalize = (word: string) => `${word.charAt(0).toUpperCase()}${word.substring(1)}`;
+
+// Evolury: os nomes de dia, mês e trimestre vinham cravados em inglês no
+// cronograma. Passam a sair do locale ativo, pelos mesmos ajudantes que o
+// calendário usa — assim não existe uma segunda lista de meses para manter.
+//
+// `shortTitle` de `weeks` continua em inglês DE PROPÓSITO: o gráfico compara
+// esse valor com "sat"/"sun" para sombrear o fim de semana. É identificador,
+// não texto de tela — a mesma distinção que vale no resto do produto.
+const CHAVES_DE_DIA = ["sun", "mon", "tue", "wed", "thurs", "fri", "sat"];
+
+export const weeks: WeekMonthDataType[] = CHAVES_DE_DIA.map((chave, dia) => ({
+  key: dia,
+  shortTitle: chave,
+  title: getWeekDayName(dia),
+  abbreviation: charCapitalize(getWeekDayName(dia, true)),
+}));
+
+export const months: WeekMonthDataType[] = Array.from({ length: 12 }, (_, mes) => ({
+  key: mes,
+  shortTitle: getMonthName(mes, true),
+  title: getMonthName(mes),
+  abbreviation: charCapitalize(getMonthName(mes, true)),
+}));
+
+export const quarters: WeekMonthDataType[] = [0, 3, 6, 9].map((primeiroMes, indice) => ({
+  key: indice,
+  shortTitle: `T${indice + 1}`,
+  title: `${charCapitalize(getMonthName(primeiroMes, true))} - ${charCapitalize(getMonthName(primeiroMes + 2, true))}`,
+  abbreviation: `T${indice + 1}`,
+}));
 
 export const bindZero = (value: number) => (value > 9 ? `${value}` : `0${value}`);
 

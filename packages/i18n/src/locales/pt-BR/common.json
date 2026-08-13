@@ -913,8 +913,9 @@
     "uploading": "Enviando",
     "submitting": "Enviando",
     "date_range": {
-      "after": "Depois:",
-      "before": "Antes:"
+      "from": "A partir de {date}",
+      "till": "Até {date}",
+      "between": "{start} até {end}"
     },
     "rename_folder": "Renomear pasta",
     "download": "Baixar",
@@ -923,7 +924,10 @@
     "project_count": "{count, plural, one {# projeto} other {# projetos}}",
     "roles": "Funções",
     "pro_feature": "Recurso Pro",
-    "sub_group_by": "Subagrupar por"
+    "sub_group_by": "Subagrupar por",
+    "week_number": "Semana {number}",
+    "duration_in_days": "{count, plural, one {# dia} other {# dias}}",
+    "week_short": "S{number}"
   },
   "chart": {
     "x_axis": "Eixo X",

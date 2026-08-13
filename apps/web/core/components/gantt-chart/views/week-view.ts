@@ -5,6 +5,7 @@
  */
 
 //
+import { translate } from "@plane/i18n";
 import type { ChartDataType } from "@plane/types";
 import { EStartOfTheWeek } from "@plane/types";
 import { months, generateWeeks } from "../data";
@@ -160,8 +161,9 @@ export const getWeeksBetweenTwoDates = (
       children: shouldPopulateDaysForWeek ? populateDaysForWeek(weekStartDate, startOfWeek) : undefined,
       weekNumber,
       weekData: {
-        shortTitle: `w${weekNumber}`,
-        title: `Week ${weekNumber}`,
+        shortTitle: translate("common.week_short", { number: weekNumber }),
+        // Evolury: rótulo de tela, traduzido; `shortTitle` acima segue sendo w<n>
+        title: translate("common.week_number", { number: weekNumber }),
       },
       title:
         monthAtStartOfTheWeek === monthAtEndOfTheWeek
