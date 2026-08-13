@@ -10,7 +10,7 @@ import { Links, Meta, Outlet, Scripts } from "react-router";
 import type { LinksFunction } from "react-router";
 import { ThemeProvider, useTheme } from "next-themes";
 // plane imports
-import { SITE_DESCRIPTION, SITE_NAME } from "@plane/constants";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@plane/constants";
 import { cn } from "@plane/utils";
 // types
 // assets
@@ -32,11 +32,11 @@ import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
-import { translate } from "@plane/i18n";
 
-// Funcao, nao constante: no escopo de modulo o translate() rodaria antes de o
-// i18n inicializar e devolveria a chave crua. `meta` e chamada em tempo de render.
-const appTitle = () => translate("ui.plane_meta_title");
+// Evolury: `meta` roda também na pré-renderização do build, onde o i18n nunca
+// inicializa — usar translate() aqui punha a CHAVE CRUA no <title> do HTML
+// servido, e a divergência com o render do navegador quebrava a hidratação
+// (React #418). Como o produto tem idioma único, metadado é literal.
 
 export const links: LinksFunction = () => [
   { rel: "icon", type: "image/png", sizes: "32x32", href: favicon32 },
@@ -98,29 +98,24 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export const meta: Route.MetaFunction = () => [
-  { title: appTitle() },
+  { title: SITE_NAME },
   { name: "description", content: SITE_DESCRIPTION },
-  { property: "og:title", content: appTitle() },
-  {
-    property: "og:description",
-    content: translate("ui.plane_meta_description"),
-  },
-  { property: "og:url", content: "https://app.plane.so/" },
+  { property: "og:title", content: SITE_NAME },
+  { property: "og:description", content: SITE_DESCRIPTION },
+  { property: "og:url", content: SITE_URL },
   { property: "og:image", content: ogImage },
   { property: "og:image:width", content: "1200" },
   { property: "og:image:height", content: "630" },
-  { property: "og:image:alt", content: translate("ui.plane_modern_pm") },
+  { property: "og:image:alt", content: SITE_NAME },
   {
     name: "keywords",
-    content:
-      "software development, plan, ship, software, accelerate, code management, release management, project management, work item tracking, agile, scrum, kanban, collaboration",
+    content: "gestão de projetos, tarefas, times, planejamento, entrega, kanban, scrum, ágil, colaboração",
   },
-  { name: "twitter:site", content: "@planepowers" },
   { name: "twitter:card", content: "summary_large_image" },
   { name: "twitter:image", content: ogImage },
   { name: "twitter:image:width", content: "1200" },
   { name: "twitter:image:height", content: "630" },
-  { name: "twitter:image:alt", content: translate("ui.plane_modern_pm") },
+  { name: "twitter:image:alt", content: SITE_NAME },
 ];
 
 export default function Root() {
