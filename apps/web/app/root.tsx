@@ -5,10 +5,11 @@
  */
 
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { Links, Meta, Outlet, Scripts } from "react-router";
 import type { LinksFunction } from "react-router";
-import { ThemeProvider, useTheme } from "next-themes";
+import { ThemeProvider } from "next-themes";
 // plane imports
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@plane/constants";
 import { cn } from "@plane/utils";
@@ -131,10 +132,18 @@ export default function Root() {
 }
 
 export function HydrateFallback() {
-  const { resolvedTheme } = useTheme();
+  // Evolury: o primeiro render do navegador PRECISA ser igual ao HTML gerado no
+  // build, senão o React descarta a árvore inteira (erro #418) — era o que
+  // acontecia: no build `window` não existe e saía <div/>, mas no navegador o
+  // tema já vinha resolvido pelo script bloqueante e saía o spinner.
+  // `mounted` só vira true depois da hidratação, então os dois renders batem.
+  const [mounted, setMounted] = useState(false);
 
-  // if we are on the server or the theme is not resolved, return an empty div
-  if (typeof window === "undefined" || resolvedTheme === undefined) return <div />;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div />;
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-canvas">
