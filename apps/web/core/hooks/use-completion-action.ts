@@ -16,7 +16,7 @@ import type { TIssue } from "@plane/types";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProjectState } from "@/hooks/store/use-project-state";
-import { useCompletionTargets, useIsIssueCompleted } from "@/hooks/use-issue-completed";
+import { useCompletionTargets, useIsIssueCompleted, useIsIssueCancelled } from "@/hooks/use-issue-completed";
 
 type TCompletionActionArgs = {
   workspaceSlug: string;
@@ -40,8 +40,12 @@ export const useCompletionAction = (args: TCompletionActionArgs) => {
   const [ocupado, setOcupado] = useState(false);
 
   const concluida = useIsIssueCompleted(stateId);
+  // Cancelada é um fim de linha declarado: "não vai ser feita" não vira "feita"
+  // por um clique. Sem destino, nem o botão nem a marca aparecem — para voltar
+  // atrás existe o seletor de estado, que é onde a decisão foi tomada.
+  const cancelada = useIsIssueCancelled(stateId);
   const tarefa = getIssueById(issueId);
-  const destino = concluida ? getReopenState(projectId) : getCompletionState(projectId);
+  const destino = cancelada ? undefined : concluida ? getReopenState(projectId) : getCompletionState(projectId);
 
   // O peek se fecha ao clique fora, e o modal é portado para fora do painel —
   // avisar a loja é o que o mantém aberto enquanto a confirmação está na tela.

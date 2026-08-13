@@ -29,7 +29,7 @@ import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifi
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useIssues } from "@/hooks/store/use-issues";
 import { useProject } from "@/hooks/store/use-project";
-import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
+import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 import useIssuePeekOverviewRedirection from "@/hooks/use-issue-peek-overview-redirection";
 import type { TSelectionHelper } from "@/hooks/use-multiple-select";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -86,9 +86,10 @@ export const SpreadsheetIssueRow = observer(function SpreadsheetIssueRow(props: 
   const subIssues = subIssuesStore.subIssuesByIssueId(issueId);
   const isIssueSelected = selectionHelpers.getIsEntitySelected(issueId);
   const isIssueActive = selectionHelpers.getIsEntityActive(issueId);
-  // Evolury: tarefa concluída fica esmaecida (ADR 0009). Vai na linha inteira,
-  // e não só na célula do título, para a planilha não ficar meio esmaecida.
-  const isCompleted = useIsIssueCompleted(issue?.state_id);
+  // Evolury: tarefa encerrada muda de aparência (ADR 0009). Vai na linha
+  // inteira, e não só na célula do título, para a planilha não ficar meio
+  // esmaecida.
+  const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
 
   if (!issue) return null;
 
@@ -106,9 +107,9 @@ export const SpreadsheetIssueRow = observer(function SpreadsheetIssueRow(props: 
           />
         }
         classNames={cn("bg-surface-1 transition-[background-color]", {
+          ...estiloEncerrada,
           "group selected-issue-row": isIssueSelected,
           "border-[0.5px] border-strong-1": isIssueActive,
-          "opacity-60": isCompleted,
         })}
         verticalOffset={100}
         shouldRecordHeights={false}
@@ -289,6 +290,20 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
               }
             )}
           >
+            {/* Evolury: marca de conclusão à esquerda do ID (ADR 0009) */}
+            {workspaceSlug && !isEpic && !issueDetail?.archived_at && (
+              <div className="mr-2 ml-1 flex h-full items-center">
+                <CompletionCheck
+                  workspaceSlug={workspaceSlug.toString()}
+                  projectId={issueDetail.project_id}
+                  issueId={issueDetail.id}
+                  stateId={issueDetail.state_id}
+                  disabled={disableUserActions}
+                  onChange={(stateId) => updateIssue?.(issueDetail.project_id, issueDetail.id, { state_id: stateId })}
+                />
+              </div>
+            )}
+
             {/* Identifier section - conditionally rendered */}
             {displayProperties?.key && (
               <div className="flex h-full min-w-24 flex-shrink-0 items-center">
@@ -303,20 +318,6 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
                     />
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
-            {workspaceSlug && !isEpic && !issueDetail?.archived_at && (
-              <div className="mr-1 flex h-full items-center">
-                <CompletionCheck
-                  workspaceSlug={workspaceSlug.toString()}
-                  projectId={issueDetail.project_id}
-                  issueId={issueDetail.id}
-                  stateId={issueDetail.state_id}
-                  disabled={disableUserActions}
-                  onChange={(stateId) => updateIssue?.(issueDetail.project_id, issueDetail.id, { state_id: stateId })}
-                />
               </div>
             )}
 

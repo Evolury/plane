@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
+import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
@@ -100,16 +100,7 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
   return (
     <>
       <div className="relative flex items-center gap-1.5">
-        {issue.project_id && (
-          <IssueIdentifier
-            issueId={issue.id}
-            projectId={issue.project_id}
-            size="xs"
-            variant="tertiary"
-            displayProperties={displayProperties}
-          />
-        )}
-        {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
+        {/* Evolury: marca de conclusão à esquerda do ID (ADR 0009) */}
         {workspaceSlug && !isEpic && !issue?.archived_at && (
           <CompletionCheck
             workspaceSlug={workspaceSlug.toString()}
@@ -118,6 +109,15 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
             stateId={issue.state_id}
             disabled={isReadOnly}
             onChange={(stateId) => updateIssue?.(issue.project_id, issue.id, { state_id: stateId })}
+          />
+        )}
+        {issue.project_id && (
+          <IssueIdentifier
+            issueId={issue.id}
+            projectId={issue.project_id}
+            size="xs"
+            variant="tertiary"
+            displayProperties={displayProperties}
           />
         )}
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
@@ -188,7 +188,7 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
 
   const issue = issuesMap[issueId];
   // Evolury: tratamento visual de concluída (ADR 0009)
-  const isCompleted = useIsIssueCompleted(issue?.state_id);
+  const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
 
   const { setIsDragging: setIsKanbanDragging } = useKanbanView();
 
@@ -263,9 +263,9 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
         id={`issue-${issueId}`}
         // make Z-index higher at the beginning of drag, to have a issue drag image of issue block without any overlaps
         className={cn("group/kanban-block relative mb-2", {
+          // Evolury: encerrada esmaece (ADR 0009)
+          "opacity-60": estiloEncerrada["opacity-60"],
           "z-[1]": isCurrentBlockDragging,
-          // Evolury: concluída fica esmaecida (ADR 0009)
-          "opacity-60": isCompleted,
         })}
         onDragStart={() => {
           if (isDragAllowed) setIsCurrentBlockDragging(true);
@@ -286,6 +286,8 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
           ref={cardRef}
           className={cn(
             "block w-full rounded-lg border border-subtle bg-layer-2 p-3 text-13 shadow-raised-100 outline-[0.5px] outline-transparent transition-all hover:border-strong hover:shadow-raised-200",
+            // Evolury: cancelada ganha fundo avermelhado, aqui no cartão em si
+            { "bg-danger-subtle/50": estiloEncerrada["bg-danger-subtle/50"] },
             { "hover:cursor-pointer": isDragAllowed },
             { "border border-accent-strong hover:border-accent-strong": getIsIssuePeeked(issue.id) },
             { "z-[100] bg-layer-1": isCurrentBlockDragging }

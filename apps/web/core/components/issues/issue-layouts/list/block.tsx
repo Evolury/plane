@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
+import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 // local imports
 import { CompletionCheck } from "../../completion-check";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
@@ -107,8 +107,8 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
 
   // derived values
   const issue = issuesMap[issueId];
-  // Evolury: tratamento visual de concluída (ADR 0009)
-  const isCompleted = useIsIssueCompleted(issue?.state_id);
+  // Evolury: tratamento visual de tarefa encerrada — concluída ou cancelada
+  const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
   const subIssuesCount = issue?.sub_issues_count ?? 0;
   const canEditIssueProperties = canEditProperties(issue?.project_id ?? undefined);
   const isDraggingAllowed = canDrag && canEditIssueProperties;
@@ -188,13 +188,15 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
         className={cn(
           "group/list-block relative flex min-h-11 flex-col gap-3 bg-layer-transparent py-3 text-13 transition-colors hover:bg-layer-transparent-hover",
           {
+            // Evolury: encerrada esmaece; cancelada ainda ganha um fundo
+            // avermelhado. Vem antes da seleção e do arraste de propósito —
+            // esses são transitórios e prevalecem.
+            ...estiloEncerrada,
             "border-accent-strong": getIsIssuePeeked(issue.id) && peekIssue?.nestingLevel === nestingLevel,
             "border-strong-1": isIssueActive,
             "last:border-b-transparent": !getIsIssuePeeked(issue.id) && !isIssueActive,
             "bg-accent-primary/5 hover:bg-accent-primary/10": isIssueSelected,
             "bg-layer-1": isCurrentBlockDragging,
-            // Evolury: concluída fica esmaecida, como no Asana
-            "opacity-60": isCompleted,
             "md:flex-row md:items-center": isSidebarCollapsed,
             "lg:flex-row lg:items-center": !isSidebarCollapsed,
           }
@@ -236,6 +238,18 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
                   </div>
                 </Tooltip>
               )}
+              {/* Evolury: marca de conclusão à esquerda do ID (ADR 0009) */}
+              {workspaceSlug && !isEpic && !issue?.archived_at && !issue?.is_draft && (
+                <CompletionCheck
+                  workspaceSlug={workspaceSlug}
+                  projectId={issue.project_id}
+                  issueId={issue.id}
+                  stateId={issue.state_id}
+                  disabled={!canEditIssueProperties}
+                  onChange={(stateId) => updateIssue?.(issue.project_id, issue.id, { state_id: stateId })}
+                />
+              )}
+
               {displayProperties && (displayProperties.key || displayProperties.issue_type) && (
                 <div className="flex-shrink-0" style={{ minWidth: `${keyMinWidth}px` }}>
                   {issue.project_id && (
@@ -248,18 +262,6 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
                     />
                   )}
                 </div>
-              )}
-
-              {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
-              {workspaceSlug && !isEpic && !issue?.archived_at && !issue?.is_draft && (
-                <CompletionCheck
-                  workspaceSlug={workspaceSlug}
-                  projectId={issue.project_id}
-                  issueId={issue.id}
-                  stateId={issue.state_id}
-                  disabled={!canEditIssueProperties}
-                  onChange={(stateId) => updateIssue?.(issue.project_id, issue.id, { state_id: stateId })}
-                />
               )}
 
               {/* sub-issues chevron */}
