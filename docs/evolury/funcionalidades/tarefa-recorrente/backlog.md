@@ -58,22 +58,22 @@ sai da trava, e a porta de entrada virou o desenho inteiro.
 Decidido em 13/08/2026 (ADR 0010, revisão). Havia **uma regra e uma ocorrência
 em produção** quando isto foi escrito — a migração é de dados, não só de esquema.
 
-- [ ] F4.1 `source_issue` na regra; campos de molde saem. Migração converte cada
+- [x] F4.1 `source_issue` na regra; campos de molde saem. Migração converte cada
       molde existente numa tarefa de verdade, que passa a ser a origem
-- [ ] F4.2 `initial_state` na regra (padrão: etapa padrão do projeto) — a
+- [x] F4.2 `initial_state` na regra (padrão: etapa padrão do projeto) — a
       ocorrência nunca nasce onde a anterior foi concluída
-- [ ] F4.3 Antecedência em dias: nasce em D-N, com início = D-N e vencimento = D
-- [ ] F4.4 Geração passa a copiar da tarefa de origem, sem comentários,
+- [x] F4.3 Antecedência em dias: nasce em D-N, com início = D-N e vencimento = D
+- [x] F4.4 Geração passa a copiar da tarefa de origem, sem comentários,
       atividade, anexos, ciclo, módulo e relações
-- [ ] F4.5 Ciclo de vida da origem: concluir segue, arquivar pausa, excluir apaga
-- [ ] F4.6 Seção "Repetir" no cartão da tarefa, só admin liga
-- [ ] F4.7 Trava na tarefa gerada, com o rastro ("gerada pela recorrência de X")
-- [ ] F4.8 Página de configurações vira lista, sem botão de criar
-- [ ] F4.9 Selo "repete" nos layouts, na tarefa de origem
-- [ ] F4.10 Aviso quando a antecedência é maior ou igual ao intervalo
-- [ ] F4.11 Subtarefas na cópia: abertas, sem data, um nível, teto de 50, e a
+- [x] F4.5 Ciclo de vida da origem: concluir segue, arquivar pausa, excluir apaga
+- [x] F4.6 Seção "Repetir" no cartão da tarefa, só admin liga
+- [x] F4.7 Trava na tarefa gerada, com o rastro ("gerada pela recorrência de X")
+- [x] F4.8 Página de configurações vira lista, sem botão de criar
+- [x] F4.9 Selo "repete" nos layouts, na tarefa de origem
+- [x] F4.10 Aviso quando a antecedência é maior ou igual ao intervalo
+- [x] F4.11 Subtarefas na cópia: abertas, sem data, um nível, teto de 50, e a
       trava de recorrência própria
-- [ ] F4.12 Testes: migração com dado existente, cópia sem os campos individuais,
+- [x] F4.12 Testes: migração com dado existente, cópia sem os campos individuais,
       datas calculadas, trava na gerada, ciclo de vida da origem, subtarefas
       nascendo sem data e sem herdar nada do ciclo anterior
 
