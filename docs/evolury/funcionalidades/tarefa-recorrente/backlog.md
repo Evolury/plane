@@ -46,16 +46,42 @@ calma antes de existir gente dependendo dele.
 
 - [x] F3.0 "Último dia do mês" como opção própria, conferida contra o Asana
 
-- [ ] F3.1 Rastro na tarefa gerada ("criada pela recorrência X")
 - [x] F3.2 Modo "após conclusão" ligado ao botão de concluir (ADR 0009) — a
       primeira ocorrência sai da data de início, e cada conclusão agenda a
       seguinte; sem isto o modo existia no formulário e nunca disparava
-- [ ] F3.3 "Tornar esta tarefa recorrente", a partir de uma tarefa existente
+
+F3.1 (rastro) e F3.3 ("tornar recorrente") foram absorvidos pela F4: o rastro
+sai da trava, e a porta de entrada virou o desenho inteiro.
+
+## F4 — Revisão: a recorrência mora na tarefa
+
+Decidido em 13/08/2026 (ADR 0010, revisão). Havia **uma regra e uma ocorrência
+em produção** quando isto foi escrito — a migração é de dados, não só de esquema.
+
+- [ ] F4.1 `source_issue` na regra; campos de molde saem. Migração converte cada
+      molde existente numa tarefa de verdade, que passa a ser a origem
+- [ ] F4.2 `initial_state` na regra (padrão: etapa padrão do projeto) — a
+      ocorrência nunca nasce onde a anterior foi concluída
+- [ ] F4.3 Antecedência em dias: nasce em D-N, com início = D-N e vencimento = D
+- [ ] F4.4 Geração passa a copiar da tarefa de origem, sem comentários,
+      atividade, anexos, ciclo, módulo e relações
+- [ ] F4.5 Ciclo de vida da origem: concluir segue, arquivar pausa, excluir apaga
+- [ ] F4.6 Seção "Repetir" no cartão da tarefa, só admin liga
+- [ ] F4.7 Trava na tarefa gerada, com o rastro ("gerada pela recorrência de X")
+- [ ] F4.8 Página de configurações vira lista, sem botão de criar
+- [ ] F4.9 Selo "repete" nos layouts, na tarefa de origem
+- [ ] F4.10 Aviso quando a antecedência é maior ou igual ao intervalo
+- [ ] F4.11 Subtarefas na cópia: abertas, sem data, um nível, teto de 50, e a
+      trava de recorrência própria
+- [ ] F4.12 Testes: migração com dado existente, cópia sem os campos individuais,
+      datas calculadas, trava na gerada, ciclo de vida da origem, subtarefas
+      nascendo sem data e sem herdar nada do ciclo anterior
 
 ## Ciclo seguinte
 
-- [ ] Subtarefas no molde, com regra própria para o que acontece quando a
-      ocorrência anterior tem subtarefa aberta
+- [ ] Vencimento relativo da subtarefa: âncora na criação ou no vencimento da
+      principal, declarada em vez de deduzida (adição pura sobre a F4)
+- [ ] Subtarefa aninhada
 
 ## Fora de escopo
 

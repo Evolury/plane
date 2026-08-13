@@ -1,6 +1,6 @@
 # Tarefa recorrente — Especificação
 
-- **Status:** aprovada (13/08/2026)
+- **Status:** aprovada (13/08/2026), revisada em 13/08/2026
 - **Decisões estruturais:** [ADR 0010](../../decisoes/0010-tarefas-recorrentes.md)
 
 ## Objetivo
@@ -10,30 +10,46 @@ certa — sem que ninguém precise lembrar de criá-la.
 
 ## Onde mora
 
-Configurações do projeto → **Execução** → **Tarefas recorrentes**, ao lado das
-Automações. Rota `/[workspaceSlug]/settings/projects/[projectId]/recurring/`.
-Só **admin do projeto** cria, edita e exclui; membro e convidado não veem o
-item.
+**A recorrência é ativada na própria tarefa**, numa seção "Repetir" que existe
+em todo cartão. Ligado o interruptor, abre a agenda. Só **admin do projeto**
+liga, edita e desliga; para os demais a seção aparece desabilitada.
+
+Configurações do projeto → **Execução** → **Tarefas recorrentes** é a **lista**
+das tarefas com recorrência ativa no projeto — sem botão de criar. Rota
+`/[workspaceSlug]/settings/projects/[projectId]/recurring/`. É o painel de
+auditoria: o que este projeto gera sozinho, com a agenda resumida, as próximas
+datas, pausar/retomar e o link para a tarefa.
 
 ## A regra
 
-Cada regra tem um nome (o da tarefa que será criada), uma **agenda** e um
-**molde**.
+Cada regra é uma **agenda** ligada a uma **tarefa de origem**. A tarefa é o
+molde, vivo: editá-la muda as próximas ocorrências.
 
 ### Agenda
 
-| Frequência | O que se configura |
-| --- | --- |
-| Diária | a cada N dias |
-| Semanal | a cada N semanas, em um ou mais dias da semana |
-| Mensal | a cada N meses, no dia D **ou** na 1ª/2ª/3ª/4ª/última <dia da semana> |
-| Anual | a cada N anos, em dia e mês |
+| Frequência | O que se configura                                                    |
+| ---------- | --------------------------------------------------------------------- |
+| Diária     | a cada N dias                                                         |
+| Semanal    | a cada N semanas, em um ou mais dias da semana                        |
+| Mensal     | a cada N meses, no dia D **ou** na 1ª/2ª/3ª/4ª/última <dia da semana> |
+| Anual      | a cada N anos, em dia e mês                                           |
 
-Mais, em todas: **horário** da geração, **data de início** e **fim** (nunca,
-numa data, ou após N ocorrências).
+Mais, em todas: **horário** da geração, **data de início**, **fim** (nunca, numa
+data, ou após N ocorrências) e **antecedência**.
 
-Quinzenal sai de duas formas, porque a palavra tem duas leituras: *semanal com
-intervalo 2* ("de duas em duas semanas, na terça") e *mensal nos dias 1 e 15*.
+**Antecedência**: quantos dias antes do vencimento a tarefa é criada. Padrão
+zero (nasce no dia). A data de nascimento vira a **data de início** da tarefa —
+mensal no dia 5 com 3 dias de antecedência gera, em setembro, uma tarefa criada
+em 02/09, com início 02/09 e vencimento 05/09. No modo após a conclusão, a
+antecedência é limitada ao momento da conclusão: não dá para nascer antes do
+gatilho existir.
+
+A pré-visualização mostra as duas datas: _"nasce em 02/09 · vence em 05/09"_.
+Quando a antecedência for maior ou igual ao intervalo, a tela **avisa** que as
+ocorrências vão se sobrepor de forma permanente — sem bloquear.
+
+Quinzenal sai de duas formas, porque a palavra tem duas leituras: _semanal com
+intervalo 2_ ("de duas em duas semanas, na terça") e _mensal nos dias 1 e 15_.
 
 **Dia que não existe no mês vira o último dia do mês.** "Todo dia 31" gera em
 28/02, 30/04, 30/06, 30/09 e 30/11. A RFC 5545 manda ignorar a data inválida —
@@ -55,22 +71,73 @@ correto para calendário, errado para tarefa (ADR 0010).
 **"Não criar enquanto a ocorrência anterior estiver aberta"**, ligada por
 padrão. Desligada, cada data gera sua tarefa, aberta ou não a anterior.
 
-### Molde
+### O que a ocorrência herda da origem
 
-Nome, descrição, prioridade, estado inicial, responsáveis, etiquetas,
-estimativa e tipo de tarefa.
+| Copia                       | Não copia                                     |
+| --------------------------- | --------------------------------------------- |
+| Nome, descrição, prioridade | Comentários e atividade                       |
+| Responsáveis, etiquetas     | Datas de início e vencimento (são calculadas) |
+| Estimativa, tipo de tarefa  | Anexos                                        |
+|                             | Ciclo e módulo                                |
+|                             | Relações e subtarefas                         |
 
-Fora do v1: **anexos** (custo de storage por ocorrência) e **subtarefas**
-(planejadas para o ciclo seguinte).
+_O que descreve o trabalho_ copia; _o que descreve aquela execução_ não.
+
+**Etapa inicial**: a ocorrência nasce na etapa configurada na regra (padrão: a
+etapa padrão do projeto), **nunca** na etapa em que a anterior foi concluída.
+
+### A tarefa de origem
+
+É trabalho real, não molde parado: pode ser concluída normalmente, e no modo
+após a conclusão é ela quem dispara a próxima.
+
+| Acontece com a origem | A regra                                          |
+| --------------------- | ------------------------------------------------ |
+| Concluída             | segue; no modo após conclusão, dispara a próxima |
+| Arquivada             | pausa (retomável)                                |
+| Excluída              | é excluída junto                                 |
+
+**A tarefa gerada não pode ativar recorrência**: a seção aparece bloqueada,
+dizendo "gerada pela recorrência de VAL-12". Sem a trava, a série viraria árvore.
+
+### Subtarefas
+
+As subtarefas da origem são copiadas — descrevem o trabalho, não a execução.
+Vêm **abertas, sem comentários, sem atividade e sem data**. O reset não é
+recurso: é consequência de copiar, como no ClickUp.
+
+**Sem data é decisão, não omissão.** O defeito conhecido do Asana é a subtarefa
+que nasce com a data do ciclo anterior, vencida desde o primeiro segundo. Uma
+subtarefa sem data já comunica "vence com a principal", que é o caso comum; as
+datas próprias são definidas à mão, e o vencimento relativo fica para o ciclo
+seguinte, como adição pura.
+
+Três travas:
+
+- **Subtarefa não tem recorrência própria.** Principal recorrendo mais subtarefa
+  recorrendo é o que produz a duplicação em cascata relatada no Asana.
+- **Um nível só.** Subtarefa de subtarefa não é copiada.
+- **Teto de 50 subtarefas por ocorrência**, com aviso ao configurar. Acima disso
+  a ocorrência é um projeto disfarçado. O ClickUp corta em 500 e **remove a
+  recorrência da tarefa** ao passar do teto — aqui o aviso vem antes, e a regra
+  de ninguém é apagada em silêncio.
+
+A guarda de ocorrência aberta continua lendo a tarefa principal: a confirmação
+de subtarefas abertas ([ADR 0009](../../decisoes/0009-botao-concluir-tarefa.md))
+já obriga a decidir sobre elas no momento de concluir.
 
 ## O que acontece na hora
 
 Um job roda a cada 15 minutos e, para cada regra vencida:
 
 1. confere a guarda (anterior aberta?) e o fim da recorrência;
-2. cria a tarefa a partir do molde, no projeto da regra;
-3. registra a ocorrência (data prevista → tarefa criada);
-4. recalcula a próxima data.
+2. copia a tarefa de origem, na etapa inicial da regra;
+3. grava as datas: início = hoje, vencimento = a data da ocorrência;
+4. registra a ocorrência (data prevista → tarefa criada);
+5. recalcula a próxima data.
+
+Com antecedência N, a regra vence N dias antes da data da ocorrência — é o
+mesmo job, com o relógio adiantado.
 
 **Atraso não acumula**: se o job ficou fora do ar, gera **uma** ocorrência — a
 mais recente devida — e segue. O registro de ocorrências garante que rodar duas
@@ -90,23 +157,32 @@ alcança qualquer tarefa. É a limpeza do histórico.
 
 ## Fora de escopo (v1)
 
-| Item | Por quê |
-| --- | --- |
-| Subtarefas no molde | maior fonte de defeito conhecida do Asana; ciclo próprio, logo após esta entrega |
-| Anexos no molde | custo de storage por ocorrência |
-| "Tornar esta tarefa recorrente" | porta de entrada, entra na F3 |
-| Pular uma ocorrência | o registro de ocorrências já deixa pronto o terreno |
-| Feriado e dia útil | exige calendário de feriados |
+| Item                             | Por quê                                             |
+| -------------------------------- | --------------------------------------------------- |
+| Anexos na cópia                  | custo de storage por ocorrência                     |
+| Vencimento relativo da subtarefa | adição pura, sem migração; a fase já carrega uma    |
+| Subtarefa aninhada               | multiplica o custo da geração                       |
+| Pular uma ocorrência             | o registro de ocorrências já deixa pronto o terreno |
+| Feriado e dia útil               | exige calendário de feriados                        |
 
 ## Perguntas resolvidas
 
 **Por que não criar todas as ocorrências futuras de uma vez?** Encheria o
 projeto de tarefas que ainda não existem, e faria de qualquer edição da regra
-uma migração.
+uma migração. Quem precisa **enxergar** o futuro tem a pré-visualização; a
+antecedência é para quem precisa **trabalhar** antes.
 
-**Por que a regra não vive na tarefa, como no Asana?** Porque aí não há onde
-listar e auditar o que está agendado. A porta de entrada pela tarefa vem na F3,
-gravando na mesma tabela.
+**Por que a ocorrência é uma cópia, e não a mesma tarefa reaproveitada?**
+Porque cada ciclo tem histórico próprio, e porque reaproveitar exigiria desfazer
+a conclusão toda vez — atividade falsa, métrica errada, tarefa saltando de
+Concluído para A fazer. O modelo de tarefa única (Todoist) só funciona onde não
+há etapa nem histórico a preservar.
+
+**E o risco de concluir a cópia por engano, como acontece no Asana?** Lá a nova
+instância nasce na seção de onde a anterior foi concluída, no instante do
+clique, e o cartão não mostra ID nem selo — três coisas que aqui não acontecem:
+a ocorrência nasce na etapa inicial, nasce na data dela (ou N dias antes), e
+carrega ID próprio mais o selo de origem.
 
 **E se o responsável sair do projeto?** A ocorrência é criada sem ele; a regra
 continua válida. Vale um aviso na tela de configuração — anotado para a F2.
