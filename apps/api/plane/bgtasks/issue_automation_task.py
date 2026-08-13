@@ -116,10 +116,17 @@ def close_old_issues():
 
             # Check if Issues
             if issues:
+                # Evolury: o fallback buscava o primeiro estado cancelado do
+                # banco INTEIRO, sem filtrar por projeto — podia mover itens
+                # para um estado de outro projeto. Agora é sempre do próprio.
                 if project.default_state is None:
-                    close_state = State.objects.filter(group="cancelled").first()
+                    close_state = State.objects.filter(project_id=project_id, group="cancelled").first()
                 else:
                     close_state = project.default_state
+
+                # sem estado de destino no projeto, não há o que fazer
+                if close_state is None:
+                    continue
 
                 issues_to_update = []
                 for issue in issues:
