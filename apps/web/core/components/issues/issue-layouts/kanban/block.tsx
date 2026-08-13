@@ -33,6 +33,7 @@ import { useProject } from "@/hooks/store/use-project";
 import useIssuePeekOverviewRedirection from "@/hooks/use-issue-peek-overview-redirection";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local components
+import { CompletionCheck } from "../../completion-check";
 import type { TRenderQuickActions } from "../list/list-view-types";
 import { IssueProperties } from "../properties/all-properties";
 import { useTranslation, translate } from "@plane/i18n";
@@ -70,6 +71,8 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
   const menuActionRef = useRef<HTMLDivElement | null>(null);
   // states
   const [isMenuActive, setIsMenuActive] = useState(false);
+  // router
+  const { workspaceSlug } = useParams();
   // hooks
   const { isMobile } = usePlatformOS();
 
@@ -96,7 +99,7 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
 
   return (
     <>
-      <div className="relative">
+      <div className="relative flex items-center gap-1.5">
         {issue.project_id && (
           <IssueIdentifier
             issueId={issue.id}
@@ -104,6 +107,17 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
             size="xs"
             variant="tertiary"
             displayProperties={displayProperties}
+          />
+        )}
+        {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
+        {workspaceSlug && !isEpic && !issue?.archived_at && (
+          <CompletionCheck
+            workspaceSlug={workspaceSlug.toString()}
+            projectId={issue.project_id}
+            issueId={issue.id}
+            stateId={issue.state_id}
+            disabled={isReadOnly}
+            onChange={(stateId) => updateIssue?.(issue.project_id, issue.id, { state_id: stateId })}
           />
         )}
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}

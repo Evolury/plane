@@ -5,6 +5,8 @@
  */
 
 import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
+// local imports
+import { CompletionCheck } from "../../completion-check";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
 import { useEffect, useRef } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
@@ -246,6 +248,18 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
                     />
                   )}
                 </div>
+              )}
+
+              {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
+              {workspaceSlug && !isEpic && !issue?.archived_at && !issue?.is_draft && (
+                <CompletionCheck
+                  workspaceSlug={workspaceSlug}
+                  projectId={issue.project_id}
+                  issueId={issue.id}
+                  stateId={issue.state_id}
+                  disabled={!canEditIssueProperties}
+                  onChange={(stateId) => updateIssue?.(issue.project_id, issue.id, { state_id: stateId })}
+                />
               )}
 
               {/* sub-issues chevron */}

@@ -34,6 +34,7 @@ import useIssuePeekOverviewRedirection from "@/hooks/use-issue-peek-overview-red
 import type { TSelectionHelper } from "@/hooks/use-multiple-select";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local components
+import { CompletionCheck } from "../../completion-check";
 import type { TRenderQuickActions } from "../list/list-view-types";
 import { isIssueNew } from "../utils";
 import { IssueColumn } from "./issue-column";
@@ -302,6 +303,20 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
                     />
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Evolury: marca de conclusão ao lado do ID (ADR 0009) */}
+            {workspaceSlug && !isEpic && !issueDetail?.archived_at && (
+              <div className="mr-1 flex h-full items-center">
+                <CompletionCheck
+                  workspaceSlug={workspaceSlug.toString()}
+                  projectId={issueDetail.project_id}
+                  issueId={issueDetail.id}
+                  stateId={issueDetail.state_id}
+                  disabled={disableUserActions}
+                  onChange={(stateId) => updateIssue?.(issueDetail.project_id, issueDetail.id, { state_id: stateId })}
+                />
               </div>
             )}
 
