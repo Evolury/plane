@@ -87,9 +87,11 @@ class RecurringWorkItemViewSet(BaseViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        rascunho = RecurringWorkItem(
-            **{campo: valor for campo, valor in serializer.validated_data.items() if campo not in ("template_assignees", "template_labels")}
-        )
+        # Os campos ManyToMany não cabem num objeto solto; a agenda não usa
+        # nenhum deles, e é só a agenda que a pré-visualização calcula.
+        relacoes = ("template_assignees", "template_labels")
+        campos = {campo: valor for campo, valor in serializer.validated_data.items() if campo not in relacoes}
+        rascunho = RecurringWorkItem(**campos)
         rascunho.project_id = project_id
         datas = proximas_datas(rascunho, timezone.now(), quantidade=5)
         return Response({"next_occurrences": [data.isoformat() for data in datas]}, status=status.HTTP_200_OK)
