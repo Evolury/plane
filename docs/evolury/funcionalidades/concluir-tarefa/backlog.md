@@ -28,13 +28,19 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
 
 ## T2 — Botão e estado visual
 
-- [ ] T2.1 Componente de conclusão reutilizável (alterna concluir/reabrir),
-      chamando o mesmo caminho de atualização de estado do seletor
-- [ ] T2.2 Reabrir: restaura o último estado não concluído lido do histórico
-      de atividade; sem histórico, cai no estado padrão do projeto
+- [x] T2.1 Componente de conclusão reutilizável (alterna concluir/reabrir),
+      chamando o mesmo caminho de atualização de estado do seletor; aplicado
+      no cabeçalho do peek
+- [x] T2.2 Reabrir devolve ao estado padrão do projeto (o mesmo de um item
+      novo), com recuo para o primeiro estado em aberto por `sequence`.
+      **Desvio consciente do ADR**: a leitura do histórico de atividade exigiria
+      buscar as atividades de cada item só para desenhar um botão, o que não se
+      paga nos layouts de lista — o destino previsível venceu
 - [ ] T2.3 Confirmação ao concluir tarefa com subtarefas abertas, com a opção
       de concluir as subtarefas junto
-- [ ] T2.4 Regras de exibição: esconder para quem não pode editar estado, e em
+- [x] T2.4 Regras de exibição (parcial: permissão e arquivado no peek;
+      triagem, rascunho e quadro público entram com os layouts)
+- [ ] ~~T2.4~~ Regras de exibição: esconder para quem não pode editar estado, e em
       triagem pendente, rascunho, item arquivado e quadro público
 - [ ] T2.5 Tratamento visual de concluído (cartão esmaecido, título riscado,
       ícone de check) nos cinco layouts — lista, quadro, planilha, calendário
