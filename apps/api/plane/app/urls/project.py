@@ -142,6 +142,11 @@ urlpatterns = [
         name="project-recurring-work-items-preview",
     ),
     path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/for-issue/<uuid:issue_id>/",
+        RecurringWorkItemViewSet.as_view({"get": "for_issue"}),
+        name="project-recurring-work-item-for-issue",
+    ),
+    path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/",
         RecurringWorkItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="project-recurring-work-item",

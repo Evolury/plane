@@ -4,11 +4,12 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: formulário de tarefa recorrente (ADR 0010).
+// Evolury: formulário da agenda de recorrência (ADR 0010, revisão 13/08/2026).
 //
-// A pré-visualização não é enfeite: "mensal, última sexta, a cada 2 meses" é
-// difícil de conferir de cabeça, e ler "28/08, 30/10, 26/12" resolve a dúvida
-// antes de a regra começar a criar trabalho para o time.
+// A tarefa é o molde — aqui só se edita a agenda. A pré-visualização não é
+// enfeite: "mensal, última sexta, a cada 2 meses" é difícil de conferir de
+// cabeça, e ler "28/08, 30/10, 26/12" resolve a dúvida antes de a regra
+// começar a criar trabalho para o time.
 
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
@@ -18,6 +19,8 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TRecurrenceFrequency, TRecurringWorkItem } from "@plane/types";
 import { EModalWidth, Input, ModalCore } from "@plane/ui";
 import { cn, getWeekDayName, renderFormattedDate } from "@plane/utils";
+// hooks
+import { useProjectState } from "@/hooks/store/use-project-state";
 // services
 import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
 
@@ -32,9 +35,20 @@ const SEMANAS_DO_MES = [
   { valor: -1, chave: "last" },
 ];
 
+// Quantos dias a agenda cobre, para avisar quando a antecedência a engole e
+// as ocorrências passam a se sobrepor de forma permanente.
+const DIAS_DO_INTERVALO: Record<TRecurrenceFrequency, number> = {
+  daily: 1,
+  weekly: 7,
+  monthly: 28,
+  yearly: 365,
+};
+
 type TFormProps = {
   workspaceSlug: string;
   projectId: string;
+  /** A tarefa de origem, quando a regra está sendo criada a partir do cartão. */
+  sourceIssueId?: string;
   regra?: TRecurringWorkItem;
   isOpen: boolean;
   onClose: () => void;
@@ -42,7 +56,6 @@ type TFormProps = {
 };
 
 const padrao = (): Partial<TRecurringWorkItem> => ({
-  name: "",
   frequency: "weekly",
   interval: 1,
   weekdays: [1],
@@ -53,16 +66,17 @@ const padrao = (): Partial<TRecurringWorkItem> => ({
   month_of_year: 1,
   time_of_day: "09:00:00",
   start_date: new Date().toISOString().slice(0, 10),
+  lead_time_days: 0,
   end_mode: "never",
   generation_mode: "schedule",
   days_after_completion: 7,
   skip_while_previous_open: true,
-  template_priority: "none",
 });
 
 export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(props: TFormProps) {
-  const { workspaceSlug, projectId, regra, isOpen, onClose, onSaved } = props;
+  const { workspaceSlug, projectId, sourceIssueId, regra, isOpen, onClose, onSaved } = props;
   const { t } = useTranslation();
+  const { getProjectStates } = useProjectState();
   // states
   const [dados, setDados] = useState<Partial<TRecurringWorkItem>>(padrao());
   const [proximas, setProximas] = useState<string[]>([]);
@@ -80,7 +94,7 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
     let cancelado = false;
     const id = setTimeout(() => {
       servico
-        .preview(workspaceSlug, projectId, { ...dados, name: dados.name || "—" })
+        .preview(workspaceSlug, projectId, dados)
         .then((resposta) => !cancelado && setProximas(resposta.next_occurrences))
         .catch(() => !cancelado && setProximas([]));
     }, 400);
@@ -92,6 +106,13 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
 
   const mudar = (campos: Partial<TRecurringWorkItem>) => setDados((atual) => ({ ...atual, ...campos }));
 
+  // getProjectStates já não devolve triagem — o tipo nem tem o grupo.
+  const etapas = getProjectStates(projectId) ?? [];
+  // Antecedência maior ou igual ao intervalo = sobreposição permanente. Pode
+  // ser intencional numa esteira contínua — por isso é aviso, não bloqueio.
+  const diasDoCiclo = (dados.interval ?? 1) * DIAS_DO_INTERVALO[dados.frequency ?? "weekly"];
+  const antecedenciaEngole = (dados.lead_time_days ?? 0) >= diasDoCiclo && (dados.lead_time_days ?? 0) > 0;
+
   const alternarDia = (dia: number) => {
     const atuais = dados.weekdays ?? [];
     mudar({ weekdays: atuais.includes(dia) ? atuais.filter((d) => d !== dia) : [...atuais, dia].sort() });
@@ -101,7 +122,7 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
     setSalvando(true);
     try {
       if (regra) await servico.update(workspaceSlug, projectId, regra.id, dados);
-      else await servico.create(workspaceSlug, projectId, dados);
+      else await servico.create(workspaceSlug, projectId, { ...dados, source_issue: sourceIssueId });
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: t("toast.success"),
@@ -132,15 +153,8 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
     <ModalCore isOpen={isOpen} handleClose={onClose} width={EModalWidth.XXXL}>
       <div className="flex max-h-[80vh] flex-col gap-5 overflow-y-auto p-5">
         <h3 className="text-16 font-medium">
-          {rotulo(regra ? "settings.update_recurring_work_item" : "settings.new_recurring_work_item")}
+          {rotulo(regra ? "settings.update_recurring_work_item" : "section.enable")}
         </h3>
-
-        <Input
-          value={dados.name ?? ""}
-          onChange={(e) => mudar({ name: e.target.value })}
-          placeholder={t("issue.title.label")}
-          className="w-full"
-        />
 
         {/* ----- agenda ----- */}
         <div className="space-y-4 rounded-md border border-subtle p-4">
@@ -327,6 +341,37 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
               </>
             )}
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-secondary">{rotulo("lead_time.label")}</span>
+            <Input
+              type="number"
+              min={0}
+              value={String(dados.lead_time_days ?? 0)}
+              onChange={(e) => mudar({ lead_time_days: Math.max(0, Number(e.target.value)) })}
+              className="w-20"
+            />
+            <span className="text-secondary">{rotulo("lead_time.days_suffix")}</span>
+          </div>
+          {antecedenciaEngole && (
+            <p className="rounded-md bg-warning-subtle px-3 py-2 text-12 text-warning-primary">
+              {rotulo("lead_time.overlap_warning")}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-secondary">{rotulo("initial_state.label")}</span>
+            <select
+              value={dados.initial_state ?? ""}
+              onChange={(e) => mudar({ initial_state: e.target.value || null })}
+              className="rounded-md border border-subtle bg-surface-1 px-2 py-1"
+            >
+              <option value="">{rotulo("initial_state.project_default")}</option>
+              {etapas.map((etapa) => (
+                <option key={etapa.id} value={etapa.id}>
+                  {etapa.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -351,8 +396,8 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
           <Button variant="secondary" onClick={onClose} disabled={salvando}>
             {t("common.cancel")}
           </Button>
-          <Button variant="primary" onClick={salvar} loading={salvando} disabled={!dados.name?.trim()}>
-            {rotulo(regra ? "settings.form.button.update" : "settings.form.button.create")}
+          <Button variant="primary" onClick={salvar} loading={salvando}>
+            {rotulo(regra ? "settings.form.button.update" : "section.enable")}
           </Button>
         </div>
       </div>

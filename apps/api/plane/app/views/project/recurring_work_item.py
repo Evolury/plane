@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-# Evolury: endpoints das tarefas recorrentes (ADR 0010).
+# Evolury: endpoints das tarefas recorrentes (ADR 0010, revisão 13/08/2026).
 #
-# Só admin do projeto — a regra cria trabalho para os outros sem pedir licença,
-# e é a mesma porta das Automações, ao lado das quais ela mora.
+# Escrever é porta de admin — a regra cria trabalho para os outros sem pedir
+# licença. Ler é de todos: o selo no cartão, a seção "Repetir" desabilitada e o
+# rastro da tarefa gerada são informação, não poder.
 
 # Django imports
 from django.utils import timezone
@@ -19,7 +20,7 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.recurring_work_item import RecurringWorkItemSerializer
 from plane.app.views.base import BaseViewSet
 from plane.bgtasks.recurring_work_item_task import agendar_proxima_data
-from plane.db.models import RecurringWorkItem
+from plane.db.models import RecurringWorkItem, RecurringWorkItemOccurrence
 from plane.utils.recurrence import proximas_datas
 
 
@@ -32,20 +33,66 @@ class RecurringWorkItemViewSet(BaseViewSet):
             RecurringWorkItem.objects.filter(
                 workspace__slug=self.kwargs.get("slug"), project_id=self.kwargs.get("project_id")
             )
-            .select_related("project", "template_state")
-            .prefetch_related("template_assignees", "template_labels")
+            # Origem excluída leva a regra junto; até o job passar, a lista
+            # não pode mostrar uma regra apontando para o nada.
+            .filter(source_issue__deleted_at__isnull=True)
+            .select_related("project", "initial_state", "source_issue", "source_issue__state")
         )
 
-    @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
     def list(self, request, slug, project_id):
         serializer = RecurringWorkItemSerializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
+    def for_issue(self, request, slug, project_id, issue_id):
+        """O papel de uma tarefa na recorrência: origem, gerada, ou nenhum.
+
+        É o que alimenta a seção "Repetir" do cartão — inclusive o rastro
+        "gerada pela recorrência de X", que vem da trava.
+        """
+        regra = self.get_queryset().filter(source_issue_id=issue_id).first()
+        if regra is not None:
+            return Response(
+                {"role": "source", "rule": RecurringWorkItemSerializer(regra).data},
+                status=status.HTTP_200_OK,
+            )
+
+        ocorrencia = (
+            RecurringWorkItemOccurrence.objects.filter(issue_id=issue_id, issue__project_id=project_id)
+            .select_related(
+                "recurring_work_item",
+                "recurring_work_item__source_issue",
+                "recurring_work_item__source_issue__state",
+                "recurring_work_item__initial_state",
+                "recurring_work_item__project",
+            )
+            .order_by("-scheduled_for")
+            .first()
+        )
+        if ocorrencia is not None:
+            return Response(
+                {
+                    "role": "occurrence",
+                    "rule": RecurringWorkItemSerializer(ocorrencia.recurring_work_item).data,
+                    "scheduled_for": ocorrencia.scheduled_for,
+                },
+                status=status.HTTP_200_OK,
+            )
+        return Response({"role": None, "rule": None}, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def create(self, request, slug, project_id):
         serializer = RecurringWorkItemSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        origem = serializer.validated_data.get("source_issue")
+        if origem is None or str(origem.project_id) != str(project_id):
+            return Response(
+                {"source_issue": "A tarefa de origem precisa ser deste projeto."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         regra = serializer.save(project_id=project_id, workspace_id=self.workspace_id_from_slug(slug))
         # Sem isto a regra nasce sem relógio e o job nunca a enxerga.
@@ -63,7 +110,12 @@ class RecurringWorkItemViewSet(BaseViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         regra = serializer.save()
-        # A agenda pode ter mudado; o relógio antigo não vale mais.
+        # A agenda pode ter mudado; o relógio antigo não vale mais. Trocar de
+        # modo zera o relógio: uma data de calendário não sobrevive à mudança
+        # para "após a conclusão".
+        if "generation_mode" in request.data:
+            RecurringWorkItem.objects.filter(pk=regra.pk).update(next_run_at=None)
+            regra.next_run_at = None
         agendar_proxima_data(regra)
         return Response(RecurringWorkItemSerializer(regra).data, status=status.HTTP_200_OK)
 
@@ -82,16 +134,23 @@ class RecurringWorkItemViewSet(BaseViewSet):
 
         É o que torna uma regra complexa confiável: em vez de decifrar
         "mensal, última sexta", a pessoa lê 28/08, 25/09, 30/10.
+
+        `partial=True` porque a pré-visualização é da AGENDA: a origem não
+        entra no cálculo, e exigi-la aqui rejeitaria a edição de uma regra
+        existente ("esta tarefa já tem recorrência").
         """
-        serializer = RecurringWorkItemSerializer(data=request.data)
+        dados = {campo: valor for campo, valor in request.data.items() if campo != "source_issue"}
+        serializer = RecurringWorkItemSerializer(data=dados, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        for obrigatorio in ("frequency", "time_of_day", "start_date"):
+            if serializer.validated_data.get(obrigatorio) is None:
+                return Response(
+                    {obrigatorio: "Sem este campo não há agenda para calcular."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        # Os campos ManyToMany não cabem num objeto solto; a agenda não usa
-        # nenhum deles, e é só a agenda que a pré-visualização calcula.
-        relacoes = ("template_assignees", "template_labels")
-        campos = {campo: valor for campo, valor in serializer.validated_data.items() if campo not in relacoes}
-        rascunho = RecurringWorkItem(**campos)
+        rascunho = RecurringWorkItem(**serializer.validated_data)
         rascunho.project_id = project_id
         datas = proximas_datas(rascunho, timezone.now(), quantidade=5)
         return Response({"next_occurrences": [data.isoformat() for data in datas]}, status=status.HTTP_200_OK)

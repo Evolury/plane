@@ -2,16 +2,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-# Evolury: tarefas recorrentes (ADR 0010).
+# Evolury: tarefas recorrentes (ADR 0010, revisado em 13/08/2026).
 #
-# Uma regra é um par AGENDA + MOLDE: quando gerar, e o que gerar. A agenda vive
-# em campos legíveis — frequência, intervalo, dias, horário — e vira `rrule` só
-# na hora de calcular; guardar RRULE cru economizaria código e custaria a tela.
+# Uma regra é uma AGENDA apontando para uma TAREFA DE ORIGEM. A tarefa é o
+# molde, vivo: editá-la muda as próximas ocorrências, sem sincronizar nada.
+# A agenda vive em campos legíveis — frequência, intervalo, dias, horário — e
+# vira `rrule` só na hora de calcular; RRULE cru economizaria código e
+# custaria a tela.
 #
 # Especificação e decisões em docs/evolury/funcionalidades/tarefa-recorrente/.
 
 # Django imports
-from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
@@ -52,8 +53,15 @@ class RecurrenceEndMode(models.TextChoices):
 class RecurringWorkItem(ProjectBaseModel):
     """Regra de recorrência de um projeto."""
 
-    # --- identificação ---
-    name = models.CharField(max_length=255)
+    # --- origem ---
+    # A tarefa que serve de molde. É trabalho real: pode ser concluída (e no
+    # modo "após a conclusão" é ela quem dispara a primeira ocorrência),
+    # arquivá-la pausa a regra, excluí-la exclui a regra junto. Como Issue usa
+    # exclusão lógica, o on_delete nunca dispara em produção — o ciclo de vida
+    # é aplicado no job de geração e nas views.
+    source_issue = models.ForeignKey(
+        "db.Issue", on_delete=models.CASCADE, related_name="recurrence_rules"
+    )
     is_active = models.BooleanField(default=True)
 
     # --- agenda ---
@@ -76,6 +84,10 @@ class RecurringWorkItem(ProjectBaseModel):
     # Horário local da geração (fuso do produto — ADR 0006).
     time_of_day = models.TimeField()
     start_date = models.DateField()
+    # Antecedência: quantos dias antes do vencimento a tarefa nasce. A data de
+    # nascimento vira a data de início da ocorrência; o vencimento é a data da
+    # agenda. Zero = nasce no dia (comportamento original).
+    lead_time_days = models.PositiveIntegerField(default=0)
 
     # --- fim da recorrência ---
     end_mode = models.CharField(max_length=20, choices=RecurrenceEndMode.choices, default=RecurrenceEndMode.NEVER)
@@ -95,31 +107,31 @@ class RecurringWorkItem(ProjectBaseModel):
     next_run_at = models.DateTimeField(null=True, blank=True, db_index=True)
     occurrences_created = models.PositiveIntegerField(default=0)
 
-    # --- molde ---
-    template_description_html = models.TextField(blank=True, default="<p></p>")
-    template_priority = models.CharField(max_length=30, default="none")
-    template_state = models.ForeignKey(
+    # A etapa onde a ocorrência nasce (padrão: a etapa padrão do projeto).
+    # NUNCA a etapa onde a anterior foi concluída — é o defeito mais reclamado
+    # do Asana, onde a nova instância reaparece dentro da coluna Concluído e é
+    # reconcluída por engano (ADR 0010, revisão).
+    initial_state = models.ForeignKey(
         "db.State", on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_work_items"
-    )
-    template_assignees = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="recurring_work_items_assigned"
-    )
-    template_labels = models.ManyToManyField("db.Label", blank=True, related_name="recurring_work_items")
-    template_estimate_point = models.ForeignKey(
-        "db.EstimatePoint", on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_work_items"
-    )
-    template_type = models.ForeignKey(
-        "db.IssueType", on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_work_items"
     )
 
     class Meta:
+        constraints = [
+            # Uma regra por tarefa: o interruptor "Repetir" do cartão liga e
+            # desliga UMA agenda, não uma coleção delas.
+            models.UniqueConstraint(
+                fields=["source_issue"],
+                condition=Q(deleted_at__isnull=True),
+                name="recurring_work_item_unique_source_when_deleted_at_null",
+            )
+        ]
         verbose_name = "Recurring Work Item"
         verbose_name_plural = "Recurring Work Items"
         db_table = "recurring_work_items"
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"{self.name} <{self.project.name}>"
+        return f"recorrência de {self.source_issue_id} <{self.project.name}>"
 
 
 class RecurringWorkItemOccurrence(BaseModel):

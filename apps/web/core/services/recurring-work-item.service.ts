@@ -4,10 +4,10 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: serviço das tarefas recorrentes (ADR 0010).
+// Evolury: serviço das tarefas recorrentes (ADR 0010, revisão 13/08/2026).
 
 import { API_BASE_URL } from "@plane/constants";
-import type { TRecurringWorkItem } from "@plane/types";
+import type { TRecurringWorkItem, TRecurringWorkItemRole } from "@plane/types";
 import { APIService } from "@/services/api.service";
 
 export class RecurringWorkItemService extends APIService {
@@ -54,6 +54,15 @@ export class RecurringWorkItemService extends APIService {
 
   async destroy(workspaceSlug: string, projectId: string, id: string): Promise<void> {
     return this.delete(`${this.base(workspaceSlug, projectId)}/${id}/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
+  /** O papel de uma tarefa na recorrência: origem, gerada, ou nenhum. */
+  async forIssue(workspaceSlug: string, projectId: string, issueId: string): Promise<TRecurringWorkItemRole> {
+    return this.get(`${this.base(workspaceSlug, projectId)}/for-issue/${issueId}/`)
       .then((res) => res?.data)
       .catch((err) => {
         throw err?.response?.data;

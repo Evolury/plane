@@ -4,16 +4,29 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: tarefas recorrentes (ADR 0010).
+// Evolury: tarefas recorrentes (ADR 0010, revisão 13/08/2026).
+//
+// A regra é uma agenda apontando para uma tarefa de origem — a tarefa é o
+// molde, vivo. Por isso não há mais campos de molde aqui.
 
 export type TRecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";
 export type TMonthlyMode = "day_of_month" | "last_day" | "weekday_of_month";
 export type TGenerationMode = "schedule" | "after_completion";
 export type TRecurrenceEndMode = "never" | "on_date" | "after_count";
 
-export type TRecurringWorkItem = {
+/** Resumo da origem que a API devolve junto com a regra. */
+export type TRecurringSourceIssue = {
   id: string;
   name: string;
+  sequence_id: number;
+  archived_at: string | null;
+  state_group: string | null;
+};
+
+export type TRecurringWorkItem = {
+  id: string;
+  source_issue: string;
+  source_issue_detail: TRecurringSourceIssue | null;
   is_active: boolean;
   // agenda
   frequency: TRecurrenceFrequency;
@@ -28,6 +41,8 @@ export type TRecurringWorkItem = {
   month_of_year: number | null;
   time_of_day: string;
   start_date: string;
+  /** Antecedência: nasce N dias antes do vencimento; a data de nascimento vira o início. */
+  lead_time_days: number;
   // fim
   end_mode: TRecurrenceEndMode;
   end_date: string | null;
@@ -40,16 +55,17 @@ export type TRecurringWorkItem = {
   occurrences_created: number;
   /** Só leitura: as próximas datas previstas */
   next_occurrences: string[];
-  // molde
-  template_description_html: string;
-  template_priority: string;
-  template_state: string | null;
-  template_assignees: string[];
-  template_labels: string[];
-  template_estimate_point: string | null;
-  template_type: string | null;
+  /** Etapa onde a ocorrência nasce (padrão: a etapa padrão do projeto). */
+  initial_state: string | null;
   project: string;
   workspace: string;
   created_at: string;
   updated_at: string;
+};
+
+/** O papel de uma tarefa na recorrência: origem, gerada, ou nenhum. */
+export type TRecurringWorkItemRole = {
+  role: "source" | "occurrence" | null;
+  rule: TRecurringWorkItem | null;
+  scheduled_for?: string;
 };

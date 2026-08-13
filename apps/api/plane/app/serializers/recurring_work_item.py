@@ -2,17 +2,23 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-# Evolury: serializer das tarefas recorrentes (ADR 0010).
+# Evolury: serializer das tarefas recorrentes (ADR 0010, revisão 13/08/2026).
 #
 # A validação por frequência mora aqui porque é a fronteira: uma regra semanal
 # sem dias escolhidos ou uma mensal sem modo geram datas silenciosamente
-# erradas, e "silenciosamente" é o problema.
+# erradas, e "silenciosamente" é o problema. As travas da origem também: são
+# elas que impedem a série de virar árvore.
 
 # Third party imports
 from rest_framework import serializers
 
 # Module imports
-from plane.db.models import RecurrenceEndMode, RecurrenceFrequency, RecurringWorkItem
+from plane.db.models import (
+    RecurrenceEndMode,
+    RecurrenceFrequency,
+    RecurringWorkItem,
+    RecurringWorkItemOccurrence,
+)
 from plane.db.models.recurring_work_item import GenerationMode, MonthlyMode
 
 from .base import BaseSerializer
@@ -20,6 +26,7 @@ from .base import BaseSerializer
 
 class RecurringWorkItemSerializer(BaseSerializer):
     next_occurrences = serializers.SerializerMethodField()
+    source_issue_detail = serializers.SerializerMethodField()
 
     class Meta:
         model = RecurringWorkItem
@@ -41,6 +48,41 @@ class RecurringWorkItemSerializer(BaseSerializer):
         from plane.utils.recurrence import proximas_datas
 
         return [data.isoformat() for data in proximas_datas(obj, timezone.now(), quantidade=3)]
+
+    def get_source_issue_detail(self, obj):
+        """O resumo da origem, para a lista não precisar de outra chamada."""
+        origem = obj.source_issue
+        if origem is None:
+            return None
+        return {
+            "id": str(origem.id),
+            "name": origem.name,
+            "sequence_id": origem.sequence_id,
+            "archived_at": origem.archived_at,
+            "state_group": origem.state.group if origem.state else None,
+        }
+
+    def validate_source_issue(self, origem):
+        # A origem é escolhida no nascimento e não muda: trocar de tarefa é
+        # excluir a regra e ligar outra.
+        if self.instance is not None and origem.id != self.instance.source_issue_id:
+            raise serializers.ValidationError("A tarefa de origem não pode ser trocada.")
+        if self.instance is not None:
+            return origem
+
+        if origem.parent_id is not None:
+            raise serializers.ValidationError("Subtarefa não pode ter recorrência própria.")
+        if origem.archived_at is not None:
+            raise serializers.ValidationError("Desarquive a tarefa antes de ativar a recorrência.")
+        if origem.is_draft:
+            raise serializers.ValidationError("Rascunho não pode ter recorrência.")
+        # A trava que impede a série de virar árvore — e que dá o rastro:
+        # tarefa gerada por recorrência não ativa recorrência própria.
+        if RecurringWorkItemOccurrence.objects.filter(issue_id=origem.id).exists():
+            raise serializers.ValidationError("Tarefa gerada por recorrência não pode ter recorrência própria.")
+        if RecurringWorkItem.objects.filter(source_issue_id=origem.id).exists():
+            raise serializers.ValidationError("Esta tarefa já tem uma recorrência.")
+        return origem
 
     def validate(self, data):
         # Em PATCH parcial, o que não veio continua valendo.
@@ -87,5 +129,10 @@ class RecurringWorkItemSerializer(BaseSerializer):
             raise serializers.ValidationError(
                 {"days_after_completion": "Escolha quantos dias após a conclusão."}
             )
+
+        estado = campo("initial_state")
+        origem = campo("source_issue")
+        if estado is not None and origem is not None and estado.project_id != origem.project_id:
+            raise serializers.ValidationError({"initial_state": "A etapa inicial precisa ser do mesmo projeto."})
 
         return data

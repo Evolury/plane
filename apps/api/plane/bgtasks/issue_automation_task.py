@@ -15,8 +15,13 @@ from django.utils import timezone
 
 # Module imports
 from plane.bgtasks.issue_activities_task import issue_activity
-from plane.db.models import Issue, Project, State
+from plane.db.models import Issue, Project, RecurringWorkItem, State
 from plane.utils.exception_logger import log_exception
+
+
+def _origens_de_recorrencia_ativa():
+    """Evolury: as tarefas que servem de origem a uma recorrência ativa."""
+    return RecurringWorkItem.objects.filter(is_active=True).values_list("source_issue_id", flat=True)
 
 
 @shared_task
@@ -52,6 +57,11 @@ def archive_old_issues():
                 | Q(issue_intake__status=2)
                 | Q(issue_intake__isnull=True)
             )
+
+            # Evolury: a origem de uma recorrência ativa fica de fora — arquivá-la
+            # pausaria a série em silêncio, e uma automação de limpeza não pode
+            # decidir isso por ninguém (ADR 0010, revisão).
+            issues = issues.exclude(pk__in=_origens_de_recorrencia_ativa())
 
             # Check if Issues
             if issues:
@@ -113,6 +123,11 @@ def close_old_issues():
                 | Q(issue_intake__status=2)
                 | Q(issue_intake__isnull=True)
             )
+
+            # Evolury: mesma proteção do arquivamento — fechar a origem à revelia
+            # travaria o modo "após a conclusão", que espera uma conclusão de
+            # verdade (cancelada não dispara, por decisão do ADR 0009).
+            issues = issues.exclude(pk__in=_origens_de_recorrencia_ativa())
 
             # Check if Issues
             if issues:
