@@ -3,6 +3,33 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.7.0] — 2026-08-13
+
+### Tarefas recorrentes
+
+Trabalho que se repete passa a ser configurado uma vez, em Configurações do
+projeto → Execução → Tarefas recorrentes (ADR 0010). Só admin cria, porque a
+regra gera trabalho para os outros.
+
+- **Agenda flexível**: diária, semanal (vários dias numa regra só), mensal — por
+  dia do mês, pelo último dia, ou pela 1ª/2ª/3ª/4ª/última ocorrência de um dia
+  da semana — e anual, todas com intervalo, o que dá quinzenal nas duas leituras
+  que a palavra tem. Fim por data, por contagem, ou nunca.
+- **Dia que não existe no mês vira o último dia**: "todo dia 31" gera em 28/02 e
+  30/04. A RFC 5545 mandaria pular esses meses, o que some com a tarefa cinco
+  vezes por ano sem ninguém relacionar à causa.
+- **Pré-visualização das próximas datas** no formulário, vinda do mesmo cálculo
+  que vai gerar as tarefas — não de uma segunda implementação no front.
+- **Duas formas de gerar**: por agenda, ou N dias após a conclusão da anterior.
+- **Três guardas contra acúmulo**: atraso não gera as ocorrências perdidas, a
+  ocorrência anterior aberta segura a próxima (opcional, ligada por padrão), e a
+  mesma data nunca gera duas tarefas.
+
+### Minhas tarefas
+
+- Etapa cancelada ganha o mesmo fundo avermelhado que o estado cancelado tem no
+  resto do produto.
+
 ## [1.6.1] — 2026-08-13
 
 ### Correções
