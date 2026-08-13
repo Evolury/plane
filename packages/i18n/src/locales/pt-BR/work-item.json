@@ -281,7 +281,19 @@
       "complete": "Concluir",
       "reopen": "Reabrir",
       "complete_tooltip": "Move a tarefa para o estado de concluída",
-      "reopen_tooltip": "Devolve a tarefa para um estado em aberto"
+      "reopen_tooltip": "Devolve a tarefa para um estado em aberto",
+      "sub_issues": {
+        "title": "Concluir as subtarefas também?",
+        "description": "Esta tarefa tem {count, plural, one {# subtarefa em aberto} other {# subtarefas em aberto}}.",
+        "parent_only": "Concluir só esta",
+        "complete_all": "Concluir todas"
+      },
+      "bulk": {
+        "selected": "{count, plural, one {# tarefa selecionada} other {# tarefas selecionadas}}",
+        "clear": "Limpar seleção",
+        "success": "{count, plural, one {# tarefa concluída} other {# tarefas concluídas}}",
+        "error": "Não foi possível concluir todas as tarefas selecionadas."
+      }
     }
   },
   "sub_work_item": {

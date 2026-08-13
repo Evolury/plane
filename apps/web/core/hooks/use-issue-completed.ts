@@ -8,9 +8,53 @@
 // A informação vem do GRUPO do estado, não de um campo — é assim que todo o
 // resto do produto decide o que é conclusão.
 
+import { useCallback } from "react";
+import type { IState } from "@plane/types";
+import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 
 export const useIsIssueCompleted = (stateId: string | null | undefined): boolean => {
   const { getStateById } = useProjectState();
   return getStateById(stateId ?? undefined)?.group === "completed";
+};
+
+/**
+ * Destinos de concluir e reabrir, por projeto.
+ *
+ * Concluir espelha o resolvedor do backend (`get_completion_state`): o estado
+ * configurado no projeto quando válido, senão o primeiro do grupo concluído por
+ * `sequence`. Reabrir devolve ao estado padrão do projeto — o mesmo destino de
+ * uma tarefa recém-criada.
+ *
+ * Fica separado do componente porque a conclusão em massa e a conclusão de
+ * subtarefas precisam resolver o destino de VÁRIOS projetos, não só o do item
+ * que está na tela.
+ */
+export const useCompletionTargets = () => {
+  const { getProjectStates } = useProjectState();
+  const { getProjectById } = useProject();
+
+  const getCompletionState = useCallback(
+    (projectId: string | null | undefined): IState | undefined => {
+      const estados = getProjectStates(projectId ?? undefined) ?? [];
+      const concluidos = estados.filter((e) => e.group === "completed").sort((a, b) => a.sequence - b.sequence);
+      const configurado = concluidos.find((e) => e.id === getProjectById(projectId ?? undefined)?.completion_state);
+      return configurado ?? concluidos[0];
+    },
+    [getProjectStates, getProjectById]
+  );
+
+  const getReopenState = useCallback(
+    (projectId: string | null | undefined): IState | undefined => {
+      const estados = getProjectStates(projectId ?? undefined) ?? [];
+      // Nunca "reabrir" para um estado que segue concluído ou cancelado.
+      const abertos = estados
+        .filter((e) => e.group !== "completed" && e.group !== "cancelled")
+        .sort((a, b) => a.sequence - b.sequence);
+      return abertos.find((e) => e.default) ?? abertos[0];
+    },
+    [getProjectStates]
+  );
+
+  return { getCompletionState, getReopenState };
 };

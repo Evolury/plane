@@ -4,4 +4,8 @@
  * See the LICENSE file for details.
  */
 
-export const useBulkOperationStatus = () => false;
+// Evolury: a seleção múltipla vinha desligada nesta edição — a máquina toda
+// existia no código, mas a única ação oferecida era uma faixa de upsell. Com a
+// conclusão em massa (ADR 0009) passou a haver ação de verdade, então a
+// seleção liga.
+export const useBulkOperationStatus = () => true;

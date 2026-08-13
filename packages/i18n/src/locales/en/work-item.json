@@ -281,7 +281,19 @@
       "complete": "Complete",
       "reopen": "Reopen",
       "complete_tooltip": "Move the work item to the completed state",
-      "reopen_tooltip": "Move the work item back to an open state"
+      "reopen_tooltip": "Move the work item back to an open state",
+      "sub_issues": {
+        "title": "Complete the sub-work items too?",
+        "description": "This work item has {count, plural, one {# open sub-work item} other {# open sub-work items}}.",
+        "parent_only": "Only this one",
+        "complete_all": "Complete all"
+      },
+      "bulk": {
+        "selected": "{count, plural, one {# work item selected} other {# work items selected}}",
+        "clear": "Clear selection",
+        "success": "{count, plural, one {# work item completed} other {# work items completed}}",
+        "error": "Some of the selected work items could not be completed."
+      }
     }
   },
   "sub_work_item": {
