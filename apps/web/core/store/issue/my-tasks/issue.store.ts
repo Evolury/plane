@@ -46,7 +46,13 @@ export interface IMyTasksIssues extends IBaseIssuesStore {
   removeBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   archiveBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   bulkUpdateProperties: (workspaceSlug: string, projectId: string, data: TBulkOperationsPayload) => Promise<void>;
-  reposicionarSeConcluida: (workspaceSlug: string, projectId: string, issueId: string, data: Partial<TIssue>) => void;
+  reposicionarPeloCiclo: (
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    data: Partial<TIssue>,
+    previousStateId: string | null | undefined
+  ) => void;
   quickAddIssue: undefined;
 }
 
@@ -144,8 +150,12 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
     const isPersonalReorder = !isStageMove && mutatedKeys.length === 1 && mutatedKeys[0] === "sort_order";
 
     if (!isStageMove && !isPersonalReorder) {
+      // O estado anterior precisa ser lido ANTES da atualização: o issueUpdate
+      // já grava o novo no mapa compartilhado, e comparar depois diria sempre
+      // que nada mudou.
+      const estadoAnterior = this.rootIssueStore.issues.getIssueById(issueId)?.state_id;
       const resultado = await this.issueUpdate(workspaceSlug, projectId, issueId, data);
-      this.reposicionarSeConcluida(workspaceSlug, projectId, issueId, data);
+      this.reposicionarPeloCiclo(workspaceSlug, projectId, issueId, data, estadoAnterior);
       return resultado;
     }
 
@@ -175,29 +185,47 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
   };
 
   /**
-   * Evolury: concluir daqui move o cartão para a etapa de concluídas na hora
-   * (ADR 0009).
+   * Evolury: o cartão acompanha o ciclo da tarefa na hora (ADR 0009).
    *
-   * O reposicionamento de verdade é do servidor, no mesmo funil que trata
-   * todos os caminhos de mudança de estado — mas ele roda em segundo plano, e
-   * sem isto o cartão ficaria parado na etapa antiga até a próxima busca.
-   * Espelha a regra do backend: só na ENTRADA no grupo concluído, e sem mexer
-   * em quem já está numa etapa desse grupo.
+   * O reposicionamento de verdade é do servidor, no mesmo funil que trata todos
+   * os caminhos de mudança de estado — mas ele roda em segundo plano, e sem
+   * isto o cartão ficaria na etapa antiga até a próxima busca. Espelha a regra
+   * do backend: concluir vai para a etapa de conclusão, cancelar para a de
+   * canceladas, e sair de um grupo encerrado devolve à padrão.
    *
    * Só estado local (shouldSync=false): nenhuma requisição sai daqui.
    */
-  reposicionarSeConcluida = (workspaceSlug: string, projectId: string, issueId: string, data: Partial<TIssue>) => {
+  reposicionarPeloCiclo = (
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    data: Partial<TIssue>,
+    previousStateId: string | null | undefined
+  ) => {
     if (!("state_id" in data) || !data.state_id) return;
     const rootStore = this.rootIssueStore.rootStore;
-    if (rootStore.state.getStateById(data.state_id)?.group !== "completed") return;
+    const issue = this.rootIssueStore.issues.getIssueById(issueId);
+    const grupoNovo = rootStore.state.getStateById(data.state_id)?.group;
+    const grupoAnterior = rootStore.state.getStateById(previousStateId ?? undefined)?.group;
+    if (!grupoNovo || grupoNovo === grupoAnterior) return;
+
+    const encerrados = ["completed", "cancelled"];
+    if (!encerrados.includes(grupoNovo) && !encerrados.includes(grupoAnterior ?? "")) return;
 
     const etapas = rootStore.myTasksStore.sortedStages;
-    const issue = this.rootIssueStore.issues.getIssueById(issueId);
-    const etapaAtual = etapas.find((etapa) => etapa.id === issue?.my_task_stage_id);
-    if (etapaAtual?.group === "completed") return;
-
-    const destino = etapas.find((etapa) => etapa.group === "completed");
+    const destino =
+      grupoNovo === "completed"
+        ? (etapas.find((etapa) => etapa.group === "completed" && etapa.is_completion) ??
+          etapas.find((etapa) => etapa.group === "completed"))
+        : grupoNovo === "cancelled"
+          ? etapas.find((etapa) => etapa.group === "cancelled")
+          : etapas.find((etapa) => etapa.is_default);
     if (!destino) return;
+
+    // Quem já está numa etapa do grupo de destino escolheu ficar lá.
+    const etapaAtual = etapas.find((etapa) => etapa.id === issue?.my_task_stage_id);
+    if (etapaAtual?.group === grupoNovo) return;
+
     this.issueUpdate(workspaceSlug, projectId, issueId, { my_task_stage_id: destino.id }, false);
   };
 

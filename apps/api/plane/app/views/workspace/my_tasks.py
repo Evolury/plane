@@ -170,6 +170,30 @@ class WorkStageViewSet(BaseViewSet):
             WorkStage.objects.filter(pk=stage.pk).update(is_default=True)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
+    def mark_completion(self, request, slug, pk):
+        """Evolury: destino da tarefa concluída entre as etapas do usuário.
+
+        Só faz sentido no grupo concluído — é a mesma pergunta que a página de
+        Estados do projeto responde com `completion_state` (ADR 0009).
+        """
+        stage = self.get_queryset().filter(pk=pk).first()
+        if stage is None:
+            return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        if stage.group != StateGroup.COMPLETED.value:
+            return Response(
+                {"error": "Só uma etapa do grupo concluído pode ser o destino da conclusão."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            # Mesma ordem do mark_default: a constraint parcial exige desmarcar
+            # a antiga antes de marcar a nova.
+            WorkStage.objects.filter(workspace=stage.workspace, owner=request.user, is_completion=True).update(
+                is_completion=False
+            )
+            WorkStage.objects.filter(pk=stage.pk).update(is_completion=True)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class MyTasksIssuesEndpoint(BaseAPIView):
     filter_backends = (ComplexFilterBackend,)
@@ -216,21 +240,25 @@ class MyTasksIssuesEndpoint(BaseAPIView):
         # listagem (seed nunca rodou): itens sem associação ficam com etapa
         # nula até uma etapa padrão ser definida.
         default_stage_id = default_stage.id if default_stage else None
-        # Evolury: tarefa concluída sem associação pertence à etapa de
-        # concluídas, e não à padrão (ADR 0009). É a mesma exceção de mão única
+        # Evolury: tarefa encerrada sem associação pertence à etapa do grupo
+        # correspondente — concluídas ou canceladas —, e não à padrão (ADR
+        # 0009). É a mesma exceção de mão única
         # que reposiciona a associação existente ao concluir — resolvida aqui
         # para valer também para quem nunca moveu nada e para o que foi
         # concluído antes de existirem etapas.
+        etapas_concluidas = WorkStage.objects.filter(
+            workspace=workspace, owner=request.user, group=StateGroup.COMPLETED.value
+        )
         completed_stage = (
-            WorkStage.objects.filter(
-                workspace=workspace,
-                owner=request.user,
-                group=StateGroup.COMPLETED.value,
-            )
+            etapas_concluidas.filter(is_completion=True).first() or etapas_concluidas.order_by("sort_order").first()
+        )
+        completed_stage_id = completed_stage.id if completed_stage else default_stage_id
+        cancelled_stage = (
+            WorkStage.objects.filter(workspace=workspace, owner=request.user, group=StateGroup.CANCELLED.value)
             .order_by("sort_order")
             .first()
         )
-        completed_stage_id = completed_stage.id if completed_stage else default_stage_id
+        cancelled_stage_id = cancelled_stage.id if cancelled_stage else default_stage_id
 
         filters = issue_filters(request.query_params, "GET")
         order_by_param = request.GET.get("order_by", "-created_at")
@@ -271,6 +299,10 @@ class MyTasksIssuesEndpoint(BaseAPIView):
                     When(
                         state__group=StateGroup.COMPLETED.value,
                         then=Value(completed_stage_id, output_field=UUIDField()),
+                    ),
+                    When(
+                        state__group=StateGroup.CANCELLED.value,
+                        then=Value(cancelled_stage_id, output_field=UUIDField()),
                     ),
                     default=Value(default_stage_id, output_field=UUIDField()),
                     output_field=UUIDField(),

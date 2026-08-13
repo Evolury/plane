@@ -150,6 +150,8 @@ export const StateItem = observer(function StateItem(props: TStateItem) {
             stateOperationsCallbacks={{
               markStateAsDefault: stateOperationsCallbacks.markStateAsDefault,
               deleteState: stateOperationsCallbacks.deleteState,
+              markStateAsCompletion: stateOperationsCallbacks.markStateAsCompletion,
+              getCompletionStateInfo: stateOperationsCallbacks.getCompletionStateInfo,
             }}
             shouldTrackEvents={shouldTrackEvents}
           />

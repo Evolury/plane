@@ -103,6 +103,29 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
 - [ ] T5.5 PR, CI, merge e deploy
 - [ ] T5.6 CHANGELOG + release
 
+## T6 — Ciclo completo em Minhas tarefas (13/08/2026)
+
+Revisão pedida depois da entrega: a etapa pessoal só reagia à conclusão.
+
+- [x] T6.1 Reabrir devolve a tarefa à **etapa padrão**, como uma recém-atribuída.
+      A decisão original dizia que reabrir não desfazia o movimento, com o
+      argumento de que devolver à etapa anterior exigiria memória — o argumento
+      valia, a conclusão não: o destino é a padrão, sem memória nenhuma
+      (revisão registrada no ADR 0009)
+- [x] T6.2 Marcação de qual etapa concluída é o destino
+      (`WorkStage.is_completion`), com endpoint `mark-completion` e a mesma
+      apresentação do "Marcar como padrão" no painel de etapas
+- [x] T6.3 Cancelar move a associação para a etapa do grupo cancelado, com uma
+      etapa **"Canceladas"** no seed — sem ela o cancelamento não teria onde
+      aterrissar. Migração cria as duas peças para quem já tinha etapas
+- [x] T6.4 Andar entre grupos abertos deixou de mexer na etapa pessoal: o time
+      mover de "A fazer" para "Em andamento" é fluxo do projeto, e não diz nada
+      sobre a organização de ninguém
+- [x] T6.5 Corrigido um defeito próprio: o "Marcar como conclusão" aparecia
+      também no painel de etapas pessoais, onde não fazia nada — ele falava
+      direto com o projeto. Agora o componente é surdo: recebe callbacks, e cada
+      tela responde do seu jeito
+
 ## Dois enganos que só a tela pegou
 
 Ambos passavam nos testes e falhavam no uso — vale registrar o padrão.

@@ -13,8 +13,10 @@ import type { IState, TStateOperationsCallbacks } from "@plane/types";
 import { EUserProjectRoles } from "@plane/types";
 import { ProjectStateLoader, GroupList } from "@/components/project-states";
 // hooks
+import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 import { useUserPermissions } from "@/hooks/store/user";
+import { useCompletionTargets } from "@/hooks/use-issue-completed";
 
 type TProjectState = {
   workspaceSlug: string;
@@ -34,6 +36,8 @@ export const ProjectStateRoot = observer(function ProjectStateRoot(props: TProje
     markStateAsDefault,
   } = useProjectState();
   const { allowPermissions } = useUserPermissions();
+  const { getProjectById, updateProject } = useProject();
+  const { getCompletionState } = useCompletionTargets();
   // derived values
   const isEditable = allowPermissions(
     [EUserProjectRoles.ADMIN],
@@ -59,7 +63,18 @@ export const ProjectStateRoot = observer(function ProjectStateRoot(props: TProje
       moveStatePosition: async (stateId: string, data: Partial<IState>) =>
         moveStatePosition(workspaceSlug, projectId, stateId, data),
       markStateAsDefault: async (stateId: string) => markStateAsDefault(workspaceSlug, projectId, stateId),
+      // Evolury: destino do botão de concluir (ADR 0009). No projeto a resposta
+      // mora em `completion_state`; sem escolha explícita vale o primeiro
+      // estado do grupo, e o rótulo mostra isso em vez de esconder.
+      markStateAsCompletion: async (stateId: string) => {
+        await updateProject(workspaceSlug, projectId, { completion_state: stateId });
+      },
+      getCompletionStateInfo: (stateId: string) => ({
+        isCompletion: getCompletionState(projectId)?.id === stateId,
+        isExplicit: getProjectById(projectId)?.completion_state === stateId,
+      }),
     }),
+    // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps
     [workspaceSlug, projectId, createState, moveStatePosition, updateState, deleteState, markStateAsDefault]
   );
 

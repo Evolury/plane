@@ -51,6 +51,7 @@ export interface IMyTasksStore {
   updateStage: (workspaceSlug: string, stageId: string, data: Partial<TWorkStage>) => Promise<TWorkStage>;
   deleteStage: (workspaceSlug: string, stageId: string) => Promise<void>;
   markStageAsDefault: (workspaceSlug: string, stageId: string) => Promise<void>;
+  markStageAsCompletion: (workspaceSlug: string, stageId: string) => Promise<void>;
 }
 
 export class MyTasksStore implements IMyTasksStore {
@@ -77,6 +78,7 @@ export class MyTasksStore implements IMyTasksStore {
       updateStage: action,
       deleteStage: action,
       markStageAsDefault: action,
+      markStageAsCompletion: action,
     });
     this.myTasksService = new MyTasksService();
   }
@@ -170,6 +172,12 @@ export class MyTasksStore implements IMyTasksStore {
 
   markStageAsDefault = async (workspaceSlug: string, stageId: string) => {
     await this.myTasksService.markStageAsDefault(workspaceSlug, stageId);
+    await this.fetchStages(workspaceSlug);
+  };
+
+  /** Evolury: destino da tarefa concluída entre as etapas do usuário (ADR 0009) */
+  markStageAsCompletion = async (workspaceSlug: string, stageId: string) => {
+    await this.myTasksService.markStageAsCompletion(workspaceSlug, stageId);
     await this.fetchStages(workspaceSlug);
   };
 

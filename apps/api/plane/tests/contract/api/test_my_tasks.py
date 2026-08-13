@@ -30,6 +30,7 @@ from plane.db.models import (
 STAGES_URL = "/api/workspaces/{slug}/my-tasks/stages/"
 STAGE_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/"
 MARK_DEFAULT_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-default/"
+MARK_COMPLETION_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-completion/"
 ISSUES_URL = "/api/workspaces/{slug}/my-tasks/issues/"
 MOVE_URL = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/move/"
 STAGE_URL_ISSUE = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/stage/"
@@ -99,10 +100,15 @@ class TestWorkStagesSeed:
     def test_first_list_seeds_default_stages(self, session_client, workspace):
         response = session_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 5
+        assert len(response.data) == 6
         defaults = [stage for stage in response.data if stage["is_default"]]
         assert len(defaults) == 1
         assert defaults[0]["name"] == "Recém-atribuídas"
+        # Uma etapa de conclusão marcada, para o destino de concluir não
+        # depender de ordenação (ADR 0009)
+        completions = [stage for stage in response.data if stage["is_completion"]]
+        assert len(completions) == 1
+        assert completions[0]["name"] == "Concluídas"
         # Ordem do seed preservada pelo sort_order
         assert [stage["name"] for stage in response.data] == [
             "Recém-atribuídas",
@@ -110,13 +116,14 @@ class TestWorkStagesSeed:
             "Em breve",
             "Depois",
             "Concluídas",
+            "Canceladas",
         ]
 
     def test_seed_is_idempotent(self, session_client, workspace):
         session_client.get(STAGES_URL.format(slug=workspace.slug))
         response = session_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 5
+        assert len(response.data) == 6
 
     def test_seed_race_is_absorbed(self, db, workspace, create_user):
         """Se dois requests passam pelo exists() ao mesmo tempo, a segunda
@@ -127,14 +134,14 @@ class TestWorkStagesSeed:
         ) as mocked_filter:
             mocked_filter.return_value.exists.return_value = False
             ensure_default_work_stages(workspace, create_user)  # não levanta
-        assert WorkStage.objects.filter(workspace=workspace, owner=create_user).count() == 5
+        assert WorkStage.objects.filter(workspace=workspace, owner=create_user).count() == 6
 
     def test_seed_is_per_user(self, session_client, second_client, workspace, second_user, create_user):
         session_client.get(STAGES_URL.format(slug=workspace.slug))
         response = second_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 5
-        assert WorkStage.objects.filter(workspace=workspace).count() == 10
+        assert len(response.data) == 6
+        assert WorkStage.objects.filter(workspace=workspace).count() == 12
         first_ids = set(WorkStage.objects.filter(owner=create_user).values_list("id", flat=True))
         second_ids = {stage["id"] for stage in response.data}
         assert first_ids.isdisjoint(second_ids)
@@ -210,6 +217,30 @@ class TestWorkStagesCrud:
         assert response.status_code == status.HTTP_204_NO_CONTENT
         association = WorkStageIssue.objects.get(owner=create_user, issue=assigned_issue)
         assert association.stage_id == stages["Recém-atribuídas"].id
+
+    def test_mark_completion_swaps(self, session_client, workspace, create_user):
+        """Evolury: destino da conclusão entre as etapas do usuário (ADR 0009)."""
+        stages = seed_stages(workspace, create_user)
+        outra = WorkStage.objects.create(
+            workspace=workspace, owner=create_user, name="Entregues", color="#000000",
+            group="completed", sort_order=75000,
+        )
+        response = session_client.post(MARK_COMPLETION_URL.format(slug=workspace.slug, pk=outra.id))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        outra.refresh_from_db()
+        stages["Concluídas"].refresh_from_db()
+        assert outra.is_completion is True
+        assert stages["Concluídas"].is_completion is False
+
+    def test_mark_completion_rejects_a_stage_outside_the_completed_group(
+        self, session_client, workspace, create_user
+    ):
+        """Etapa de outro grupo não pode ser destino de conclusão."""
+        stages = seed_stages(workspace, create_user)
+        response = session_client.post(MARK_COMPLETION_URL.format(slug=workspace.slug, pk=stages["Hoje"].id))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        stages["Hoje"].refresh_from_db()
+        assert stages["Hoje"].is_completion is False
 
     def test_mark_default_swaps(self, session_client, workspace, create_user):
         stages = seed_stages(workspace, create_user)
@@ -394,7 +425,7 @@ class TestMyTasksIssueStage:
         assert WorkStage.objects.filter(owner=create_user).count() == 0
         response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
         assert response.status_code == status.HTTP_200_OK
-        assert WorkStage.objects.filter(owner=create_user).count() == 5
+        assert WorkStage.objects.filter(owner=create_user).count() == 6
         assert response.data["stage_id"] is not None
 
 

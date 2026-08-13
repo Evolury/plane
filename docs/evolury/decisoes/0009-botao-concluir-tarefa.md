@@ -59,17 +59,44 @@ tem atribuída. A direção única preserva o que motivou o ADR 0001 — organiz
 pessoal não vaza para o time —, enquanto deixa o fato compartilhado
 (a conclusão) se refletir na visão pessoal.
 
-Duas regras completam a exceção:
+Regras que completam a exceção:
 
-- **Quem já está numa etapa do grupo concluído fica onde está.** Se a pessoa
+- **Quem já está numa etapa do grupo de destino fica onde está.** Se a pessoa
   escolheu uma etapa própria de concluídas, é dela a última palavra.
-- **Sem associação, a tarefa concluída pertence à etapa de concluídas.** Isso é
-  resolvido na listagem, não gravado — cobre quem nunca moveu nada e o que foi
-  concluído antes de a pessoa ter etapas, sem migração e sem inventar
-  associação para ninguém.
+- **Sem associação, a tarefa encerrada pertence à etapa do grupo
+  correspondente.** Isso é resolvido na listagem, não gravado — cobre quem
+  nunca moveu nada e o que foi encerrado antes de a pessoa ter etapas, sem
+  migração e sem inventar associação para ninguém.
+- **Andar entre grupos abertos não mexe em nada.** O time mover o estado de
+  "A fazer" para "Em andamento" é fluxo do projeto, e não diz nada sobre a
+  organização pessoal de ninguém.
 
-Reabrir **não** desfaz o movimento: devolver a tarefa à etapa anterior exigiria
-guardar de onde ela veio, e mão única foi a decisão.
+### Revisão de 13/08/2026 — o ciclo inteiro, não só a conclusão
+
+A primeira versão desta decisão dizia que reabrir **não** desfaz o movimento,
+com o argumento de que devolver a tarefa à etapa anterior exigiria guardar de
+onde ela veio. O argumento continua correto, mas a conclusão estava errada: o
+destino da reabertura não precisa ser a etapa anterior — é a **etapa padrão**,
+exatamente como o projeto devolve a tarefa ao estado padrão. Sem memória
+nenhuma.
+
+Com isso a etapa pessoal acompanha o ciclo inteiro, com a mesma regra do
+projeto traduzida para etapas:
+
+| Transição do estado real | Destino da etapa pessoal |
+| --- | --- |
+| entrou no grupo concluído | etapa de conclusão (a marcada, senão a primeira) |
+| entrou no grupo cancelado | primeira etapa do grupo cancelado |
+| voltou para um grupo aberto | etapa padrão, como uma tarefa recém-atribuída |
+
+Duas peças novas sustentam a tabela: **`WorkStage.is_completion`**, que responde
+"qual destas etapas concluídas é o destino" — a mesma pergunta que
+`Project.completion_state` responde do lado do projeto —, e uma etapa
+**"Canceladas"** no seed, sem a qual o cancelamento não teria onde aterrissar.
+Quem já tinha etapas semeadas recebe as duas por migração.
+
+A mão única continua valendo, e é o que importava no ADR 0001: mover a etapa
+pessoal segue sem alterar nada no projeto.
 
 ## Escopo
 

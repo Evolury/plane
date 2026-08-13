@@ -24,7 +24,10 @@ type TBaseStateItemTitleProps = {
 
 type TEnabledStateItemTitleProps = TBaseStateItemTitleProps & {
   disabled: false;
-  stateOperationsCallbacks: Pick<TStateOperationsCallbacks, "markStateAsDefault" | "deleteState">;
+  stateOperationsCallbacks: Pick<
+    TStateOperationsCallbacks,
+    "markStateAsDefault" | "deleteState" | "markStateAsCompletion" | "getCompletionStateInfo"
+  >;
   shouldTrackEvents: boolean;
 };
 
@@ -63,12 +66,18 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
       </div>
       {!disabled && (
         <div className="hidden items-center gap-2 group-hover:flex">
-          {/* Evolury: destino do botão de concluir, só no grupo concluído (ADR 0009) */}
-          {state.group === "completed" && (
-            <div className="flex-shrink-0 text-11 transition-all">
-              <StateMarksAsCompletion state={state} />
-            </div>
-          )}
+          {/* Evolury: destino do botão de concluir, só no grupo concluído e só
+              onde a tela sabe responder quem é o destino (ADR 0009) */}
+          {state.group === "completed" &&
+            props.stateOperationsCallbacks.markStateAsCompletion &&
+            props.stateOperationsCallbacks.getCompletionStateInfo && (
+              <div className="flex-shrink-0 text-11 transition-all">
+                <StateMarksAsCompletion
+                  {...props.stateOperationsCallbacks.getCompletionStateInfo(state.id)}
+                  onMark={() => props.stateOperationsCallbacks.markStateAsCompletion!(state.id)}
+                />
+              </div>
+            )}
           {/* state mark as default option */}
           <div className="flex-shrink-0 text-11 transition-all">
             <StateMarksAsDefault

@@ -279,6 +279,11 @@ urlpatterns = [
         name="workspace-my-tasks-stage-mark-default",
     ),
     path(
+        "workspaces/<str:slug>/my-tasks/stages/<uuid:pk>/mark-completion/",
+        WorkStageViewSet.as_view({"post": "mark_completion"}),
+        name="workspace-my-tasks-stage-mark-completion",
+    ),
+    path(
         "workspaces/<str:slug>/my-tasks/issues/",
         MyTasksIssuesEndpoint.as_view(),
         name="workspace-my-tasks-issues",

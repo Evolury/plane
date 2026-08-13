@@ -19,6 +19,8 @@ export type TWorkStage = {
   sort_order: number;
   /** A "primeira etapa": recebe todo item atribuído sem associação */
   is_default: boolean;
+  /** Destino da tarefa concluída, entre as etapas do grupo concluído */
+  is_completion: boolean;
   workspace: string;
   owner: string;
   created_at: string;

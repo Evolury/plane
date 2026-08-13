@@ -58,13 +58,21 @@ def tarefa(db, projeto, workspace, create_user, estados):
 @pytest.fixture
 def etapas(db, workspace, create_user):
     return {
+        "recem": WorkStage.objects.create(
+            workspace=workspace, owner=create_user, name="Recém-atribuídas", color="#000",
+            group=StateGroup.UNSTARTED.value, sort_order=5000, is_default=True,
+        ),
         "hoje": WorkStage.objects.create(
             workspace=workspace, owner=create_user, name="Hoje", color="#000",
-            group=StateGroup.STARTED.value, sort_order=15000, is_default=True,
+            group=StateGroup.STARTED.value, sort_order=15000,
         ),
         "concluidas": WorkStage.objects.create(
             workspace=workspace, owner=create_user, name="Concluídas", color="#000",
             group=StateGroup.COMPLETED.value, sort_order=25000,
+        ),
+        "canceladas": WorkStage.objects.create(
+            workspace=workspace, owner=create_user, name="Canceladas", color="#000",
+            group=StateGroup.CANCELLED.value, sort_order=35000,
         ),
     }
 
@@ -160,3 +168,58 @@ class TestPersonalStageOnCompletion:
 
         assert sync_personal_stages_on_completion(tarefa.id, estados["aberto"].id, estados["concluido"].id) == 0
         assert not WorkStageIssue.objects.filter(owner=create_user, issue=tarefa).exists()
+
+    @pytest.mark.django_db
+    def test_uses_the_stage_marked_as_completion(self, tarefa, estados, etapas, workspace, create_user):
+        """A etapa marcada ganha da primeira do grupo."""
+        entregues = WorkStage.objects.create(
+            workspace=workspace, owner=create_user, name="Entregues", color="#000",
+            group=StateGroup.COMPLETED.value, sort_order=45000, is_completion=True,
+        )
+
+        assert sync_personal_stages_on_completion(tarefa.id, estados["aberto"].id, estados["concluido"].id) == 1
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == entregues.id
+
+    @pytest.mark.django_db
+    def test_reopening_returns_to_the_default_stage(self, tarefa, estados, etapas, workspace, create_user):
+        """Desconcluir devolve a tarefa à etapa padrão, como uma recém-atribuída."""
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, issue=tarefa, stage=etapas["concluidas"]
+        )
+
+        movidas = sync_personal_stages_on_completion(tarefa.id, estados["concluido"].id, estados["aberto"].id)
+
+        assert movidas == 1
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["recem"].id
+
+    @pytest.mark.django_db
+    def test_cancelling_moves_to_the_cancelled_stage(self, tarefa, estados, etapas, workspace, create_user):
+        """Cancelar tem o mesmo tratamento de concluir, com outro destino."""
+        cancelado = State.objects.create(
+            name="Cancelado", group=StateGroup.CANCELLED.value,
+            project=tarefa.project, workspace=tarefa.workspace, color="#000",
+        )
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, issue=tarefa, stage=etapas["hoje"]
+        )
+
+        assert sync_personal_stages_on_completion(tarefa.id, estados["aberto"].id, cancelado.id) == 1
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["canceladas"].id
+
+    @pytest.mark.django_db
+    def test_moving_between_open_groups_does_nothing(self, tarefa, estados, etapas, workspace, create_user):
+        """Andar entre estados abertos é fluxo do projeto, não da pessoa.
+
+        Quem organizou a tarefa em "Hoje" não a perde porque o time moveu o
+        estado de "A fazer" para "Em andamento".
+        """
+        em_andamento = State.objects.create(
+            name="Em andamento", group=StateGroup.STARTED.value,
+            project=tarefa.project, workspace=tarefa.workspace, color="#000",
+        )
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=create_user, issue=tarefa, stage=etapas["hoje"]
+        )
+
+        assert sync_personal_stages_on_completion(tarefa.id, estados["aberto"].id, em_andamento.id) == 0
+        assert WorkStageIssue.objects.get(owner=create_user, issue=tarefa).stage_id == etapas["hoje"].id
