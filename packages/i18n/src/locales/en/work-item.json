@@ -276,7 +276,13 @@
       "label": "Archived work items",
       "count_tooltip": "There are {count, plural, one {# work item} other {# work items}} in project's archives"
     },
-    "view": "View work item"
+    "view": "View work item",
+    "completion": {
+      "complete": "Complete",
+      "reopen": "Reopen",
+      "complete_tooltip": "Move the work item to the completed state",
+      "reopen_tooltip": "Move the work item back to an open state"
+    }
   },
   "sub_work_item": {
     "update": {

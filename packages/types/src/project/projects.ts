@@ -52,6 +52,8 @@ export interface IProject extends IPartialProject {
   readonly cover_image_url?: string;
   default_assignee?: IUser | string | null;
   default_state?: string | null;
+  // Evolury: destino do botão de concluir (ADR 0009); nulo = automático
+  completion_state?: string | null;
   description?: string;
   estimate?: string | null;
   anchor?: string | null;
