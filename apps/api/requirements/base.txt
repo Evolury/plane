@@ -75,3 +75,8 @@ opentelemetry-exporter-otlp-proto-grpc==1.28.1
 drf-spectacular==0.29.0
 # html sanitizer
 nh3==0.2.18
+
+# Evolury: cálculo de recorrência (RFC 5545) para tarefas recorrentes — ADR 0010.
+# Já vinha como dependência transitiva; declarada porque agora é usada direto,
+# e dependência que sobrevive por sorte some quando o grafo muda.
+python-dateutil==2.9.0.post0

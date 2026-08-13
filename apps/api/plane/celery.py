@@ -35,6 +35,13 @@ app.conf.beat_schedule = {
     # A telemetria de instância não é agendada: esta instalação não envia métricas
     # para terceiros. Ver docs/telemetria.md para religar contra coletor próprio.
     #
+    # Evolury: tarefas recorrentes (ADR 0010). De quinze em quinze minutos
+    # porque a agenda tem horário — "toda segunda às 8h" com job diário seria
+    # "toda segunda, em algum momento".
+    "generate-recurring-work-items-every-fifteen-minutes": {
+        "task": "plane.bgtasks.recurring_work_item_task.generate_recurring_work_items",
+        "schedule": crontab(minute="*/15"),
+    },
     # Occurs once every day
     "check-every-day-to-delete-hard-delete": {
         "task": "plane.bgtasks.deletion_task.hard_delete",
