@@ -36,17 +36,27 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
       **Desvio consciente do ADR**: a leitura do histórico de atividade exigiria
       buscar as atividades de cada item só para desenhar um botão, o que não se
       paga nos layouts de lista — o destino previsível venceu
-- [ ] T2.3 Confirmação ao concluir tarefa com subtarefas abertas, com a opção
-      de concluir as subtarefas junto
-- [x] T2.4 Regras de exibição (parcial: permissão e arquivado no peek;
-      triagem, rascunho e quadro público entram com os layouts)
-- [ ] ~~T2.4~~ Regras de exibição: esconder para quem não pode editar estado, e em
-      triagem pendente, rascunho, item arquivado e quadro público
-- [x] T2.5 Tratamento visual de concluído em **lista e quadro** (cartão
-      esmaecido, via o grupo do estado — mesma fonte que o resto do produto).
-      Falta planilha, calendário e gantt; o gancho `useIsIssueCompleted` já
-      existe e é só aplicá-lo nos blocos restantes
-- [ ] T2.6 Ação em massa: concluir a seleção
+- [x] T2.3 Confirmação ao concluir tarefa com subtarefas abertas, com a opção
+      de concluir as subtarefas junto. Só as subtarefas **diretas**; quem tem
+      filha aberta é perguntado por sua vez, ao ser concluída.
+      A validação revelou que o peek se fechava ao primeiro clique dentro da
+      confirmação — o modal é portado para fora do painel, então o detector de
+      clique externo o tratava como clique de fora, e o botão desmontava antes
+      do `click` disparar (nenhuma requisição saía). A loja de detalhe ganhou
+      `isCompletionModalOpen`, como os outros modais do peek já faziam
+- [x] T2.4 Regras de exibição: permissão, arquivado e rascunho no peek.
+      Triagem e quadro público não passam por este cabeçalho — a triagem tem
+      página própria e o quadro público é outro aplicativo
+- [x] T2.5 Tratamento visual de concluído nos **cinco layouts** (esmaecido, via
+      o grupo do estado — mesma fonte que o resto do produto). Na planilha vai
+      na linha inteira, e não só na célula do título
+- [x] T2.6 Ação em massa: concluir a seleção. A seleção múltipla existia
+      inteira no código desta edição, mas vinha **desligada**
+      (`useBulkOperationStatus` fixo em `false`) porque a única ação oferecida
+      era uma faixa de upsell. Agora há ação real, então a seleção liga e a
+      faixa dá lugar à barra de conclusão. Sem endpoint de operação em massa
+      (é da edição paga), a barra repete a mesma atualização item a item, em
+      lotes de cinco
 
 ## T3 — Minhas tarefas
 
@@ -73,6 +83,13 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
       alteração de código (o objetivo do ADR 0009)
 - [ ] T5.5 PR, CI, merge e deploy
 - [ ] T5.6 CHANGELOG + release
+
+## Achados fora de escopo
+
+- O cronograma (gantt) mostra o cabeçalho de datas e a duração em inglês:
+  `9 days`, `Week 32`, `Aug 2026`, iniciais dos dias. Também `getBlockViewDetails`
+  monta `From …` / `Till …`. Não é desta entrega, mas é do mesmo tipo de
+  pendência de idioma já corrigida em outros lugares.
 
 ## Fora de escopo
 

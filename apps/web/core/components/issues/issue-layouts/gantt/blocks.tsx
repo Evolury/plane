@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { Popover } from "@plane/propel/popover";
 import { Tooltip } from "@plane/propel/tooltip";
 import { ControlLink } from "@plane/ui";
-import { findTotalDaysInRange, generateWorkItemLink } from "@plane/utils";
+import { cn, findTotalDaysInRange, generateWorkItemLink } from "@plane/utils";
 // components
 import { SIDEBAR_WIDTH } from "@/components/gantt-chart/constants";
 import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifier";
@@ -20,6 +20,7 @@ import { useIssues } from "@/hooks/store/use-issues";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
 import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
+import { useIsIssueCompleted } from "@/hooks/use-issue-completed";
 import useIssuePeekOverviewRedirection from "@/hooks/use-issue-peek-overview-redirection";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local imports
@@ -52,6 +53,8 @@ export const IssueGanttBlock = observer(function IssueGanttBlock(props: Props) {
     issueDetails && getProjectStates(issueDetails?.project_id)?.find((state) => state?.id == issueDetails?.state_id);
 
   const { blockStyle } = getBlockViewDetails(issueDetails, stateDetails?.color ?? "");
+  // Evolury: tarefa concluída fica esmaecida (ADR 0009)
+  const isCompleted = useIsIssueCompleted(issueDetails?.state_id);
 
   const handleIssuePeekOverview = () => handleRedirection(workspaceSlug, issueDetails, isMobile);
 
@@ -65,7 +68,9 @@ export const IssueGanttBlock = observer(function IssueGanttBlock(props: Props) {
           // oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions
           <div
             id={`issue-${issueId}`}
-            className="space-between relative flex h-full w-full cursor-pointer items-center rounded-sm"
+            className={cn("space-between relative flex h-full w-full cursor-pointer items-center rounded-sm", {
+              "opacity-60": isCompleted,
+            })}
             style={blockStyle}
             onClick={handleIssuePeekOverview}
           >
@@ -117,6 +122,8 @@ export const IssueGanttSidebarBlock = observer(function IssueGanttSidebarBlock(p
   // derived values
   const issueDetails = getIssueById(issueId);
   const projectIdentifier = getProjectIdentifierById(issueDetails?.project_id);
+  // Evolury: tarefa concluída fica esmaecida (ADR 0009)
+  const isCompleted = useIsIssueCompleted(issueDetails?.state_id);
 
   const handleIssuePeekOverview = (e: any) => {
     e.stopPropagation(true);
@@ -138,7 +145,7 @@ export const IssueGanttSidebarBlock = observer(function IssueGanttSidebarBlock(p
       id={`issue-${issueId}`}
       href={workItemLink}
       onClick={handleIssuePeekOverview}
-      className="line-clamp-1 w-full cursor-pointer text-13 text-primary"
+      className={cn("line-clamp-1 w-full cursor-pointer text-13 text-primary", { "opacity-60": isCompleted })}
       disabled={!!issueDetails?.tempId}
     >
       <div className="relative flex h-full w-full cursor-pointer items-center gap-2">

@@ -204,11 +204,14 @@ export const IssuePeekOverviewHeader = observer(function IssuePeekOverviewHeader
       <div className="flex items-center gap-x-4">
         <NameDescriptionUpdateStatus isSubmitting={isSubmitting} />
         <div className="flex items-center gap-2">
-          {/* Evolury: concluir/reabrir (ADR 0009). Fora de item arquivado, e
-              desabilitado por permissão como o resto do cabeçalho. */}
-          {issueDetails && !isArchived && (
+          {/* Evolury: concluir/reabrir (ADR 0009). Fora de item arquivado e de
+              rascunho, e desabilitado por permissão como o resto do cabeçalho.
+              Triagem e quadro público não passam por este cabeçalho. */}
+          {issueDetails && !isArchived && !issueDetails.is_draft && (
             <CompletionToggle
+              workspaceSlug={workspaceSlug}
               projectId={issueDetails.project_id}
+              issueId={issueId}
               stateId={issueDetails.state_id}
               disabled={disabled}
               onChange={(stateId) =>
