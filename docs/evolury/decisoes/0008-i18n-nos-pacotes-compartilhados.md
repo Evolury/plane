@@ -52,3 +52,14 @@ bibliotecas externas (i18next e React), de nenhum pacote interno.
 - Componentes desses pacotes continuam aceitando texto por propriedade quando
   o conteúdo é do domínio de quem chama — a tradução interna é para o texto
   que pertence ao próprio componente.
+- **O servidor `live` passou a carregar i18n em runtime.** Ele depende de
+  `@plane/editor`, que agora depende de `@plane/i18n` — então `i18next-icu`
+  entra no grafo de um processo Node que roda em produção, e não só nos
+  aplicativos de navegador, onde tudo é empacotado. Isso ficou visível quando a
+  imagem de produção passou a instalar apenas as dependências reais de cada app
+  (`pnpm deploy --prod`): `intl-messageformat` é **peer dependency** de
+  `i18next-icu` e não estava declarada em lugar nenhum, sobrevivia por
+  hoisting. O `live` subia e morria em `ERR_MODULE_NOT_FOUND`. A correção é
+  declarar a peer explicitamente em `@plane/i18n`, que é quem de fato precisa
+  dela em runtime. Ao mexer nas dependências desses pacotes, vale lembrar que
+  agora existe um consumidor Node, não só navegador.
