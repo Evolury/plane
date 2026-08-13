@@ -333,6 +333,9 @@ catalogs:
     i18next-resources-to-backend:
       specifier: 1.2.1
       version: 1.2.1
+    intl-messageformat:
+      specifier: 10.7.16
+      version: 10.7.16
     ioredis:
       specifier: 5.7.0
       version: 5.7.0
@@ -1508,6 +1511,9 @@ importers:
       i18next-resources-to-backend:
         specifier: 'catalog:'
         version: 1.2.1
+      intl-messageformat:
+        specifier: 'catalog:'
+        version: 10.7.16
       react:
         specifier: 'catalog:'
         version: 18.3.1
