@@ -31,6 +31,10 @@ class MonthlyMode(models.TextChoices):
     """Como o mês escolhe o dia."""
 
     DAY_OF_MONTH = "day_of_month", "Dia do mês"
+    # Existe como opção própria, e não como "dia 31", porque ninguém pensa
+    # "dia 31" quando quer dizer "fecha o mês" — e o Asana, que é a referência
+    # aqui, também tem a opção separada.
+    LAST_DAY = "last_day", "Último dia do mês"
     WEEKDAY_OF_MONTH = "weekday_of_month", "Dia da semana do mês"
 
 

@@ -652,6 +652,12 @@ def update_issue_activity(
             previous_state_id=estado_antigo if estado_antigo and is_valid_uuid(estado_antigo) else None,
             new_state_id=estado_novo,
         )
+        # Evolury: no modo "após a conclusão", concluir a ocorrência é o que
+        # agenda a próxima (ADR 0010). Importado aqui dentro para não criar
+        # ciclo entre as tarefas em segundo plano.
+        from plane.bgtasks.recurring_work_item_task import agendar_apos_conclusao
+
+        agendar_apos_conclusao(issue_id=issue_id, novo_estado_id=estado_novo)
 
 
 def delete_issue_activity(

@@ -68,6 +68,8 @@ class RecurringWorkItemSerializer(BaseSerializer):
                     raise serializers.ValidationError(
                         {"week_of_month": "Escolha a semana e o dia da semana do mês."}
                     )
+            elif modo == MonthlyMode.LAST_DAY:
+                pass  # não precisa de dia: é sempre o fim do mês
             elif not campo("day_of_month"):
                 raise serializers.ValidationError({"day_of_month": "Escolha o dia do mês."})
 

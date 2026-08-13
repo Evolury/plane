@@ -202,6 +202,7 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
                 className="rounded-md border border-subtle bg-surface-1 px-2 py-1"
               >
                 <option value="day_of_month">{rotulo("monthly_mode.day_of_month")}</option>
+                <option value="last_day">{rotulo("monthly_mode.last_day")}</option>
                 <option value="weekday_of_month">{rotulo("monthly_mode.weekday_of_month")}</option>
               </select>
 
@@ -230,7 +231,7 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
                     ))}
                   </select>
                 </>
-              ) : (
+              ) : dados.monthly_mode === "last_day" ? null : (
                 <>
                   <span className="text-secondary">{rotulo("day_of_month.label")}</span>
                   <Input

@@ -455,7 +455,8 @@
     "monthly_mode": {
       "label": "No mês",
       "day_of_month": "No dia do mês",
-      "weekday_of_month": "No dia da semana"
+      "weekday_of_month": "No dia da semana",
+      "last_day": "No último dia do mês"
     },
     "week_of_month": {
       "first": "primeira",
