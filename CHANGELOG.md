@@ -3,6 +3,52 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.8.0] — 2026-08-13
+
+### A recorrência mora na tarefa
+
+Redesenho da funcionalidade entregue na 1.7.0, antes do primeiro uso amplo
+(ADR 0010, revisão). O formulário paralelo de molde saiu: a regra passa a
+apontar para uma **tarefa de origem**, que é o molde vivo — editar a tarefa
+muda as próximas ocorrências, sem sincronizar nada.
+
+- **Seção "Repetir" em todo cartão** (painel e peek): interruptor que só admin
+  liga, com agenda, pausar e editar na própria tarefa. Subtarefa não tem
+  recorrência própria; tarefa gerada mostra, no lugar do interruptor, o rastro
+  **"Gerada pela recorrência de X"** — clicável, levando à origem.
+- **Configurações viram painel de auditoria**: a página lista as tarefas com
+  recorrência ativa (ID, próximas datas, abrir tarefa, pausar, excluir), sem
+  botão de criar.
+- **A ocorrência nasce na etapa inicial da regra** (padrão: a etapa padrão do
+  projeto), nunca na etapa onde a anterior foi concluída — o defeito mais
+  reclamado do Asana, onde a cópia nova aparece dentro da coluna Concluído e é
+  reconcluída por engano.
+- **Antecedência em dias e horas**: a tarefa nasce antes do vencimento ("3 dias
+  antes", "2 horas antes"), com a data de nascimento virando data de início e o
+  vencimento vindo da agenda. Horas valem até 23 — a partir de 24, usa-se dias.
+- **O que a cópia carrega**: nome, descrição, prioridade, responsáveis,
+  etiquetas, estimativa, tipo e subtarefas (um nível, abertas, **sem data** —
+  data ausente não mente; a herdada do ciclo anterior nasceria vencida). Não
+  carrega comentários, atividade, anexos, ciclo, módulo nem relações.
+- **Ciclo de vida da origem**: concluir dispara a próxima no modo "após a
+  conclusão"; arquivar pausa (reversível); excluir encerra a recorrência. As
+  automações de arquivar e fechar **pulam origens ativas** — uma limpeza
+  automática não pode pausar uma série em silêncio.
+- **Guarda com critérios precisos**: a série inteira conta (origem e todas as
+  ocorrências); cancelar e excluir liberam; concluir a anterior antes do
+  vencimento resgata a ocorrência do período com a antecedência restante, e
+  vencimento passado com a anterior aberta pula o período.
+- **Selo "repete"** ao lado do ID nos layouts de lista e kanban.
+- Migração converte cada molde existente numa tarefa de verdade, retomável por
+  construção e ensaiada com dado real antes do deploy.
+
+### Correções
+
+- Ocorrência excluída ainda aberta não bloqueia mais a guarda — bloqueava a
+  série para sempre, invisível no quadro.
+- Modal aberto de dentro do peek não fecha mais o peek no primeiro clique
+  (mesma correção da confirmação de conclusão, ADR 0009).
+
 ## [1.7.0] — 2026-08-13
 
 ### Tarefas recorrentes
