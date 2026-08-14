@@ -3,6 +3,25 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.11.0] — 2026-08-14
+
+### Tarefas recorrentes
+
+- **Pular uma ocorrência.** Cada uma das próximas datas, na seção "Repetir" da
+  tarefa de origem, tem um botão **Pular** — só para admin do projeto. A data
+  fica riscada e não vira tarefa; **Desfazer** no mesmo lugar a devolve. A
+  semana do feriado deixa de exigir concluir uma tarefa que ninguém fez, ou
+  desligar a recorrência e lembrar de religá-la.
+- **Pular não mexe na série**: a ocorrência seguinte nasce no dia de sempre, e
+  o contador de ocorrências criadas não sobe.
+- **Não há confirmação, de propósito.** Nada foi criado, ninguém foi
+  notificado, nenhum trabalho se perdeu — e modal para o que é barato ensina a
+  confirmar sem ler, gastando a modal que importa.
+- **Mudar a agenda descarta os pulos futuros**, com aviso **antes** de salvar e
+  a contagem do que será descartado: a data pulada pode nem existir na agenda
+  nova. Mudar só a antecedência não descarta nada, porque ela move o nascimento
+  e não a data prevista.
+
 ## [1.10.0] — 2026-08-14
 
 ### Tarefas recorrentes
