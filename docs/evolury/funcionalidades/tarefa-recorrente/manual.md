@@ -174,11 +174,11 @@ Excluir uma **tarefa gerada** não afeta a série.
 
 ## Como pausar ou encerrar
 
-| Objetivo                             | Caminho                                                                                                    |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| Parar por um tempo                   | **Pausar**, no cartão ou no painel — reversível                                                            |
-| Encerrar de vez                      | desligar o interruptor **Repetir** na tarefa, ou a lixeira no painel                                       |
-| Encontrar a recorrência meses depois | Configurações → Tarefas recorrentes; ou abrir a ocorrência da semana e clicar no rastro, que leva à origem |
+| Objetivo                             | Caminho                                                                                                                                                                      |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parar por um tempo                   | **Pausar**, no cartão ou no painel — reversível                                                                                                                              |
+| Encerrar de vez                      | desligar o interruptor **Repetir** na tarefa, ou a lixeira no painel                                                                                                         |
+| Encontrar a recorrência meses depois | O ícone de repetição no cabeçalho das tarefas, ao lado do filtro; Configurações → Tarefas recorrentes; ou abrir a ocorrência da semana e clicar no rastro, que leva à origem |
 
 Encerrar apaga a agenda e **preserva as tarefas já geradas** — elas são
 trabalho, não histórico da regra. A tarefa de origem também permanece, como

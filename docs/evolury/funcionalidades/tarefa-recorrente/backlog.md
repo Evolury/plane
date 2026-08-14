@@ -162,6 +162,14 @@ chamam de "excluir este evento", porque lá a instância existe de verdade).
       descarte ao mudar a agenda, permanência ao mudar a antecedência, e a
       porta de admin
 
+## F10 — Atalho no cabeçalho (14/08/2026)
+
+- [x] F10.1 Ícone de repetição ao lado do filtro, no cabeçalho das tarefas do
+      projeto, levando à auditoria das recorrentes. Aparece **só quando há
+      recorrência ativa** — atalho para tela vazia é ruído permanente — e **só
+      para admin**, porque a página responde `NotAuthorizedView` aos demais.
+      Não custa consulta nova: o selo do quadro já pede a mesma resposta
+
 ## Fora de escopo
 
 Anexos no molde, feriado e dia útil (ADR 0010).

@@ -18,6 +18,7 @@ import { useIssues } from "@/hooks/store/use-issues";
 // plane web imports
 import type { TProject } from "@plane/types";
 // local imports
+import { RecurrenceShortcut } from "@/components/recurring-work-items/header-shortcut";
 import { WorkItemsModal } from "../analytics/work-items/modal";
 import { WorkItemFiltersToggle } from "../work-item-filters/filters-toggle";
 import {
@@ -109,6 +110,9 @@ export const HeaderFilters = observer(function HeaderFilters(props: Props) {
         />
       </div>
       <WorkItemFiltersToggle entityType={storeType} entityId={projectId} />
+      {/* Evolury: atalho para a auditoria das recorrentes, ao lado do filtro.
+          Some sozinho quando o projeto não gera nada (ADR 0010). */}
+      <RecurrenceShortcut workspaceSlug={workspaceSlug} projectId={projectId} />
       <FiltersDropdown
         miniIcon={<SlidersHorizontal className="size-3.5" />}
         title={t("common.display")}
