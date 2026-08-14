@@ -99,6 +99,18 @@ tornar visível, por último o gesto de offboarding, que é o mais caro.
 - [x] F5.5 Responsável padrão do projeto na geração — a regra valia em toda
       tarefa criada à mão e era ignorada nas que nascem sozinhas
 
+## F6 — Matriz de compatibilidade (14/08/2026)
+
+- [x] F6.1 Executar a matriz: 40 linhas com evidência
+      ([compatibilidade.md](compatibilidade.md))
+- [x] F6.2 Corrigir a consulta por regra na listagem, com teto de consultas
+      fixado em teste
+- [x] F6.3 Precisar "conta em ciclo e módulo" na especificação, no manual e no
+      ADR — a ocorrência nasce fora dos dois
+
+Lacunas anotadas, não corrigidas: aviso ao arquivar a origem (pausa a série em
+silêncio) e endpoint enxuto para o selo do quadro.
+
 ## Ciclo seguinte
 
 - [ ] Vencimento relativo da subtarefa: âncora na criação ou no vencimento da

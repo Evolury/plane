@@ -210,6 +210,36 @@ class TestRecurringWorkItems:
 
         assert [pessoa["display_name"] for pessoa in lista.data[0]["inactive_assignees"]] == ["Quem Saiu"]
 
+    def test_the_list_does_not_query_per_rule(
+        self, session_client, workspace, projeto, create_user, django_assert_max_num_queries
+    ):
+        """O selo do quadro pede esta lista a cada render.
+
+        Sem os conjuntos vindo prontos do contexto, cada regra custaria duas
+        consultas para responder a mesma pergunta sobre o mesmo projeto — o
+        custo cresceria com o número de recorrentes do projeto.
+
+        O teto é apertado de propósito: com 5 regras são 4 consultas, e sem os
+        conjuntos prontos seriam ~14. Um teto folgado deixaria a regressão
+        passar sem ninguém notar, que é o defeito que este teste existe para
+        impedir.
+        """
+        for indice in range(5):
+            tarefa = Issue.objects.create(
+                name=f"Origem {indice}", project=projeto, workspace=projeto.workspace, created_by=create_user
+            )
+            IssueAssignee.objects.create(
+                issue=tarefa, assignee=create_user, project=projeto, workspace=projeto.workspace
+            )
+            session_client.post(
+                LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(tarefa), format="json"
+            )
+
+        with django_assert_max_num_queries(6):
+            resposta = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
+
+        assert len(resposta.data) == 5
+
     def test_for_member_counts_the_rules_before_removing_someone(
         self, session_client, workspace, projeto, origem, create_user
     ):
