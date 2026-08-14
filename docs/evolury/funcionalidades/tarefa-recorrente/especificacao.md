@@ -153,6 +153,10 @@ As subtarefas da origem são copiadas — descrevem o trabalho, não a execuçã
 Vêm **abertas, sem comentários, sem atividade e sem data**. O reset não é
 recurso: é consequência de copiar, como no ClickUp.
 
+**A árvore inteira vem junto**, em qualquer profundidade, com a hierarquia
+preservada: a subtarefa de uma subtarefa nasce dentro dela, não solta na raiz.
+A hierarquia descreve o trabalho, e é por isso que ela acompanha.
+
 **Sem data é o padrão, e é decisão.** O defeito conhecido do Asana é a subtarefa
 que nasce com a data do ciclo anterior, vencida desde o primeiro segundo. Uma
 subtarefa sem data já comunica "vence com a principal", que é o caso comum.
@@ -173,18 +177,22 @@ outro, que é onde o remapeamento do ClickUp falha quando a data do pai recua.
 dia em que a ocorrência nasce. Data ausente não mente, e data impossível
 também não pode.
 
-O campo aparece na linha da subtarefa, só nas subtarefas de uma tarefa de
-origem, e só para admin.
+O campo aparece na linha da subtarefa, em **qualquer nível** da árvore de uma
+tarefa de origem, e só para admin.
 
-Três travas:
+Duas travas:
 
 - **Subtarefa não tem recorrência própria.** Principal recorrendo mais subtarefa
   recorrendo é o que produz a duplicação em cascata relatada no Asana.
-- **Um nível só.** Subtarefa de subtarefa não é copiada.
-- **Teto de 50 subtarefas por ocorrência**, com aviso ao configurar. Acima disso
-  a ocorrência é um projeto disfarçado. O ClickUp corta em 500 e **remove a
-  recorrência da tarefa** ao passar do teto — aqui o aviso vem antes, e a regra
-  de ninguém é apagada em silêncio.
+- **Teto de 50 subtarefas por ocorrência**, contando a **árvore inteira** e não
+  só as filhas diretas, com aviso na seção "Repetir" quando a origem passa dele.
+  Acima do teto a ocorrência é um projeto disfarçado. O ClickUp corta em 500 e
+  **remove a recorrência da tarefa** ao passar — aqui o aviso vem antes, e a
+  regra de ninguém é apagada em silêncio.
+
+Quando o teto corta, ele corta **do nível mais fundo para cima**, e nunca
+separa uma subtarefa do seu pai: a ocorrência pode nascer com menos ramos, e
+nunca com um ramo solto pendurado na raiz.
 
 A guarda de ocorrência aberta continua lendo a tarefa principal: a confirmação
 de subtarefas abertas ([ADR 0009](../../decisoes/0009-botao-concluir-tarefa.md))
@@ -230,9 +238,15 @@ alcança qualquer tarefa. É a limpeza do histórico.
 | -------------------------------- | --------------------------------------------------- |
 | Anexos na cópia                  | custo de storage por ocorrência                     |
 | Vencimento relativo da subtarefa | adição pura, sem migração; a fase já carrega uma    |
-| Subtarefa aninhada               | multiplica o custo da geração                       |
+| Subtarefa aninhada               | multiplicaria o custo da geração                    |
 | Pular uma ocorrência             | o registro de ocorrências já deixa pronto o terreno |
 | Feriado e dia útil               | exige calendário de feriados                        |
+
+Dois já entraram, e a tabela fica como registro do que se pensava na hora:
+**vencimento relativo da subtarefa** em 14/08/2026, por ser adição pura; e
+**subtarefa aninhada** no mesmo dia, quando o custo foi medido em vez de
+presumido — o teto passou a contar a árvore, e o número de nós copiados por
+ocorrência continua o mesmo.
 
 ## Perguntas resolvidas
 

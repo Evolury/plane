@@ -188,12 +188,15 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                 displayProperties={displayProperties}
                 issue={issue}
               />
-              {/* Evolury: só aparece quando o pai tem recorrência (ADR 0010, F7) */}
+              {/* Evolury: só aparece quando a raiz tem recorrência (ADR 0010,
+                  F7). A raiz, e não o pai imediato: com a árvore inteira
+                  entrando na cópia (F8), a subtarefa de terceiro nível também
+                  declara o próprio vencimento — e quem tem a regra é a origem. */}
               {issue.project_id && (
                 <SubtaskDueForParent
                   workspaceSlug={workspaceSlug}
                   projectId={issue.project_id}
-                  parentIssueId={parentIssueId}
+                  rootIssueId={rootIssueId}
                   subtaskId={issueId}
                 />
               )}

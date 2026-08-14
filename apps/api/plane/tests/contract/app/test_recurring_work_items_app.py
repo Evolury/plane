@@ -24,6 +24,7 @@ from plane.db.models import (
     User,
     WorkspaceMember,
 )
+from plane.utils.subtask_tree import TETO_DE_SUBTAREFAS
 
 LISTA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/"
 PREVIEW_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/preview/"
@@ -192,6 +193,34 @@ class TestRecurringWorkItems:
         assert como_gerada.data["role"] == "occurrence"
         assert como_gerada.data["rule"]["source_issue_detail"]["sequence_id"] == origem.sequence_id
         assert como_comum.data["role"] is None
+
+    def test_the_cap_warning_only_fires_above_the_ceiling(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """O corte é silencioso na geração; o aviso é o preço disso.
+
+        A regra de ninguém é desligada por causa do teto — que é o que o
+        ClickUp faz ao passar do limite dele. Em troca, quem tem árvore grande
+        precisa saber antes, e não pela ocorrência que nasceu pela metade.
+        """
+        session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        url = PARA_TAREFA_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=origem.id)
+
+        assert session_client.get(url).data["subtask_cap_exceeded"] is False
+
+        pai = origem
+        # Uma corrente funda: o teto conta a árvore, e não os filhos diretos.
+        for i in range(TETO_DE_SUBTAREFAS + 1):
+            pai = Issue.objects.create(
+                name=f"Passo {i}", parent=pai, project=projeto, workspace=projeto.workspace,
+                created_by=create_user,
+            )
+
+        resposta = session_client.get(url)
+        assert resposta.data["subtask_cap_exceeded"] is True
+        assert resposta.data["subtask_cap"] == TETO_DE_SUBTAREFAS
 
     def test_an_inactive_assignee_is_visible_on_the_rule(
         self, session_client, workspace, projeto, origem, create_user
@@ -363,6 +392,34 @@ class TestRecurringWorkItems:
         removida = session_client.post(url, {"subtask": str(filha.id), "anchor": ""}, format="json")
         assert removida.status_code == status.HTTP_204_NO_CONTENT
         assert RecurringSubtaskSchedule.objects.count() == 0
+
+    def test_a_nested_subtask_can_be_scheduled(self, session_client, workspace, projeto, origem, create_user):
+        """Qualquer nível da árvore, não só o primeiro (F8).
+
+        A cópia leva a árvore inteira; se a agenda parasse no primeiro nível,
+        metade das subtarefas copiadas ficaria sem o recurso — a inconsistência
+        que ninguém lê no manual e descobre configurando.
+        """
+        filha = Issue.objects.create(
+            name="Fechar o caixa", parent=origem, project=projeto, workspace=projeto.workspace,
+            created_by=create_user,
+        )
+        neta = Issue.objects.create(
+            name="Conferir extrato", parent=filha, project=projeto, workspace=projeto.workspace,
+            created_by=create_user,
+        )
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.post(
+            AGENDA_SUB_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"]),
+            {"subtask": str(neta.id), "anchor": "after_creation", "offset_days": 1},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert resposta.data["subtask"] == str(neta.id)
 
     def test_only_a_child_of_the_source_can_be_scheduled(
         self, session_client, workspace, projeto, origem, create_user

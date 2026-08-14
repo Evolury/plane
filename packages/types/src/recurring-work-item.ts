@@ -91,4 +91,8 @@ export type TRecurringWorkItemRole = {
   role: "source" | "occurrence" | null;
   rule: TRecurringWorkItem | null;
   scheduled_for?: string;
+  /** Quantas subtarefas cabem numa ocorrência, contando a árvore inteira. */
+  subtask_cap?: number;
+  /** A árvore da origem passou do teto — parte dela não será copiada. */
+  subtask_cap_exceeded?: boolean;
 };

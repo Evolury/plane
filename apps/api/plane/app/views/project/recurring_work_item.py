@@ -34,6 +34,7 @@ from plane.db.models import (
     SubtaskDueAnchor,
 )
 from plane.utils.recurrence import proximas_datas
+from plane.utils.subtask_tree import TETO_DE_SUBTAREFAS, dentro_da_arvore, excede_o_teto
 
 
 class RecurringWorkItemViewSet(BaseViewSet):
@@ -103,8 +104,16 @@ class RecurringWorkItemViewSet(BaseViewSet):
         """
         regra = self.get_queryset().filter(source_issue_id=issue_id).first()
         if regra is not None:
+            # O aviso de teto vive aqui, e não na listagem: ele custa uma
+            # travessia da árvore por regra, e a listagem tem teto de consultas
+            # justamente porque uma pergunta por regra já a derrubou uma vez.
             return Response(
-                {"role": "source", "rule": RecurringWorkItemSerializer(regra).data},
+                {
+                    "role": "source",
+                    "rule": RecurringWorkItemSerializer(regra).data,
+                    "subtask_cap": TETO_DE_SUBTAREFAS,
+                    "subtask_cap_exceeded": excede_o_teto(issue_id),
+                },
                 status=status.HTTP_200_OK,
             )
 
@@ -245,10 +254,12 @@ class RecurringWorkItemViewSet(BaseViewSet):
             return Response({"error": "Tarefa recorrente não encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
         subtarefa_id = request.data.get("subtask")
-        subtarefa = Issue.objects.filter(pk=subtarefa_id, parent_id=regra.source_issue_id).first()
-        if subtarefa is None:
+        subtarefa = Issue.objects.filter(pk=subtarefa_id, project_id=project_id).first()
+        # Qualquer nível da árvore, e só o que a cópia alcança: agendar uma
+        # subtarefa que a ocorrência nunca vai criar seria configurar o vazio.
+        if subtarefa is None or not dentro_da_arvore(regra.source_issue_id, subtarefa.id):
             return Response(
-                {"subtask": "A subtarefa precisa ser filha da tarefa de origem."},
+                {"subtask": "A subtarefa precisa estar na árvore da tarefa de origem."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

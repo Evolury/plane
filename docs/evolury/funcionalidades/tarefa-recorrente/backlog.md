@@ -121,9 +121,24 @@ tornar visível, por último o gesto de offboarding, que é o mais caro.
 - [x] F7.4 Testes: as duas âncoras, o recorte, subtarefa sem agenda,
       recomputação a cada ciclo e as travas da API
 
-## Ciclo seguinte
+## F8 — Subtarefa aninhada (14/08/2026)
 
-- [ ] Subtarefa aninhada
+O nível único era corte de custo, e o custo foi medido em vez de presumido: o
+teto passou a contar a árvore, então o número de nós copiados por ocorrência
+continua o mesmo. Conferido contra Jira, monday, Asana, ClickUp e Pipefy — o
+único que copia árvore (ClickUp) é o único que conta as aninhadas no teto.
+
+- [x] F8.1 Travessia em largura com teto sobre a árvore inteira, cortando na
+      fronteira do nível — filha de quem não foi copiado não é copiada
+- [x] F8.2 Guarda de ciclo (`parent` permite A → B → A) e leitura de
+      responsáveis, etiquetas e agendas em bloco, com o custo por nó fixado em
+      teste — 8 consultas, que é o preço de `Issue.save()` e não nosso
+- [x] F8.3 Vencimento relativo (F7) em qualquer nível: a API valida contra a
+      árvore, e a linha da subtarefa pergunta pela raiz, não pelo pai imediato
+- [x] F8.4 Aviso de teto na seção "Repetir" — a chave existia órfã desde a F4, e
+      com a árvore o corte silencioso passou a poder levar um ramo inteiro
+- [x] F8.5 Testes: árvore de três níveis, teto cortando sem órfão, ciclo,
+      ramo arquivado saindo inteiro, agenda em neta e o custo por nó
 
 ## Fora de escopo
 
