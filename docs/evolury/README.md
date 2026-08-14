@@ -10,6 +10,8 @@ herdado se explica pelo próprio upstream; o que é nosso se explica aqui.
 evolury/
 ├── decisoes/            # ADRs — decisões de arquitetura numeradas
 │   └── NNNN-titulo.md
+├── processos/           # como o time trabalha, quando o "como" precisa sobreviver
+│   └── <nome>.md
 └── funcionalidades/     # uma pasta por funcionalidade própria
     └── <nome>/
         ├── especificacao.md    # comportamento, UX, regras de negócio
@@ -38,6 +40,13 @@ arqueologia de git.
    funcionalidade entregue;
 5. o status no índice [docs/README.md](../README.md) acompanha o progresso
    (Planejada → Em desenvolvimento → Entregue).
+
+**Processos (`processos/`).** Rotina que se repete e cuja execução precisa ser
+igual entre uma vez e outra — hoje, a
+[revisão de releases do upstream](processos/revisao-de-releases.md), que anda
+junto do seu [histórico](processos/historico-de-revisoes.md). Processo com log
+é processo que se pode auditar: cada execução diz de onde partiu, o que achou e
+o que decidiu, e a execução seguinte começa lendo a anterior.
 
 **Manual (`manual.md`).** Opcional, e vale a pena quando a funcionalidade chega
 ao usuário final: descreve **o que acontece**, em linguagem de quem usa,
