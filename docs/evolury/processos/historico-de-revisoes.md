@@ -61,6 +61,33 @@ públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
 
 ---
 
+## 14/08/2026 (fim do dia) — auditoria do próprio processo
+
+Conferido se o processo escrito basta para alguém executá-lo sem improviso.
+**Não bastava**, e as cinco lacunas eram todas coisa aprendida executando e não
+devolvida ao papel:
+
+1. O comando de consulta usava `gh`, que **não está instalado** nesta máquina —
+   quem seguisse ao pé da letra travava no primeiro passo. Trocado pelo `curl`
+   com o token do cofre, e **executado literalmente** para provar: devolve os 22.
+2. Faltava a técnica mais rápida de todas: **procurar o identificador do aviso
+   no nosso código**. Boa parte das correções herdadas cita o GHSA no
+   comentário. Testada em quatro avisos, achou os quatro.
+3. Faltavam os arquivos de teste que **nomeiam os avisos que cobrem** — rodar a
+   suíte vale mais que ler o código.
+4. Faltava a regra de **provar executando, não lendo**: foi atacando o
+   sanitizador que o último aviso ganhou veredito, e a suposição inicial sobre
+   onde a defesa morava estava errada.
+5. Faltava conferir **todos os caminhos de escrita** — app e API pública têm
+   serializers separados, e defesa que existe só num dos dois é contornável por
+   token externo.
+
+Processo que só funciona com quem o escreveu ao lado não é processo. A
+verificação de hoje é o que transforma a experiência de uma execução em
+instrução para a próxima.
+
+---
+
 ## 14/08/2026 (tarde) — triagem dos 22 avisos
 
 Executada logo depois de o eixo de segurança entrar no processo. Cada aviso foi

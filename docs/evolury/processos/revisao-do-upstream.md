@@ -57,9 +57,24 @@ nenhuma release passe despercebida entre uma consulta e outra.
 ### 2a. Listar os avisos de segurança
 
 ```bash
-gh api "repos/makeplane/plane/security-advisories?per_page=100" \
-  --jq '.[] | "\(.ghsa_id) | \(.severity) | \(.published_at[0:10]) | \(.summary)"'
+# O `gh` não está instalado nesta máquina; o token vem do cofre.
+TOKEN=$(bws secret get 2423fa31-822d-4555-be31-b46a002fdb63 \
+  | python3 -c 'import sys,json; print(json.load(sys.stdin)["value"])')
+
+curl -s -H "Authorization: token $TOKEN" -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/repos/makeplane/plane/security-advisories?per_page=100" \
+  > avisos.json
+
+python3 -c '
+import json
+for a in json.load(open("avisos.json")):
+    print(a["ghsa_id"], "|", a["severity"], "|", a["published_at"][:10], "|", a["summary"])
+'
 ```
+
+O JSON guarda também o campo `description`, que traz a análise técnica do
+autor — é dele que sai o ponto exato a procurar no nosso código. Vale manter o
+arquivo até o fim da revisão em vez de refazer a chamada a cada aviso.
 
 Comparar com o **registro de avisos** no histórico e separar os que ainda não
 têm veredito. Ordem de trabalho por severidade: `critical` e `high` são
@@ -84,7 +99,31 @@ informação: ela prova que a janela foi coberta.
 ### 3. Dar veredito a cada aviso pendente
 
 Para cada GHSA sem veredito, abrir a descrição, achar o ponto vulnerável e
-**procurá-lo no nosso código**. Três resultados possíveis, todos registrados:
+**procurá-lo no nosso código**.
+
+**Comece procurando o próprio identificador.** Boa parte das correções herdadas
+cita o aviso no comentário, e isso resolve o veredito em segundos:
+
+```bash
+grep -rn "GHSA-xxxx-xxxx-xxxx" apps/ --include=*.py --include=*.ts*
+```
+
+**Depois, procure teste que já cubra.** `plane/tests/unit/bg_tasks/test_ssrf_advisories.py`
+nomeia no cabeçalho todos os avisos de SSRF que cobre, e
+`plane/tests/unit/utils/test_html_sanitization_xss.py` faz o mesmo para XSS
+armazenado. Rodar a suíte vale mais que ler o código.
+
+**Prove executando, não lendo.** Para veredito de segurança, leitura de código
+convence e engana: foi atacando o sanitizador com `<script>`, `onerror` e
+`javascript:` que o último aviso ganhou veredito — o código _parecia_ certo
+antes disso, e a suposição inicial sobre onde a defesa morava estava errada.
+
+**Confira todos os caminhos de escrita, não só o do app.** A API pública
+(`plane/api/`) e a do app (`plane/app/`) têm serializers separados. Uma defesa
+que exista só num dos dois é contornável por quem tem token externo — a
+verificação do XSS só ficou honesta depois de conferir os dois.
+
+Três resultados possíveis, todos registrados:
 
 | Veredito              | Significa                                                               |
 | --------------------- | ----------------------------------------------------------------------- |
