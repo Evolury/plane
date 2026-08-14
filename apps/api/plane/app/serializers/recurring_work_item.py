@@ -68,15 +68,27 @@ class RecurringWorkItemSerializer(BaseSerializer):
 
         A geração já os descarta; isto é o que torna o descarte visível para
         alguém consertar a raiz — corrigir em silêncio seria a outra armadilha.
+
+        O selo do quadro pede esta lista a cada render, então os dois conjuntos
+        vêm prontos do contexto quando a view os prepara: sem isso seriam duas
+        consultas POR REGRA, repetindo a mesma pergunta sobre o mesmo projeto.
         """
         from plane.db.models import IssueAssignee, ProjectMember
 
-        ativos = set(
-            ProjectMember.objects.filter(project_id=obj.project_id, is_active=True).values_list(
-                "member_id", flat=True
+        ativos = self.context.get("membros_ativos")
+        if ativos is None:
+            ativos = set(
+                ProjectMember.objects.filter(project_id=obj.project_id, is_active=True).values_list(
+                    "member_id", flat=True
+                )
             )
-        )
-        vinculos = IssueAssignee.objects.filter(issue_id=obj.source_issue_id).select_related("assignee")
+
+        por_tarefa = self.context.get("responsaveis_por_tarefa")
+        if por_tarefa is not None:
+            vinculos = por_tarefa.get(obj.source_issue_id, [])
+        else:
+            vinculos = IssueAssignee.objects.filter(issue_id=obj.source_issue_id).select_related("assignee")
+
         return [
             {
                 "id": str(vinculo.assignee_id),

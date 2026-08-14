@@ -289,6 +289,10 @@ padrão do projeto assume.
 - Cada ocorrência é uma tarefa comum: conta em ciclo e módulo, aparece em
   "Minhas tarefas" na etapa padrão de cada responsável, e pode ser concluída
   pelo botão como qualquer outra.
+  > Precisado em 14/08/2026, ao executar a matriz de compatibilidade: a
+  > ocorrência **nasce fora** de ciclo e módulo — a revisão tirou os dois da
+  > cópia. Adicionada a um ciclo à mão, conta normalmente; o que não acontece é
+  > herdar o ciclo da origem, que estaria encerrado quando ela nasce.
 - A automação de arquivar e fechar vai alcançar ocorrências antigas concluídas.
   É desejável — é a limpeza do histórico — mas precisa estar escrito.
 - O registro de ocorrências (qual data gerou qual tarefa) é o que garante

@@ -8,6 +8,9 @@
 # licença. Ler é de todos: o selo no cartão, a seção "Repetir" desabilitada e o
 # rastro da tarefa gerada são informação, não poder.
 
+# Python imports
+from collections import defaultdict
+
 # Django imports
 from django.db import transaction
 from django.utils import timezone
@@ -21,7 +24,7 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.recurring_work_item import RecurringWorkItemSerializer
 from plane.app.views.base import BaseViewSet
 from plane.bgtasks.recurring_work_item_task import agendar_proxima_data
-from plane.db.models import IssueAssignee, RecurringWorkItem, RecurringWorkItemOccurrence
+from plane.db.models import IssueAssignee, ProjectMember, RecurringWorkItem, RecurringWorkItemOccurrence
 from plane.utils.recurrence import proximas_datas
 
 
@@ -40,9 +43,30 @@ class RecurringWorkItemViewSet(BaseViewSet):
             .select_related("project", "initial_state", "source_issue", "source_issue__state")
         )
 
+    def _contexto_de_responsaveis(self, regras, project_id):
+        """Os dois conjuntos que o serializer precisaria consultar por regra.
+
+        O selo do quadro chama esta lista a cada render; sem isto seriam duas
+        consultas por regra para responder a mesma pergunta sobre o mesmo
+        projeto.
+        """
+        ativos = set(
+            ProjectMember.objects.filter(project_id=project_id, is_active=True).values_list(
+                "member_id", flat=True
+            )
+        )
+        por_tarefa = defaultdict(list)
+        origens = [regra.source_issue_id for regra in regras]
+        for vinculo in IssueAssignee.objects.filter(issue_id__in=origens).select_related("assignee"):
+            por_tarefa[vinculo.issue_id].append(vinculo)
+        return {"membros_ativos": ativos, "responsaveis_por_tarefa": por_tarefa}
+
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
     def list(self, request, slug, project_id):
-        serializer = RecurringWorkItemSerializer(self.get_queryset(), many=True)
+        regras = list(self.get_queryset())
+        serializer = RecurringWorkItemSerializer(
+            regras, many=True, context=self._contexto_de_responsaveis(regras, project_id)
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
@@ -136,11 +160,11 @@ class RecurringWorkItemViewSet(BaseViewSet):
         Alimenta a confirmação de remoção do membro: o ato não é travado, mas
         deixa de ser silencioso (ADR 0010).
         """
-        regras = self.get_queryset().filter(source_issue__assignees__id=user_id).distinct()
-        return Response(
-            {"count": regras.count(), "rules": RecurringWorkItemSerializer(regras, many=True).data},
-            status=status.HTTP_200_OK,
+        regras = list(self.get_queryset().filter(source_issue__assignees__id=user_id).distinct())
+        serializer = RecurringWorkItemSerializer(
+            regras, many=True, context=self._contexto_de_responsaveis(regras, project_id)
         )
+        return Response({"count": len(regras), "rules": serializer.data}, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def transfer_assignee(self, request, slug, project_id):

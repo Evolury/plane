@@ -192,9 +192,14 @@ vezes não cria duas tarefas para a mesma data.
 
 ## A tarefa gerada
 
-É uma tarefa comum, com uma origem: conta em ciclo e módulo, aparece em "Minhas
-tarefas" na etapa padrão de cada responsável, pode ser concluída pelo botão, e
-gera atividade, webhook e notificação — com **o autor da regra como ator**.
+É uma tarefa comum, com uma origem: aparece em "Minhas tarefas" na etapa padrão
+de cada responsável, pode ser concluída pelo botão, e gera atividade, webhook e
+notificação — com **o autor da regra como ator**.
+
+**Nasce fora de ciclo e de módulo**, porque ciclo e módulo descrevem aquela
+execução, não o trabalho. Adicionada a um ciclo à mão, conta nos gráficos como
+qualquer outra — o que não acontece é herdar o ciclo da origem, que estaria
+encerrado quando a ocorrência nasce.
 
 **Não passa por triagem**, mesmo com a entrada ativada: trabalho agendado por um
 admin já está aprovado.

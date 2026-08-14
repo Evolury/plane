@@ -88,6 +88,11 @@ início 02/09 e vencimento 05/09.
 O critério: **o que descreve o trabalho** vem; **o que descreve aquela
 execução** fica para trás.
 
+Sobre ciclo e módulo, vale a precisão: a tarefa **nasce fora dos dois**. Se
+alguém a adicionar a um ciclo, ela conta nos gráficos como qualquer outra — o
+que não acontece é entrar sozinha no ciclo da origem, que a essa altura já
+estaria encerrado.
+
 **A etapa em que ela nasce** é escolhida na regra — por padrão, a etapa padrão
 do projeto. Ela **nunca** nasce na etapa em que a anterior foi concluída.
 
