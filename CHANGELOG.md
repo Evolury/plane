@@ -3,6 +3,37 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.10.0] — 2026-08-14
+
+### Tarefas recorrentes
+
+- **A ocorrência passa a copiar a árvore inteira de subtarefas**, em qualquer
+  profundidade e com a hierarquia preservada — antes ia um nível só. A
+  hierarquia descreve o trabalho, e a falta era invisível: o cartão da origem
+  mostra a árvore toda, então ninguém percebia que a ocorrência nascia com o
+  passo grande e sem os passos dele.
+- **O teto de 50 subtarefas passou a contar a árvore**, e não as filhas
+  diretas. É o que mantém o custo da geração onde estava — o mesmo número de
+  tarefas criadas por ocorrência, distribuídas de outro jeito. Uma origem com
+  50 filhas diretas continua copiando exatamente o que copiava.
+- **O aviso de teto agora aparece** na seção "Repetir", quando a origem passa
+  de 50. O corte na geração continua silencioso de propósito: a recorrência de
+  ninguém é desativada por causa do limite.
+- **O vencimento relativo da subtarefa vale em qualquer nível**, e não só no
+  primeiro.
+
+### Processo
+
+- **A revisão do upstream ganhou o eixo dos avisos de segurança.** Só olhar
+  release publicada deixava passar falha corrigida em silêncio: o Dependabot
+  avisa quem consome pacote, e nós bifurcamos o código-fonte. Os **22 avisos**
+  do Plane CE foram triados um a um contra o nosso código, e o histórico
+  registra o veredito de cada um para que a revisão seguinte não recomece.
+- **O sanitizador de HTML ganhou testes de ataque** — dez vetores clássicos de
+  XSS contra `validate_html_content`, mais dois que provam que a formatação
+  legítima e as tags do editor sobrevivem. A defesa já existia; o que faltava
+  era alguém tentar quebrá-la sempre que a lista de permissão mudar.
+
 ## [1.9.0] — 2026-08-14
 
 ### Segurança
