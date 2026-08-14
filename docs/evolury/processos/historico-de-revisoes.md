@@ -16,7 +16,7 @@ primeira entrada desta página, para saber de onde continuar.
 | **Data da última revisão**          | 14/08/2026                      |
 | **Releases pendentes**              | nenhuma                         |
 | **Exposições conhecidas em aberto** | nenhuma                         |
-| **Avisos com veredito**             | 21 de 22 (1 pendente)           |
+| **Avisos com veredito**             | 22 de 22                        |
 
 ---
 
@@ -28,32 +28,32 @@ revisão reverificaria os mesmos vinte avisos toda vez.
 Nenhum dos 22 foi publicado depois do nosso corte (05/08/2026), o que **sugere**
 que as correções vieram junto no código herdado — mas data é pista, não prova.
 A triagem de 14/08/2026 conferiu os 22 **no nosso código**, um a um: 20
-cobertos, 1 não aplicável, 1 pendente.
+cobertos e 1 não aplicável — o pendente foi fechado no mesmo dia.
 
-| GHSA                  | Severidade | Publicado  | Veredito      | Evidência                                                               |
-| --------------------- | ---------- | ---------- | ------------- | ----------------------------------------------------------------------- |
-| `GHSA-j77v-w36v-63v6` | crítico    | 2024-04-10 | coberto       | `validate_url` + `pinned_fetch` · 21 testes passam                      |
-| `GHSA-39gx-38xf-c348` | crítico    | 2024-10-11 | não aplicável | `/_next/image` não existe: o front migrou para Vite                     |
-| `GHSA-cmwv-pjmw-8483` | crítico    | 2026-08-03 | coberto       | manifestos com placeholder; produção com chave própria                  |
-| `GHSA-7j95-vh8g-f365` | crítico    | 2026-08-03 | coberto       | Gitea e GitLab só aceitam e-mail verificado                             |
-| `GHSA-4vj8-p63v-8p24` | crítico    | 2026-08-03 | coberto       | `join` exige sessão e e-mail igual ao convidado; o código cita o aviso  |
-| `GHSA-mqjv-rwgv-4gxq` | crítico    | 2026-08-03 | coberto       | contador de tentativas por token no código mágico                       |
-| `GHSA-mq87-52pf-hm3h` | crítico    | 2026-08-03 | coberto       | `pinned_fetch` fixa o IP e não segue redirecionamento · suíte SSRF      |
-| `GHSA-r2hw-fff3-pjwp` | crítico    | 2026-08-03 | coberto       | `ProjectBulkAssetEndpoint` escopado por autor e workspace               |
-| `GHSA-6fj7-xgpg-mj6f` | alto       | 2025-10-23 | coberto       | `get_safe_redirect_url` valida o `next_path`                            |
-| `GHSA-jcc6-f9v6-f7jw` | alto       | 2026-02-25 | coberto       | suíte SSRF cobre o favicon do 'Adicionar link'                          |
-| `GHSA-fpx8-73gf-7x73` | alto       | 2026-03-05 | coberto       | `validate_url` no serializer do webhook · CGNAT, 6to4, multicast        |
-| `GHSA-87x4-j8vh-p5qf` | alto       | 2026-03-05 | coberto       | membros exigem `WorkspaceEntityPermission`, não anônimo                 |
-| `GHSA-9fr2-pprw-pp9j` | alto       | 2026-04-09 | coberto       | `TestFaviconRedirect`, citando o aviso                                  |
-| `GHSA-qw87-v5w3-6vxx` | alto       | 2026-05-15 | coberto       | cópia de asset restrita ao workspace de destino                         |
-| `GHSA-rcg8-g69v-x23j` | médio      | 2025-01-06 | coberto       | SVG em `SCRIPT_CAPABLE_MIME_TYPES`: servido como anexo                  |
-| `GHSA-rwjc-xhh3-m9m9` | médio      | 2025-08-14 | **pendente**  | XSS em `description_html`; falta conferir a sanitização na renderização |
-| `GHSA-7qx6-6739-c7qr` | médio      | 2026-01-02 | coberto       | convidado recebe `UserLiteSerializer`, sem e-mail                       |
-| `GHSA-rfj3-8c85-g46j` | médio      | 2026-02-23 | coberto       | mesmo escopo por workspace nos assets                                   |
-| `GHSA-4q54-h4x9-m329` | médio      | 2026-04-07 | coberto       | `IssueBulkUpdateDateEndpoint` filtra pelo `project_id` da URL           |
-| `GHSA-93x3-ghh7-72j3` | médio      | 2026-05-15 | coberto       | `segment` conferido contra `VALID_ANALYTICS_FIELDS`                     |
-| `GHSA-cjh4-q763-cc48` | baixo      | 2025-05-21 | coberto       | `UserSerializer` exclui senha e fixa campos de sistema                  |
-| `GHSA-8rvg-7w43-p2w2` | baixo      | 2026-04-07 | coberto       | e-mail no corpo do POST, não em parâmetro de URL                        |
+| GHSA                  | Severidade | Publicado  | Veredito      | Evidência                                                                                           |
+| --------------------- | ---------- | ---------- | ------------- | --------------------------------------------------------------------------------------------------- |
+| `GHSA-j77v-w36v-63v6` | crítico    | 2024-04-10 | coberto       | `validate_url` + `pinned_fetch` · 21 testes passam                                                  |
+| `GHSA-39gx-38xf-c348` | crítico    | 2024-10-11 | não aplicável | `/_next/image` não existe: o front migrou para Vite                                                 |
+| `GHSA-cmwv-pjmw-8483` | crítico    | 2026-08-03 | coberto       | manifestos com placeholder; produção com chave própria                                              |
+| `GHSA-7j95-vh8g-f365` | crítico    | 2026-08-03 | coberto       | Gitea e GitLab só aceitam e-mail verificado                                                         |
+| `GHSA-4vj8-p63v-8p24` | crítico    | 2026-08-03 | coberto       | `join` exige sessão e e-mail igual ao convidado; o código cita o aviso                              |
+| `GHSA-mqjv-rwgv-4gxq` | crítico    | 2026-08-03 | coberto       | contador de tentativas por token no código mágico                                                   |
+| `GHSA-mq87-52pf-hm3h` | crítico    | 2026-08-03 | coberto       | `pinned_fetch` fixa o IP e não segue redirecionamento · suíte SSRF                                  |
+| `GHSA-r2hw-fff3-pjwp` | crítico    | 2026-08-03 | coberto       | `ProjectBulkAssetEndpoint` escopado por autor e workspace                                           |
+| `GHSA-6fj7-xgpg-mj6f` | alto       | 2025-10-23 | coberto       | `get_safe_redirect_url` valida o `next_path`                                                        |
+| `GHSA-jcc6-f9v6-f7jw` | alto       | 2026-02-25 | coberto       | suíte SSRF cobre o favicon do 'Adicionar link'                                                      |
+| `GHSA-fpx8-73gf-7x73` | alto       | 2026-03-05 | coberto       | `validate_url` no serializer do webhook · CGNAT, 6to4, multicast                                    |
+| `GHSA-87x4-j8vh-p5qf` | alto       | 2026-03-05 | coberto       | membros exigem `WorkspaceEntityPermission`, não anônimo                                             |
+| `GHSA-9fr2-pprw-pp9j` | alto       | 2026-04-09 | coberto       | `TestFaviconRedirect`, citando o aviso                                                              |
+| `GHSA-qw87-v5w3-6vxx` | alto       | 2026-05-15 | coberto       | cópia de asset restrita ao workspace de destino                                                     |
+| `GHSA-rcg8-g69v-x23j` | médio      | 2025-01-06 | coberto       | SVG em `SCRIPT_CAPABLE_MIME_TYPES`: servido como anexo                                              |
+| `GHSA-rwjc-xhh3-m9m9` | médio      | 2025-08-14 | coberto       | `nh3.clean` com lista de permissão na escrita, no app e na API pública · teste de regressão próprio |
+| `GHSA-7qx6-6739-c7qr` | médio      | 2026-01-02 | coberto       | convidado recebe `UserLiteSerializer`, sem e-mail                                                   |
+| `GHSA-rfj3-8c85-g46j` | médio      | 2026-02-23 | coberto       | mesmo escopo por workspace nos assets                                                               |
+| `GHSA-4q54-h4x9-m329` | médio      | 2026-04-07 | coberto       | `IssueBulkUpdateDateEndpoint` filtra pelo `project_id` da URL                                       |
+| `GHSA-93x3-ghh7-72j3` | médio      | 2026-05-15 | coberto       | `segment` conferido contra `VALID_ANALYTICS_FIELDS`                                                 |
+| `GHSA-cjh4-q763-cc48` | baixo      | 2025-05-21 | coberto       | `UserSerializer` exclui senha e fixa campos de sistema                                              |
+| `GHSA-8rvg-7w43-p2w2` | baixo      | 2026-04-07 | coberto       | e-mail no corpo do POST, não em parâmetro de URL                                                    |
 
 Também existem **17 identificadores em rascunho**, vistos em branches abertas do
 upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
@@ -66,7 +66,7 @@ públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
 Executada logo depois de o eixo de segurança entrar no processo. Cada aviso foi
 conferido **no nosso código**, não deduzido da data de publicação.
 
-**Resultado: 20 cobertos, 1 não aplicável, 1 pendente.** Nenhuma exposição nova.
+**Resultado: 21 cobertos, 1 não aplicável.** Nenhuma exposição nova.
 
 A hipótese de que o corte posterior às publicações nos cobriria se confirmou —
 mas só depois de conferida. Em vários casos a evidência é direta: o código traz
@@ -78,9 +78,19 @@ endpoint não existe aqui, porque o front migrou de Next.js para Vite. É o tipo
 de veredito que só se dá lendo o próprio código: pela versão, pareceria
 aplicável.
 
-**Pendente (1):** `GHSA-rwjc-xhh3-m9m9`, XSS armazenado em `description_html`.
-Falta conferir onde a sanitização acontece na renderização — o campo passa pelo
-editor, e a resposta provavelmente está no pacote de editor, não na API.
+**O último pendente, fechado no mesmo dia:** `GHSA-rwjc-xhh3-m9m9`, XSS
+armazenado em `description_html`. A suposição estava errada — a defesa não está
+na renderização, e sim **na escrita**: `nh3.clean` com lista de permissão roda
+nos serializers do app **e** da API pública, antes de qualquer coisa chegar ao
+banco. Conferir os dois caminhos importava, porque um token externo escrevendo
+direto na API pularia uma defesa que só existisse no app.
+
+Em vez de aceitar a leitura do código, ataquei o sanitizador com os vetores
+clássicos: `<script>` some, `onerror`, `onload` e `onclick` são removidos,
+`javascript:` perde o `href`, `<iframe>` e `<svg>` desaparecem. Virou teste
+nosso (`test_html_sanitization_xss.py`), porque a lista de permissão é editada
+sempre que o editor ganha um nó novo — e uma tag executável entrando ali
+passaria despercebida sem alguém tentando explorá-la.
 
 ---
 
