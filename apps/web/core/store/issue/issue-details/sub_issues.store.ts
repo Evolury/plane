@@ -46,6 +46,8 @@ export interface IIssueSubIssuesStoreActions {
 }
 
 type TSubIssueHelpersKeys = "issue_visibility" | "preview_loader" | "issue_loader";
+/** Evolury: alternar é do clique; afirmar é de quem terminou de carregar. */
+type TSubIssueHelperMode = "toggle" | "set" | "unset";
 type TSubIssueHelpers = Record<TSubIssueHelpersKeys, string[]>;
 export interface IIssueSubIssuesStore extends IIssueSubIssuesStoreActions {
   // observables
@@ -60,7 +62,12 @@ export interface IIssueSubIssuesStore extends IIssueSubIssuesStoreActions {
   subIssueHelpersByIssueId: (issueId: string) => TSubIssueHelpers;
   // actions
   fetchOtherProjectProperties: (workspaceSlug: string, projectIds: string[]) => Promise<void>;
-  setSubIssueHelpers: (parentIssueId: string, key: TSubIssueHelpersKeys, value: string) => void;
+  setSubIssueHelpers: (
+    parentIssueId: string,
+    key: TSubIssueHelpersKeys,
+    value: string,
+    mode?: TSubIssueHelperMode
+  ) => void;
 }
 
 export class IssueSubIssuesStore implements IIssueSubIssuesStore {
@@ -116,12 +123,29 @@ export class IssueSubIssuesStore implements IIssueSubIssuesStore {
   });
 
   // actions
-  setSubIssueHelpers = (parentIssueId: string, key: TSubIssueHelpersKeys, value: string) => {
+  /**
+   * Evolury: `mode` decide entre alternar e afirmar.
+   *
+   * Alternar é a semântica certa para expandir e recolher uma subtarefa
+   * aninhada — o clique é que manda. Mas quem termina de buscar a lista quer
+   * dizer "está visível", e dizer isso duas vezes não pode desfazer: em
+   * desenvolvimento o React roda cada efeito duas vezes de propósito
+   * (StrictMode), e o alternador transformava a segunda passada em ocultar.
+   * Era por isso que a lista de subtarefas não aparecia.
+   */
+  setSubIssueHelpers = (
+    parentIssueId: string,
+    key: TSubIssueHelpersKeys,
+    value: string,
+    mode: TSubIssueHelperMode = "toggle"
+  ) => {
     if (!parentIssueId || !key || !value) return;
 
     update(this.subIssueHelpers, [parentIssueId, key], (_subIssueHelpers: string[] = []) => {
-      if (_subIssueHelpers.includes(value)) return pull(_subIssueHelpers, value);
-      return concat(_subIssueHelpers, value);
+      const presente = _subIssueHelpers.includes(value);
+      if (mode === "set") return presente ? _subIssueHelpers : concat(_subIssueHelpers, value);
+      if (mode === "unset") return presente ? pull(_subIssueHelpers, value) : _subIssueHelpers;
+      return presente ? pull(_subIssueHelpers, value) : concat(_subIssueHelpers, value);
     });
   };
 

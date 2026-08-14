@@ -87,13 +87,17 @@ export const SubIssuesCollapsibleContent = observer(function SubIssuesCollapsibl
     const currentSubIssueHelpers = subIssueHelpersByIssueId(`${parentIssueId}_root`);
     if (!currentSubIssueHelpers.issue_visibility.includes(parentIssueId)) {
       try {
-        setSubIssueHelpers(`${parentIssueId}_root`, "preview_loader", parentIssueId);
+        // Evolury: "set" e "unset" em vez de alternar. Em desenvolvimento o
+        // React executa cada efeito duas vezes (StrictMode), e a segunda
+        // passada do alternador desfazia a primeira — a lista era carregada e
+        // escondida em seguida. Afirmar o estado é idempotente por construção.
+        setSubIssueHelpers(`${parentIssueId}_root`, "preview_loader", parentIssueId, "set");
         await subIssueOperations.fetchSubIssues(workspaceSlug, projectId, parentIssueId);
-        setSubIssueHelpers(`${parentIssueId}_root`, "issue_visibility", parentIssueId);
+        setSubIssueHelpers(`${parentIssueId}_root`, "issue_visibility", parentIssueId, "set");
       } catch (error) {
         console.error("Error fetching sub-work items:", error);
       } finally {
-        setSubIssueHelpers(`${parentIssueId}_root`, "preview_loader", "");
+        setSubIssueHelpers(`${parentIssueId}_root`, "preview_loader", parentIssueId, "unset");
       }
     }
   }, [parentIssueId, projectId, setSubIssueHelpers, subIssueHelpersByIssueId, subIssueOperations, workspaceSlug]);
