@@ -45,6 +45,11 @@ DIAS_DA_SEMANA = [SU, MO, TU, WE, TH, FR, SA]
 
 LIMITE_DE_BUSCA = 500
 
+# Quantas datas futuras a regra mostra — e, por consequência, quantas dá para
+# pular. Os dois números são o mesmo de propósito: pular o que não está na tela
+# seria pular às cegas, e a API valida contra esta mesma janela (F9).
+JANELA_DE_PREVISAO = 3
+
 
 def _fuso(regra):
     return ZoneInfo(regra.project.timezone or "America/Sao_Paulo")
@@ -153,7 +158,7 @@ def proxima_data(regra, depois_de: datetime) -> datetime | None:
     return None
 
 
-def proximas_datas(regra, depois_de: datetime, quantidade: int = 3) -> list[datetime]:
+def proximas_datas(regra, depois_de: datetime, quantidade: int = JANELA_DE_PREVISAO) -> list[datetime]:
     """Pré-visualização: as próximas N datas, em UTC.
 
     É o que torna uma regra complexa confiável na tela — "próximas: 18/08,

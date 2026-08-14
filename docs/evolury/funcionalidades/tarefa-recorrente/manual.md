@@ -184,9 +184,32 @@ Encerrar apaga a agenda e **preserva as tarefas já geradas** — elas são
 trabalho, não histórico da regra. A tarefa de origem também permanece, como
 tarefa comum.
 
+## Pular uma ocorrência
+
+Semana de feriado? Fechamento já feito à mão? Na seção **Repetir** da tarefa de
+origem, cada uma das próximas datas tem um botão **Pular**. A data fica riscada
+e não vira tarefa. Só admin do projeto vê o botão.
+
+Não há caixa de confirmação: nada foi criado ainda, então nada se perde. Se
+mudar de ideia, **Desfazer** no mesmo lugar devolve a data à série.
+
+O que pular **não** faz:
+
+- não muda a agenda — a ocorrência seguinte nasce no dia de sempre;
+- não conta como ocorrência criada;
+- não encerra nem pausa a recorrência.
+
+O botão não aparece quando a recorrência está pausada, quando a tarefa de
+origem está arquivada, ou no modo "após a conclusão" — nesses casos não há data
+prevista a caminho.
+
+**Atenção ao editar a agenda:** mudar frequência, dias, horário ou início
+**descarta os pulos**, porque a data pulada pode nem existir na agenda nova. O
+formulário avisa antes de você salvar. Mudar só a antecedência não descarta
+nada.
+
 ## Fora do escopo hoje
 
 - Anexos não são copiados.
-- Não há como pular uma ocorrência específica sem mexer na série.
 - Feriado e dia útil não são considerados: se a data cair em feriado, a tarefa
   nasce assim mesmo.

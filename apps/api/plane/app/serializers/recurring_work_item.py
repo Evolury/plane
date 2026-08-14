@@ -30,6 +30,7 @@ class RecurringWorkItemSerializer(BaseSerializer):
     source_issue_detail = serializers.SerializerMethodField()
     inactive_assignees = serializers.SerializerMethodField()
     subtask_schedules = serializers.SerializerMethodField()
+    skipped_occurrences = serializers.SerializerMethodField()
 
     class Meta:
         model = RecurringWorkItem
@@ -50,7 +51,7 @@ class RecurringWorkItemSerializer(BaseSerializer):
 
         from plane.utils.recurrence import proximas_datas
 
-        return [data.isoformat() for data in proximas_datas(obj, timezone.now(), quantidade=3)]
+        return [data.isoformat() for data in proximas_datas(obj, timezone.now())]
 
     def get_source_issue_detail(self, obj):
         """O resumo da origem, para a lista não precisar de outra chamada."""
@@ -121,6 +122,24 @@ class RecurringWorkItemSerializer(BaseSerializer):
             }
             for linha in linhas
         ]
+
+    def get_skipped_occurrences(self, obj):
+        """As datas futuras que alguém marcou para não gerar (F9).
+
+        Só as futuras: pulo cumprido é história, e história não se desfaz na
+        tela — o botão "desfazer" que aparecesse sobre uma data vencida
+        prometeria trazer de volta um trabalho que a série já deixou para trás.
+        """
+        from django.utils import timezone
+
+        pulos = self.context.get("pulos_por_regra")
+        if pulos is not None:
+            datas = pulos.get(obj.id, [])
+        else:
+            datas = RecurringWorkItemOccurrence.objects.filter(
+                recurring_work_item=obj, skipped_at__isnull=False, scheduled_for__gte=timezone.now()
+            ).values_list("scheduled_for", flat=True)
+        return sorted(data.isoformat() for data in datas)
 
     def validate_source_issue(self, origem):
         # A origem é escolhida no nascimento e não muda: trocar de tarefa é

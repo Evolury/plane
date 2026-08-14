@@ -13,6 +13,7 @@
 
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
+import { AlertTriangle } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
@@ -27,6 +28,24 @@ import { RecurringWorkItemService } from "@/services/recurring-work-item.service
 const servico = new RecurringWorkItemService();
 
 const FREQUENCIAS: TRecurrenceFrequency[] = ["daily", "weekly", "monthly", "yearly"];
+
+// Os campos que determinam QUAIS datas a série tem — espelham `CAMPOS_DA_AGENDA`
+// da API, que é quem descarta os pulos. Mudar um deles pode apagar uma data que
+// alguém tinha marcado para não gerar.
+const CAMPOS_DA_AGENDA = [
+  "frequency",
+  "interval",
+  "weekdays",
+  "monthly_mode",
+  "day_of_month",
+  "week_of_month",
+  "weekday_of_month",
+  "month_of_year",
+  "time_of_day",
+  "start_date",
+  "generation_mode",
+  "days_after_completion",
+] as const satisfies readonly (keyof TRecurringWorkItem)[];
 const SEMANAS_DO_MES = [
   { valor: 1, chave: "first" },
   { valor: 2, chave: "second" },
@@ -86,6 +105,14 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
   useEffect(() => {
     if (isOpen) setDados(regra ? { ...regra } : padrao());
   }, [isOpen, regra]);
+
+  // Quantos pulos esta edição vai descartar. A conta é sobre os campos que
+  // determinam QUAIS datas a série tem — os mesmos que a API usa. Antecedência
+  // fica de fora: ela move o nascimento, não a data prevista, que é o que o
+  // pulo endereça.
+  const agendaMudou =
+    !!regra && CAMPOS_DA_AGENDA.some((campo) => JSON.stringify(dados[campo]) !== JSON.stringify(regra[campo]));
+  const pulosAmeacados = agendaMudou ? (regra?.skipped_occurrences?.length ?? 0) : 0;
 
   // A cada mudança de agenda, o servidor responde as próximas datas — é o
   // mesmo cálculo que vai gerar as tarefas, e não uma segunda implementação
@@ -402,6 +429,18 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
             <p className="text-tertiary">{rotulo("preview.empty")}</p>
           )}
         </div>
+
+        {/* O aviso vem ANTES de salvar, não depois: contar que se descartou
+            algo é pior que perguntar. O descarte em si é da API — aqui só se
+            avisa quem está prestes a causá-lo (ADR 0010, F9). */}
+        {pulosAmeacados > 0 && (
+          <div className="flex items-start gap-2 rounded-md bg-warning-subtle px-3 py-2 text-12 text-warning-primary">
+            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+            <span className="min-w-0 wrap-break-word whitespace-normal">
+              {t("recurring_work_items.skip.schedule_change_warning", { count: pulosAmeacados })}
+            </span>
+          </div>
+        )}
 
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={onClose} disabled={salvando}>

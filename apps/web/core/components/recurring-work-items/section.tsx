@@ -29,6 +29,7 @@ import { useUserPermissions } from "@/hooks/store/user";
 import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
 // local imports
 import { RecurringWorkItemForm } from "./form";
+import { NextOccurrences } from "./next-occurrences";
 
 const servico = new RecurringWorkItemService();
 
@@ -155,6 +156,10 @@ export const RecurrenceSection = observer(function RecurrenceSection(props: TSec
   };
 
   const origemArquivada = !!regra?.source_issue_detail?.archived_at;
+  // Pular só faz sentido sobre o que vai nascer: regra pausada ou origem
+  // arquivada não geram nada, e oferecer o botão ali prometeria efeito sobre
+  // uma data que já não estava a caminho.
+  const podePular = ehAdmin && !!regra?.is_active && !origemArquivada && !!regra?.next_occurrences?.length;
 
   return (
     <>
@@ -201,41 +206,55 @@ export const RecurrenceSection = observer(function RecurrenceSection(props: TSec
         </div>
 
         {papel.role === "source" && regra && (
-          <div className="mt-2 flex items-center justify-between gap-2 rounded-md bg-layer-2 px-3 py-2">
-            <p className="min-w-0 truncate text-12 text-tertiary">
-              {origemArquivada
-                ? rotulo("section.archived_paused")
-                : regra.is_active
-                  ? regra.next_occurrences?.length
-                    ? `${t("recurring_work_items.list.next")}: ${regra.next_occurrences.map((d) => renderFormattedDate(d)).join(" · ")}`
-                    : t("recurring_work_items.preview.empty")
-                  : t("recurring_work_items.list.paused")}
-            </p>
-            {ehAdmin && (
-              <div className="flex flex-shrink-0 items-center gap-1">
-                <Tooltip
-                  tooltipContent={t(
-                    regra.is_active ? "recurring_work_items.actions.pause" : "recurring_work_items.actions.resume"
-                  )}
-                >
-                  <button
-                    type="button"
-                    onClick={alternarAtiva}
-                    className="grid size-6 place-items-center rounded-sm text-secondary hover:bg-layer-1 hover:text-primary"
+          <div className="mt-2 rounded-md bg-layer-2 px-3 py-2">
+            <div className="flex items-center justify-between gap-2">
+              <p className="min-w-0 truncate text-12 text-tertiary">
+                {origemArquivada
+                  ? rotulo("section.archived_paused")
+                  : !regra.is_active
+                    ? t("recurring_work_items.list.paused")
+                    : !regra.next_occurrences?.length
+                      ? t("recurring_work_items.preview.empty")
+                      : podePular
+                        ? // A lista abaixo carrega as datas; repeti-las aqui só
+                          // gastaria a única linha que cabe no painel.
+                          t("recurring_work_items.preview.label")
+                        : `${t("recurring_work_items.list.next")}: ${regra.next_occurrences.map((d) => renderFormattedDate(d)).join(" · ")}`}
+              </p>
+              {ehAdmin && (
+                <div className="flex flex-shrink-0 items-center gap-1">
+                  <Tooltip
+                    tooltipContent={t(
+                      regra.is_active ? "recurring_work_items.actions.pause" : "recurring_work_items.actions.resume"
+                    )}
                   >
-                    {regra.is_active ? <Pause className="size-3" /> : <Play className="size-3" />}
-                  </button>
-                </Tooltip>
-                <Tooltip tooltipContent={t("recurring_work_items.actions.edit")}>
-                  <button
-                    type="button"
-                    onClick={() => abrirForm(true)}
-                    className="grid size-6 place-items-center rounded-sm text-secondary hover:bg-layer-1 hover:text-primary"
-                  >
-                    <Pencil className="size-3" />
-                  </button>
-                </Tooltip>
-              </div>
+                    <button
+                      type="button"
+                      onClick={alternarAtiva}
+                      className="grid size-6 place-items-center rounded-sm text-secondary hover:bg-layer-1 hover:text-primary"
+                    >
+                      {regra.is_active ? <Pause className="size-3" /> : <Play className="size-3" />}
+                    </button>
+                  </Tooltip>
+                  <Tooltip tooltipContent={t("recurring_work_items.actions.edit")}>
+                    <button
+                      type="button"
+                      onClick={() => abrirForm(true)}
+                      className="grid size-6 place-items-center rounded-sm text-secondary hover:bg-layer-1 hover:text-primary"
+                    >
+                      <Pencil className="size-3" />
+                    </button>
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+            {podePular && (
+              <NextOccurrences
+                workspaceSlug={workspaceSlug}
+                projectId={projectId}
+                regra={regra}
+                onChange={atualizarTudo}
+              />
             )}
           </div>
         )}

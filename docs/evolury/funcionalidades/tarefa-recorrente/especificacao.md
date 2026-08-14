@@ -215,6 +215,31 @@ mesmo job, com o relógio adiantado.
 mais recente devida — e segue. O registro de ocorrências garante que rodar duas
 vezes não cria duas tarefas para a mesma data.
 
+## Pular uma ocorrência
+
+A semana do feriado, o fechamento que já foi feito à mão, a reunião cancelada.
+Cada uma das **próximas datas** pode ser marcada para **não gerar**, na seção
+"Repetir" da tarefa de origem, **só por admin do projeto**.
+
+| O que acontece                      | O que não acontece                |
+| ----------------------------------- | --------------------------------- |
+| Aquela data não vira tarefa         | A série não muda                  |
+| A data fica riscada, com "Desfazer" | A ocorrência seguinte não se move |
+| O contador de criadas não sobe      | Nenhuma confirmação é pedida      |
+
+**Não há confirmação de propósito**: nada foi criado, ninguém foi notificado,
+nenhum trabalho se perdeu. Desfazer devolve a data à série enquanto ela ainda
+estiver entre as próximas.
+
+O botão só aparece sobre o que vai nascer — regra pausada ou origem arquivada
+não geram nada, e no modo "após a conclusão" não há datas previstas para pular.
+
+**Mudar a agenda descarta os pulos futuros**, e o formulário avisa antes de
+salvar, com a contagem. A data pulada pode ter deixado de existir na série
+nova, e um pulo que sobrevive à troca de agenda vira surpresa semanas depois.
+A antecedência não conta como mudança de agenda: ela move o nascimento, não a
+data prevista.
+
 ## A tarefa gerada
 
 É uma tarefa comum, com uma origem: aparece em "Minhas tarefas" na etapa padrão
@@ -234,19 +259,20 @@ alcança qualquer tarefa. É a limpeza do histórico.
 
 ## Fora de escopo (v1)
 
-| Item                             | Por quê                                             |
-| -------------------------------- | --------------------------------------------------- |
-| Anexos na cópia                  | custo de storage por ocorrência                     |
-| Vencimento relativo da subtarefa | adição pura, sem migração; a fase já carrega uma    |
-| Subtarefa aninhada               | multiplicaria o custo da geração                    |
-| Pular uma ocorrência             | o registro de ocorrências já deixa pronto o terreno |
-| Feriado e dia útil               | exige calendário de feriados                        |
+| Item                             | Por quê                                               |
+| -------------------------------- | ----------------------------------------------------- |
+| Anexos na cópia                  | custo de storage por ocorrência                       |
+| Vencimento relativo da subtarefa | adição pura, sem migração; a fase já carrega uma      |
+| Subtarefa aninhada               | multiplicaria o custo da geração                      |
+| Pular uma ocorrência             | o registro de ocorrências já deixava pronto o terreno |
+| Feriado e dia útil               | exige calendário de feriados                          |
 
-Dois já entraram, e a tabela fica como registro do que se pensava na hora:
+Três já entraram, e a tabela fica como registro do que se pensava na hora:
 **vencimento relativo da subtarefa** em 14/08/2026, por ser adição pura; e
 **subtarefa aninhada** no mesmo dia, quando o custo foi medido em vez de
 presumido — o teto passou a contar a árvore, e o número de nós copiados por
-ocorrência continua o mesmo.
+ocorrência continua o mesmo. E **pular uma ocorrência** no mesmo dia,
+pelo terreno que o registro de ocorrências já tinha deixado pronto.
 
 ## Perguntas resolvidas
 

@@ -80,6 +80,8 @@ export type TRecurringWorkItem = {
   inactive_assignees: TInactiveAssignee[];
   /** Só leitura: vencimento relativo das subtarefas da origem. */
   subtask_schedules: TSubtaskSchedule[];
+  /** Só leitura: datas futuras marcadas para não gerar. Mudar a agenda as descarta. */
+  skipped_occurrences: string[];
   project: string;
   workspace: string;
   created_at: string;
