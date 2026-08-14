@@ -50,9 +50,19 @@ o que mostrou que o SSRF de webhook (`GHSA-mq87-52pf-hm3h`) está corrigido aqui
 
 ### 1. Descobrir o ponto de partida
 
-Abrir o [histórico](historico-de-revisoes.md) e ler a **última release
-revisada**. Nunca começar de outro lugar — o histórico é o que garante que
-nenhuma release passe despercebida entre uma consulta e outra.
+Abrir o [histórico](historico-de-revisoes.md) e ler a tabela **Estado atual**,
+no topo. Ela é a âncora — não a primeira entrada, não a memória de ninguém:
+
+| Campo                           | Para que serve                                  |
+| ------------------------------- | ----------------------------------------------- |
+| Última release revisada         | o `<de>` do diff no passo 5                     |
+| Data da última revisão          | mostra o tamanho da janela desde então          |
+| Releases pendentes              | o que ficou para trás numa revisão interrompida |
+| Exposições conhecidas em aberto | falha sabida e ainda não corrigida              |
+| Avisos com veredito             | quantos GHSA já saíram da fila                  |
+
+Nunca começar de outro lugar. O histórico é o que garante que nenhuma release e
+nenhum aviso passem despercebidos entre uma consulta e outra.
 
 ### 2a. Listar os avisos de segurança
 
@@ -181,14 +191,40 @@ revisão impossível e o rollback caro.
 
 ### 9. Registrar no histórico
 
-Toda revisão vira uma entrada, mesmo quando não encontrou nada. A entrada diz o
-que foi olhado, o que foi decidido e **por quê** — inclusive o que foi
-dispensado. Item dispensado sem motivo escrito volta a ser reavaliado do zero na
-revisão seguinte, que é desperdício puro.
+São **três escritas**, e nenhuma é opcional:
 
-O **registro de avisos** é atualizado no mesmo passo: cada GHSA com veredito sai
-da fila de pendentes para sempre. É ele que impede a revisão de reverificar os
-mesmos vinte avisos toda vez.
+**1. A tabela `Estado atual`.** É a âncora que a próxima revisão vai ler no
+passo 1. Uma revisão que escreva a entrada e esqueça a tabela deixa a seguinte
+começando do lugar errado — e o erro é silencioso, porque o documento continua
+parecendo completo. **Se só houver tempo para uma escrita, é esta.**
+
+**2. A entrada da revisão**, no topo da lista e datada. Diz o que foi olhado, o
+que foi decidido e **por quê** — inclusive o que foi dispensado. Item dispensado
+sem motivo escrito volta a ser reavaliado do zero na revisão seguinte, que é
+desperdício puro. Mesmo quando nada foi encontrado a entrada existe: ela prova
+que a janela foi coberta.
+
+**3. O registro de avisos.** Cada GHSA com veredito sai da fila de pendentes
+para sempre. É ele que impede a revisão de reverificar os mesmos vinte avisos
+toda vez.
+
+Molde mínimo da entrada:
+
+```markdown
+## DD/MM/AAAA — <o que foi revisado> (base: `<última release revisada>`)
+
+### Releases novas
+
+<lista, ou "nenhuma">
+
+### Avisos novos
+
+<lista com veredito, ou "nenhum sem veredito">
+
+### Implementado
+
+<PRs, ou "nada — e por quê">
+```
 
 ## Armadilhas conhecidas deste fork
 
