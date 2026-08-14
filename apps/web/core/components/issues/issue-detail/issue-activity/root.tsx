@@ -20,7 +20,7 @@ import { CommentCreate } from "@/components/comments/comment-create";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 // local imports
-import { IssueActivityCommentRoot } from "./activity-comment-root";
+import { IssueActivityList, IssueCommentsList } from "./activity-comment-root";
 import { useWorkItemCommentOperations } from "./helper";
 import { ActivitySortRoot } from "./sort-root";
 import { ActivityFilterRoot } from "./filter-root";
@@ -90,40 +90,48 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
   if (!project) return <></>;
 
   return (
-    <div className="space-y-4">
-      {/* header */}
-      <div className="flex items-center justify-between">
-        <div className="text-h5-medium text-primary">{t("common.activity")}</div>
-        <div className="flex items-center gap-2">
-          <ActivitySortRoot sortOrder={sortOrder || E_SORT_ORDER.ASC} toggleSort={toggleSortOrder} />
-          <ActivityFilterRoot
-            selectedFilters={selectedFilters || defaultActivityFilters}
-            toggleFilter={toggleFilter}
-            isIntakeIssue={isIntakeIssue}
+    // Evolury: a conversa vem primeiro; o histórico automático vem depois e
+    // recortado. Misturados, as linhas de "mudou o estado" afogavam os
+    // comentários, que são a parte que alguém escreveu para ser lida.
+    <div className="space-y-8">
+      {/* comentários */}
+      <div className="space-y-4">
+        <div className="text-h5-medium text-primary">{t("common.comments")}</div>
+        <div className="space-y-3">
+          {!disabled && sortOrder === E_SORT_ORDER.DESC && renderCommentCreationBox}
+          <IssueCommentsList
             projectId={projectId}
+            workspaceSlug={workspaceSlug}
+            isIntakeIssue={isIntakeIssue}
+            issueId={issueId}
+            activityOperations={activityOperations}
+            showAccessSpecifier={!!project.anchor}
+            disabled={disabled}
+            sortOrder={sortOrder || E_SORT_ORDER.ASC}
           />
+          {!disabled && sortOrder === E_SORT_ORDER.ASC && renderCommentCreationBox}
         </div>
       </div>
 
-      {/* rendering activity */}
-      <div className="space-y-3">
-        <div className="min-h-[200px]">
-          <div className="space-y-3">
-            {!disabled && sortOrder === E_SORT_ORDER.DESC && renderCommentCreationBox}
-            <IssueActivityCommentRoot
-              projectId={projectId}
-              workspaceSlug={workspaceSlug}
-              isIntakeIssue={isIntakeIssue}
-              issueId={issueId}
+      {/* atividade */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="text-h5-medium text-primary">{t("common.activity")}</div>
+          <div className="flex items-center gap-2">
+            <ActivitySortRoot sortOrder={sortOrder || E_SORT_ORDER.ASC} toggleSort={toggleSortOrder} />
+            <ActivityFilterRoot
               selectedFilters={selectedFilters || defaultActivityFilters}
-              activityOperations={activityOperations}
-              showAccessSpecifier={!!project.anchor}
-              disabled={disabled}
-              sortOrder={sortOrder || E_SORT_ORDER.ASC}
+              toggleFilter={toggleFilter}
+              isIntakeIssue={isIntakeIssue}
+              projectId={projectId}
             />
-            {!disabled && sortOrder === E_SORT_ORDER.ASC && renderCommentCreationBox}
           </div>
         </div>
+        <IssueActivityList
+          issueId={issueId}
+          selectedFilters={selectedFilters || defaultActivityFilters}
+          sortOrder={sortOrder || E_SORT_ORDER.ASC}
+        />
       </div>
     </div>
   );
