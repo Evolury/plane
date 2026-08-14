@@ -3,6 +3,56 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.9.0] — 2026-08-14
+
+### Segurança
+
+- **Convites de projeto passam a ser porta de admin.** `list`, `retrieve` e
+  `destroy` herdavam apenas autenticação: qualquer pessoa do workspace lia ou
+  apagava convites de qualquer projeto, inclusive de um do qual não participa —
+  e o convite carrega o e-mail de quem foi convidado e o token bruto de aceite.
+  Corresponde ao aviso `GHSA-r68c-48rr-m67f` do Plane CE, conferido no nosso
+  código e corrigido antes de a release deles sair. Com teste de regressão.
+
+### Tela da tarefa
+
+- **Comentários vêm antes da atividade.** Eram um fluxo único, e o histórico
+  automático — "mudou o estado", "definiu a prioridade" — afogava a conversa,
+  que é a parte que alguém escreveu para ser lida.
+- **As duas listas são recortadas**, com "Carregar mais": 5 comentários e 10
+  linhas de atividade. O recorte guarda sempre os mais **recentes**, qualquer
+  que seja a ordenação escolhida, e o botão fica acima deles — é de onde a
+  conversa continua para trás.
+- **A lista de subtarefas voltou a aparecer.** Ela se escondia sozinha: o
+  marcador de visibilidade era um alternador, e o React executa cada efeito
+  duas vezes em desenvolvimento — a segunda passada desfazia a primeira.
+
+### Tarefas recorrentes
+
+- **Vencimento relativo da subtarefa**: cada subtarefa da origem pode declarar
+  "1 dia após o nascimento" ou "2 dias antes do vencimento" da ocorrência. Sem
+  declaração, continua nascendo sem data. A data é calculada a cada ciclo, e
+  nunca cai antes do dia em que a ocorrência nasce.
+- **Responsável que sai do projeto**: a cópia o descarta, o painel marca a
+  regra com conserto em um clique, e a remoção do membro avisa quantas
+  recorrentes ficam afetadas e oferece transferir. A remoção nunca é travada, e
+  a geração nunca para.
+- **Responsável padrão do projeto** passa a valer nas ocorrências sem
+  responsável — a regra valia em toda tarefa criada à mão e era ignorada
+  justamente nas que nascem sozinhas.
+- **Arquivar a origem agora avisa** que pausa a série, e o selo do quadro ganhou
+  endpoint próprio, no lugar da listagem completa.
+
+### Processo
+
+- **Revisão de releases do upstream** vira processo documentado, com histórico
+  que serve de ponto de partida da revisão seguinte. Só release publicada entra
+  no escopo; aviso de segurança sem release vira exposição conhecida no log.
+- **Matriz de compatibilidade** das tarefas recorrentes executada — 40 linhas
+  com evidência, dois defeitos corrigidos e uma suspeita descartada.
+- **Manual do usuário** das tarefas recorrentes: o comportamento observável, em
+  linguagem de quem usa.
+
 ## [1.8.0] — 2026-08-13
 
 ### A recorrência mora na tarefa
