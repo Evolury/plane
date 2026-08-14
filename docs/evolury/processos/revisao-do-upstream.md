@@ -1,8 +1,19 @@
-# Revisão de releases do Plane CE
+# Revisão do upstream (Plane CE)
 
-Instruções da revisão periódica do upstream. O histórico de cada execução fica
-em [historico-de-revisoes.md](historico-de-revisoes.md), que é **o ponto de
-partida obrigatório** de toda revisão nova.
+Instruções da revisão periódica. O histórico de cada execução fica em
+[historico-de-revisoes.md](historico-de-revisoes.md), que é **o ponto de partida
+obrigatório** de toda revisão nova.
+
+A revisão tem **dois eixos independentes**, e os dois são obrigatórios:
+
+| Eixo                    | O que dispara       | Como se verifica                               |
+| ----------------------- | ------------------- | ---------------------------------------------- |
+| **Releases**            | tag nova publicada  | diff entre a última revisada e a nova          |
+| **Avisos de segurança** | GHSA novo publicado | conferir no **nosso** código se a falha existe |
+
+Eles são separados porque respondem a perguntas diferentes. A release pergunta
+"o que mudou lá?"; o aviso pergunta "isto que eles corrigiram existe aqui?".
+Um aviso pode sair sem release, e uma release pode sair sem aviso.
 
 ## Por que este processo existe
 
@@ -17,20 +28,23 @@ nossa.
 
 ## O que se olha, e o que não se olha
 
-**Só release publicada.** A unidade de revisão é a
-[release do GitHub](https://github.com/makeplane/plane/releases): tag, notas e o
-diff entre a última tag revisada e a nova.
+**Nunca se porta código não publicado.** Branch aberta e PR em revisão mudam,
+são revertidos e às vezes nem chegam a existir; adotar isso gera trabalho que se
+perde.
 
-**Não se olha commit solto, branch aberta nem PR em revisão.** Código não
-publicado muda, é revertido e às vezes nem chega a existir; revisar isso gera
-trabalho que se perde. A exceção que confirma a regra está registrada na
-revisão inicial do histórico — e é justamente por ela que a regra existe.
+**Mas um identificador GHSA é uma pista legítima, venha de onde vier** —
+inclusive de uma mensagem de commit numa branch aberta. A distinção que importa:
 
-> **Aviso de segurança sem release ainda.** Se um GHSA público apontar para o
-> Plane CE e a correção ainda não estiver em release, **anote no histórico como
-> exposição conhecida** e avalie o risco. Não é motivo para abrir exceção no
-> processo, é motivo para decidir conscientemente se esperamos a release ou se
-> tratamos por conta própria.
+> **Não adotamos o código deles; investigamos a falha que o aviso nomeia.**
+> A pista é externa e instável; a evidência é o nosso código, que é estável e
+> está aqui. Foi assim que a falha dos convites (`GHSA-r68c-48rr-m67f`) foi
+> encontrada e corrigida em 14/08/2026, antes de o upstream publicar.
+
+**Data de publicação é pista, não prova.** O fluxo normal é o aviso sair depois
+da correção, então um aviso anterior ao nosso corte _provavelmente_ já está
+coberto. "Provavelmente" não basta para segurança: **confere-se no código**. Foi
+o que mostrou que o SSRF de webhook (`GHSA-mq87-52pf-hm3h`) está corrigido aqui
+— o próprio comentário no código cita o aviso.
 
 ## O passo a passo
 
@@ -40,7 +54,22 @@ Abrir o [histórico](historico-de-revisoes.md) e ler a **última release
 revisada**. Nunca começar de outro lugar — o histórico é o que garante que
 nenhuma release passe despercebida entre uma consulta e outra.
 
-### 2. Listar o que há de novo
+### 2a. Listar os avisos de segurança
+
+```bash
+gh api "repos/makeplane/plane/security-advisories?per_page=100" \
+  --jq '.[] | "\(.ghsa_id) | \(.severity) | \(.published_at[0:10]) | \(.summary)"'
+```
+
+Comparar com o **registro de avisos** no histórico e separar os que ainda não
+têm veredito. Ordem de trabalho por severidade: `critical` e `high` são
+verificados na hora; `medium` e `low` podem esperar a próxima revisão, desde que
+o registro diga que estão pendentes.
+
+Nenhum alerta automático chega até nós: o Dependabot avisa quem **consome um
+pacote**, e nós bifurcamos o código-fonte. Esta consulta é o nosso único radar.
+
+### 2b. Listar as releases novas
 
 ```bash
 git fetch upstream --tags
@@ -52,12 +81,26 @@ nenhuma, a revisão termina aqui — e mesmo assim **registra-se a consulta no
 histórico**, com o resultado "nenhuma release nova". Consulta sem achado é
 informação: ela prova que a janela foi coberta.
 
-### 3. Ler as notas de cada release
+### 3. Dar veredito a cada aviso pendente
+
+Para cada GHSA sem veredito, abrir a descrição, achar o ponto vulnerável e
+**procurá-lo no nosso código**. Três resultados possíveis, todos registrados:
+
+| Veredito              | Significa                                                               |
+| --------------------- | ----------------------------------------------------------------------- |
+| **coberto**           | a correção já está aqui — herdada no corte ou aplicada depois           |
+| **corrigido por nós** | a falha existia e foi corrigida; com teste de regressão                 |
+| **não aplicável**     | o código afetado não existe nesta edição, ou o caminho não é alcançável |
+
+"Não aplicável" leva o motivo escrito. Sem ele, o aviso volta a ser
+investigado do zero na revisão seguinte.
+
+### 4. Ler as notas de cada release
 
 Uma release por vez, na ordem cronológica. As notas dizem a intenção; o diff diz
 o que realmente mudou. Ler as duas, nessa ordem.
 
-### 4. Levantar o diff no que nos alcança
+### 5. Levantar o diff no que nos alcança
 
 ```bash
 git diff --stat <ultima-revisada>..<nova> -- apps/ packages/
@@ -66,7 +109,7 @@ git diff --stat <ultima-revisada>..<nova> -- apps/ packages/
 Ignorar o que não roda aqui: `.github/`, documentação do upstream, testes de
 recursos que não temos, edição paga.
 
-### 5. Classificar cada mudança
+### 6. Classificar cada mudança
 
 | Classe             | O que é                                                         | Tratamento padrão                                                  |
 | ------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -77,7 +120,7 @@ recursos que não temos, edição paga.
 | **Infra e build**  | docker, CI, scripts                                             | Avaliar; costuma conflitar com o nosso enxugamento                 |
 | **Não aplicável**  | edição paga, recurso que não temos, arquivo que não existe aqui | Registrar o motivo e seguir                                        |
 
-### 6. Conferir aplicabilidade de verdade
+### 7. Conferir aplicabilidade de verdade
 
 **Arquivo existir não é o mesmo que estar vulnerável.** Antes de portar, abrir o
 nosso arquivo e confirmar que o padrão defeituoso está lá. Pode não estar por
@@ -87,7 +130,7 @@ dois motivos opostos, e os dois importam:
 - divergimos e o problema existe **de outra forma** → a correção precisa de
   adaptação, não de cópia.
 
-### 7. Implementar
+### 8. Implementar
 
 Cada item aprovado segue o fluxo normal do repositório: branch, teste que
 falha antes e passa depois, `pnpm check`, validação na stack isolada, PR com
@@ -97,12 +140,16 @@ volta na próxima refatoração e ninguém percebe.
 Um PR por assunto. Misturar cinco correções de segurança num PR só torna a
 revisão impossível e o rollback caro.
 
-### 8. Registrar no histórico
+### 9. Registrar no histórico
 
 Toda revisão vira uma entrada, mesmo quando não encontrou nada. A entrada diz o
 que foi olhado, o que foi decidido e **por quê** — inclusive o que foi
 dispensado. Item dispensado sem motivo escrito volta a ser reavaliado do zero na
 revisão seguinte, que é desperdício puro.
+
+O **registro de avisos** é atualizado no mesmo passo: cada GHSA com veredito sai
+da fila de pendentes para sempre. É ele que impede a revisão de reverificar os
+mesmos vinte avisos toda vez.
 
 ## Armadilhas conhecidas deste fork
 

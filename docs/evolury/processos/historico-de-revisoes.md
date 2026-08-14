@@ -1,7 +1,7 @@
 # Histórico de revisões do upstream
 
-Log das revisões de release do Plane CE. Método em
-[revisao-de-releases.md](revisao-de-releases.md).
+Log das revisões do upstream. Método em
+[revisao-do-upstream.md](revisao-do-upstream.md).
 
 **A revisão mais recente fica no topo.** Toda revisão nova começa lendo a
 primeira entrada desta página, para saber de onde continuar.
@@ -16,6 +16,47 @@ primeira entrada desta página, para saber de onde continuar.
 | **Data da última revisão**          | 14/08/2026                      |
 | **Releases pendentes**              | nenhuma                         |
 | **Exposições conhecidas em aberto** | nenhuma                         |
+| **Avisos com veredito**             | 3 de 22                         |
+
+---
+
+## Registro de avisos de segurança
+
+Um GHSA sai desta fila quando ganha veredito, e não volta. Sem este registro, a
+revisão reverificaria os mesmos vinte avisos toda vez.
+
+Nenhum dos 22 foi publicado depois do nosso corte (05/08/2026), o que **sugere**
+que as correções vieram junto no código herdado — mas data é pista, não prova:
+o veredito só vale conferido no nosso código.
+
+| GHSA                  | Severidade | Publicado  | Veredito     | Evidência                                                                                             |
+| --------------------- | ---------- | ---------- | ------------ | ----------------------------------------------------------------------------------------------------- |
+| `GHSA-j77v-w36v-63v6` | crítico    | 2024-04-10 | **pendente** | —                                                                                                     |
+| `GHSA-39gx-38xf-c348` | crítico    | 2024-10-11 | **pendente** | —                                                                                                     |
+| `GHSA-cmwv-pjmw-8483` | crítico    | 2026-08-03 | coberto      | manifestos trazem placeholder explícito, e a produção usa chave própria do cofre                      |
+| `GHSA-7j95-vh8g-f365` | crítico    | 2026-08-03 | **pendente** | —                                                                                                     |
+| `GHSA-4vj8-p63v-8p24` | crítico    | 2026-08-03 | **pendente** | —                                                                                                     |
+| `GHSA-mqjv-rwgv-4gxq` | crítico    | 2026-08-03 | **pendente** | —                                                                                                     |
+| `GHSA-mq87-52pf-hm3h` | crítico    | 2026-08-03 | coberto      | `pinned_fetch` no webhook fixa o IP e não segue redirecionamento; o comentário no código cita o aviso |
+| `GHSA-r2hw-fff3-pjwp` | crítico    | 2026-08-03 | **pendente** | —                                                                                                     |
+| `GHSA-6fj7-xgpg-mj6f` | alto       | 2025-10-23 | **pendente** | —                                                                                                     |
+| `GHSA-jcc6-f9v6-f7jw` | alto       | 2026-02-25 | **pendente** | —                                                                                                     |
+| `GHSA-fpx8-73gf-7x73` | alto       | 2026-03-05 | **pendente** | —                                                                                                     |
+| `GHSA-87x4-j8vh-p5qf` | alto       | 2026-03-05 | **pendente** | —                                                                                                     |
+| `GHSA-9fr2-pprw-pp9j` | alto       | 2026-04-09 | **pendente** | —                                                                                                     |
+| `GHSA-qw87-v5w3-6vxx` | alto       | 2026-05-15 | **pendente** | —                                                                                                     |
+| `GHSA-rcg8-g69v-x23j` | médio      | 2025-01-06 | **pendente** | —                                                                                                     |
+| `GHSA-rwjc-xhh3-m9m9` | médio      | 2025-08-14 | **pendente** | —                                                                                                     |
+| `GHSA-7qx6-6739-c7qr` | médio      | 2026-01-02 | **pendente** | —                                                                                                     |
+| `GHSA-rfj3-8c85-g46j` | médio      | 2026-02-23 | **pendente** | —                                                                                                     |
+| `GHSA-4q54-h4x9-m329` | médio      | 2026-04-07 | **pendente** | —                                                                                                     |
+| `GHSA-93x3-ghh7-72j3` | médio      | 2026-05-15 | **pendente** | —                                                                                                     |
+| `GHSA-cjh4-q763-cc48` | baixo      | 2025-05-21 | **pendente** | —                                                                                                     |
+| `GHSA-8rvg-7w43-p2w2` | baixo      | 2026-04-07 | **pendente** | —                                                                                                     |
+
+Também existem **17 identificadores em rascunho**, vistos em branches abertas do
+upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
+públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
 
 ---
 
@@ -71,10 +112,19 @@ também remove na correção dele.
 ### Achado de processo
 
 A revisão foi feita olhando branches e commits, e o resultado mostrou por que
-isso não escala: 19 branches em revisão, com títulos de limpeza cobrindo os
-commits substantivos, e nenhuma garantia de que sobrevivem como estão. Daí a
-regra de **só olhar release publicada** — e a exceção explícita para avisos de
-segurança, que viram "exposição conhecida" em vez de trabalho imediato.
+isso não escala como fonte: 19 branches em revisão, com títulos de limpeza
+cobrindo os commits substantivos, e nenhuma garantia de que sobrevivem como
+estão. Daí a regra de **nunca portar código não publicado**.
+
+**Revisado no mesmo dia, depois de conferir a página de avisos.** O processo
+nascera olhando só releases, e isso deixava um buraco: o Plane tem 22 avisos de
+segurança públicos, e nenhum alerta automático chega até nós — o Dependabot
+avisa quem consome pacote, e nós bifurcamos o código-fonte. A revisão passou a
+ter **dois eixos**, com o registro de avisos acima como memória do segundo.
+
+Ficou também a distinção que faltava: um identificador GHSA é **pista legítima
+venha de onde vier**, inclusive de branch aberta — o que não se adota é o código
+deles; o que se investiga é a falha que o aviso nomeia, no nosso código.
 
 ### Implementado
 

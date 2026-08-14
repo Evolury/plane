@@ -43,7 +43,7 @@ arqueologia de git.
 
 **Processos (`processos/`).** Rotina que se repete e cuja execução precisa ser
 igual entre uma vez e outra — hoje, a
-[revisão de releases do upstream](processos/revisao-de-releases.md), que anda
+[revisão do upstream](processos/revisao-do-upstream.md), que anda
 junto do seu [histórico](processos/historico-de-revisoes.md). Processo com log
 é processo que se pode auditar: cada execução diz de onde partiu, o que achou e
 o que decidiu, e a execução seguinte começa lendo a anterior.
