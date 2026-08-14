@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
+import Link from "next/link";
 import useSWR, { mutate as mutateGlobal } from "swr";
 import { Pause, Play, Pencil, Repeat } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
@@ -19,7 +20,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Tooltip } from "@plane/propel/tooltip";
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { AlertModalCore, ToggleSwitch } from "@plane/ui";
-import { renderFormattedDate } from "@plane/utils";
+import { generateWorkItemLink, renderFormattedDate } from "@plane/utils";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProject } from "@/hooks/store/use-project";
@@ -86,17 +87,33 @@ export const RecurrenceSection = observer(function RecurrenceSection(props: TSec
   const regra = papel.rule;
   const rotulo = (chave: string, params?: Record<string, string>) => t(`recurring_work_items.${chave}`, params);
 
-  // Tarefa gerada: a trava É o rastro.
+  // Tarefa gerada: a trava É o rastro — e o rastro é o caminho de volta.
+  // Meses depois, quem está na frente da pessoa é a ocorrência da semana;
+  // a origem, concluída, dorme sob o movimento do projeto. Um clique resolve.
   if (papel.role === "occurrence") {
     const origem = regra?.source_issue_detail;
+    const texto = rotulo("section.generated_by", {
+      id: origem ? `${identificador}-${origem.sequence_id}` : "—",
+    });
     return (
       <div className="flex items-center gap-2 py-2 text-12 text-tertiary">
         <Repeat className="size-3.5 flex-shrink-0" />
-        <span>
-          {rotulo("section.generated_by", {
-            id: origem ? `${identificador}-${origem.sequence_id}` : "—",
-          })}
-        </span>
+        {origem && regra ? (
+          <Link
+            href={generateWorkItemLink({
+              workspaceSlug,
+              projectId,
+              issueId: regra.source_issue,
+              projectIdentifier: identificador,
+              sequenceId: origem.sequence_id,
+            })}
+            className="hover:text-primary hover:underline"
+          >
+            {texto}
+          </Link>
+        ) : (
+          <span>{texto}</span>
+        )}
       </div>
     );
   }
