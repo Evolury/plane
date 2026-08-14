@@ -22,6 +22,14 @@
 #   use plane.settings.test, which inherits from common and reads DATABASE_URL,
 #   REDIS_URL, RABBITMQ_* etc. from the environment.
 
+# Evolury: nome de projeto próprio, e não o do diretório.
+#
+# Sem esta linha o Compose deriva o nome da pasta — que aqui é `plane`, o mesmo
+# da produção que roda nesta máquina (~/Projetos/infra/plane). Os serviços não
+# colidem por nome, mas os containers caem no mesmo projeto, e um
+# `down --remove-orphans` do lado da produção levaria os de teste junto.
+name: planetest
+
 services:
   test-db:
     image: postgres:15.7-alpine

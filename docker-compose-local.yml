@@ -1,3 +1,13 @@
+# Evolury: nome de projeto próprio, e não o do diretório.
+#
+# Este arquivo derrubou a produção em 11/08/2026. A pasta se chama `plane`, que
+# é o nome do projeto da produção nesta máquina, e os serviços aqui têm os
+# MESMOS nomes de lá (`plane-db`, `api`, `worker`...) — um `up` sem `-p` isolado
+# recriou os containers de produção, e um `down -v` teria levado o banco.
+#
+# A linha abaixo tira a segurança das mãos de quem digita o comando.
+name: planelocal
+
 services:
   plane-redis:
     image: valkey/valkey:7.2.11-alpine
