@@ -60,6 +60,15 @@ export class RecurringWorkItemService extends APIService {
       });
   }
 
+  /** Só quais tarefas se repetem — o que o selo do quadro precisa. */
+  async badges(workspaceSlug: string, projectId: string): Promise<{ source_issue_ids: string[] }> {
+    return this.get(`${this.base(workspaceSlug, projectId)}/badges/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
   /** O papel de uma tarefa na recorrência: origem, gerada, ou nenhum. */
   async forIssue(workspaceSlug: string, projectId: string, issueId: string): Promise<TRecurringWorkItemRole> {
     return this.get(`${this.base(workspaceSlug, projectId)}/for-issue/${issueId}/`)

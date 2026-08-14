@@ -19,7 +19,7 @@ import { Tooltip } from "@plane/propel/tooltip";
 // services
 import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
 // local imports
-import { chaveDaLista } from "./section";
+import { chaveDosSelos } from "./section";
 
 const servico = new RecurringWorkItemService();
 
@@ -33,15 +33,16 @@ export const RecurrenceBadge = observer(function RecurrenceBadge(props: TBadgePr
   const { workspaceSlug } = useParams();
   const { t } = useTranslation();
 
-  // Uma chamada por projeto, compartilhada entre todos os cartões pelo SWR —
-  // o selo não pode custar uma consulta por linha.
-  const { data: regras } = useSWR(
-    workspaceSlug && projectId ? chaveDaLista(workspaceSlug.toString(), projectId) : null,
-    () => servico.list(workspaceSlug!.toString(), projectId),
+  // Uma chamada por projeto, compartilhada entre todos os cartões pelo SWR, e
+  // enxuta: o selo só precisa saber QUAIS tarefas se repetem, não a agenda de
+  // cada uma nem quem responde por elas.
+  const { data: selos } = useSWR(
+    workspaceSlug && projectId ? chaveDosSelos(workspaceSlug.toString(), projectId) : null,
+    () => servico.badges(workspaceSlug!.toString(), projectId),
     { revalidateOnFocus: false }
   );
 
-  const ehOrigem = regras?.some((regra) => regra.source_issue === issueId && regra.is_active);
+  const ehOrigem = selos?.source_issue_ids?.includes(issueId);
   if (!ehOrigem) return null;
 
   return (

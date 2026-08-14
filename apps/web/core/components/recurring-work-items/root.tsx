@@ -26,7 +26,7 @@ import { useProject } from "@/hooks/store/use-project";
 import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
 // local imports
 import { RecurringWorkItemForm } from "./form";
-import { chaveDaLista, chaveDaRegra } from "./section";
+import { chaveDaLista, chaveDaRegra, chaveDosSelos } from "./section";
 
 const servico = new RecurringWorkItemService();
 
@@ -57,6 +57,7 @@ export const RecurringWorkItemsRoot = observer(function RecurringWorkItemsRoot(p
     await servico.update(workspaceSlug, projectId, regra.id, { is_active: !regra.is_active });
     mutate();
     mutateGlobal(chaveDaRegra(regra.source_issue));
+    mutateGlobal(chaveDosSelos(workspaceSlug, projectId));
   };
 
   // O conserto inline do alerta: tira o responsável que saiu da tarefa de
@@ -88,6 +89,7 @@ export const RecurringWorkItemsRoot = observer(function RecurringWorkItemsRoot(p
       });
       mutate();
       mutateGlobal(chaveDaRegra(aExcluir.source_issue));
+      mutateGlobal(chaveDosSelos(workspaceSlug, projectId));
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,

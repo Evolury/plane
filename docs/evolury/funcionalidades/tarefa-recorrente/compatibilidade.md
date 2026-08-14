@@ -94,15 +94,16 @@ buraco em "Minhas tarefas". Não é: a etapa é anotação com fallback para a
 padrão (ADR 0002), então a tarefa sem associação aparece corretamente. O
 desenho aditivo já cobria.
 
-## Lacunas conhecidas
+## Lacunas — resolvidas em 14/08/2026
 
-Comportamentos corretos, mas que merecem melhoria — anotados, não corrigidos
-nesta execução:
+As duas anotadas na execução foram fechadas antes de seguir adiante:
 
-- **Arquivar a origem não avisa que pausa a série.** O comportamento é o
-  documentado, e arquivar é ato deliberado; ainda assim, um aviso no momento do
-  arquivamento seguiria a mesma regra da remoção de membro ("o ato acontece, a
-  consequência não é silenciosa").
-- **O selo do quadro depende da listagem inteira do projeto.** Hoje é uma
-  chamada compartilhada por todos os cartões via SWR, com 4 consultas. Projetos
-  com muitas recorrentes podem justificar um endpoint enxuto no futuro.
+- **Arquivar a origem agora avisa que pausa a série.** A confirmação de
+  arquivamento mostra "Arquivar pausa a recorrência desta tarefa (...) e a
+  série retoma ao desarquivar", pela mesma regra da remoção de membro: o ato
+  acontece, a consequência não é silenciosa. ✓ `[V]` modal de arquivamento
+- **O selo tem endpoint próprio.** `badges/` devolve só quais tarefas se
+  repetem — uma consulta, uma coluna —, em vez da listagem que calcula datas
+  futuras e confere responsáveis regra a regra. Regra pausada fica de fora,
+  porque o selo afirma "esta tarefa se repete". ✓ `[T]`
+  test_badges_answer_with_one_query · `[V]` o quadro chama apenas `/badges/`

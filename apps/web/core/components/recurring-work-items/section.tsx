@@ -35,6 +35,9 @@ const servico = new RecurringWorkItemService();
 export const chaveDaRegra = (issueId: string) => `RECURRING_ROLE_${issueId}`;
 export const chaveDaLista = (workspaceSlug: string, projectId: string) =>
   `RECURRING_WORK_ITEMS_${workspaceSlug}_${projectId}`;
+/** O selo do quadro: enxuto, só quais tarefas se repetem. */
+export const chaveDosSelos = (workspaceSlug: string, projectId: string) =>
+  `RECURRING_BADGES_${workspaceSlug}_${projectId}`;
 
 type TSectionProps = {
   workspaceSlug: string;
@@ -80,6 +83,7 @@ export const RecurrenceSection = observer(function RecurrenceSection(props: TSec
   const atualizarTudo = () => {
     mutate();
     mutateGlobal(chaveDaLista(workspaceSlug, projectId));
+    mutateGlobal(chaveDosSelos(workspaceSlug, projectId));
   };
 
   if (!papel) return null;

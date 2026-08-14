@@ -70,6 +70,16 @@ class RecurringWorkItemViewSet(BaseViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
+    def badges(self, request, slug, project_id):
+        """Só quais tarefas se repetem — o que o selo do quadro precisa saber.
+
+        A listagem completa calcula datas futuras e confere responsáveis regra
+        a regra; o cartão não usa nada disso. Uma consulta, uma coluna.
+        """
+        origens = self.get_queryset().filter(is_active=True).values_list("source_issue_id", flat=True)
+        return Response({"source_issue_ids": [str(pk) for pk in origens]}, status=status.HTTP_200_OK)
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
     def for_issue(self, request, slug, project_id, issue_id):
         """O papel de uma tarefa na recorrência: origem, gerada, ou nenhum.
 
