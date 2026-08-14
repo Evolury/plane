@@ -40,8 +40,8 @@ calma antes de existir gente dependendo dele.
 - [x] F2.4 Pré-visualização das próximas datas ("próximas: 18/08, 25/08, 01/09")
       — é o que torna uma regra complexa confiável
 - [~] F2.5 Aviso quando o responsável do molde não é mais membro do projeto —
-      **substituído pela F5**: o molde virou tarefa de origem na F4, e o
-      tratamento certo tem três camadas, não um aviso
+  **substituído pela F5**: o molde virou tarefa de origem na F4, e o
+  tratamento certo tem três camadas, não um aviso
 - [x] F2.6 Ligar/desligar a regra sem excluí-la
 
 ## F3 — Integração
@@ -112,10 +112,17 @@ tornar visível, por último o gesto de offboarding, que é o mais caro.
 - [x] F6.5 Endpoint `badges/` para o selo do quadro, no lugar da listagem
       completa
 
+## F7 — Vencimento relativo da subtarefa (14/08/2026)
+
+- [x] F7.1 Modelo `RecurringSubtaskSchedule` e migração — tabela própria, com
+      cascata dos dois lados
+- [x] F7.2 Cálculo na geração, com o recorte no nascimento
+- [x] F7.3 Endpoint `subtask-schedule/` e campo na linha da subtarefa
+- [x] F7.4 Testes: as duas âncoras, o recorte, subtarefa sem agenda,
+      recomputação a cada ciclo e as travas da API
+
 ## Ciclo seguinte
 
-- [ ] Vencimento relativo da subtarefa: âncora na criação ou no vencimento da
-      principal, declarada em vez de deduzida (adição pura sobre a F4)
 - [ ] Subtarefa aninhada
 
 ## Fora de escopo

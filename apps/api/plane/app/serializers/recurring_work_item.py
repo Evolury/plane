@@ -16,6 +16,7 @@ from rest_framework import serializers
 from plane.db.models import (
     RecurrenceEndMode,
     RecurrenceFrequency,
+    RecurringSubtaskSchedule,
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
 )
@@ -28,6 +29,7 @@ class RecurringWorkItemSerializer(BaseSerializer):
     next_occurrences = serializers.SerializerMethodField()
     source_issue_detail = serializers.SerializerMethodField()
     inactive_assignees = serializers.SerializerMethodField()
+    subtask_schedules = serializers.SerializerMethodField()
 
     class Meta:
         model = RecurringWorkItem
@@ -97,6 +99,27 @@ class RecurringWorkItemSerializer(BaseSerializer):
             }
             for vinculo in vinculos
             if vinculo.assignee_id not in ativos
+        ]
+
+    def get_subtask_schedules(self, obj):
+        """O vencimento relativo de cada subtarefa da origem (F7).
+
+        Devolvido junto da regra porque a tela que edita a agenda é a mesma que
+        mostra as subtarefas — buscar em separado seria uma ida a mais para
+        desenhar um campo.
+        """
+        agendas = self.context.get("agendas_por_regra")
+        if agendas is not None:
+            linhas = agendas.get(obj.id, [])
+        else:
+            linhas = RecurringSubtaskSchedule.objects.filter(recurring_work_item=obj)
+        return [
+            {
+                "subtask": str(linha.subtask_id),
+                "anchor": linha.anchor,
+                "offset_days": linha.offset_days,
+            }
+            for linha in linhas
         ]
 
     def validate_source_issue(self, origem):

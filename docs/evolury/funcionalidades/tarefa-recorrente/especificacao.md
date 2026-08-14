@@ -126,10 +126,10 @@ Sem tratamento, toda ocorrência futura nasceria com um dono que não existe mai
 
 **A remoção nunca é travada** e **a geração nunca para**. O que acontece:
 
-| Camada | Comportamento |
-| --- | --- |
-| Geração | descarta o responsável inativo; a ocorrência nasce sem ele, nunca com um fantasma |
-| Configurações | contador no item "Tarefas recorrentes" e linha marcada, com o conserto ali — só para admin do projeto |
+| Camada            | Comportamento                                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------------------------- |
+| Geração           | descarta o responsável inativo; a ocorrência nasce sem ele, nunca com um fantasma                               |
+| Configurações     | contador no item "Tarefas recorrentes" e linha marcada, com o conserto ali — só para admin do projeto           |
 | Remoção do membro | a confirmação avisa quantas recorrentes ficam afetadas e oferece **transferir** para outra pessoa na mesma tela |
 
 Trabalho com aparência de dono é pior que trabalho sem dono: ninguém assume o
@@ -153,11 +153,28 @@ As subtarefas da origem são copiadas — descrevem o trabalho, não a execuçã
 Vêm **abertas, sem comentários, sem atividade e sem data**. O reset não é
 recurso: é consequência de copiar, como no ClickUp.
 
-**Sem data é decisão, não omissão.** O defeito conhecido do Asana é a subtarefa
+**Sem data é o padrão, e é decisão.** O defeito conhecido do Asana é a subtarefa
 que nasce com a data do ciclo anterior, vencida desde o primeiro segundo. Uma
-subtarefa sem data já comunica "vence com a principal", que é o caso comum; as
-datas próprias são definidas à mão, e o vencimento relativo fica para o ciclo
-seguinte, como adição pura.
+subtarefa sem data já comunica "vence com a principal", que é o caso comum.
+
+**Quando o prazo importa, a subtarefa declara o próprio vencimento**:
+
+| Âncora              | Exemplo        | Cálculo                      |
+| ------------------- | -------------- | ---------------------------- |
+| Após o nascimento   | "1 dia depois" | início da ocorrência + N     |
+| Antes do vencimento | "2 dias antes" | vencimento da ocorrência − N |
+| Sem regra (padrão)  | —              | sem data                     |
+
+O deslocamento é sempre positivo: a direção vem da âncora, não do sinal. E a
+data é calculada **a cada ciclo, do zero** — nunca deslocada de um ciclo para o
+outro, que é onde o remapeamento do ClickUp falha quando a data do pai recua.
+
+**Nunca antes do nascimento**: deslocamento maior que a janela é recortado no
+dia em que a ocorrência nasce. Data ausente não mente, e data impossível
+também não pode.
+
+O campo aparece na linha da subtarefa, só nas subtarefas de uma tarefa de
+origem, e só para admin.
 
 Três travas:
 

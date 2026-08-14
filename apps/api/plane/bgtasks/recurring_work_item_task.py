@@ -41,9 +41,11 @@ from plane.db.models import (
     IssueAssignee,
     IssueLabel,
     ProjectMember,
+    RecurringSubtaskSchedule,
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
     State,
+    SubtaskDueAnchor,
 )
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.utils.exception_logger import log_exception
@@ -165,13 +167,40 @@ def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
     )
 
 
-def _copiar_subtarefas(origem, copia, regra, ativos):
-    """Um nível, sem datas, abertas na etapa padrão do projeto.
+def _vencimento_da_subtarefa(agenda, nascimento, vencimento):
+    """A data da subtarefa, calculada do zero — nunca deslocada.
 
-    Sem data é decisão: o defeito conhecido do Asana é a subtarefa que nasce
-    vencida, com a data do ciclo anterior. Data ausente não mente.
+    É o que nos livra da classe de defeito do ClickUp, cujo remapeamento não
+    funciona quando a data do pai recua: aqui não há data anterior para
+    deslocar, há data para calcular a cada ciclo.
+
+    O recorte no nascimento é a regra de segurança: subtarefa não pode vencer
+    antes de existir. Data ausente não mente, e data impossível também.
     """
-    filhas = Issue.issue_objects.filter(parent=origem).order_by("sort_order")[:TETO_DE_SUBTAREFAS]
+    if agenda is None:
+        return None
+    if agenda.anchor == SubtaskDueAnchor.AFTER_CREATION:
+        calculada = nascimento + timedelta(days=agenda.offset_days)
+    else:
+        calculada = vencimento - timedelta(days=agenda.offset_days)
+    return max(calculada, nascimento)
+
+
+def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento=None):
+    """Um nível, abertas na etapa padrão do projeto.
+
+    Sem agenda própria, a subtarefa nasce **sem data**: o defeito conhecido do
+    Asana é a subtarefa que nasce vencida, com a data do ciclo anterior. Data
+    ausente não mente. Com agenda, a data é calculada a partir do nascimento ou
+    do vencimento desta ocorrência (F7).
+    """
+    filhas = list(Issue.issue_objects.filter(parent=origem).order_by("sort_order")[:TETO_DE_SUBTAREFAS])
+    agendas = {
+        agenda.subtask_id: agenda
+        for agenda in RecurringSubtaskSchedule.objects.filter(
+            recurring_work_item=regra, subtask_id__in=[filha.id for filha in filhas]
+        )
+    }
     for filha in filhas:
         subcopia = Issue.objects.create(
             project=regra.project,
@@ -182,6 +211,11 @@ def _copiar_subtarefas(origem, copia, regra, ativos):
             priority=filha.priority or "none",
             type=filha.type,
             estimate_point=filha.estimate_point,
+            target_date=(
+                _vencimento_da_subtarefa(agendas.get(filha.id), nascimento, vencimento)
+                if nascimento and vencimento
+                else None
+            ),
             created_by_id=regra.created_by_id,
         )
         _copiar_relacionados(filha, subcopia, regra, ativos)
@@ -205,6 +239,11 @@ def _criar_ocorrencia(regra, previsto_para, agora):
 
     origem = regra.source_issue
     fuso = ZoneInfo(regra.project.timezone)
+    # As datas são calculadas, nunca copiadas: nasce hoje, vence na data da
+    # agenda. Com antecedência, "hoje" chega antes do vencimento — e é essa
+    # janela que as subtarefas usam de referência (F7).
+    nascimento = agora.astimezone(fuso).date()
+    vencimento = previsto_para.astimezone(fuso).date()
     with transaction.atomic():
         tarefa = Issue.objects.create(
             project=regra.project,
@@ -217,13 +256,13 @@ def _criar_ocorrencia(regra, previsto_para, agora):
             estimate_point=origem.estimate_point,
             # As datas são calculadas, nunca copiadas: nasce hoje, vence na
             # data da agenda. Com antecedência, "hoje" chega antes do vencimento.
-            start_date=agora.astimezone(fuso).date(),
-            target_date=previsto_para.astimezone(fuso).date(),
+            start_date=nascimento,
+            target_date=vencimento,
             created_by_id=regra.created_by_id,
         )
         ativos = _responsaveis_ativos(regra)
         _copiar_relacionados(origem, tarefa, regra, ativos, usar_padrao=True)
-        _copiar_subtarefas(origem, tarefa, regra, ativos)
+        _copiar_subtarefas(origem, tarefa, regra, ativos, nascimento, vencimento)
 
         ocorrencia.issue = tarefa
         ocorrencia.save(update_fields=["issue"])

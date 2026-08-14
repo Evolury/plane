@@ -7,7 +7,7 @@
 // Evolury: serviço das tarefas recorrentes (ADR 0010, revisão 13/08/2026).
 
 import { API_BASE_URL } from "@plane/constants";
-import type { TRecurringWorkItem, TRecurringWorkItemRole } from "@plane/types";
+import type { TRecurringWorkItem, TRecurringWorkItemRole, TSubtaskDueAnchor } from "@plane/types";
 import { APIService } from "@/services/api.service";
 
 export class RecurringWorkItemService extends APIService {
@@ -101,6 +101,26 @@ export class RecurringWorkItemService extends APIService {
     return this.post(`${this.base(workspaceSlug, projectId)}/transfer-assignee/`, {
       from_user: fromUser,
       to_user: toUser,
+    })
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
+  /** Define ou remove (âncora vazia) o vencimento relativo de uma subtarefa. */
+  async setSubtaskSchedule(
+    workspaceSlug: string,
+    projectId: string,
+    ruleId: string,
+    subtaskId: string,
+    anchor: TSubtaskDueAnchor | "",
+    offsetDays: number
+  ): Promise<void> {
+    return this.post(`${this.base(workspaceSlug, projectId)}/${ruleId}/subtask-schedule/`, {
+      subtask: subtaskId,
+      anchor,
+      offset_days: offsetDays,
     })
       .then((res) => res?.data)
       .catch((err) => {

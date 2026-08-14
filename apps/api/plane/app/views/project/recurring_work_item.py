@@ -24,7 +24,15 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.recurring_work_item import RecurringWorkItemSerializer
 from plane.app.views.base import BaseViewSet
 from plane.bgtasks.recurring_work_item_task import agendar_proxima_data
-from plane.db.models import IssueAssignee, ProjectMember, RecurringWorkItem, RecurringWorkItemOccurrence
+from plane.db.models import (
+    Issue,
+    IssueAssignee,
+    ProjectMember,
+    RecurringSubtaskSchedule,
+    RecurringWorkItem,
+    RecurringWorkItemOccurrence,
+    SubtaskDueAnchor,
+)
 from plane.utils.recurrence import proximas_datas
 
 
@@ -59,7 +67,14 @@ class RecurringWorkItemViewSet(BaseViewSet):
         origens = [regra.source_issue_id for regra in regras]
         for vinculo in IssueAssignee.objects.filter(issue_id__in=origens).select_related("assignee"):
             por_tarefa[vinculo.issue_id].append(vinculo)
-        return {"membros_ativos": ativos, "responsaveis_por_tarefa": por_tarefa}
+        agendas = defaultdict(list)
+        for linha in RecurringSubtaskSchedule.objects.filter(recurring_work_item__in=regras):
+            agendas[linha.recurring_work_item_id].append(linha)
+        return {
+            "membros_ativos": ativos,
+            "responsaveis_por_tarefa": por_tarefa,
+            "agendas_por_regra": agendas,
+        }
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
     def list(self, request, slug, project_id):
@@ -217,6 +232,56 @@ class RecurringWorkItemViewSet(BaseViewSet):
                 )
 
         return Response({"transferred": len(origens)}, status=status.HTTP_200_OK)
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
+    def set_subtask_schedule(self, request, slug, project_id, pk):
+        """Define (ou remove) o vencimento relativo de uma subtarefa.
+
+        `anchor` vazio remove a agenda — a subtarefa volta a nascer sem data,
+        que é o padrão e uma escolha legítima.
+        """
+        regra = self.get_queryset().filter(pk=pk).first()
+        if regra is None:
+            return Response({"error": "Tarefa recorrente não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        subtarefa_id = request.data.get("subtask")
+        subtarefa = Issue.objects.filter(pk=subtarefa_id, parent_id=regra.source_issue_id).first()
+        if subtarefa is None:
+            return Response(
+                {"subtask": "A subtarefa precisa ser filha da tarefa de origem."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        ancora = request.data.get("anchor")
+        if not ancora:
+            RecurringSubtaskSchedule.objects.filter(
+                recurring_work_item=regra, subtask=subtarefa
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        if ancora not in SubtaskDueAnchor.values:
+            return Response({"anchor": "Âncora inválida."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            deslocamento = int(request.data.get("offset_days") or 0)
+        except (TypeError, ValueError):
+            deslocamento = -1
+        if deslocamento < 0:
+            # A direção vem da âncora, não do sinal — número negativo aqui
+            # significaria a mesma coisa duas vezes, e ao contrário.
+            return Response(
+                {"offset_days": "O deslocamento não pode ser negativo."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        agenda, _ = RecurringSubtaskSchedule.objects.update_or_create(
+            recurring_work_item=regra,
+            subtask=subtarefa,
+            defaults={"anchor": ancora, "offset_days": deslocamento},
+        )
+        return Response(
+            {"subtask": str(agenda.subtask_id), "anchor": agenda.anchor, "offset_days": agenda.offset_days},
+            status=status.HTTP_200_OK,
+        )
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def preview(self, request, slug, project_id):

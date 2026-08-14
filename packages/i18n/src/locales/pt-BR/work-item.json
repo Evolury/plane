@@ -557,7 +557,17 @@
       "transferred": "Recorrentes transferidas.",
       "explanation": "A remoção acontece de qualquer forma; as próximas ocorrências nascem sem essa pessoa."
     },
-    "archive_warning": "Arquivar pausa a recorrência desta tarefa. Nada é gerado enquanto ela estiver arquivada, e a série retoma ao desarquivar."
+    "archive_warning": "Arquivar pausa a recorrência desta tarefa. Nada é gerado enquanto ela estiver arquivada, e a série retoma ao desarquivar.",
+    "subtask_due": {
+      "label": "Vencimento na recorrência",
+      "none": "Sem data",
+      "after_creation": "após a criação",
+      "before_due": "antes do vencimento",
+      "days": "dia(s)",
+      "summary_after": "vence {days} dia(s) após a criação",
+      "summary_before": "vence {days} dia(s) antes do vencimento",
+      "clamped": "Com a antecedência atual, esta data seria antes da criação — a subtarefa nasce vencendo no mesmo dia."
+    }
   },
   "epic": {
     "new": "Novo Epic",

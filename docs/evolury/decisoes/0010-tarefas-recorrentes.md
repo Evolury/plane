@@ -188,9 +188,9 @@ errada mente. E uma subtarefa sem data já comunica "vence com a principal", que
 é o caso comum.
 
 O vencimento relativo — âncora na criação ou no vencimento da principal, como o
-remapeamento do ClickUp, só que declarado em vez de deduzido — fica para o ciclo
-seguinte. É adição pura: quem não configurar continua sem data. O caminho
-inverso, lançar as âncoras e recuar, quebraria regra já configurada.
+remapeamento do ClickUp, só que declarado em vez de deduzido — ficou para o
+ciclo seguinte, e **entrou em 14/08/2026** (ver adiante). Foi adição pura: quem
+não configurar continua sem data.
 
 Três travas nascem com a cópia: **subtarefa não tem recorrência própria** (é o
 que produz a duplicação em cascata do Asana, 6 virando 12), **um nível só**, e
@@ -264,6 +264,38 @@ todas com a mesma pessoa seria ruído.
 
 As duas regras se completam: descartado o fantasma, se não sobrar ninguém, o
 padrão do projeto assume.
+
+### Vencimento relativo da subtarefa (14/08/2026)
+
+Uma recorrente semanal com três subtarefas datadas custa 156 preenchimentos de
+data por ano — exatamente a repetição que a funcionalidade existe para
+eliminar. E subtarefa sem data não aparece no calendário nem no cronograma, e
+não dispara aviso: o trabalho miúdo fica escondido dentro do cartão.
+
+Cada subtarefa da origem pode declarar **âncora + deslocamento**: "1 dia após o
+nascimento" ou "2 dias antes do vencimento" da ocorrência. Sempre positivo — a
+direção vem da âncora, não do sinal, porque número negativo em campo de prazo é
+onde a interface confunde. Sem declaração, a subtarefa continua nascendo sem
+data, que é o padrão e uma escolha legítima.
+
+**O nosso problema é de criação, não de mutação**, e é isso que nos livra da
+classe de defeito do mercado. O ClickUp precisa decidir como deslocar datas que
+já existem quando o pai muda — daí o remapeamento que [não funciona quando a
+data recua](https://feedback.clickup.com/feature-requests/p/reschedule-subtasks-when-parent-task-moved-to-an-earlier-date),
+que ignora subtarefa sem data, e que não dispara pelo Gantt. Aqui não há data
+anterior para deslocar: a cada ciclo a data é calculada do zero.
+
+O Asana é o buraco mais claro: os modelos só oferecem "X dias após a criação", e
+"N dias antes do vencimento do pai" é pedido recorrente no fórum, sem resposta.
+
+**A regra de segurança**: se o cálculo cair antes do nascimento da ocorrência, a
+data vira o próprio nascimento. Data ausente não mente, e data impossível
+também não pode. Subtarefa que nasce vencida é o defeito do Asana que a revisão
+evitou não copiando datas — seria irônico reintroduzi-lo pela porta da frente.
+
+A agenda mora em **tabela própria**, e não em colunas de `issues`: é recurso de
+nicho e `issues` é a maior tabela do banco. A cascata dos dois lados faz a
+limpeza sozinha, e subtarefa nova simplesmente não tem linha.
 
 ## Alternativas consideradas
 

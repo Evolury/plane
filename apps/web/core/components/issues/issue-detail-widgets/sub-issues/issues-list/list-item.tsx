@@ -26,6 +26,8 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifier";
 // local components
 import { SubIssuesListItemProperties } from "./properties";
+// Evolury: vencimento relativo da subtarefa na recorrência (ADR 0010, F7)
+import { SubtaskDueForParent } from "@/components/recurring-work-items/subtask-due-for-parent";
 import { SubIssuesListRoot } from "./root";
 
 type Props = {
@@ -186,6 +188,15 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                 displayProperties={displayProperties}
                 issue={issue}
               />
+              {/* Evolury: só aparece quando o pai tem recorrência (ADR 0010, F7) */}
+              {issue.project_id && (
+                <SubtaskDueForParent
+                  workspaceSlug={workspaceSlug}
+                  projectId={issue.project_id}
+                  parentIssueId={parentIssueId}
+                  subtaskId={issueId}
+                />
+              )}
             </div>
 
             <div className="flex-shrink-0 text-13">

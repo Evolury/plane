@@ -13,6 +13,16 @@ export type TRecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";
 export type TMonthlyMode = "day_of_month" | "last_day" | "weekday_of_month";
 export type TGenerationMode = "schedule" | "after_completion";
 export type TRecurrenceEndMode = "never" | "on_date" | "after_count";
+/** De onde a data da subtarefa é contada (F7). */
+export type TSubtaskDueAnchor = "after_creation" | "before_due";
+
+/** Vencimento relativo de uma subtarefa da tarefa de origem. */
+export type TSubtaskSchedule = {
+  subtask: string;
+  anchor: TSubtaskDueAnchor;
+  /** Sempre positivo: a direção vem da âncora, não do sinal. */
+  offset_days: number;
+};
 
 /** Responsável da origem que não é mais membro do projeto. */
 export type TInactiveAssignee = {
@@ -68,6 +78,8 @@ export type TRecurringWorkItem = {
   initial_state: string | null;
   /** Só leitura: responsáveis da origem que saíram do projeto — a geração já os descarta. */
   inactive_assignees: TInactiveAssignee[];
+  /** Só leitura: vencimento relativo das subtarefas da origem. */
+  subtask_schedules: TSubtaskSchedule[];
   project: string;
   workspace: string;
   created_at: string;
