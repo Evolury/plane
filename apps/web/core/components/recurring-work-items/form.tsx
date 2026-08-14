@@ -67,6 +67,7 @@ const padrao = (): Partial<TRecurringWorkItem> => ({
   time_of_day: "09:00:00",
   start_date: new Date().toISOString().slice(0, 10),
   lead_time_days: 0,
+  lead_time_hours: 0,
   end_mode: "never",
   generation_mode: "schedule",
   days_after_completion: 7,
@@ -110,8 +111,9 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
   const etapas = getProjectStates(projectId) ?? [];
   // Antecedência maior ou igual ao intervalo = sobreposição permanente. Pode
   // ser intencional numa esteira contínua — por isso é aviso, não bloqueio.
-  const diasDoCiclo = (dados.interval ?? 1) * DIAS_DO_INTERVALO[dados.frequency ?? "weekly"];
-  const antecedenciaEngole = (dados.lead_time_days ?? 0) >= diasDoCiclo && (dados.lead_time_days ?? 0) > 0;
+  const horasDoCiclo = (dados.interval ?? 1) * DIAS_DO_INTERVALO[dados.frequency ?? "weekly"] * 24;
+  const horasDeAntecedencia = (dados.lead_time_days ?? 0) * 24 + (dados.lead_time_hours ?? 0);
+  const antecedenciaEngole = horasDeAntecedencia > 0 && horasDeAntecedencia >= horasDoCiclo;
 
   const alternarDia = (dia: number) => {
     const atuais = dados.weekdays ?? [];
@@ -351,6 +353,15 @@ export const RecurringWorkItemForm = observer(function RecurringWorkItemForm(pro
               className="w-20"
             />
             <span className="text-secondary">{rotulo("lead_time.days_suffix")}</span>
+            <Input
+              type="number"
+              min={0}
+              max={23}
+              value={String(dados.lead_time_hours ?? 0)}
+              onChange={(e) => mudar({ lead_time_hours: Math.min(23, Math.max(0, Number(e.target.value))) })}
+              className="w-20"
+            />
+            <span className="text-secondary">{rotulo("lead_time.hours_suffix")}</span>
           </div>
           {antecedenciaEngole && (
             <p className="rounded-md bg-warning-subtle px-3 py-2 text-12 text-warning-primary">

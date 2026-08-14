@@ -84,10 +84,13 @@ class RecurringWorkItem(ProjectBaseModel):
     # Horário local da geração (fuso do produto — ADR 0006).
     time_of_day = models.TimeField()
     start_date = models.DateField()
-    # Antecedência: quantos dias antes do vencimento a tarefa nasce. A data de
-    # nascimento vira a data de início da ocorrência; o vencimento é a data da
-    # agenda. Zero = nasce no dia (comportamento original).
+    # Antecedência: quanto antes do vencimento a tarefa nasce. Dias para a
+    # véspera ("o relatório chega 3 dias antes"), horas para o preparo ("a
+    # pauta chega 2 horas antes da reunião"). A data de nascimento vira a data
+    # de início da ocorrência; o vencimento é a data da agenda. Zero = nasce
+    # na hora (comportamento original).
     lead_time_days = models.PositiveIntegerField(default=0)
+    lead_time_hours = models.PositiveIntegerField(default=0)
 
     # --- fim da recorrência ---
     end_mode = models.CharField(max_length=20, choices=RecurrenceEndMode.choices, default=RecurrenceEndMode.NEVER)

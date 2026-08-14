@@ -130,6 +130,11 @@ class RecurringWorkItemSerializer(BaseSerializer):
                 {"days_after_completion": "Escolha quantos dias após a conclusão."}
             )
 
+        # A representação canônica da antecedência: horas até 23, dias dali em
+        # diante — "26 horas" e "1 dia e 2 horas" não podem ser duas regras.
+        if (campo("lead_time_hours") or 0) > 23:
+            raise serializers.ValidationError({"lead_time_hours": "A partir de 24 horas, use dias."})
+
         estado = campo("initial_state")
         origem = campo("source_issue")
         if estado is not None and origem is not None and estado.project_id != origem.project_id:

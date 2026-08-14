@@ -206,6 +206,16 @@ class TestRecurringWorkItems:
         assert resposta.status_code == status.HTTP_400_BAD_REQUEST
         assert "day_of_month" in resposta.data
 
+    def test_a_full_day_of_lead_time_must_be_days(self, session_client, workspace, projeto, origem):
+        """"26 horas" e "1 dia e 2 horas" não podem ser duas regras diferentes."""
+        resposta = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id),
+            _payload(origem, lead_time_hours=24),
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert "lead_time_hours" in resposta.data
+
     def test_end_on_date_without_date_is_rejected(self, session_client, workspace, projeto, origem):
         resposta = session_client.post(
             LISTA_URL.format(slug=workspace.slug, project_id=projeto.id),
