@@ -3,6 +3,16 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.12.0] — 2026-08-14
+
+### Tarefas recorrentes
+
+- **Atalho no cabeçalho das tarefas**, ao lado do filtro, levando à auditoria
+  das recorrentes do projeto. Ele só aparece quando **existe recorrência ativa**
+  — atalho para tela vazia seria ruído permanente — e só para admin, que é quem
+  a página atende. A auditoria já existia; o que faltava era alguém achá-la sem
+  ir até Configurações → Execução.
+
 ## [1.11.0] — 2026-08-14
 
 ### Tarefas recorrentes
