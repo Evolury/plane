@@ -1,3 +1,15 @@
+# Evolury: nome de projeto próprio, e não o do diretório.
+#
+# Este é o compose de auto-hospedagem herdado do upstream, e é o mais perigoso
+# dos três: os nomes de serviço são IDÊNTICOS aos da produção que roda nesta
+# máquina (`api`, `web`, `plane-db`, `plane-redis`, `proxy`...). A pasta se
+# chama `plane`, que é também o nome do projeto da produção — então um
+# `docker compose up` distraído na raiz do repositório recriaria a produção
+# inteira a partir daqui.
+#
+# Nós não implantamos por este arquivo: a produção sai de ~/Projetos/infra/plane.
+name: plane-selfhost
+
 services:
   web:
     container_name: web
