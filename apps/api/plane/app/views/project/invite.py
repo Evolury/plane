@@ -28,7 +28,6 @@ from plane.db.models import (
     ProjectMember,
     Workspace,
     ProjectMemberInvite,
-    User,
     WorkspaceMember,
     Project,
     ProjectUserProperty,
@@ -52,6 +51,24 @@ class ProjectInvitationsViewset(BaseViewSet):
             .select_related("project")
             .select_related("workspace", "workspace__owner")
         )
+
+    # Evolury: o convite expõe o e-mail de quem foi convidado e o token bruto de
+    # aceite, e pode ser apagado — então ler e remover são porta de admin, como
+    # criar já era. Sem estes decoradores, os três métodos herdam apenas
+    # `IsAuthenticated` do BaseViewSet, e qualquer pessoa do workspace alcança os
+    # convites de qualquer projeto, inclusive de um do qual não participa
+    # (GHSA-r68c-48rr-m67f, portado do upstream na revisão de 14/08/2026).
+    @allow_permission([ROLE.ADMIN])
+    def list(self, request, slug, project_id):
+        return super().list(request)
+
+    @allow_permission([ROLE.ADMIN])
+    def retrieve(self, request, slug, project_id, pk):
+        return super().retrieve(request)
+
+    @allow_permission([ROLE.ADMIN])
+    def destroy(self, request, slug, project_id, pk):
+        return super().destroy(request)
 
     @allow_permission([ROLE.ADMIN])
     def create(self, request, slug, project_id):

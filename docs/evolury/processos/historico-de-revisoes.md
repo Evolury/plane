@@ -15,7 +15,7 @@ primeira entrada desta página, para saber de onde continuar.
 | **Última release revisada**         | `v1.4.1` (upstream, 07/08/2026) |
 | **Data da última revisão**          | 14/08/2026                      |
 | **Releases pendentes**              | nenhuma                         |
-| **Exposições conhecidas em aberto** | 1 — ver revisão de 14/08        |
+| **Exposições conhecidas em aberto** | nenhuma                         |
 
 ---
 
@@ -57,9 +57,16 @@ projeto, e o convite carrega **o e-mail do convidado e o token bruto**.
 
 Conferido no nosso código, não inferido do upstream.
 
-**Situação:** em aberto. A correção do upstream existe em branch, sem release.
-Decisão pendente do responsável pelo produto: esperar a release ou corrigir por
-conta própria — são três decoradores.
+**Situação:** **corrigido em 14/08/2026**, por decisão de não esperar a release
+do upstream. `list`, `retrieve` e `destroy` ganharam `@allow_permission([ROLE.ADMIN])`
+em [invite.py](../../../apps/api/plane/app/views/project/invite.py), com teste de
+regressão em `test_project_invitation_admin_scope.py` — quatro cenários que
+falhavam antes e passam depois, incluindo o pior caso (alguém do workspace que
+nem participa do projeto lendo os convites dele), mais um que prova que o admin
+continua administrando.
+
+Aproveitado no mesmo passo: o import `User` sem uso no arquivo, que o upstream
+também remove na correção dele.
 
 ### Achado de processo
 
