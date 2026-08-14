@@ -3,8 +3,12 @@
 Log das revisões do upstream. Método em
 [revisao-do-upstream.md](revisao-do-upstream.md).
 
-**A revisão mais recente fica no topo.** Toda revisão nova começa lendo a
-primeira entrada desta página, para saber de onde continuar.
+**A âncora é a tabela `Estado atual`, logo abaixo** — é dela que toda revisão
+nova parte. As entradas ficam em ordem decrescente e contam o que aconteceu em
+cada uma; a tabela diz onde paramos.
+
+Atualizar a tabela é a escrita mais importante de uma revisão: sem ela, a
+seguinte começa do lugar errado e nada denuncia o erro.
 
 ---
 
@@ -58,6 +62,24 @@ cobertos e 1 não aplicável — o pendente foi fechado no mesmo dia.
 Também existem **17 identificadores em rascunho**, vistos em branches abertas do
 upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
 públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
+
+---
+
+## 14/08/2026 (fim do dia) — a âncora do histórico
+
+Conferido se o histórico registra o suficiente para a próxima revisão começar de
+onde esta parou. **Registrava, mas por acidente**: a tabela `Estado atual`
+existia porque eu a criei, e nenhuma instrução mandava atualizá-la.
+
+O modo de falha era silencioso e vinha exatamente de quem faz o trabalho direito:
+escrever a entrada da revisão, contar o que achou, e esquecer a tabela. O
+documento continuaria parecendo completo, e a revisão seguinte partiria do
+lugar errado sem nada denunciar.
+
+Agora o passo 1 aponta para a tabela como âncora — não para a primeira entrada,
+não para a memória de ninguém —, o passo 9 exige as três escritas em ordem de
+importância, e o histórico diz na abertura que atualizar a tabela é a escrita
+mais importante da revisão.
 
 ---
 
