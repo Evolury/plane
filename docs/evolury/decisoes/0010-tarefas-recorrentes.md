@@ -358,6 +358,71 @@ olhando. Um conjunto de visitados fecha a porta.
 **O vencimento relativo passa a valer em qualquer nível.** Deixá-lo no primeiro
 seria entregar a árvore inteira com metade dela sem o recurso.
 
+### Pular uma ocorrência (14/08/2026)
+
+A semana do feriado, o fechamento que já foi feito à mão, a reunião cancelada.
+Sem pular, restam duas saídas ruins: deixar nascer e concluir uma tarefa que
+ninguém fez — o que suja a métrica e ensina a fechar por fechar —, ou desligar
+a recorrência e lembrar de religá-la, que é a promessa que ninguém cumpre.
+
+**O mecanismo já estava construído.** Este ADR anotou, desde o começo, que o
+registro de ocorrências permitiria pular sem mexer na série. É literalmente
+isso: pular é gravar a linha de ocorrência **antes da hora**, com carimbo
+próprio. A unicidade `(regra, data prevista)` que hoje garante que rodar o job
+duas vezes não cria duas tarefas passa a garantir que aquela data não gera.
+
+**O carimbo é próprio, e não `issue` nulo**, porque nulo já significa outra
+coisa: a linha é gravada antes da tarefa de propósito — é o que faz dois
+workers na mesma regra esbarrarem na unicidade em vez de criarem em dobro —, e
+um processo que morra entre as duas gravações deixa a linha órfã. Sem carimbo,
+o motor leria "ninguém quis esta data" onde a verdade é "algo deu errado aqui".
+
+**Pular não mexe no relógio.** A série segue, e a ocorrência seguinte nasce no
+dia de sempre. Se pular adiantasse ou atrasasse a próxima, seria edição de
+agenda disfarçada de exceção — e o contador de ocorrências criadas não conta,
+porque pulo não é trabalho.
+
+#### Três escolhas de interface
+
+**"Pular", e não um X de fechar.** O X lê como excluir, e não há o que excluir:
+a ocorrência não existe. O Todoist chama de _skip_; os calendários chamam de
+"excluir apenas este evento" porque lá a instância existe de verdade. Rótulo
+confuso em cima de um controle com cara de destrutivo é onde o erro nasce.
+
+**Desfazer, e não confirmar.** Confirmação é para o irreversível, e pular uma
+data futura é o oposto disso: nada foi criado, ninguém foi notificado, nenhum
+trabalho se perdeu. Modal para o que é barato ensina a confirmar sem ler — e
+gasta a modal que importa, a de desativar a recorrência, que já existe. É o
+mesmo raciocínio que este ADR aplica a alerta: ruído ensina a ignorar alerta.
+
+**Mora no cartão, não no formulário.** O formulário edita a **agenda** e tem
+salvar e cancelar; pular é exceção a uma data e vale no clique. Oferecer os
+dois na mesma caixa seria pôr lado a lado "pule esta data" e "mude a agenda",
+que descarta os pulos. E só aparece sobre o que vai nascer: regra pausada ou
+origem arquivada não geram nada, e o botão ali prometeria efeito sobre uma data
+que já não estava a caminho.
+
+#### Mudar a agenda descarta os pulos futuros
+
+Pulo endereça uma data. Trocada a agenda, aquela data pode ter deixado de
+existir — e o pulo sobreviveria calado até casar por acaso com uma data nova,
+semanas depois. É o buraco que o Google Calendar tem com as exceções dele.
+
+**O formulário avisa antes de salvar**, com a contagem. Contar depois que se
+descartou algo é pior do que avisar antes: quem foi avisado escolheu; quem foi
+informado depois só descobriu.
+
+A **antecedência fica de fora** dessa regra: ela move o nascimento, não a data
+prevista — e é a data prevista que o pulo endereça.
+
+#### O que falha alto de propósito
+
+A API só aceita pular uma data que esteja entre as **próximas ocorrências
+calculadas na hora**, e grava no banco a candidata calculada, não a que chegou
+no pedido. Um milissegundo de diferença passaria pela API e não casaria com
+nada no motor: o pulo não pularia, e o silêncio apareceria semanas depois, sem
+ninguém conseguir ligar à causa. Falhar no clique é a única forma honesta.
+
 ## Alternativas consideradas
 
 - **Guardar RRULE cru**: menos código, tela impossível. Descartado.
@@ -389,8 +454,9 @@ seria entregar a árvore inteira com metade dela sem o recurso.
 - A automação de arquivar e fechar vai alcançar ocorrências antigas concluídas.
   É desejável — é a limpeza do histórico — mas precisa estar escrito.
 - O registro de ocorrências (qual data gerou qual tarefa) é o que garante
-  idempotência sob repetição do job e o que vai permitir, depois, **pular uma
-  ocorrência** sem mexer na série.
+  idempotência sob repetição do job e o que permitiu, em 14/08/2026, **pular
+  uma ocorrência** sem mexer na série — gravando a linha antes da hora, com
+  carimbo próprio.
 - Feriado e dia útil ficam de fora: exigem calendário de feriados, que é outro
   projeto.
 - **A revisão exige migração de dados, não só de esquema.** Havia uma regra em

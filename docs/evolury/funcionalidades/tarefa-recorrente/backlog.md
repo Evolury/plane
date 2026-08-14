@@ -140,7 +140,28 @@ continua o mesmo. Conferido contra Jira, monday, Asana, ClickUp e Pipefy — o
 - [x] F8.5 Testes: árvore de três níveis, teto cortando sem órfão, ciclo,
       ramo arquivado saindo inteiro, agenda em neta e o custo por nó
 
+## F9 — Pular uma ocorrência (14/08/2026)
+
+O terreno estava pronto desde a F1: o registro de ocorrências existe para
+garantir idempotência, e pular é usá-lo ao contrário — gravar a linha antes da
+hora. Conferido contra Todoist (que chama de _skip_) e os calendários (que
+chamam de "excluir este evento", porque lá a instância existe de verdade).
+
+- [x] F9.1 `skipped_at` na ocorrência e migração — carimbo próprio, porque
+      `issue` nulo já significa "linha órfã", não "ninguém quis esta data"
+- [x] F9.2 A data pulada não gera, e a série não se move: mesmo relógio, mesmo
+      contador, e a guarda de trabalho aberto continua lendo tarefa
+- [x] F9.3 Endpoint `skip-occurrence/`, só admin, validando contra as próximas
+      datas calculadas na hora e gravando a **candidata**, não o que chegou
+- [x] F9.4 Mudar a agenda descarta os pulos futuros, com aviso **antes** de
+      salvar; antecedência não conta, porque move o nascimento e não a data
+- [x] F9.5 Lista das próximas datas no cartão, com Pular e Desfazer, sem
+      confirmação — e ausente quando não há data a caminho
+- [x] F9.6 Testes: a data pulada não gera e a série segue, a guarda não trava,
+      linha órfã não é pulo, ida e volta pela API, data fora da série recusada,
+      descarte ao mudar a agenda, permanência ao mudar a antecedência, e a
+      porta de admin
+
 ## Fora de escopo
 
-Anexos no molde, pular uma ocorrência sem mexer na série, feriado e dia útil
-(ADR 0010).
+Anexos no molde, feriado e dia útil (ADR 0010).

@@ -274,6 +274,18 @@ def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento
     _gravar_vinculos(responsaveis, etiquetas)
 
 
+def _foi_pulada(regra, previsto_para):
+    """Alguém marcou esta data para não gerar (F9).
+
+    A checagem é explícita, e não uma dependência do erro de unicidade que o
+    `_criar_ocorrencia` já trata: pular é decisão de alguém, e decisão de
+    alguém não deve chegar ao motor disfarçada de conflito de concorrência.
+    """
+    return RecurringWorkItemOccurrence.objects.filter(
+        recurring_work_item=regra, scheduled_for=previsto_para, skipped_at__isnull=False
+    ).exists()
+
+
 def _criar_ocorrencia(regra, previsto_para, agora):
     """Copia a tarefa de origem e registra a ocorrência.
 
@@ -379,7 +391,9 @@ def processar_regra(regra, agora=None):
         return None
 
     previsto_para = regra.next_run_at
-    tarefa = _criar_ocorrencia(regra, previsto_para, agora)
+    # Pular é exceção a UMA ocorrência, não à agenda: a data não gera e a série
+    # segue como se nada tivesse acontecido — inclusive o relógio, logo abaixo.
+    tarefa = None if _foi_pulada(regra, previsto_para) else _criar_ocorrencia(regra, previsto_para, agora)
 
     regra.refresh_from_db(fields=["occurrences_created"])
     if regra.generation_mode == GenerationMode.AFTER_COMPLETION:

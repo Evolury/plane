@@ -12,8 +12,9 @@
 from collections import defaultdict
 
 # Django imports
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 # Third party imports
 from rest_framework import status
@@ -35,6 +36,25 @@ from plane.db.models import (
 )
 from plane.utils.recurrence import proximas_datas
 from plane.utils.subtask_tree import TETO_DE_SUBTAREFAS, dentro_da_arvore, excede_o_teto
+
+# Os campos que determinam QUAIS datas a série tem. Mudar qualquer um deles
+# invalida os pulos futuros, porque a data pulada pode ter deixado de existir.
+# A antecedência ficou de fora de propósito: ela move o nascimento, não a data
+# prevista — e é a data prevista que o pulo endereça.
+CAMPOS_DA_AGENDA = {
+    "frequency",
+    "interval",
+    "weekdays",
+    "monthly_mode",
+    "day_of_month",
+    "week_of_month",
+    "weekday_of_month",
+    "month_of_year",
+    "time_of_day",
+    "start_date",
+    "generation_mode",
+    "days_after_completion",
+}
 
 
 class RecurringWorkItemViewSet(BaseViewSet):
@@ -71,10 +91,16 @@ class RecurringWorkItemViewSet(BaseViewSet):
         agendas = defaultdict(list)
         for linha in RecurringSubtaskSchedule.objects.filter(recurring_work_item__in=regras):
             agendas[linha.recurring_work_item_id].append(linha)
+        pulos = defaultdict(list)
+        for regra_id, data in RecurringWorkItemOccurrence.objects.filter(
+            recurring_work_item__in=regras, skipped_at__isnull=False, scheduled_for__gte=timezone.now()
+        ).values_list("recurring_work_item_id", "scheduled_for"):
+            pulos[regra_id].append(data)
         return {
             "membros_ativos": ativos,
             "responsaveis_por_tarefa": por_tarefa,
             "agendas_por_regra": agendas,
+            "pulos_por_regra": pulos,
         }
 
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
@@ -175,6 +201,14 @@ class RecurringWorkItemViewSet(BaseViewSet):
         if "generation_mode" in request.data:
             RecurringWorkItem.objects.filter(pk=regra.pk).update(next_run_at=None)
             regra.next_run_at = None
+        if CAMPOS_DA_AGENDA & set(request.data):
+            # Pulo é exceção a uma data, e a data acabou de deixar de existir.
+            # Guardá-lo seria surpresa: ele sobreviveria calado até casar por
+            # acaso com uma data nova, semanas depois. É o buraco que o Google
+            # Calendar tem, e o formulário avisa antes de salvar.
+            RecurringWorkItemOccurrence.objects.filter(
+                recurring_work_item=regra, skipped_at__isnull=False, scheduled_for__gte=timezone.now()
+            ).delete()
         agendar_proxima_data(regra)
         return Response(RecurringWorkItemSerializer(regra).data, status=status.HTTP_200_OK)
 
@@ -293,6 +327,57 @@ class RecurringWorkItemViewSet(BaseViewSet):
             {"subtask": str(agenda.subtask_id), "anchor": agenda.anchor, "offset_days": agenda.offset_days},
             status=status.HTTP_200_OK,
         )
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
+    def skip_occurrence(self, request, slug, project_id, pk):
+        """Marca (ou desmarca) uma data futura para não gerar.
+
+        Pular não mexe na série: a data segue existindo na agenda, e a
+        ocorrência seguinte sai no dia de sempre. O que muda é uma data.
+
+        `skipped: false` desfaz. Não há confirmação em lugar nenhum deste
+        caminho de propósito — nada foi criado, ninguém foi notificado, nenhum
+        trabalho se perdeu, e modal para o que é barato ensina a confirmar sem
+        ler, gastando a modal que importa (ADR 0010).
+        """
+        regra = self.get_queryset().filter(pk=pk).first()
+        if regra is None:
+            return Response({"error": "Tarefa recorrente não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        pedida = parse_datetime(request.data.get("scheduled_for") or "")
+        # A data é casada com a candidata calculada, e é a CANDIDATA que vai
+        # para o banco. Sem isso, um milissegundo de diferença viraria um pulo
+        # que não pula — silêncio no motor, que é o pior lugar para errar.
+        janela = proximas_datas(regra, timezone.now())
+        alvo = next((data for data in janela if pedida is not None and data == pedida), None)
+        if alvo is None:
+            return Response(
+                {"scheduled_for": "A data precisa ser uma das próximas ocorrências desta regra."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if request.data.get("skipped") is False:
+            RecurringWorkItemOccurrence.objects.filter(
+                recurring_work_item=regra, scheduled_for=alvo, skipped_at__isnull=False
+            ).delete()
+            return Response({"scheduled_for": alvo.isoformat(), "skipped": False}, status=status.HTTP_200_OK)
+
+        try:
+            RecurringWorkItemOccurrence.objects.create(
+                recurring_work_item=regra,
+                workspace_id=regra.workspace_id,
+                scheduled_for=alvo,
+                skipped_at=timezone.now(),
+                created_by=request.user,
+            )
+        except IntegrityError:
+            # Já existe linha para esta data — ou o job passou na frente, ou
+            # dois cliques chegaram juntos. Nos dois casos não há o que fazer.
+            return Response(
+                {"scheduled_for": "Esta ocorrência já foi registrada."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        return Response({"scheduled_for": alvo.isoformat(), "skipped": True}, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def preview(self, request, slug, project_id):

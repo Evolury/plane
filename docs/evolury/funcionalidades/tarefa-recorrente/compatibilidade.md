@@ -60,18 +60,19 @@ validação visual em stack local, `[I]` inspeção de código.
 
 ## Plataforma
 
-| #   | Recurso existente                | Tratamento                                                            | Verificação                                                       |
-| --- | -------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 31  | Atividade, webhook e notificação | Toda ocorrência dispara, com o autor da regra como ator               | ✓ `[I]` `issue_activity.delay` na geração                         |
-| 32  | Triagem (intake)                 | A ocorrência não passa: trabalho agendado por admin já está aprovado  | ✓ `[I]` criação direta, sem registro de intake                    |
-| 33  | API pública (`plane/api`)        | Conclusão externa dispara a próxima — o funil de atividade é o mesmo  | ✓ `[I]` `issue_activity.delay` em `api/views/issue.py`            |
-| 34  | Espaço público (`space`)         | Nenhuma rota de recorrência exposta                                   | ✓ `[I]` rotas só em `plane/app`                                   |
-| 35  | Mover tarefa entre projetos      | Não existe nesta edição; a regra guarda o projeto e a origem no mesmo | ✓ `[I]` sem endpoint de troca de projeto                          |
-| 36  | Multi-workspace                  | Escopo por workspace em modelo, consultas e rotas                     | ✓ `[I]` + `[T]` toda a suíte usa slug                             |
-| 37  | Fuso e semana (ADR 0005/0006)    | Datas calculadas no fuso do projeto; semana começa no domingo         | ✓ `[T]` toda a classe TestAgenda                                  |
-| 38  | i18n                             | Chaves em `recurring_work_items.*`, pt-BR (ADR 0004)                  | ✓ CI verde em todos os PRs                                        |
-| 39  | Exportações e analytics          | A ocorrência é tarefa comum; nada de especial a tratar                | ✓ `[I]`                                                           |
-| 40  | Beat / worker                    | Job a cada 15 minutos; uma regra quebrada não derruba as outras       | ✓ `[I]` `try/except` por regra em `generate_recurring_work_items` |
+| #   | Recurso existente                | Tratamento                                                                                                 | Verificação                                                                                                             |
+| --- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 31  | Atividade, webhook e notificação | Toda ocorrência dispara, com o autor da regra como ator                                                    | ✓ `[I]` `issue_activity.delay` na geração                                                                               |
+| 32  | Triagem (intake)                 | A ocorrência não passa: trabalho agendado por admin já está aprovado                                       | ✓ `[I]` criação direta, sem registro de intake                                                                          |
+| 33  | API pública (`plane/api`)        | Conclusão externa dispara a próxima — o funil de atividade é o mesmo                                       | ✓ `[I]` `issue_activity.delay` em `api/views/issue.py`                                                                  |
+| 34  | Espaço público (`space`)         | Nenhuma rota de recorrência exposta                                                                        | ✓ `[I]` rotas só em `plane/app`                                                                                         |
+| 35  | Mover tarefa entre projetos      | Não existe nesta edição; a regra guarda o projeto e a origem no mesmo                                      | ✓ `[I]` sem endpoint de troca de projeto                                                                                |
+| 36  | Multi-workspace                  | Escopo por workspace em modelo, consultas e rotas                                                          | ✓ `[I]` + `[T]` toda a suíte usa slug                                                                                   |
+| 37  | Fuso e semana (ADR 0005/0006)    | Datas calculadas no fuso do projeto; semana começa no domingo                                              | ✓ `[T]` toda a classe TestAgenda                                                                                        |
+| 38  | i18n                             | Chaves em `recurring_work_items.*`, pt-BR (ADR 0004)                                                       | ✓ CI verde em todos os PRs                                                                                              |
+| 39  | Exportações e analytics          | A ocorrência é tarefa comum; nada de especial a tratar                                                     | ✓ `[I]`                                                                                                                 |
+| 40  | Pular uma ocorrência             | Grava a linha de ocorrência antes da hora; a série não se move, e mudar a agenda descarta os pulos futuros | ✓ `[T]` test_a_skipped_date_does_not_generate_and_the_series_goes_on · test_changing_the_schedule_discards_future_skips |
+| 40  | Beat / worker                    | Job a cada 15 minutos; uma regra quebrada não derruba as outras                                            | ✓ `[I]` `try/except` por regra em `generate_recurring_work_items`                                                       |
 
 ## Achados da execução
 

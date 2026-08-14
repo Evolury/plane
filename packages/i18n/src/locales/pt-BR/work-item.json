@@ -503,6 +503,11 @@
       "label": "Próximas ocorrências",
       "empty": "Nenhuma data prevista com esta configuração."
     },
+    "skip": {
+      "action": "Pular",
+      "undo": "Desfazer",
+      "schedule_change_warning": "{count, plural, one {Há # ocorrência pulada nesta regra} other {Há # ocorrências puladas nesta regra}}. Mudar a agenda descarta o pulo: a data deixa de existir na série."
+    },
     "list": {
       "empty": "Nenhuma tarefa com recorrência ativa. Ative a recorrência na seção Repetir de uma tarefa.",
       "next": "Próxima",

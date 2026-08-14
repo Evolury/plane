@@ -14,6 +14,7 @@ from unittest import mock
 from zoneinfo import ZoneInfo
 
 import pytest
+from django.utils import timezone
 
 from plane.bgtasks.recurring_work_item_task import (
     agendar_apos_conclusao,
@@ -764,6 +765,85 @@ class TestGeracao:
 
         assert Issue.objects.get(parent=primeira).target_date == date(2026, 8, 16)
         assert Issue.objects.get(parent=segunda).target_date == date(2026, 8, 23)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_skipped_date_does_not_generate_and_the_series_goes_on(
+        self, _atividade, projeto, create_user
+    ):
+        """Pular é exceção a uma ocorrência, não à agenda (ADR 0010, F9).
+
+        A prova de que a série não foi mexida está na segunda rodada: a semana
+        seguinte nasce no dia de sempre. Se pular adiantasse ou atrasasse o
+        relógio, seria edição de agenda disfarçada de exceção.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        RecurringWorkItemOccurrence.objects.create(
+            recurring_work_item=regra,
+            workspace=projeto.workspace,
+            scheduled_for=regra.next_run_at,
+            skipped_at=timezone.now(),
+        )
+
+        pulada = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+        regra.refresh_from_db()
+        seguinte = processar_regra(regra, agora=_em_sp(2026, 8, 24, 8, 5))
+
+        assert pulada is None
+        assert seguinte is not None and seguinte.target_date == date(2026, 8, 24)
+        # O contador conta trabalho criado, e pulo não é trabalho.
+        regra.refresh_from_db()
+        assert regra.occurrences_created == 1
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_skipped_date_does_not_hold_the_open_guard(self, _atividade, projeto, create_user):
+        """A linha do pulo não tem tarefa, e guarda de trabalho aberto lê tarefa.
+
+        Sem isto, pular uma vez travaria a série para sempre: a guarda veria a
+        linha, concluiria que há ocorrência em aberto, e nada mais nasceria.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, skip_while_previous_open=True)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        RecurringWorkItemOccurrence.objects.create(
+            recurring_work_item=regra,
+            workspace=projeto.workspace,
+            scheduled_for=regra.next_run_at,
+            skipped_at=timezone.now(),
+        )
+
+        processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+        regra.refresh_from_db()
+
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 24, 8, 5)) is not None
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_an_occurrence_without_a_work_item_is_not_a_skip(self, _atividade, projeto, create_user):
+        """Linha sem tarefa não é pulo — só pulo é pulo.
+
+        Ocorrência sem tarefa existe por outros motivos: a linha é gravada
+        **antes** da tarefa, de propósito, para que dois workers na mesma regra
+        esbarrem na unicidade em vez de criarem em dobro. Um processo que morra
+        entre as duas gravações deixa a linha órfã.
+
+        Sem a marca própria, `issue` nulo teria de servir de pulo, e o motor
+        leria "ninguém quis esta data" onde a verdade é "algo deu errado aqui".
+        """
+        from plane.bgtasks.recurring_work_item_task import _foi_pulada
+
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        orfa = RecurringWorkItemOccurrence.objects.create(
+            recurring_work_item=regra, workspace=projeto.workspace, scheduled_for=regra.next_run_at
+        )
+
+        assert orfa.issue_id is None and orfa.skipped_at is None
+        assert _foi_pulada(regra, regra.next_run_at) is False
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

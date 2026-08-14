@@ -154,6 +154,15 @@ class RecurringWorkItemOccurrence(BaseModel):
     issue = models.ForeignKey(
         "db.Issue", on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_occurrences"
     )
+    # Pular é gravar a linha ANTES de a data chegar: a unicidade que garante
+    # idempotência passa a garantir que aquela data não gera (ADR 0010, F9).
+    #
+    # Marca própria porque `issue` nulo já significa outra coisa: a linha é
+    # gravada ANTES da tarefa, para que dois workers esbarrem na unicidade em
+    # vez de criarem em dobro — e um processo que morra entre as duas gravações
+    # deixa a linha órfã. Sem o carimbo, o gerador leria "ninguém quis esta
+    # data" onde a verdade é "algo deu errado aqui".
+    skipped_at = models.DateTimeField(null=True, blank=True, verbose_name="Skipped At")
 
     class Meta:
         constraints = [

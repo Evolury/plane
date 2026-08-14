@@ -167,6 +167,11 @@ urlpatterns = [
         name="project-recurring-work-item-subtask-schedule",
     ),
     path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/skip-occurrence/",
+        RecurringWorkItemViewSet.as_view({"post": "skip_occurrence"}),
+        name="project-recurring-work-item-skip-occurrence",
+    ),
+    path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/",
         RecurringWorkItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="project-recurring-work-item",

@@ -31,6 +31,7 @@ PREVIEW_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items
 ITEM_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/"
 PARA_TAREFA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-issue/{issue_id}/"
 SELOS_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/badges/"
+PULAR_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/skip-occurrence/"
 PARA_MEMBRO_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-member/{user_id}/"
 TRANSFERIR_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/transfer-assignee/"
 AGENDA_SUB_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/subtask-schedule/"
@@ -194,6 +195,113 @@ class TestRecurringWorkItems:
         assert como_gerada.data["rule"]["source_issue_detail"]["sequence_id"] == origem.sequence_id
         assert como_comum.data["role"] is None
 
+    def test_skipping_a_date_round_trip(self, session_client, workspace, projeto, origem):
+        """Pular, aparecer na regra e desfazer — sem confirmação em passo nenhum."""
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        regra_id = criada.data["id"]
+        proxima = criada.data["next_occurrences"][0]
+        url = PULAR_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_id)
+
+        pulada = session_client.post(url, {"scheduled_for": proxima}, format="json")
+        assert pulada.status_code == status.HTTP_200_OK
+
+        lista = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
+        assert lista.data[0]["skipped_occurrences"] == [proxima]
+        assert RecurringWorkItemOccurrence.objects.filter(skipped_at__isnull=False).count() == 1
+
+        desfeita = session_client.post(url, {"scheduled_for": proxima, "skipped": False}, format="json")
+        assert desfeita.status_code == status.HTTP_200_OK
+        assert RecurringWorkItemOccurrence.objects.count() == 0
+
+    def test_a_date_outside_the_series_cannot_be_skipped(self, session_client, workspace, projeto, origem):
+        """Falhar alto aqui é o que impede o pulo que não pula.
+
+        A data vai para o banco como a candidata calculada, e não como a que
+        chegou: um milissegundo de diferença passaria pela API e não casaria
+        com nada no motor — silêncio, semanas depois, sem ninguém entender.
+        """
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        url = PULAR_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"])
+
+        for valor in ("2026-09-09T12:00:00+00:00", "amanhã", ""):
+            resposta = session_client.post(url, {"scheduled_for": valor}, format="json")
+            assert resposta.status_code == status.HTTP_400_BAD_REQUEST, valor
+            assert "scheduled_for" in resposta.data
+
+    def test_changing_the_schedule_discards_future_skips(self, session_client, workspace, projeto, origem):
+        """Pulo endereça uma data, e a data deixou de existir.
+
+        Guardá-lo seria surpresa guardada: ele sobreviveria calado até casar
+        por acaso com uma data nova. É o buraco que o Google Calendar tem.
+        """
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        regra_id = criada.data["id"]
+        session_client.post(
+            PULAR_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_id),
+            {"scheduled_for": criada.data["next_occurrences"][0]},
+            format="json",
+        )
+
+        editada = session_client.patch(
+            ITEM_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_id),
+            {"weekdays": [3]},  # de segunda para quarta
+            format="json",
+        )
+
+        assert editada.status_code == status.HTTP_200_OK
+        assert editada.data["skipped_occurrences"] == []
+        assert RecurringWorkItemOccurrence.objects.filter(skipped_at__isnull=False).count() == 0
+
+    def test_changing_the_lead_time_keeps_the_skips(self, session_client, workspace, projeto, origem):
+        """A antecedência move o nascimento, não a data prevista.
+
+        E é a data prevista que o pulo endereça — descartá-lo aqui seria jogar
+        fora uma decisão de alguém por causa de um campo que não a tocou.
+        """
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        regra_id = criada.data["id"]
+        proxima = criada.data["next_occurrences"][0]
+        session_client.post(
+            PULAR_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_id),
+            {"scheduled_for": proxima},
+            format="json",
+        )
+
+        editada = session_client.patch(
+            ITEM_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_id),
+            {"lead_time_days": 2},
+            format="json",
+        )
+
+        assert editada.data["skipped_occurrences"] == [proxima]
+
+    def test_only_admin_can_skip(self, workspace, projeto, origem, create_user, session_client):
+        """Pular cria (ou deixa de criar) trabalho para os outros: porta de admin."""
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        membro = User.objects.create(email="membro@evolury.com.br", username="membro", display_name="Membro")
+        ProjectMember.objects.create(project=projeto, member=membro, role=15, is_active=True)
+        WorkspaceMember.objects.create(workspace=workspace, member=membro, role=15, is_active=True)
+        cliente = APIClient()
+        cliente.force_authenticate(user=membro)
+
+        resposta = cliente.post(
+            PULAR_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"]),
+            {"scheduled_for": criada.data["next_occurrences"][0]},
+            format="json",
+        )
+
+        assert resposta.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)
+
     def test_the_cap_warning_only_fires_above_the_ceiling(
         self, session_client, workspace, projeto, origem, create_user
     ):
@@ -251,10 +359,11 @@ class TestRecurringWorkItems:
         consultas para responder a mesma pergunta sobre o mesmo projeto — o
         custo cresceria com o número de recorrentes do projeto.
 
-        O teto é apertado de propósito: com 5 regras são 4 consultas, e sem os
-        conjuntos prontos seriam ~14. Um teto folgado deixaria a regressão
+        O teto é apertado de propósito: com 5 regras são 5 consultas, e sem os
+        conjuntos prontos seriam ~19. Um teto folgado deixaria a regressão
         passar sem ninguém notar, que é o defeito que este teste existe para
-        impedir.
+        impedir. Subiu de 4 para 5 na F9: os pulos futuros são a quarta
+        pergunta que se responde de uma vez para todas as regras.
         """
         for indice in range(5):
             tarefa = Issue.objects.create(
@@ -267,7 +376,7 @@ class TestRecurringWorkItems:
                 LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(tarefa), format="json"
             )
 
-        with django_assert_max_num_queries(6):
+        with django_assert_max_num_queries(7):
             resposta = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
 
         assert len(resposta.data) == 5

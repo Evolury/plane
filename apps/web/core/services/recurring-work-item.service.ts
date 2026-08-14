@@ -128,6 +128,24 @@ export class RecurringWorkItemService extends APIService {
       });
   }
 
+  /** Marca (ou desmarca) uma data futura para não gerar. */
+  async skipOccurrence(
+    workspaceSlug: string,
+    projectId: string,
+    ruleId: string,
+    scheduledFor: string,
+    skipped: boolean
+  ): Promise<void> {
+    return this.post(`${this.base(workspaceSlug, projectId)}/${ruleId}/skip-occurrence/`, {
+      scheduled_for: scheduledFor,
+      skipped,
+    })
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
   /** Próximas datas de uma agenda que ainda não foi salva. */
   async preview(
     workspaceSlug: string,
