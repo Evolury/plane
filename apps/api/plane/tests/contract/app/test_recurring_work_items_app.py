@@ -28,6 +28,7 @@ LISTA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/"
 PREVIEW_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/preview/"
 ITEM_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/"
 PARA_TAREFA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-issue/{issue_id}/"
+SELOS_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/badges/"
 PARA_MEMBRO_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-member/{user_id}/"
 TRANSFERIR_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/transfer-assignee/"
 
@@ -239,6 +240,38 @@ class TestRecurringWorkItems:
             resposta = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
 
         assert len(resposta.data) == 5
+
+    def test_badges_answer_with_one_query(
+        self, session_client, workspace, projeto, create_user, django_assert_max_num_queries
+    ):
+        """O selo do quadro só precisa saber QUAIS tarefas se repetem.
+
+        A listagem completa calcula datas futuras e confere responsáveis regra
+        a regra — nada disso aparece no cartão. Aqui é uma consulta, e a regra
+        pausada fica de fora porque o selo diz "esta tarefa se repete".
+        """
+        ativas = []
+        for indice in range(5):
+            tarefa = Issue.objects.create(
+                name=f"Origem {indice}", project=projeto, workspace=projeto.workspace, created_by=create_user
+            )
+            criada = session_client.post(
+                LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(tarefa), format="json"
+            )
+            ativas.append((tarefa, criada.data["id"]))
+
+        pausada, regra_pausada = ativas.pop()
+        session_client.patch(
+            ITEM_URL.format(slug=workspace.slug, project_id=projeto.id, pk=regra_pausada),
+            {"is_active": False},
+            format="json",
+        )
+
+        with django_assert_max_num_queries(4):
+            resposta = session_client.get(SELOS_URL.format(slug=workspace.slug, project_id=projeto.id))
+
+        assert sorted(resposta.data["source_issue_ids"]) == sorted(str(t.id) for t, _ in ativas)
+        assert str(pausada.id) not in resposta.data["source_issue_ids"]
 
     def test_for_member_counts_the_rules_before_removing_someone(
         self, session_client, workspace, projeto, origem, create_user

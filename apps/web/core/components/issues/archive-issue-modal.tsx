@@ -5,6 +5,9 @@
  */
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
+import useSWR from "swr";
+import { Repeat } from "lucide-react";
 // i18n
 import { useTranslation } from "@plane/i18n";
 // types
@@ -15,6 +18,12 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
 import { useProject } from "@/hooks/store/use-project";
+// Evolury: arquivar a origem pausa a série — o ato acontece, mas não em
+// silêncio (ADR 0010)
+import { chaveDosSelos } from "@/components/recurring-work-items/section";
+import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
+
+const servicoRecorrente = new RecurringWorkItemService();
 
 type Props = {
   data?: TIssue | TDeDupeIssue;
@@ -27,15 +36,27 @@ type Props = {
 export function ArchiveIssueModal(props: Props) {
   const { dataId, data, isOpen, handleClose, onSubmit } = props;
   const { t } = useTranslation();
+  const { workspaceSlug } = useParams();
   // states
   const [isArchiving, setIsArchiving] = useState(false);
   // store hooks
   const { getProjectById } = useProject();
   const { issueMap } = useIssues();
 
-  if (!dataId && !data) return null;
+  const issue = data ? data : dataId ? issueMap[dataId] : undefined;
 
-  const issue = data ? data : issueMap[dataId!];
+  // Evolury: a mesma lista enxuta que alimenta o selo do quadro responde se
+  // esta tarefa é origem de recorrência.
+  const projetoDaTarefa = issue?.project_id ?? null;
+  const { data: selos } = useSWR(
+    isOpen && workspaceSlug && projetoDaTarefa ? chaveDosSelos(workspaceSlug.toString(), projetoDaTarefa) : null,
+    () => servicoRecorrente.badges(workspaceSlug!.toString(), projetoDaTarefa!)
+  );
+  const pausaRecorrencia = !!issue && !!selos?.source_issue_ids?.includes(issue.id);
+
+  if (!dataId && !data) return null;
+  if (!issue) return null;
+
   const projectDetails = getProjectById(issue.project_id);
 
   const onClose = () => {
@@ -74,6 +95,13 @@ export function ArchiveIssueModal(props: Props) {
           {t("issue.archive.label")} {projectDetails?.identifier} {issue.sequence_id}
         </h3>
         <p className="mt-3 text-13 text-secondary">{t("issue.archive.confirm_message")}</p>
+        {/* Evolury: arquivar a origem pausa a série (ADR 0010) */}
+        {pausaRecorrencia && (
+          <div className="mt-3 flex items-start gap-2 rounded-md bg-warning-subtle px-3 py-2 text-12 text-warning-primary">
+            <Repeat className="mt-0.5 size-3.5 shrink-0" />
+            <span>{t("recurring_work_items.archive_warning")}</span>
+          </div>
+        )}
         <div className="mt-3 flex justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={onClose}>
             {t("common.cancel")}

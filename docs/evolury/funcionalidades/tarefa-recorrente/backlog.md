@@ -108,8 +108,9 @@ tornar visível, por último o gesto de offboarding, que é o mais caro.
 - [x] F6.3 Precisar "conta em ciclo e módulo" na especificação, no manual e no
       ADR — a ocorrência nasce fora dos dois
 
-Lacunas anotadas, não corrigidas: aviso ao arquivar a origem (pausa a série em
-silêncio) e endpoint enxuto para o selo do quadro.
+- [x] F6.4 Aviso ao arquivar a origem — pausava a série em silêncio
+- [x] F6.5 Endpoint `badges/` para o selo do quadro, no lugar da listagem
+      completa
 
 ## Ciclo seguinte
 

@@ -556,7 +556,8 @@
       "transfer_none": "Não transferir — apenas remover a atribuição",
       "transferred": "Recorrentes transferidas.",
       "explanation": "A remoção acontece de qualquer forma; as próximas ocorrências nascem sem essa pessoa."
-    }
+    },
+    "archive_warning": "Arquivar pausa a recorrência desta tarefa. Nada é gerado enquanto ela estiver arquivada, e a série retoma ao desarquivar."
   },
   "epic": {
     "new": "Novo Epic",
