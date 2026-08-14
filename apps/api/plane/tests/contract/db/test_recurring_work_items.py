@@ -291,6 +291,103 @@ class TestGeracao:
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_project_default_assignee_catches_the_orphan(self, _atividade, projeto, create_user):
+        """Origem sem responsável cai no padrão do projeto, como qualquer tarefa.
+
+        A regra vale em toda tarefa criada à mão; ignorá-la nas que nascem
+        sozinhas deixaria sem rede justamente onde ninguém está olhando.
+        """
+        padrao = User.objects.create(email="padrao@evolury.com.br", username="padrao")
+        ProjectMember.objects.create(project=projeto, member=padrao, role=15, is_active=True)
+        projeto.default_assignee = padrao
+        projeto.save(update_fields=["default_assignee"])
+
+        origem = _concluir(_origem(projeto, create_user))  # sem responsável
+        filha = Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Parte", created_by=create_user
+        )
+        regra = _regra(projeto, create_user, origem=origem)
+        regra.project.refresh_from_db()
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert list(tarefa.assignees.all()) == [padrao]
+        # Subtarefa não: sem responsável nela é normal, e carimbar todas com a
+        # mesma pessoa seria ruído.
+        assert Issue.objects.get(parent=tarefa, name="Parte").assignees.count() == 0
+        assert filha.assignees.count() == 0
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_default_assignee_never_overrides_a_real_one(self, _atividade, projeto, create_user):
+        """O padrão é rede de segurança, não regra de sobreposição."""
+        padrao = User.objects.create(email="padrao@evolury.com.br", username="padrao")
+        ProjectMember.objects.create(project=projeto, member=padrao, role=15, is_active=True)
+        projeto.default_assignee = padrao
+        projeto.save(update_fields=["default_assignee"])
+
+        origem = _origem(projeto, create_user)
+        IssueAssignee.objects.create(
+            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
+        )
+        _concluir(origem)
+        regra = _regra(projeto, create_user, origem=origem)
+        regra.project.refresh_from_db()
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert list(tarefa.assignees.all()) == [create_user]
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_an_inactive_default_assignee_is_ignored(self, _atividade, projeto, create_user):
+        """Padrão que saiu do projeto não pode voltar pela porta dos fundos."""
+        padrao = User.objects.create(email="padrao@evolury.com.br", username="padrao")
+        vinculo = ProjectMember.objects.create(project=projeto, member=padrao, role=15, is_active=True)
+        projeto.default_assignee = padrao
+        projeto.save(update_fields=["default_assignee"])
+        vinculo.is_active = False
+        vinculo.save(update_fields=["is_active"])
+
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        regra.project.refresh_from_db()
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert tarefa.assignees.count() == 0
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_default_assignee_catches_what_the_ghost_left(self, _atividade, projeto, create_user):
+        """As duas regras juntas: descarta o fantasma, o padrão assume."""
+        saiu = User.objects.create(email="saiu@evolury.com.br", username="saiu")
+        vinculo = ProjectMember.objects.create(project=projeto, member=saiu, role=15, is_active=True)
+        padrao = User.objects.create(email="padrao@evolury.com.br", username="padrao")
+        ProjectMember.objects.create(project=projeto, member=padrao, role=15, is_active=True)
+        projeto.default_assignee = padrao
+        projeto.save(update_fields=["default_assignee"])
+
+        origem = _origem(projeto, create_user)
+        IssueAssignee.objects.create(
+            issue=origem, assignee=saiu, project=projeto, workspace=projeto.workspace
+        )
+        _concluir(origem)
+        regra = _regra(projeto, create_user, origem=origem)
+        regra.project.refresh_from_db()
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        vinculo.is_active = False
+        vinculo.save(update_fields=["is_active"])
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert list(tarefa.assignees.all()) == [padrao]
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_the_dates_are_calculated_never_copied(self, _atividade, projeto, create_user):
         """Nasce hoje, vence na data da agenda — nada herdado da origem."""
         origem = _origem(projeto, create_user, start_date=date(2026, 1, 1), target_date=date(2026, 1, 5))

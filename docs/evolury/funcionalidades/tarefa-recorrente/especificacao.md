@@ -136,6 +136,17 @@ Trabalho com aparência de dono é pior que trabalho sem dono: ninguém assume o
 que já parece atribuído. E tarefa sem responsável é auto-evidente no quadro —
 tarefa que deixou de nascer, não ([ADR 0010](../../decisoes/0010-tarefas-recorrentes.md)).
 
+**Origem sem responsável nenhum** gera ocorrência sem responsável, e **não**
+dispara alerta: ausência é escolha legítima, e avisar sobre o normal gasta o
+crédito do aviso. Nesse caso vale o **responsável padrão do projeto**, com a
+mesma validação do caminho normal de criação (membro ativo, papel de membro ou
+admin). Ele é rede de segurança, não sobreposição: nunca troca um responsável
+de verdade, e só alcança a tarefa principal — subtarefa sem responsável é
+normal, e carimbar todas com a mesma pessoa seria ruído.
+
+As duas regras se completam: descartado o fantasma, se não sobrar ninguém, o
+padrão do projeto assume.
+
 ### Subtarefas
 
 As subtarefas da origem são copiadas — descrevem o trabalho, não a execução.

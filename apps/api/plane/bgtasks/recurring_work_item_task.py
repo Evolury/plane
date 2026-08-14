@@ -105,20 +105,47 @@ def _responsaveis_ativos(regra):
     )
 
 
-def _copiar_relacionados(origem, copia, regra, ativos=None):
+def _responsavel_padrao(regra):
+    """O responsável padrão do projeto, quando ainda vale.
+
+    Mesma validação do caminho normal de criação: membro ativo, com papel de
+    membro ou admin — convidado não recebe trabalho por padrão. Sem isto, a
+    regra do projeto valeria em toda tarefa criada à mão e seria ignorada
+    justamente nas que nascem sozinhas, que é onde ninguém está olhando.
+    """
+    padrao_id = regra.project.default_assignee_id
+    if padrao_id is None:
+        return None
+    valido = ProjectMember.objects.filter(
+        member_id=padrao_id, project_id=regra.project_id, role__gte=15, is_active=True
+    ).exists()
+    return padrao_id if valido else None
+
+
+def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
     """Responsáveis e etiquetas — descrevem o trabalho, então acompanham."""
     if ativos is None:
         ativos = _responsaveis_ativos(regra)
+    responsaveis = [
+        vinculo.assignee_id
+        for vinculo in IssueAssignee.objects.filter(issue=origem)
+        if vinculo.assignee_id in ativos
+    ]
+    # Só a tarefa principal cai no padrão do projeto: subtarefa sem responsável
+    # é normal, e carimbar todas elas com a mesma pessoa seria ruído.
+    if not responsaveis and usar_padrao:
+        padrao = _responsavel_padrao(regra)
+        if padrao is not None:
+            responsaveis = [padrao]
     IssueAssignee.objects.bulk_create(
         [
             IssueAssignee(
                 issue=copia,
-                assignee_id=vinculo.assignee_id,
+                assignee_id=responsavel,
                 project_id=regra.project_id,
                 workspace_id=regra.workspace_id,
             )
-            for vinculo in IssueAssignee.objects.filter(issue=origem)
-            if vinculo.assignee_id in ativos
+            for responsavel in responsaveis
         ],
         batch_size=100,
         ignore_conflicts=True,
@@ -195,7 +222,7 @@ def _criar_ocorrencia(regra, previsto_para, agora):
             created_by_id=regra.created_by_id,
         )
         ativos = _responsaveis_ativos(regra)
-        _copiar_relacionados(origem, tarefa, regra, ativos)
+        _copiar_relacionados(origem, tarefa, regra, ativos, usar_padrao=True)
         _copiar_subtarefas(origem, tarefa, regra, ativos)
 
         ocorrencia.issue = tarefa
