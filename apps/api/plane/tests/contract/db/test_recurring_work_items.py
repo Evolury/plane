@@ -426,6 +426,74 @@ class TestGeracao:
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_deleted_occurrence_does_not_hold_the_guard(self, _atividade, projeto, create_user):
+        """Excluída não é aberta: ninguém a vê no quadro para entender o bloqueio."""
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        primeira = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+        primeira.delete()  # exclusão lógica, aberta
+
+        regra.refresh_from_db()
+        segunda = processar_regra(regra, agora=_em_sp(2026, 8, 24, 8, 5))
+
+        assert segunda is not None
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_completing_before_the_due_moment_rescues_the_period(self, _atividade, projeto, create_user):
+        """Concluída em cima da hora, a ocorrência do período ainda nasce.
+
+        O ponto de virada da guarda é o VENCIMENTO, não o disparo: antes dele,
+        liberar a guarda gera com a antecedência que restou; depois dele, o
+        período é pulado (testado logo abaixo, no deslize do relógio).
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, lead_time_days=1)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        primeira = processar_regra(regra, agora=_em_sp(2026, 8, 16, 8, 5))
+        assert primeira is not None  # nasceu no domingo, vence segunda 17/08
+
+        # Domingo 23/08 (disparo da próxima): a anterior segue aberta → nada,
+        # e o relógio continua apontando para 24/08.
+        regra.refresh_from_db()
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 23, 8, 5)) is None
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 24)
+
+        # Concluída na segunda 05:00, três horas antes de vencer: a rodada
+        # seguinte resgata a ocorrência do período, com a antecedência restante.
+        _concluir(primeira)
+        segunda = processar_regra(regra, agora=_em_sp(2026, 8, 24, 5, 10))
+
+        assert segunda is not None
+        assert segunda.start_date == date(2026, 8, 24)
+        assert segunda.target_date == date(2026, 8, 24)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_period_missed_while_blocked_is_skipped(self, _atividade, projeto, create_user):
+        """Vencimento passado com a anterior aberta: o período não nasce vencido."""
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        primeira = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        # Segunda 24/08 às 10:00, anterior ainda aberta: o relógio desliza.
+        regra.refresh_from_db()
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 24, 10, 0)) is None
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 31)
+
+        # Concluir às 11:00 não ressuscita o período perdido.
+        _concluir(primeira)
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 24, 11, 0)) is None
+        assert (
+            RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra).count() == 1
+        )
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_generates_again_once_the_previous_is_closed(self, _atividade, projeto, create_user):
         origem = _concluir(_origem(projeto, create_user))
         regra = _regra(projeto, create_user, origem=origem)

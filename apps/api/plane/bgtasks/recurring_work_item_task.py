@@ -71,11 +71,19 @@ def _origem_aberta(origem):
 
 
 def _tem_trabalho_aberto(regra):
-    """Alguma tarefa da série — a origem ou uma ocorrência — segue aberta."""
+    """Alguma tarefa da série — a origem ou uma ocorrência — segue aberta.
+
+    Aberta = etapa fora dos grupos concluído e cancelado. A junção com a
+    tarefa não passa pelo manager de exclusão lógica, então o filtro de
+    `deleted_at` é explícito: uma ocorrência excluída não pode segurar a
+    guarda — ela nem aparece no quadro para alguém entender o porquê.
+    """
     if _origem_aberta(regra.source_issue):
         return True
     return (
-        RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra, issue__isnull=False)
+        RecurringWorkItemOccurrence.objects.filter(
+            recurring_work_item=regra, issue__isnull=False, issue__deleted_at__isnull=True
+        )
         .exclude(issue__state__group__in=["completed", "cancelled"])
         .exists()
     )

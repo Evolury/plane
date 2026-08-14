@@ -74,6 +74,21 @@ correto para calendário, errado para tarefa (ADR 0010).
 **"Não criar enquanto a ocorrência anterior estiver aberta"**, ligada por
 padrão. Desligada, cada data gera sua tarefa, aberta ou não a anterior.
 
+Os critérios, com precisão:
+
+- **Aberta** = etapa fora dos grupos concluído e cancelado. Cancelar libera a
+  guarda; excluir também — tarefa excluída não segura nada, porque ninguém a
+  vê no quadro para entender o bloqueio.
+- **A série inteira conta**: a origem e todas as ocorrências, não só a última.
+  A pilha de cópias começa na esquecida de três semanas atrás.
+- **O ponto de virada é o vencimento, não o disparo.** Concluída a anterior
+  antes de a próxima vencer — mesmo horas antes —, a ocorrência do período
+  nasce na rodada seguinte do job (≤15 min), com a antecedência que restou.
+  Vencimento passado com a anterior aberta, o período é **pulado**: o relógio
+  desliza para a data seguinte, e concluir depois não ressuscita o que
+  passou — despejar no quadro uma tarefa que já nasce vencida não ajuda
+  ninguém (é a regra "atraso não acumula" aplicada à guarda).
+
 ### O que a ocorrência herda da origem
 
 | Copia                       | Não copia                                     |
