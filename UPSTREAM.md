@@ -9,9 +9,20 @@ produto independente: desenvolvimento, roadmap e versionamento próprios.
 |                              |                                                                                     |
 | ---------------------------- | ----------------------------------------------------------------------------------- |
 | Versão do upstream           | Plane CE `v1.4.1`                                                                   |
-| Ponto de corte               | `31853ab2b`                                                                         |
+| Ponto de corte               | `31853ab2b`, que é a tag `v1.4.1-rc2`                                               |
 | Patches próprios até o corte | 30 commits (i18n pt-BR, marca, fuso e formatos brasileiros, imagens docker enxutas) |
 | Primeira versão independente | `v1.0.0`                                                                            |
+
+**O corte saiu do candidato, e o candidato virou a release sem uma linha a
+mais.** `git diff 31853ab2b v1.4.1` é vazio: os quatro commits que separam um do
+outro são todos merges de release, e um dos pais do `release: v1.4.1` é
+exatamente o nosso ponto de corte. O Plane desenvolve em `preview`, marca um
+`rc`, e ao aprovar mescla em `master` e tagueia — o `rc2` **é** a `v1.4.1`, com
+outro nome.
+
+Isso importa para quem for comparar diffs: procurar `31853ab2b` na `master`
+deles não encontra nada, porque o commit vive na `preview` e só chega à `master`
+pelo merge da release.
 
 O histórico anterior ao corte continua no repositório: `git log v1.4.1` mostra
 toda a linha do upstream, e `git log v1.4.1..main` mostra o que é nosso.
