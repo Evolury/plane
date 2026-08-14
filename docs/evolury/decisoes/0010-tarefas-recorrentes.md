@@ -200,6 +200,52 @@ tarefa ao passar — aqui o aviso vem antes, e a regra de ninguém some em silê
 O reset das subtarefas não precisa de interruptor como no Todoist: copiar já
 entrega tudo aberto.
 
+### Responsável que sai do projeto
+
+Remover alguém de um projeto **não desfaz as atribuições**: o `destroy` só marca
+`is_active = False` no vínculo, e as linhas de `IssueAssignee` sobrevivem. A
+pessoa some dos seletores e continua atribuída no que já tinha — inclusive na
+tarefa de origem, de onde a cópia puxa os responsáveis.
+
+Numa tarefa comum isso é uma linha velha que alguém corrige. Numa recorrência é
+uma **fábrica de atribuições erradas**: toda ocorrência nasce com dono que não
+existe mais, e trabalho com aparência de dono é pior que trabalho sem dono —
+ninguém assume o que já parece atribuído.
+
+**Não travamos a remoção.** Tirar alguém de um projeto é ato de governança —
+desligamento, fim de contrato, incidente — e precisa acontecer na hora. Travar
+punia o momento errado (quem remove raramente é dono das recorrências) e criava
+incentivo perverso: a saída mais rápida do bloqueio seria _excluir a
+recorrência_, destruindo sob pressão a configuração que deveria ser transferida.
+Ninguém no mercado trava — GitHub, Google e Atlassian removem primeiro e
+mostram o que ficou órfão depois.
+
+**Nem pausamos a regra.** É onde deixamos de copiar o Asana de propósito: lá a
+automação pausa porque, sem a propriedade, ela não tem o que fazer — a falha é
+total. Aqui é parcial: a agenda continua sabendo o que gerar, só perdeu um
+responsável. Pausar jogaria fora o trabalho inteiro por causa de um atributo, e
+produziria o silêncio contra o qual esta funcionalidade inteira foi desenhada.
+Um backup semanal que deixa de nascer porque alguém saiu da empresa é muito pior
+que um backup que nasce sem dono: tarefa sem responsável é auto-evidente no
+quadro; tarefa que não existe, não.
+
+Três camadas, cada uma cobrindo o que a outra deixa passar:
+
+1. **A geração descarta o inativo** — a ocorrência nasce sem ele, nunca com um
+   fantasma, e nunca deixa de nascer.
+2. **O alerta persiste onde o conserto acontece**: contador no item "Tarefas
+   recorrentes" das configurações, linha marcada, conserto ali mesmo. Só para
+   **admin do projeto** — alerta que quem vê não pode resolver é ruído, e ruído
+   ensina todo mundo a ignorar alerta, inclusive o legítimo.
+3. **O aviso no instante da remoção**, com transferência para outra pessoa na
+   mesma tela. É o gesto único de offboarding do Atlassian e do Google: remover
+   e transferir juntos. A remoção acontece de qualquer forma; o que muda é
+   deixar de ser silenciosa.
+
+A regra que as três expressam: **o ato administrativo nunca é bloqueado, a
+consequência dele nunca é silenciosa, e o trabalho nunca deixa de acontecer por
+causa de metadado.**
+
 ## Alternativas consideradas
 
 - **Guardar RRULE cru**: menos código, tela impossível. Descartado.

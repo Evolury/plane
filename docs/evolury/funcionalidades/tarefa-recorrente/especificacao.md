@@ -118,6 +118,24 @@ após a conclusão é ela quem dispara a próxima.
 **A tarefa gerada não pode ativar recorrência**: a seção aparece bloqueada,
 dizendo "gerada pela recorrência de VAL-12". Sem a trava, a série viraria árvore.
 
+### Responsável que sai do projeto
+
+Remover alguém de um projeto não desfaz as atribuições dele — some dos
+seletores, continua atribuído no que já tinha, inclusive na tarefa de origem.
+Sem tratamento, toda ocorrência futura nasceria com um dono que não existe mais.
+
+**A remoção nunca é travada** e **a geração nunca para**. O que acontece:
+
+| Camada | Comportamento |
+| --- | --- |
+| Geração | descarta o responsável inativo; a ocorrência nasce sem ele, nunca com um fantasma |
+| Configurações | contador no item "Tarefas recorrentes" e linha marcada, com o conserto ali — só para admin do projeto |
+| Remoção do membro | a confirmação avisa quantas recorrentes ficam afetadas e oferece **transferir** para outra pessoa na mesma tela |
+
+Trabalho com aparência de dono é pior que trabalho sem dono: ninguém assume o
+que já parece atribuído. E tarefa sem responsável é auto-evidente no quadro —
+tarefa que deixou de nascer, não ([ADR 0010](../../decisoes/0010-tarefas-recorrentes.md)).
+
 ### Subtarefas
 
 As subtarefas da origem são copiadas — descrevem o trabalho, não a execução.

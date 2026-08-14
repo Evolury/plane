@@ -39,7 +39,9 @@ calma antes de existir gente dependendo dele.
       `recurring_work_items.*`
 - [x] F2.4 Pré-visualização das próximas datas ("próximas: 18/08, 25/08, 01/09")
       — é o que torna uma regra complexa confiável
-- [ ] F2.5 Aviso quando o responsável do molde não é mais membro do projeto
+- [~] F2.5 Aviso quando o responsável do molde não é mais membro do projeto —
+      **substituído pela F5**: o molde virou tarefa de origem na F4, e o
+      tratamento certo tem três camadas, não um aviso
 - [x] F2.6 Ligar/desligar a regra sem excluí-la
 
 ## F3 — Integração
@@ -78,6 +80,22 @@ em produção** quando isto foi escrito — a migração é de dados, não só d
       nascendo sem data e sem herdar nada do ciclo anterior
 - [x] F4.13 Antecedência em horas, além de dias — o preparo dentro do dia
       ("a pauta chega 2 horas antes da reunião"); horas valem até 23
+
+## F5 — Responsável que sai do projeto
+
+Decidido em 13/08/2026 (ADR 0010). A remoção **não é travada** e a geração
+**não para**; a ordem abaixo é deliberada — primeiro parar o dano, depois
+tornar visível, por último o gesto de offboarding, que é o mais caro.
+
+- [ ] F5.1 A cópia descarta responsável sem vínculo ativo no projeto — a
+      ocorrência nasce sem ele, nunca com um fantasma
+- [ ] F5.2 Responsáveis inativos expostos na regra (campo derivado no
+      serializer), com contador no item "Tarefas recorrentes", linha marcada
+      no painel e conserto inline — só para admin do projeto
+- [ ] F5.3 Confirmação de remoção de membro mostra quantas recorrentes ficam
+      afetadas e oferece **transferir** para outra pessoa na mesma tela
+- [ ] F5.4 Testes: cópia pulando o inativo, contador, e a remoção seguindo
+      adiante sem travar
 
 ## Ciclo seguinte
 
