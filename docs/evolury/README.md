@@ -15,6 +15,7 @@ evolury/
         ├── especificacao.md    # comportamento, UX, regras de negócio
         ├── arquitetura.md      # modelo de dados, API, stores, componentes
         ├── compatibilidade.md  # matriz de interação com recursos existentes
+        ├── manual.md           # comportamento observável, fonte do manual do usuário
         └── backlog.md          # fases, itens e critérios de aceite
 ```
 
@@ -37,6 +38,13 @@ arqueologia de git.
    funcionalidade entregue;
 5. o status no índice [docs/README.md](../README.md) acompanha o progresso
    (Planejada → Em desenvolvimento → Entregue).
+
+**Manual (`manual.md`).** Opcional, e vale a pena quando a funcionalidade chega
+ao usuário final: descreve **o que acontece**, em linguagem de quem usa,
+organizado por situação em vez de por fase de implementação. É a fonte para o
+material de treinamento — sem raciocínio de projeto, que mora no ADR, e sem
+detalhe de implementação, que mora na arquitetura. Escrito depois da entrega,
+quando o comportamento já é fato.
 
 **Relação com o código.** Arquivo herdado do upstream que for alterado por uma
 funcionalidade recebe o comentário `Evolury:` apontando o porquê — e a

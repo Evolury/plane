@@ -21,6 +21,9 @@ Tudo o que a Evolury constrói por cima da base herdada é documentado em
 - [evolury/decisoes/](evolury/decisoes/) — decisões de arquitetura (ADRs), numeradas e imutáveis
 - [evolury/funcionalidades/](evolury/funcionalidades/) — uma pasta por funcionalidade própria, da especificação ao backlog
 
-| Funcionalidade                                                            | Status                                                                     |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [minhas-tarefas](evolury/funcionalidades/minhas-tarefas/especificacao.md) | Entregue na v1.1.0 — F0–F6 concluídas; matriz de compatibilidade executada |
+| Funcionalidade                                                                | Status                                                                                                                 |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [minhas-tarefas](evolury/funcionalidades/minhas-tarefas/especificacao.md)     | Entregue na v1.1.0 — F0–F6 concluídas; matriz de compatibilidade executada                                             |
+| [terminologia-tarefa](evolury/funcionalidades/terminologia-tarefa/backlog.md) | Entregue na v1.2.0 — ADR 0003                                                                                          |
+| [concluir-tarefa](evolury/funcionalidades/concluir-tarefa/backlog.md)         | Entregue nas v1.3.0–v1.7.0 — botão, ciclo de vida da etapa pessoal e etapa de conclusão do projeto (ADR 0009)          |
+| [tarefa-recorrente](evolury/funcionalidades/tarefa-recorrente/manual.md)      | Entregue na v1.7.0, redesenhada na v1.8.0 — recorrência na tarefa (ADR 0010); F5 e o responsável padrão aguardam corte |

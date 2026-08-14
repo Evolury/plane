@@ -100,8 +100,8 @@ Sem endpoint novo: o botão usa o `PATCH` de work item que já existe.
       alteração de código (o objetivo do ADR 0009). Confirmado no ciclo de
       validação: 4 tarefas, 1 concluída, contada pelo grupo do estado — nenhuma
       linha de código de ciclo foi tocada nesta entrega
-- [ ] T5.5 PR, CI, merge e deploy
-- [ ] T5.6 CHANGELOG + release
+- [x] T5.5 PR, CI, merge e deploy
+- [x] T5.6 CHANGELOG + release — entregue ao longo das v1.3.0 a v1.7.0
 
 ## T6 — Ciclo completo em Minhas tarefas (13/08/2026)
 
