@@ -28,6 +28,15 @@ import { IssueActivityLoader } from "./loader";
 /** Quantas linhas de atividade aparecem antes do "Carregar mais". */
 export const ATIVIDADES_POR_PAGINA = 10;
 
+/** Quantos comentários aparecem antes do "Carregar mais".
+ *
+ * Menor que o das atividades de propósito: comentário é um cartão com autor,
+ * texto e ações — ocupa várias vezes a altura de uma linha de "mudou o
+ * estado". Cinco cobre a conversa recente sem empurrar a caixa de escrita
+ * para fora da tela.
+ */
+export const COMENTARIOS_POR_PAGINA = 5;
+
 type TIssueCommentsList = {
   workspaceSlug: string;
   projectId: string;
@@ -50,6 +59,9 @@ export const IssueCommentsList = observer(function IssueCommentsList(props: TIss
     disabled,
     sortOrder,
   } = props;
+  const { t } = useTranslation();
+  // states
+  const [visiveis, setVisiveis] = useState(COMENTARIOS_POR_PAGINA);
   // store hooks
   const {
     activity: { getActivityAndCommentsByIssueId },
@@ -63,16 +75,30 @@ export const IssueCommentsList = observer(function IssueCommentsList(props: TIss
   const comentarios = activityAndComments.filter((item) => item.activity_type === "COMMENT");
   if (comentarios.length <= 0) return null;
 
+  // Mesma regra da atividade: o recorte guarda os mais RECENTES, e o botão de
+  // revelar fica ACIMA deles — é de onde a conversa continua para trás.
+  const escondidos = Math.max(0, comentarios.length - visiveis);
+  const recortados = sortOrder === "asc" ? comentarios.slice(escondidos) : comentarios.slice(0, visiveis);
+
   return (
     <div>
-      {comentarios.map((activityComment, index) => (
+      {escondidos > 0 && (
+        <button
+          type="button"
+          onClick={() => setVisiveis((atual) => atual + COMENTARIOS_POR_PAGINA)}
+          className="mb-2 text-12 text-secondary underline-offset-2 hover:text-primary hover:underline"
+        >
+          {t("common.load_more")} ({escondidos})
+        </button>
+      )}
+      {recortados.map((activityComment, index) => (
         <CommentCard
           key={activityComment.id}
           workspaceSlug={workspaceSlug}
           entityId={issueId}
           comment={getCommentById(activityComment.id)}
           activityOperations={activityOperations}
-          ends={index === 0 ? "top" : index === comentarios.length - 1 ? "bottom" : undefined}
+          ends={index === 0 ? "top" : index === recortados.length - 1 ? "bottom" : undefined}
           showAccessSpecifier={!!showAccessSpecifier}
           showCopyLinkOption={!isIntakeIssue}
           disabled={disabled}
