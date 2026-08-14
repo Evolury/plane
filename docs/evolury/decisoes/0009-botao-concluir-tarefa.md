@@ -83,12 +83,12 @@ nenhuma.
 Com isso a etapa pessoal acompanha o ciclo inteiro, com a mesma regra do
 projeto traduzida para etapas:
 
-| Transição do estado real | Destino da etapa pessoal |
-| --- | --- |
-| entrou no grupo concluído | etapa de conclusão (a marcada, senão a primeira) |
-| entrou no grupo cancelado | primeira etapa do grupo cancelado |
-| voltou para o estado **padrão** do projeto | etapa padrão, como uma recém-atribuída |
-| voltou para qualquer outro estado aberto | primeira etapa do grupo desse estado |
+| Transição do estado real                   | Destino da etapa pessoal                         |
+| ------------------------------------------ | ------------------------------------------------ |
+| entrou no grupo concluído                  | etapa de conclusão (a marcada, senão a primeira) |
+| entrou no grupo cancelado                  | primeira etapa do grupo cancelado                |
+| voltou para o estado **padrão** do projeto | etapa padrão, como uma recém-atribuída           |
+| voltou para qualquer outro estado aberto   | primeira etapa do grupo desse estado             |
 
 As duas últimas linhas parecem uma só, mas não são, e a diferença é o que a
 pessoa quis dizer. O **botão de reabrir** manda a tarefa para o estado padrão do

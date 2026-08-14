@@ -15,6 +15,7 @@ from rest_framework.test import APIClient
 from plane.db.models import (
     Issue,
     IssueAssignee,
+    RecurringSubtaskSchedule,
     Project,
     ProjectMember,
     RecurringWorkItem,
@@ -31,6 +32,7 @@ PARA_TAREFA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-i
 SELOS_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/badges/"
 PARA_MEMBRO_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-member/{user_id}/"
 TRANSFERIR_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/transfer-assignee/"
+AGENDA_SUB_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/subtask-schedule/"
 
 AGENDA_SEMANAL = {
     "frequency": "weekly",
@@ -337,6 +339,65 @@ class TestRecurringWorkItems:
 
         assert resposta.status_code == status.HTTP_200_OK
         assert IssueAssignee.objects.filter(issue=origem).count() == 0
+
+    def test_the_subtask_schedule_round_trip(self, session_client, workspace, projeto, origem, create_user):
+        """Definir, aparecer na regra e remover — o ciclo inteiro do campo."""
+        filha = Issue.objects.create(
+            name="Revisar", parent=origem, project=projeto, workspace=projeto.workspace, created_by=create_user
+        )
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        url = AGENDA_SUB_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"])
+
+        definida = session_client.post(
+            url, {"subtask": str(filha.id), "anchor": "before_due", "offset_days": 2}, format="json"
+        )
+        assert definida.status_code == status.HTTP_200_OK
+
+        lista = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
+        assert lista.data[0]["subtask_schedules"] == [
+            {"subtask": str(filha.id), "anchor": "before_due", "offset_days": 2}
+        ]
+
+        removida = session_client.post(url, {"subtask": str(filha.id), "anchor": ""}, format="json")
+        assert removida.status_code == status.HTTP_204_NO_CONTENT
+        assert RecurringSubtaskSchedule.objects.count() == 0
+
+    def test_only_a_child_of_the_source_can_be_scheduled(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """Agenda de subtarefa é da série — tarefa solta não entra."""
+        avulsa = Issue.objects.create(
+            name="Avulsa", project=projeto, workspace=projeto.workspace, created_by=create_user
+        )
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.post(
+            AGENDA_SUB_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"]),
+            {"subtask": str(avulsa.id), "anchor": "before_due", "offset_days": 1},
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_a_negative_offset_is_rejected(self, session_client, workspace, projeto, origem, create_user):
+        """A direção vem da âncora, não do sinal."""
+        filha = Issue.objects.create(
+            name="Revisar", parent=origem, project=projeto, workspace=projeto.workspace, created_by=create_user
+        )
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.post(
+            AGENDA_SUB_URL.format(slug=workspace.slug, project_id=projeto.id, pk=criada.data["id"]),
+            {"subtask": str(filha.id), "anchor": "after_creation", "offset_days": -3},
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert "offset_days" in resposta.data
 
     def test_weekly_without_weekdays_is_rejected(self, session_client, workspace, projeto, origem):
         """Sem dia escolhido a agenda erraria em silêncio, que é o pior jeito."""

@@ -12,12 +12,12 @@ era remover o seletor e fixar um fuso único.
 
 **A premissa de fuso único não se sustenta: o Brasil tem quatro offsets.**
 
-| Offset | Onde                                                     | Zona IANA de referência |
-| ------ | -------------------------------------------------------- | ----------------------- |
-| UTC−2  | Fernando de Noronha                                      | `America/Noronha`       |
-| UTC−3  | Brasília e a maior parte do país                         | `America/Sao_Paulo`     |
-| UTC−4  | AM (leste), MT, MS, RO, RR                               | `America/Manaus`        |
-| UTC−5  | AC e sudoeste do AM                                      | `America/Rio_Branco`    |
+| Offset | Onde                             | Zona IANA de referência |
+| ------ | -------------------------------- | ----------------------- |
+| UTC−2  | Fernando de Noronha              | `America/Noronha`       |
+| UTC−3  | Brasília e a maior parte do país | `America/Sao_Paulo`     |
+| UTC−4  | AM (leste), MT, MS, RO, RR       | `America/Manaus`        |
+| UTC−5  | AC e sudoeste do AM              | `America/Rio_Branco`    |
 
 Fixar um fuso único deslocaria em uma ou duas horas o horário de quem está em
 Manaus, Cuiabá, Campo Grande, Porto Velho, Boa Vista ou Rio Branco — Manaus
@@ -34,12 +34,12 @@ Manter o fuso configurável, com **uma opção por offset** — quatro no total 
 e `America/Sao_Paulo` como padrão. Isso entrega o que se queria (o fim das
 400+ zonas do mundo poluindo a tela) sem quebrar quem está fora de Brasília.
 
-| Offset | Opção exibida                        | Zona IANA            |
-| ------ | ------------------------------------ | -------------------- |
-| UTC−2  | Fernando de Noronha                  | `America/Noronha`    |
-| UTC−3  | Brasília                             | `America/Sao_Paulo`  |
-| UTC−4  | Manaus                               | `America/Manaus`     |
-| UTC−5  | Rio Branco                           | `America/Rio_Branco` |
+| Offset | Opção exibida       | Zona IANA            |
+| ------ | ------------------- | -------------------- |
+| UTC−2  | Fernando de Noronha | `America/Noronha`    |
+| UTC−3  | Brasília            | `America/Sao_Paulo`  |
+| UTC−4  | Manaus              | `America/Manaus`     |
+| UTC−5  | Rio Branco          | `America/Rio_Branco` |
 
 As outras 12 zonas IANA brasileiras foram dispensadas: elas só diferem das
 que ficaram em regras de horário de verão **anteriores a 2019**, quando o país

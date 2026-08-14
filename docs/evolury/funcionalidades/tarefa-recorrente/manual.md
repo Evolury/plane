@@ -24,23 +24,23 @@ de auditoria, com o resumo da agenda, as próximas datas e os controles.
 
 ## Os três papéis de uma tarefa
 
-| Papel | Como identificar | O que a seção Repetir mostra |
-| --- | --- | --- |
-| **Origem** | selo de repetição ao lado do código (VAL-12) | o interruptor ligado, a agenda e as próximas datas |
-| **Gerada** | nasceu sozinha, código próprio | "Gerada pela recorrência de VAL-12" — clicável, leva à origem |
-| **Comum** | nenhum dos dois | o interruptor desligado |
+| Papel      | Como identificar                             | O que a seção Repetir mostra                                  |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------- |
+| **Origem** | selo de repetição ao lado do código (VAL-12) | o interruptor ligado, a agenda e as próximas datas            |
+| **Gerada** | nasceu sozinha, código próprio               | "Gerada pela recorrência de VAL-12" — clicável, leva à origem |
+| **Comum**  | nenhum dos dois                              | o interruptor desligado                                       |
 
 **A tarefa gerada não pode ter recorrência própria**, e **subtarefa também
 não** — nesses casos a seção nem oferece o interruptor.
 
 ## A agenda
 
-| Frequência | O que se escolhe |
-| --- | --- |
-| Diária | a cada N dias |
-| Semanal | a cada N semanas, em um ou vários dias da semana |
-| Mensal | a cada N meses, no dia D, no **último dia do mês**, ou na 1ª/2ª/3ª/4ª/última ocorrência de um dia da semana |
-| Anual | a cada N anos, em dia e mês |
+| Frequência | O que se escolhe                                                                                            |
+| ---------- | ----------------------------------------------------------------------------------------------------------- |
+| Diária     | a cada N dias                                                                                               |
+| Semanal    | a cada N semanas, em um ou vários dias da semana                                                            |
+| Mensal     | a cada N meses, no dia D, no **último dia do mês**, ou na 1ª/2ª/3ª/4ª/última ocorrência de um dia da semana |
+| Anual      | a cada N anos, em dia e mês                                                                                 |
 
 Mais, em todas: **horário**, **data de início**, **término** (nunca, numa data,
 ou após N ocorrências) e **antecedência**.
@@ -78,11 +78,11 @@ início 02/09 e vencimento 05/09.
 
 ## O que a tarefa gerada traz
 
-| Vem da origem | Não vem |
-| --- | --- |
-| Nome, descrição, prioridade | Comentários e histórico |
-| Responsáveis, etiquetas | Datas (são calculadas) |
-| Estimativa, tipo de tarefa | Anexos |
+| Vem da origem                   | Não vem                  |
+| ------------------------------- | ------------------------ |
+| Nome, descrição, prioridade     | Comentários e histórico  |
+| Responsáveis, etiquetas         | Datas (são calculadas)   |
+| Estimativa, tipo de tarefa      | Anexos                   |
 | Subtarefas (um nível, sem data) | Ciclo, módulo e relações |
 
 O critério: **o que descreve o trabalho** vem; **o que descreve aquela
@@ -96,16 +96,29 @@ estaria encerrado.
 **A etapa em que ela nasce** é escolhida na regra — por padrão, a etapa padrão
 do projeto. Ela **nunca** nasce na etapa em que a anterior foi concluída.
 
-**As subtarefas vêm abertas e sem data.** As datas próprias, quando fizerem
-falta, são preenchidas à mão. Limite de 50 subtarefas por ocorrência.
+**As subtarefas vêm abertas.** Por padrão, sem data — e nesse caso a leitura é
+"vence com a principal". Quando o prazo importa, cada subtarefa pode declarar o
+próprio vencimento, na linha dela dentro da tarefa de origem:
+
+| O que se escolhe             | Resultado na ocorrência                |
+| ---------------------------- | -------------------------------------- |
+| "1 dia após a criação"       | vence 1 dia depois de a tarefa nascer  |
+| "2 dias antes do vencimento" | vence 2 dias antes da tarefa principal |
+| "Sem data" (padrão)          | nasce sem data                         |
+
+A data é recalculada a cada ciclo, e nunca cai antes do dia em que a ocorrência
+nasce — pedir "10 dias antes" numa janela de 3 dias faz a subtarefa vencer no
+dia do nascimento, em vez de nascer vencida.
+
+Limite de 50 subtarefas por ocorrência.
 
 ## Responsáveis
 
-| Situação na origem | O que a tarefa gerada recebe |
-| --- | --- |
-| Tem responsáveis | os mesmos |
-| Nenhum responsável | o **responsável padrão do projeto**, se houver |
-| Responsável que saiu do projeto | os demais; quem saiu é descartado |
+| Situação na origem              | O que a tarefa gerada recebe                   |
+| ------------------------------- | ---------------------------------------------- |
+| Tem responsáveis                | os mesmos                                      |
+| Nenhum responsável              | o **responsável padrão do projeto**, se houver |
+| Responsável que saiu do projeto | os demais; quem saiu é descartado              |
 
 Quem sai de um projeto continua atribuído nas tarefas antigas. Nas recorrentes
 isso é tratado:
@@ -141,12 +154,12 @@ Desligada a opção, cada data gera sua tarefa, aberta ou não a anterior.
 A origem é trabalho de verdade, não um molde parado: aparece no quadro, é
 concluída normalmente e costuma ficar em Concluído.
 
-| O que se faz com a origem | O que acontece com a recorrência |
-| --- | --- |
-| Concluir | segue; no modo "após a conclusão", dispara a próxima |
-| Arquivar | **pausa** — retoma ao desarquivar |
-| Excluir | a recorrência é excluída junto |
-| Editar (nome, descrição, responsáveis, subtarefas) | vale para as **próximas** ocorrências |
+| O que se faz com a origem                          | O que acontece com a recorrência                     |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| Concluir                                           | segue; no modo "após a conclusão", dispara a próxima |
+| Arquivar                                           | **pausa** — retoma ao desarquivar                    |
+| Excluir                                            | a recorrência é excluída junto                       |
+| Editar (nome, descrição, responsáveis, subtarefas) | vale para as **próximas** ocorrências                |
 
 **Editar a origem é como se muda o que a recorrência gera.** Não há um molde
 separado para manter.
@@ -155,10 +168,10 @@ Excluir uma **tarefa gerada** não afeta a série.
 
 ## Como pausar ou encerrar
 
-| Objetivo | Caminho |
-| --- | --- |
-| Parar por um tempo | **Pausar**, no cartão ou no painel — reversível |
-| Encerrar de vez | desligar o interruptor **Repetir** na tarefa, ou a lixeira no painel |
+| Objetivo                             | Caminho                                                                                                    |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Parar por um tempo                   | **Pausar**, no cartão ou no painel — reversível                                                            |
+| Encerrar de vez                      | desligar o interruptor **Repetir** na tarefa, ou a lixeira no painel                                       |
 | Encontrar a recorrência meses depois | Configurações → Tarefas recorrentes; ou abrir a ocorrência da semana e clicar no rastro, que leva à origem |
 
 Encerrar apaga a agenda e **preserva as tarefas já geradas** — elas são
@@ -172,5 +185,3 @@ tarefa comum.
 - Não há como pular uma ocorrência específica sem mexer na série.
 - Feriado e dia útil não são considerados: se a data cair em feriado, a tarefa
   nasce assim mesmo.
-- Vencimento próprio de subtarefa (por exemplo, "2 dias antes da principal")
-  ainda não existe — as datas são preenchidas à mão.

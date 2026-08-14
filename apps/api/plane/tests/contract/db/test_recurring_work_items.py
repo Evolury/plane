@@ -29,9 +29,11 @@ from plane.db.models import (
     ProjectMember,
     RecurrenceEndMode,
     RecurrenceFrequency,
+    RecurringSubtaskSchedule,
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
     State,
+    SubtaskDueAnchor,
     User,
 )
 from plane.db.models.recurring_work_item import MonthlyMode
@@ -492,6 +494,98 @@ class TestGeracao:
         assert copia.start_date is None and copia.target_date is None
         assert copia.state.group == "backlog"  # aberta, mesmo com a original concluída
         assert Issue.objects.filter(parent=copia).count() == 0
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_subtask_can_have_its_own_relative_due_date(self, _atividade, projeto, create_user):
+        """As duas âncoras, dentro da janela que a antecedência abre.
+
+        Nasce em 14/08 (3 dias de antecedência) e vence em 17/08: "1 dia após o
+        nascimento" cai em 15/08, "2 dias antes do vencimento" cai em 15/08
+        também — âncoras diferentes que aqui coincidem de propósito, para o
+        teste provar que cada uma calcula pela sua ponta.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        preparo = Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Reunir dados",
+            created_by=create_user, sort_order=1,
+        )
+        revisao = Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
+            created_by=create_user, sort_order=2,
+        )
+        Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Sem prazo",
+            created_by=create_user, sort_order=3,
+        )
+        regra = _regra(projeto, create_user, origem=origem, lead_time_days=3)
+        RecurringSubtaskSchedule.objects.create(
+            recurring_work_item=regra, subtask=preparo, anchor=SubtaskDueAnchor.AFTER_CREATION, offset_days=1
+        )
+        RecurringSubtaskSchedule.objects.create(
+            recurring_work_item=regra, subtask=revisao, anchor=SubtaskDueAnchor.BEFORE_DUE, offset_days=2
+        )
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 14, 8, 5))
+
+        assert (tarefa.start_date, tarefa.target_date) == (date(2026, 8, 14), date(2026, 8, 17))
+        copias = {c.name: c for c in Issue.objects.filter(parent=tarefa)}
+        assert copias["Reunir dados"].target_date == date(2026, 8, 15)
+        assert copias["Revisar"].target_date == date(2026, 8, 15)
+        # Sem agenda continua sem data: ausência é escolha legítima.
+        assert copias["Sem prazo"].target_date is None
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_subtask_never_is_born_already_overdue(self, _atividade, projeto, create_user):
+        """Deslocamento maior que a janela é recortado no nascimento.
+
+        "10 dias antes do vencimento" numa ocorrência que nasce no mesmo dia em
+        que vence cairia 10 dias no passado — a subtarefa nasceria vencida, que
+        é exatamente o defeito do Asana que a F4 evitou não copiando datas.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        filha = Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
+            created_by=create_user,
+        )
+        regra = _regra(projeto, create_user, origem=origem)  # sem antecedência
+        RecurringSubtaskSchedule.objects.create(
+            recurring_work_item=regra, subtask=filha, anchor=SubtaskDueAnchor.BEFORE_DUE, offset_days=10
+        )
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert Issue.objects.get(parent=tarefa).target_date == tarefa.start_date == date(2026, 8, 17)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_subtask_schedule_is_recomputed_every_cycle(self, _atividade, projeto, create_user):
+        """Cada ciclo calcula do zero — nada é deslocado.
+
+        É o que nos livra do defeito do ClickUp, cujo remapeamento não funciona
+        quando a data do pai recua: aqui não existe data anterior para mover.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        filha = Issue.objects.create(
+            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
+            created_by=create_user,
+        )
+        regra = _regra(projeto, create_user, origem=origem, lead_time_days=2)
+        RecurringSubtaskSchedule.objects.create(
+            recurring_work_item=regra, subtask=filha, anchor=SubtaskDueAnchor.BEFORE_DUE, offset_days=1
+        )
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        primeira = processar_regra(regra, agora=_em_sp(2026, 8, 15, 8, 5))
+        _concluir(primeira)
+        regra.refresh_from_db()
+        segunda = processar_regra(regra, agora=_em_sp(2026, 8, 22, 8, 5))
+
+        assert Issue.objects.get(parent=primeira).target_date == date(2026, 8, 16)
+        assert Issue.objects.get(parent=segunda).target_date == date(2026, 8, 23)
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

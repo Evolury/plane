@@ -162,6 +162,11 @@ urlpatterns = [
         name="project-recurring-work-items-transfer-assignee",
     ),
     path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/subtask-schedule/",
+        RecurringWorkItemViewSet.as_view({"post": "set_subtask_schedule"}),
+        name="project-recurring-work-item-subtask-schedule",
+    ),
+    path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/",
         RecurringWorkItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="project-recurring-work-item",

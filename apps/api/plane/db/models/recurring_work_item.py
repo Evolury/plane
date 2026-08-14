@@ -170,3 +170,52 @@ class RecurringWorkItemOccurrence(BaseModel):
 
     def __str__(self):
         return f"{self.recurring_work_item_id} @ {self.scheduled_for}"
+
+
+class SubtaskDueAnchor(models.TextChoices):
+    """De onde a data da subtarefa é contada."""
+
+    AFTER_CREATION = "after_creation", "Após o nascimento da ocorrência"
+    BEFORE_DUE = "before_due", "Antes do vencimento da ocorrência"
+
+
+class RecurringSubtaskSchedule(BaseModel):
+    """Vencimento relativo de uma subtarefa da tarefa de origem.
+
+    Mora em tabela própria, e não em colunas de `issues`: é recurso de nicho, e
+    `issues` é a maior tabela do banco. A cascata dos dois lados faz a limpeza
+    sozinha — excluir a subtarefa ou a regra leva a agenda junto, e subtarefa
+    nova simplesmente não tem linha, que é o padrão certo (sem data).
+
+    O cálculo acontece na GERAÇÃO, nunca por deslocamento de datas existentes.
+    É o que nos livra da classe de defeito do ClickUp, onde o remapeamento não
+    funciona quando a data do pai recua: aqui não há o que remapear, há o que
+    calcular do zero a cada ciclo.
+    """
+
+    recurring_work_item = models.ForeignKey(
+        RecurringWorkItem, on_delete=models.CASCADE, related_name="subtask_schedules"
+    )
+    subtask = models.ForeignKey(
+        "db.Issue", on_delete=models.CASCADE, related_name="recurrence_subtask_schedules"
+    )
+    anchor = models.CharField(max_length=20, choices=SubtaskDueAnchor.choices)
+    # Sempre positivo: a direção vem da âncora, não do sinal. Data com número
+    # negativo é onde interface de prazo costuma confundir.
+    offset_days = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["recurring_work_item", "subtask"],
+                condition=Q(deleted_at__isnull=True),
+                name="recurring_subtask_schedule_unique_when_deleted_at_null",
+            )
+        ]
+        verbose_name = "Recurring Subtask Schedule"
+        verbose_name_plural = "Recurring Subtask Schedules"
+        db_table = "recurring_subtask_schedules"
+        ordering = ("created_at",)
+
+    def __str__(self):
+        return f"{self.subtask_id}: {self.anchor} {self.offset_days}d"

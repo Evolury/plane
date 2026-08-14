@@ -38,7 +38,7 @@ no CI (`i18n-sync-check`): uma chave nova exige tradução para 18 idiomas.
    direto ainda conseguiria gravar um valor que nenhuma tela corrigiria. A
    migração `0128` normaliza os perfis existentes.
 4. **Os 17 idiomas não usados saem do repositório** — 476 arquivos, 7 MB, e
-   outros tantos *chunks* a menos no build.
+   outros tantos _chunks_ a menos no build.
 5. **O locale `en` fica**, sem ser selecionável. Ele é a fonte das chaves para
    as duas ferramentas do pacote: `generate-types.ts` deriva dele a união de
    chaves do TypeScript e `sync-check.ts` o usa como referência. Com ele no
