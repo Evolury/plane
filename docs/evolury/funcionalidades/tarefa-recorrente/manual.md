@@ -83,7 +83,7 @@ início 02/09 e vencimento 05/09.
 | Nome, descrição, prioridade     | Comentários e histórico  |
 | Responsáveis, etiquetas         | Datas (são calculadas)   |
 | Estimativa, tipo de tarefa      | Anexos                   |
-| Subtarefas (um nível, sem data) | Ciclo, módulo e relações |
+| Subtarefas (a árvore, sem data) | Ciclo, módulo e relações |
 
 O critério: **o que descreve o trabalho** vem; **o que descreve aquela
 execução** fica para trás.
@@ -110,7 +110,13 @@ A data é recalculada a cada ciclo, e nunca cai antes do dia em que a ocorrênci
 nasce — pedir "10 dias antes" numa janela de 3 dias faz a subtarefa vencer no
 dia do nascimento, em vez de nascer vencida.
 
-Limite de 50 subtarefas por ocorrência.
+**As subtarefas aninhadas vêm junto**, na mesma hierarquia: uma subtarefa
+que está dentro de outra nasce dentro dela na ocorrência, não solta na raiz.
+O vencimento próprio vale em qualquer nível.
+
+Limite de **50 subtarefas por ocorrência**, contando todos os níveis. Passando
+disso, a seção "Repetir" avisa e a ocorrência nasce com o que coube — sempre
+sem separar uma subtarefa do pai dela, e sem que a recorrência seja desativada.
 
 ## Responsáveis
 
@@ -181,7 +187,6 @@ tarefa comum.
 ## Fora do escopo hoje
 
 - Anexos não são copiados.
-- Subtarefa de subtarefa não é copiada (um nível apenas).
 - Não há como pular uma ocorrência específica sem mexer na série.
 - Feriado e dia útil não são considerados: se a data cair em feriado, a tarefa
   nasce assim mesmo.

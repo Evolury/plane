@@ -197,6 +197,9 @@ que produz a duplicação em cascata do Asana, 6 virando 12), **um nível só**,
 **teto de 50 por ocorrência**. O ClickUp corta em 500 e remove a recorrência da
 tarefa ao passar — aqui o aviso vem antes, e a regra de ninguém some em silêncio.
 
+> A trava do nível único caiu em 14/08/2026 (ver "Subtarefa aninhada", adiante).
+> As outras duas continuam, e o teto passou a contar a árvore inteira.
+
 O reset das subtarefas não precisa de interruptor como no Todoist: copiar já
 entrega tudo aberto.
 
@@ -296,6 +299,64 @@ evitou não copiando datas — seria irônico reintroduzi-lo pela porta da frent
 A agenda mora em **tabela própria**, e não em colunas de `issues`: é recurso de
 nicho e `issues` é a maior tabela do banco. A cascata dos dois lados faz a
 limpeza sozinha, e subtarefa nova simplesmente não tem linha.
+
+### Subtarefa aninhada (14/08/2026)
+
+O nível único era corte de custo, declarado como tal ("multiplica o custo da
+geração"). O custo foi medido, e o corte saiu: **a cópia leva a árvore inteira.**
+
+O argumento é o mesmo que decidiu tudo o mais nesta funcionalidade — _o que
+descreve o trabalho copia_. A hierarquia descreve: "fechar o caixa" com
+"conferir extrato" dentro dele não é a mesma coisa que os dois lado a lado. E a
+falta era **invisível**: o cartão da origem continua mostrando a árvore toda,
+então quem configurou não tinha como perceber que a ocorrência nasceu com o
+passo grande e sem os passos dele.
+
+O mercado, conferido em 14/08/2026:
+
+| Produto | Aninhamento no produto        | O que a recorrência/cópia leva      |
+| ------- | ----------------------------- | ----------------------------------- |
+| Jira    | nenhum — subtarefa é plana    | o clone nativo alcança **um** nível |
+| monday  | 1 (4 nos quadros novos)       | —                                   |
+| Asana   | até 5, mas recomenda 1        | leva as subtarefas                  |
+| ClickUp | livre                         | leva a árvore, teto conta aninhadas |
+| Pipefy  | não tem — checklist no cartão | gatilho só cria e move cartão       |
+| Evolury | livre na interface            | **a árvore** (era um nível)         |
+
+Dois fatos desta tabela desenham a decisão.
+
+**O único que copia árvore é também o único que conta a árvore no teto.** O
+ClickUp soma as aninhadas no limite dele, e não é coincidência: sem isso, "50
+subtarefas" viraria 50 × 50 × 50 no dia em que o aninhamento entrasse. Então o
+nosso teto de 50 passou a contar **todos os níveis**. É o que mantém o custo da
+geração exatamente onde estava — o mesmo número de nós, distribuídos de outro
+jeito. Onde não copiamos o ClickUp é no que ele faz ao passar do teto:
+**remover a recorrência da tarefa**. Destruir a configuração de alguém como
+efeito colateral de um limite é a pior resposta possível; aqui o corte é
+silencioso na geração e o **aviso vem na tela**, ao configurar.
+
+**Quem limita profundidade limita no produto, não na recorrência.** Jira em
+zero, monday em um, Asana em cinco. Nenhum deles tem uma regra de profundidade
+que valha só na cópia — e é o que nos convenceu a **não ter limite próprio de
+profundidade**. A nossa interface permite aninhar à vontade; uma recorrência
+que copiasse menos do que o produto mostra criaria uma segunda regra invisível,
+que é a classe de defeito que este ADR inteiro evita. Um teto só, sobre nós, e
+ele já limita a profundidade na prática: 50 nós não formam árvore funda.
+
+**A travessia é em largura, por correção e não por gosto.** A regra é _filha de
+quem não foi copiado não é copiada_ — cortar nível a nível a garante sozinha,
+enquanto em profundidade o teto cairia no meio de um ramo e penduraria netas
+sem pai na ocorrência. É também o que preserva a compatibilidade: uma origem
+com 50 filhas diretas gasta o teto no primeiro nível e copia exatamente o que
+copiava antes.
+
+**Ciclo é possível e agora é tratado.** `parent` é um ponteiro comum e nada no
+banco impede A → B → A. Com um nível a travessia não tinha como girar; com a
+árvore, teria — e girar dentro de um job de fundo é travar onde ninguém está
+olhando. Um conjunto de visitados fecha a porta.
+
+**O vencimento relativo passa a valer em qualquer nível.** Deixá-lo no primeiro
+seria entregar a árvore inteira com metade dela sem o recurso.
 
 ## Alternativas consideradas
 

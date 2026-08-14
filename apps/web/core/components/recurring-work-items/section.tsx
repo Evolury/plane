@@ -14,7 +14,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import useSWR, { mutate as mutateGlobal } from "swr";
-import { Pause, Play, Pencil, Repeat } from "lucide-react";
+import { AlertTriangle, Pause, Play, Pencil, Repeat } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Tooltip } from "@plane/propel/tooltip";
@@ -237,6 +237,24 @@ export const RecurrenceSection = observer(function RecurrenceSection(props: TSec
                 </Tooltip>
               </div>
             )}
+          </div>
+        )}
+
+        {/* O corte é silencioso na geração de propósito — a regra de ninguém é
+            desligada por causa do teto. O aviso é o preço disso: quem tem uma
+            árvore grande precisa saber antes, e não descobrir pela ocorrência
+            que nasceu pela metade. */}
+        {papel.role === "source" && papel.subtask_cap_exceeded && (
+          <div className="mt-2 flex items-start gap-2 rounded-md bg-warning-subtle px-3 py-2 text-12 text-warning-primary">
+            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+            {/* `whitespace-normal` porque um ancestral do painel usa
+                `truncate`, e o `nowrap` dele é herdado: sem reativar a quebra,
+                o aviso vira uma linha só e some recortada na borda. As datas
+                logo acima convivem com isso porque truncam de propósito — um
+                aviso truncado seria um aviso que não avisa. */}
+            <span className="min-w-0 wrap-break-word whitespace-normal">
+              {rotulo("section.subtask_cap_warning", { count: String(papel.subtask_cap ?? 50) })}
+            </span>
           </div>
         )}
       </div>

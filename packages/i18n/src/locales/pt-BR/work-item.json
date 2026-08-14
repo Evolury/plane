@@ -526,7 +526,7 @@
       "subtask_locked": "Subtarefa não pode ter recorrência própria.",
       "source_badge": "Esta tarefa se repete",
       "archived_paused": "Pausada — a tarefa de origem está arquivada",
-      "subtask_cap_warning": "Somente as primeiras {count} subtarefas serão copiadas em cada ocorrência."
+      "subtask_cap_warning": "Esta tarefa passou de {count} subtarefas. Cada ocorrência copia as {count} primeiras, contando as aninhadas — o restante fica de fora."
     },
     "lead_time": {
       "label": "Criar com antecedência de",

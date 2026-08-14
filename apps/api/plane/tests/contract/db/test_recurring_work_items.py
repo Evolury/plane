@@ -38,9 +38,17 @@ from plane.db.models import (
 )
 from plane.db.models.recurring_work_item import MonthlyMode
 from plane.utils.recurrence import proxima_data, proximas_datas
+from plane.utils.subtask_tree import TETO_DE_SUBTAREFAS
 
 SP = ZoneInfo("America/Sao_Paulo")
 UTC = ZoneInfo("UTC")
+
+# Custo marginal de cada subtarefa copiada, medido em 14/08/2026: 8, que é o
+# preço de `Issue.save()` e não nosso — ponto de salvamento, trava do projeto,
+# duas agregações, o insert e a linha da sequência. É o piso, e o número está
+# colado nele de propósito: teto frouxo passa com o defeito (lição da F6.2).
+# Ler os vínculos nó a nó, como era antes, somaria dois e estouraria aqui.
+_CONSULTAS_POR_NO = 8
 
 
 @pytest.fixture
@@ -84,6 +92,30 @@ def _regra(projeto, create_user, origem=None, **campos):
     )
     padrao.update(campos)
     return RecurringWorkItem.objects.create(**padrao)
+
+
+def _subtarefa(projeto, create_user, pai, nome, **campos):
+    padrao = dict(
+        project=projeto, workspace=projeto.workspace, parent=pai, name=nome, created_by=create_user
+    )
+    padrao.update(campos)
+    return Issue.objects.create(**padrao)
+
+
+def _descendentes(raiz):
+    """Toda a árvore abaixo de uma tarefa, em qualquer profundidade."""
+    encontrados, fronteira = [], [raiz.id]
+    while fronteira:
+        filhas = list(Issue.issue_objects.filter(parent_id__in=fronteira).order_by("sort_order", "created_at"))
+        encontrados += filhas
+        fronteira = [filha.id for filha in filhas]
+    return encontrados
+
+
+def _arvore(raiz):
+    """A árvore como dicionário aninhado de nomes — lê como desenho."""
+    filhas = Issue.issue_objects.filter(parent=raiz).order_by("sort_order", "created_at")
+    return {filha.name: _arvore(filha) for filha in filhas}
 
 
 def _concluir(tarefa):
@@ -463,7 +495,7 @@ class TestGeracao:
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
     def test_subtasks_come_along_open_and_dateless(self, _atividade, projeto, create_user):
-        """Um nível, abertas, sem data — data ausente não mente (ADR 0010)."""
+        """Abertas e sem data — data ausente não mente (ADR 0010)."""
         origem = _origem(projeto, create_user)
         filha = Issue.objects.create(
             project=projeto,
@@ -475,13 +507,6 @@ class TestGeracao:
             created_by=create_user,
         )
         _concluir(filha)
-        Issue.objects.create(
-            project=projeto,
-            workspace=projeto.workspace,
-            parent=filha,
-            name="Neta não entra",
-            created_by=create_user,
-        )
         _concluir(origem)
         regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
@@ -493,7 +518,160 @@ class TestGeracao:
         copia = copias.get()
         assert copia.start_date is None and copia.target_date is None
         assert copia.state.group == "backlog"  # aberta, mesmo com a original concluída
-        assert Issue.objects.filter(parent=copia).count() == 0
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_whole_subtask_tree_comes_along(self, _atividade, projeto, create_user):
+        """A hierarquia descreve o trabalho, então acompanha inteira (F8).
+
+        O recorte no primeiro nível entregava a ocorrência com o passo grande e
+        sem os passos dele — e a falta era invisível, porque o cartão da origem
+        continua mostrando a árvore toda.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        filha = _subtarefa(projeto, create_user, origem, "Fechar o caixa")
+        neta = _subtarefa(projeto, create_user, filha, "Conferir extrato")
+        _subtarefa(projeto, create_user, neta, "Anexar comprovantes")
+        _subtarefa(projeto, create_user, origem, "Enviar por e-mail")
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert _arvore(tarefa) == {
+            "Fechar o caixa": {"Conferir extrato": {"Anexar comprovantes": {}}},
+            "Enviar por e-mail": {},
+        }
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_cap_counts_the_whole_tree(self, _atividade, projeto, create_user):
+        """O teto conta a árvore, não os filhos diretos.
+
+        Sem isto, "50 subtarefas" viraria 50 × 50 no dia em que o aninhamento
+        entrasse — a ocorrência deixaria de ser tarefa e viraria projeto.
+
+        E o corte respeita a hierarquia: ninguém é copiado sem o pai, senão a
+        ocorrência nasceria com ramo solto pendurado na raiz.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        for i in range(10):
+            pai = _subtarefa(projeto, create_user, origem, f"Etapa {i}", sort_order=i)
+            for j in range(9):
+                _subtarefa(projeto, create_user, pai, f"Passo {i}.{j}", sort_order=j)
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        copiadas = _descendentes(tarefa)
+        assert len(copiadas) == TETO_DE_SUBTAREFAS
+        ids = {copia.id for copia in copiadas} | {tarefa.id}
+        assert all(copia.parent_id in ids for copia in copiadas)
+        # Largura: os 10 primeiros níveis rasos entram antes de qualquer neto.
+        assert len([c for c in copiadas if c.parent_id == tarefa.id]) == 10
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_cycle_in_the_parent_chain_does_not_hang(self, _atividade, projeto, create_user):
+        """`parent` é ponteiro comum: nada no banco impede A → B → A.
+
+        Numa travessia ingênua isso seria laço infinito dentro de um job de
+        fundo — o lugar onde ninguém está olhando quando trava.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        a = _subtarefa(projeto, create_user, origem, "A")
+        b = _subtarefa(projeto, create_user, a, "B")
+        Issue.objects.filter(pk=origem.pk).update(parent=b)
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert sorted(c.name for c in _descendentes(tarefa)) == ["A", "B"]
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_an_archived_branch_is_skipped_whole(self, _atividade, projeto, create_user):
+        """Arquivar um ramo tira o ramo, não só o nó.
+
+        A neta continua visível para o banco; copiá-la penduraria na raiz uma
+        tarefa cujo contexto — o pai arquivado — não veio junto.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        arquivada = _subtarefa(projeto, create_user, origem, "Ramo arquivado")
+        _subtarefa(projeto, create_user, arquivada, "Neta do arquivado")
+        _subtarefa(projeto, create_user, origem, "Ramo vivo")
+        Issue.objects.filter(pk=arquivada.pk).update(archived_at=date(2026, 8, 10))
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert [c.name for c in _descendentes(tarefa)] == ["Ramo vivo"]
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_a_nested_subtask_can_declare_its_own_due_date(self, _atividade, projeto, create_user):
+        """O vencimento relativo (F7) vale em qualquer profundidade.
+
+        Se valesse só no primeiro nível, a árvore entraria na cópia e metade
+        dela ficaria sem o recurso — a inconsistência que ninguém lê no manual
+        e descobre configurando.
+        """
+        origem = _concluir(_origem(projeto, create_user))
+        filha = _subtarefa(projeto, create_user, origem, "Fechar o caixa")
+        neta = _subtarefa(projeto, create_user, filha, "Conferir extrato")
+        regra = _regra(projeto, create_user, origem=origem, lead_time_days=3)
+        RecurringSubtaskSchedule.objects.create(
+            recurring_work_item=regra, subtask=neta, anchor=SubtaskDueAnchor.BEFORE_DUE, offset_days=1
+        )
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 14, 8, 5))
+
+        copias = {c.name: c for c in _descendentes(tarefa)}
+        assert copias["Conferir extrato"].target_date == date(2026, 8, 16)
+        assert copias["Fechar o caixa"].target_date is None
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_tree_does_not_cost_a_query_per_node(
+        self, _atividade, projeto, create_user, django_assert_max_num_queries
+    ):
+        """Responsáveis, etiquetas e agendas vêm em bloco, não nó a nó.
+
+        O custo da geração foi o motivo declarado de a subtarefa aninhada ter
+        ficado para o ciclo seguinte (ADR 0010) — então ele é o que se fixa.
+
+        O teste mede o custo **marginal**: quanto uma árvore de 16 nós custa a
+        mais que uma de 4. Criar tarefa tem preço fixo e irredutível (trava de
+        projeto, duas agregações, a linha da sequência), e é por isso que um
+        teto absoluto aqui seria frouxo o bastante para passar com o defeito.
+        O que não pode voltar é a consulta de vínculos por nó.
+        """
+
+        def _com_arvore(nome, ramos, folhas):
+            origem = _concluir(_origem(projeto, create_user, name=nome))
+            for i in range(ramos):
+                pai = _subtarefa(projeto, create_user, origem, f"{nome} {i}")
+                for j in range(folhas):
+                    _subtarefa(projeto, create_user, pai, f"{nome} {i}.{j}")
+            regra = _regra(projeto, create_user, origem=origem)
+            agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+            regra.refresh_from_db()
+            return regra
+
+        rasa = _com_arvore("Rasa", 2, 1)  # 4 nós
+        funda = _com_arvore("Funda", 4, 3)  # 16 nós
+
+        with django_assert_max_num_queries(1000) as pequena:
+            processar_regra(rasa, agora=_em_sp(2026, 8, 17, 8, 5))
+        with django_assert_max_num_queries(1000) as grande:
+            processar_regra(funda, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        por_no = (len(grande.captured_queries) - len(pequena.captured_queries)) / 12
+        assert por_no <= _CONSULTAS_POR_NO
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

@@ -50,11 +50,7 @@ from plane.db.models import (
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.utils.exception_logger import log_exception
 from plane.utils.recurrence import data_apos_conclusao, proxima_data
-
-# Teto de subtarefas copiadas por ocorrência. Acima disso a ocorrência é um
-# projeto disfarçado; a tela avisa ao configurar, e aqui o corte é silencioso
-# de propósito — a regra de ninguém é desligada por causa do teto.
-TETO_DE_SUBTAREFAS = 50
+from plane.utils.subtask_tree import ids_da_arvore
 
 
 def _estado_inicial(regra):
@@ -124,6 +120,54 @@ def _responsavel_padrao(regra):
     return padrao_id if valido else None
 
 
+def _linhas_de_vinculo(copia, regra, responsaveis, etiquetas):
+    """As linhas de responsável e etiqueta de uma cópia, prontas para inserir."""
+    return (
+        [
+            IssueAssignee(
+                issue=copia,
+                assignee_id=pessoa,
+                project_id=regra.project_id,
+                workspace_id=regra.workspace_id,
+            )
+            for pessoa in responsaveis
+        ],
+        [
+            IssueLabel(
+                issue=copia,
+                label_id=etiqueta,
+                project_id=regra.project_id,
+                workspace_id=regra.workspace_id,
+            )
+            for etiqueta in etiquetas
+        ],
+    )
+
+
+def _gravar_vinculos(responsaveis, etiquetas):
+    IssueAssignee.objects.bulk_create(responsaveis, batch_size=100, ignore_conflicts=True)
+    IssueLabel.objects.bulk_create(etiquetas, batch_size=100, ignore_conflicts=True)
+
+
+def _vinculos_das_tarefas(ids):
+    """Responsáveis e etiquetas de várias tarefas, em duas consultas.
+
+    Uma consulta por subtarefa seria uma centena de idas ao banco numa árvore
+    no teto — e o custo da geração foi exatamente o motivo de a subtarefa
+    aninhada ter ficado para o ciclo seguinte (ADR 0010).
+    """
+    responsaveis, etiquetas = {}, {}
+    for tarefa_id, pessoa_id in IssueAssignee.objects.filter(issue_id__in=ids).values_list(
+        "issue_id", "assignee_id"
+    ):
+        responsaveis.setdefault(tarefa_id, []).append(pessoa_id)
+    for tarefa_id, etiqueta_id in IssueLabel.objects.filter(issue_id__in=ids).values_list(
+        "issue_id", "label_id"
+    ):
+        etiquetas.setdefault(tarefa_id, []).append(etiqueta_id)
+    return responsaveis, etiquetas
+
+
 def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
     """Responsáveis e etiquetas — descrevem o trabalho, então acompanham."""
     if ativos is None:
@@ -139,32 +183,8 @@ def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
         padrao = _responsavel_padrao(regra)
         if padrao is not None:
             responsaveis = [padrao]
-    IssueAssignee.objects.bulk_create(
-        [
-            IssueAssignee(
-                issue=copia,
-                assignee_id=responsavel,
-                project_id=regra.project_id,
-                workspace_id=regra.workspace_id,
-            )
-            for responsavel in responsaveis
-        ],
-        batch_size=100,
-        ignore_conflicts=True,
-    )
-    IssueLabel.objects.bulk_create(
-        [
-            IssueLabel(
-                issue=copia,
-                label_id=vinculo.label_id,
-                project_id=regra.project_id,
-                workspace_id=regra.workspace_id,
-            )
-            for vinculo in IssueLabel.objects.filter(issue=origem)
-        ],
-        batch_size=100,
-        ignore_conflicts=True,
-    )
+    etiquetas = list(IssueLabel.objects.filter(issue=origem).values_list("label_id", flat=True))
+    _gravar_vinculos(*_linhas_de_vinculo(copia, regra, responsaveis, etiquetas))
 
 
 def _vencimento_da_subtarefa(agenda, nascimento, vencimento):
@@ -187,25 +207,48 @@ def _vencimento_da_subtarefa(agenda, nascimento, vencimento):
 
 
 def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento=None):
-    """Um nível, abertas na etapa padrão do projeto.
+    """A árvore inteira de subtarefas, aberta na etapa padrão do projeto.
+
+    O aninhamento entra porque a hierarquia **descreve o trabalho** — é o mesmo
+    critério que traz nome, prioridade e etiqueta. Recortá-la no primeiro nível
+    entregava uma ocorrência com o passo grande e sem os passos dele, e a
+    diferença ficava invisível: o cartão da origem mostra a árvore toda.
+
+    O teto conta a árvore, não os filhos diretos. É o que mantém o custo da
+    geração onde estava — o mesmo número de nós, distribuídos de outro jeito.
 
     Sem agenda própria, a subtarefa nasce **sem data**: o defeito conhecido do
     Asana é a subtarefa que nasce vencida, com a data do ciclo anterior. Data
     ausente não mente. Com agenda, a data é calculada a partir do nascimento ou
-    do vencimento desta ocorrência (F7).
+    do vencimento desta ocorrência (F7), em qualquer nível.
     """
-    filhas = list(Issue.issue_objects.filter(parent=origem).order_by("sort_order")[:TETO_DE_SUBTAREFAS])
+    ids = ids_da_arvore(origem.id)
+    if not ids:
+        return
+
+    por_id = Issue.objects.in_bulk(ids)
+    responsaveis_da, etiquetas_da = _vinculos_das_tarefas(ids)
     agendas = {
         agenda.subtask_id: agenda
         for agenda in RecurringSubtaskSchedule.objects.filter(
-            recurring_work_item=regra, subtask_id__in=[filha.id for filha in filhas]
+            recurring_work_item=regra, subtask_id__in=ids
         )
     }
-    for filha in filhas:
+
+    copia_de = {origem.id: copia}
+    responsaveis, etiquetas = [], []
+    for subtarefa_id in ids:
+        filha = por_id.get(subtarefa_id)
+        pai = copia_de.get(filha.parent_id) if filha is not None else None
+        # Filha de quem não foi copiado não é copiada. A travessia em largura
+        # já garante isso; a checagem cobre a tarefa que alguém excluiu entre
+        # a travessia e agora, e faz o ramo dela sumir junto, não pela metade.
+        if pai is None:
+            continue
         subcopia = Issue.objects.create(
             project=regra.project,
             workspace_id=regra.workspace_id,
-            parent=copia,
+            parent=pai,
             name=filha.name,
             description_html=filha.description_html or "<p></p>",
             priority=filha.priority or "none",
@@ -218,7 +261,17 @@ def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento
             ),
             created_by_id=regra.created_by_id,
         )
-        _copiar_relacionados(filha, subcopia, regra, ativos)
+        copia_de[filha.id] = subcopia
+        linhas_de_pessoa, linhas_de_etiqueta = _linhas_de_vinculo(
+            subcopia,
+            regra,
+            [pessoa for pessoa in responsaveis_da.get(filha.id, []) if pessoa in ativos],
+            etiquetas_da.get(filha.id, []),
+        )
+        responsaveis += linhas_de_pessoa
+        etiquetas += linhas_de_etiqueta
+
+    _gravar_vinculos(responsaveis, etiquetas)
 
 
 def _criar_ocorrencia(regra, previsto_para, agora):
