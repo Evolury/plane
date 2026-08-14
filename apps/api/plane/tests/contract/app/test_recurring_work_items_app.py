@@ -14,6 +14,7 @@ from rest_framework.test import APIClient
 
 from plane.db.models import (
     Issue,
+    IssueAssignee,
     Project,
     ProjectMember,
     RecurringWorkItem,
@@ -27,6 +28,8 @@ LISTA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/"
 PREVIEW_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/preview/"
 ITEM_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/{pk}/"
 PARA_TAREFA_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-issue/{issue_id}/"
+PARA_MEMBRO_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/for-member/{user_id}/"
+TRANSFERIR_URL = "/api/workspaces/{slug}/projects/{project_id}/recurring-work-items/transfer-assignee/"
 
 AGENDA_SEMANAL = {
     "frequency": "weekly",
@@ -186,6 +189,91 @@ class TestRecurringWorkItems:
         assert como_gerada.data["role"] == "occurrence"
         assert como_gerada.data["rule"]["source_issue_detail"]["sequence_id"] == origem.sequence_id
         assert como_comum.data["role"] is None
+
+    def test_an_inactive_assignee_is_visible_on_the_rule(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """A geração já descarta o inativo; isto torna o descarte visível."""
+        saiu = User.objects.create(email="saiu@evolury.com.br", username="saiu", display_name="Quem Saiu")
+        vinculo = ProjectMember.objects.create(project=projeto, member=saiu, role=15, is_active=True)
+        IssueAssignee.objects.create(
+            issue=origem, assignee=saiu, project=projeto, workspace=projeto.workspace
+        )
+        criada = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+        assert criada.data["inactive_assignees"] == []
+
+        vinculo.is_active = False
+        vinculo.save(update_fields=["is_active"])
+        lista = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
+
+        assert [pessoa["display_name"] for pessoa in lista.data[0]["inactive_assignees"]] == ["Quem Saiu"]
+
+    def test_for_member_counts_the_rules_before_removing_someone(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """A remoção não é travada — mas deixa de ser silenciosa."""
+        IssueAssignee.objects.create(
+            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
+        )
+        session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.get(
+            PARA_MEMBRO_URL.format(slug=workspace.slug, project_id=projeto.id, user_id=create_user.id)
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert resposta.data["count"] == 1
+
+    def test_transfer_moves_the_assignee_on_the_source(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """O gesto de offboarding: sai um, entra outro, nas origens de uma vez."""
+        entra = User.objects.create(email="entra@evolury.com.br", username="entra")
+        ProjectMember.objects.create(project=projeto, member=entra, role=15, is_active=True)
+        IssueAssignee.objects.create(
+            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
+        )
+        session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.post(
+            TRANSFERIR_URL.format(slug=workspace.slug, project_id=projeto.id),
+            {"from_user": str(create_user.id), "to_user": str(entra.id)},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert resposta.data["transferred"] == 1
+        # Lido como o produto lê: `objects` exclui o que foi apagado logicamente
+        # (o M2M cru não filtra, e é por isso que ele não serve de asserção).
+        assert list(
+            IssueAssignee.objects.filter(issue=origem).values_list("assignee_id", flat=True)
+        ) == [entra.id]
+
+    def test_transfer_without_destination_only_removes(
+        self, session_client, workspace, projeto, origem, create_user
+    ):
+        """O conserto inline do painel, quando não há para quem transferir."""
+        IssueAssignee.objects.create(
+            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
+        )
+        session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id), _payload(origem), format="json"
+        )
+
+        resposta = session_client.post(
+            TRANSFERIR_URL.format(slug=workspace.slug, project_id=projeto.id),
+            {"from_user": str(create_user.id)},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert IssueAssignee.objects.filter(issue=origem).count() == 0
 
     def test_weekly_without_weekdays_is_rejected(self, session_client, workspace, projeto, origem):
         """Sem dia escolhido a agenda erraria em silêncio, que é o pior jeito."""

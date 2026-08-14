@@ -9,6 +9,7 @@
 # rastro da tarefa gerada são informação, não poder.
 
 # Django imports
+from django.db import transaction
 from django.utils import timezone
 
 # Third party imports
@@ -20,7 +21,7 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.recurring_work_item import RecurringWorkItemSerializer
 from plane.app.views.base import BaseViewSet
 from plane.bgtasks.recurring_work_item_task import agendar_proxima_data
-from plane.db.models import RecurringWorkItem, RecurringWorkItemOccurrence
+from plane.db.models import IssueAssignee, RecurringWorkItem, RecurringWorkItemOccurrence
 from plane.utils.recurrence import proximas_datas
 
 
@@ -127,6 +128,61 @@ class RecurringWorkItemViewSet(BaseViewSet):
         # As tarefas já geradas ficam: elas são trabalho, não histórico da regra.
         regra.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
+    def for_member(self, request, slug, project_id, user_id):
+        """As recorrentes em que alguém é responsável.
+
+        Alimenta a confirmação de remoção do membro: o ato não é travado, mas
+        deixa de ser silencioso (ADR 0010).
+        """
+        regras = self.get_queryset().filter(source_issue__assignees__id=user_id).distinct()
+        return Response(
+            {"count": regras.count(), "rules": RecurringWorkItemSerializer(regras, many=True).data},
+            status=status.HTTP_200_OK,
+        )
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
+    def transfer_assignee(self, request, slug, project_id):
+        """Troca o responsável nas tarefas de origem, de uma vez.
+
+        `to_user` vazio apenas remove — é o conserto inline do painel, quando
+        já não há para quem transferir.
+        """
+        de = request.data.get("from_user")
+        para = request.data.get("to_user")
+        if not de:
+            return Response({"from_user": "Informe quem sai."}, status=status.HTTP_400_BAD_REQUEST)
+
+        origens = list(
+            self.get_queryset()
+            .filter(source_issue__assignees__id=de)
+            .values_list("source_issue_id", flat=True)
+            .distinct()
+        )
+        if not origens:
+            return Response({"transferred": 0}, status=status.HTTP_200_OK)
+
+        with transaction.atomic():
+            IssueAssignee.objects.filter(issue_id__in=origens, assignee_id=de).delete()
+            if para:
+                # `ignore_conflicts` porque a pessoa de destino pode já ser
+                # responsável em parte das origens.
+                IssueAssignee.objects.bulk_create(
+                    [
+                        IssueAssignee(
+                            issue_id=origem,
+                            assignee_id=para,
+                            project_id=project_id,
+                            workspace_id=self.workspace_id_from_slug(slug),
+                        )
+                        for origem in origens
+                    ],
+                    batch_size=100,
+                    ignore_conflicts=True,
+                )
+
+        return Response({"transferred": len(origens)}, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def preview(self, request, slug, project_id):

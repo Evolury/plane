@@ -41,6 +41,7 @@ type AccountTypeProps = {
 
 export function NameColumn(props: NameProps) {
   const { rowData, workspaceSlug, isAdmin, currentUser, setRemoveMemberModal } = props;
+  const { t } = useTranslation();
   // derived values
   const { avatar_url, display_name, email, first_name, id, last_name } = rowData.member;
 
@@ -83,7 +84,8 @@ export function NameColumn(props: NameProps) {
                     onClick={() => setRemoveMemberModal(rowData)}
                   >
                     <CircleMinus className="size-3.5 flex-shrink-0" />
-                    {rowData.member?.id === currentUser?.id ? "Leave " : "Remove "}
+                    {/* Evolury: estava em inglês fixo no código herdado */}
+                    {rowData.member?.id === currentUser?.id ? t("leave") : t("remove")}
                   </div>
                 </CustomMenu.MenuItem>
               </CustomMenu>

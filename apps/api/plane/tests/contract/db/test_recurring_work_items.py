@@ -32,6 +32,7 @@ from plane.db.models import (
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
     State,
+    User,
 )
 from plane.db.models.recurring_work_item import MonthlyMode
 from plane.utils.recurrence import proxima_data, proximas_datas
@@ -259,6 +260,34 @@ class TestGeracao:
         assert tarefa.state.default is True
         assert list(tarefa.assignees.all()) == [create_user]
         assert RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra, issue=tarefa).count() == 1
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_an_inactive_assignee_is_dropped_from_the_copy(self, _atividade, projeto, create_user):
+        """Quem saiu do projeto não carimba as ocorrências futuras.
+
+        Remover alguém só desativa o vínculo — as atribuições sobrevivem na
+        origem. Sem o filtro, a série viraria fábrica de dono inexistente, e
+        trabalho com aparência de dono é pior que sem dono (ADR 0010).
+        """
+        saiu = User.objects.create(email="saiu@evolury.com.br", username="saiu")
+        vinculo = ProjectMember.objects.create(project=projeto, member=saiu, role=15, is_active=True)
+        origem = _origem(projeto, create_user)
+        for pessoa in (create_user, saiu):
+            IssueAssignee.objects.create(
+                issue=origem, assignee=pessoa, project=projeto, workspace=projeto.workspace
+            )
+        _concluir(origem)
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+
+        vinculo.is_active = False
+        vinculo.save(update_fields=["is_active"])
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        assert list(tarefa.assignees.all()) == [create_user]
+        # E a origem continua como está: consertar a raiz é decisão de gente.
+        assert IssueAssignee.objects.filter(issue=origem).count() == 2
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

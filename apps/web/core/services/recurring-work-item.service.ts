@@ -69,6 +69,36 @@ export class RecurringWorkItemService extends APIService {
       });
   }
 
+  /** As recorrentes em que alguém é responsável — alimenta a remoção do membro. */
+  async forMember(
+    workspaceSlug: string,
+    projectId: string,
+    userId: string
+  ): Promise<{ count: number; rules: TRecurringWorkItem[] }> {
+    return this.get(`${this.base(workspaceSlug, projectId)}/for-member/${userId}/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
+  /** Troca (ou apenas remove) o responsável nas tarefas de origem. */
+  async transferAssignee(
+    workspaceSlug: string,
+    projectId: string,
+    fromUser: string,
+    toUser?: string
+  ): Promise<{ transferred: number }> {
+    return this.post(`${this.base(workspaceSlug, projectId)}/transfer-assignee/`, {
+      from_user: fromUser,
+      to_user: toUser,
+    })
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
   /** Próximas datas de uma agenda que ainda não foi salva. */
   async preview(
     workspaceSlug: string,
