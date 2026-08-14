@@ -41,8 +41,10 @@ export type TRecurringWorkItem = {
   month_of_year: number | null;
   time_of_day: string;
   start_date: string;
-  /** Antecedência: nasce N dias antes do vencimento; a data de nascimento vira o início. */
+  /** Antecedência: nasce N dias e M horas antes do vencimento; o nascimento vira o início. */
   lead_time_days: number;
+  /** 0 a 23 — a partir de 24 horas, usa-se dias. */
+  lead_time_hours: number;
   // fim
   end_mode: TRecurrenceEndMode;
   end_date: string | null;

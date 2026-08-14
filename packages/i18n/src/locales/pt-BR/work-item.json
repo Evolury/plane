@@ -530,7 +530,8 @@
     },
     "lead_time": {
       "label": "Criar com antecedência de",
-      "days_suffix": "dia(s) antes do vencimento",
+      "days_suffix": "dia(s)",
+      "hours_suffix": "hora(s) antes do vencimento",
       "overlap_warning": "Com esta antecedência, a próxima tarefa nasce antes de a anterior vencer — as ocorrências vão se sobrepor."
     },
     "initial_state": {

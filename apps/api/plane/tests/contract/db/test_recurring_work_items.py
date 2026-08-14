@@ -18,6 +18,7 @@ import pytest
 from plane.bgtasks.recurring_work_item_task import (
     agendar_apos_conclusao,
     agendar_proxima_data,
+    generate_recurring_work_items,
     processar_regra,
 )
 from plane.db.models import (
@@ -294,6 +295,42 @@ class TestGeracao:
         # E o relógio vai para a semana seguinte — não fica preso na data
         # ainda futura, tentando gerá-la de novo a cada rodada.
         assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 24)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_lead_time_in_hours_fires_within_the_day(self, _atividade, projeto, create_user):
+        """Horas são o preparo: a pauta chega 2 horas antes da reunião."""
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, lead_time_hours=2)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        assert regra.next_run_at.astimezone(SP) == _em_sp(2026, 8, 17, 8, 0)
+
+        # Três horas antes ainda não dispara; duas, sim.
+        assert processar_regra(regra, agora=_em_sp(2026, 8, 17, 5, 0)) is None
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 6, 5))
+
+        assert tarefa is not None
+        assert tarefa.start_date == date(2026, 8, 17)
+        assert tarefa.target_date == date(2026, 8, 17)
+        regra.refresh_from_db()
+        assert regra.next_run_at.astimezone(SP).date() == date(2026, 8, 24)
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_the_job_window_counts_hours_in_sql(self, _atividade, projeto, create_user):
+        """A janela do job soma dias e horas no banco, não só em Python."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        origem = _concluir(_origem(projeto, create_user))
+        regra = _regra(projeto, create_user, origem=origem, lead_time_hours=2)
+        # Vence daqui a uma hora; com duas de antecedência, já é devida.
+        RecurringWorkItem.objects.filter(pk=regra.pk).update(next_run_at=timezone.now() + timedelta(hours=1))
+
+        generate_recurring_work_items()
+
+        assert RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra).count() == 1
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

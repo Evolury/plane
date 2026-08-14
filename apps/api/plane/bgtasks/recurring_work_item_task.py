@@ -192,9 +192,14 @@ def _criar_ocorrencia(regra, previsto_para, agora):
     return tarefa
 
 
+def _antecedencia(regra):
+    """Dias para a véspera, horas para o preparo — somados."""
+    return timedelta(days=regra.lead_time_days or 0, hours=regra.lead_time_hours or 0)
+
+
 def _momento_do_disparo(regra):
     """Quando a regra dispara: a data prevista, adiantada pela antecedência."""
-    return regra.next_run_at - timedelta(days=regra.lead_time_days or 0)
+    return regra.next_run_at - _antecedencia(regra)
 
 
 def processar_regra(regra, agora=None):
@@ -248,7 +253,8 @@ def generate_recurring_work_items():
     """Job do beat: roda a cada 15 minutos."""
     agora = timezone.now()
     antecedencia = ExpressionWrapper(
-        F("lead_time_days") * Value(timedelta(days=1)), output_field=DurationField()
+        F("lead_time_days") * Value(timedelta(days=1)) + F("lead_time_hours") * Value(timedelta(hours=1)),
+        output_field=DurationField(),
     )
     regras = (
         RecurringWorkItem.objects.filter(is_active=True, next_run_at__isnull=False)

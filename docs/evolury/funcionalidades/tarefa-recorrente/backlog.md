@@ -76,6 +76,8 @@ em produção** quando isto foi escrito — a migração é de dados, não só d
 - [x] F4.12 Testes: migração com dado existente, cópia sem os campos individuais,
       datas calculadas, trava na gerada, ciclo de vida da origem, subtarefas
       nascendo sem data e sem herdar nada do ciclo anterior
+- [x] F4.13 Antecedência em horas, além de dias — o preparo dentro do dia
+      ("a pauta chega 2 horas antes da reunião"); horas valem até 23
 
 ## Ciclo seguinte
 

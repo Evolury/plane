@@ -151,10 +151,13 @@ a nova instância _"reaparece somente na seção de onde foi concluída"_ — so
 dentro da coluna Concluído e é reconcluída por engano. O ClickUp devolve ao
 primeiro status; o monday deixa escolher, e é o que adotamos.
 
-**Nasce com antecedência configurável** — N dias antes do vencimento, e essa
-data de nascimento vira a **data de início** da tarefa. Uma regra mensal no dia
-5 com 3 dias de antecedência gera, em setembro, uma tarefa criada em 02/09, com
-início 02/09 e vencimento 05/09.
+**Nasce com antecedência configurável** — dias e horas antes do vencimento, e
+essa data de nascimento vira a **data de início** da tarefa. Uma regra mensal no
+dia 5 com 3 dias de antecedência gera, em setembro, uma tarefa criada em 02/09,
+com início 02/09 e vencimento 05/09. As horas cobrem o preparo dentro do dia —
+a pauta que chega 2 horas antes da reunião — e valem até 23: a partir de 24,
+usa-se dias, para "26 horas" e "1 dia e 2 horas" não serem duas regras
+diferentes.
 
 Sem isso a tarefa apareceria no dia em que já vence, o que atrapalha quem
 planeja. O modelo é o do ClickUp, onde _"a data de início sempre recorre o mesmo

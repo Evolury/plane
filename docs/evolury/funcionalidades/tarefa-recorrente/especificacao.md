@@ -37,12 +37,15 @@ molde, vivo: editá-la muda as próximas ocorrências.
 Mais, em todas: **horário** da geração, **data de início**, **fim** (nunca, numa
 data, ou após N ocorrências) e **antecedência**.
 
-**Antecedência**: quantos dias antes do vencimento a tarefa é criada. Padrão
-zero (nasce no dia). A data de nascimento vira a **data de início** da tarefa —
+**Antecedência**: quanto antes do vencimento a tarefa é criada, em **dias e
+horas**. Dias resolvem a véspera — o relatório que chega 3 dias antes; horas
+resolvem o preparo — a pauta que chega 2 horas antes da reunião. Padrão zero
+(nasce na hora). A data de nascimento vira a **data de início** da tarefa —
 mensal no dia 5 com 3 dias de antecedência gera, em setembro, uma tarefa criada
-em 02/09, com início 02/09 e vencimento 05/09. No modo após a conclusão, a
-antecedência é limitada ao momento da conclusão: não dá para nascer antes do
-gatilho existir.
+em 02/09, com início 02/09 e vencimento 05/09. Horas valem até 23: a partir de
+24, usa-se dias — "26 horas" e "1 dia e 2 horas" não podem ser duas regras
+diferentes. No modo após a conclusão, a antecedência é limitada ao momento da
+conclusão: não dá para nascer antes do gatilho existir.
 
 A pré-visualização mostra as duas datas: _"nasce em 02/09 · vence em 05/09"_.
 Quando a antecedência for maior ou igual ao intervalo, a tela **avisa** que as
