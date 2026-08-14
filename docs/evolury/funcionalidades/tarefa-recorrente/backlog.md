@@ -96,6 +96,8 @@ tornar visível, por último o gesto de offboarding, que é o mais caro.
       afetadas e oferece **transferir** para outra pessoa na mesma tela
 - [x] F5.4 Testes: cópia pulando o inativo, contador, e a remoção seguindo
       adiante sem travar
+- [x] F5.5 Responsável padrão do projeto na geração — a regra valia em toda
+      tarefa criada à mão e era ignorada nas que nascem sozinhas
 
 ## Ciclo seguinte
 

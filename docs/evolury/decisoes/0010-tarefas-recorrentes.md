@@ -246,6 +246,25 @@ A regra que as três expressam: **o ato administrativo nunca é bloqueado, a
 consequência dele nunca é silenciosa, e o trabalho nunca deixa de acontecer por
 causa de metadado.**
 
+**Origem sem responsável nenhum não é o mesmo caso.** A ocorrência nasce sem
+responsável, e **nenhum alerta dispara**: ausência é escolha legítima — muita
+equipe trabalha por puxada —, enquanto o fantasma é degradação silenciosa de
+algo que alguém configurou. Alertar sobre o normal imporia um jeito de
+trabalhar e gastaria o crédito do aviso: quem recebe alerta de coisa comum
+para de ler alerta.
+
+O que vale nesse caso é o **responsável padrão do projeto**, que o produto já
+aplica em toda tarefa criada sem responsável — com validação de membro ativo e
+papel de membro ou admin. A geração criava a tarefa direto no banco e ignorava
+esse padrão, o que deixava a regra do projeto valendo em tudo **menos nas
+tarefas que nascem sozinhas** — justamente as que ninguém está olhando no
+momento em que nascem. Agora a geração o honra, com a mesma validação, e
+apenas na tarefa principal: subtarefa sem responsável é normal, e carimbar
+todas com a mesma pessoa seria ruído.
+
+As duas regras se completam: descartado o fantasma, se não sobrar ninguém, o
+padrão do projeto assume.
+
 ## Alternativas consideradas
 
 - **Guardar RRULE cru**: menos código, tela impossível. Descartado.
