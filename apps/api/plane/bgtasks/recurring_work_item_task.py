@@ -40,6 +40,7 @@ from plane.db.models import (
     Issue,
     IssueAssignee,
     IssueLabel,
+    ProjectMember,
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
     State,
@@ -89,8 +90,25 @@ def _tem_trabalho_aberto(regra):
     )
 
 
-def _copiar_relacionados(origem, copia, regra):
+def _responsaveis_ativos(regra):
+    """Quem ainda é membro do projeto — remover alguém não desfaz atribuições.
+
+    Sem este filtro, a origem de quem saiu da empresa continuaria carimbando
+    todas as ocorrências futuras com um dono que não existe mais, e trabalho
+    com aparência de dono é pior que trabalho sem dono: ninguém assume o que já
+    parece atribuído (ADR 0010).
+    """
+    return set(
+        ProjectMember.objects.filter(project_id=regra.project_id, is_active=True).values_list(
+            "member_id", flat=True
+        )
+    )
+
+
+def _copiar_relacionados(origem, copia, regra, ativos=None):
     """Responsáveis e etiquetas — descrevem o trabalho, então acompanham."""
+    if ativos is None:
+        ativos = _responsaveis_ativos(regra)
     IssueAssignee.objects.bulk_create(
         [
             IssueAssignee(
@@ -100,6 +118,7 @@ def _copiar_relacionados(origem, copia, regra):
                 workspace_id=regra.workspace_id,
             )
             for vinculo in IssueAssignee.objects.filter(issue=origem)
+            if vinculo.assignee_id in ativos
         ],
         batch_size=100,
         ignore_conflicts=True,
@@ -119,7 +138,7 @@ def _copiar_relacionados(origem, copia, regra):
     )
 
 
-def _copiar_subtarefas(origem, copia, regra):
+def _copiar_subtarefas(origem, copia, regra, ativos):
     """Um nível, sem datas, abertas na etapa padrão do projeto.
 
     Sem data é decisão: o defeito conhecido do Asana é a subtarefa que nasce
@@ -138,7 +157,7 @@ def _copiar_subtarefas(origem, copia, regra):
             estimate_point=filha.estimate_point,
             created_by_id=regra.created_by_id,
         )
-        _copiar_relacionados(filha, subcopia, regra)
+        _copiar_relacionados(filha, subcopia, regra, ativos)
 
 
 def _criar_ocorrencia(regra, previsto_para, agora):
@@ -175,8 +194,9 @@ def _criar_ocorrencia(regra, previsto_para, agora):
             target_date=previsto_para.astimezone(fuso).date(),
             created_by_id=regra.created_by_id,
         )
-        _copiar_relacionados(origem, tarefa, regra)
-        _copiar_subtarefas(origem, tarefa, regra)
+        ativos = _responsaveis_ativos(regra)
+        _copiar_relacionados(origem, tarefa, regra, ativos)
+        _copiar_subtarefas(origem, tarefa, regra, ativos)
 
         ocorrencia.issue = tarefa
         ocorrencia.save(update_fields=["issue"])

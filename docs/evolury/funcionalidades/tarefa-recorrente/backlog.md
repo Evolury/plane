@@ -87,14 +87,14 @@ Decidido em 13/08/2026 (ADR 0010). A remoção **não é travada** e a geração
 **não para**; a ordem abaixo é deliberada — primeiro parar o dano, depois
 tornar visível, por último o gesto de offboarding, que é o mais caro.
 
-- [ ] F5.1 A cópia descarta responsável sem vínculo ativo no projeto — a
+- [x] F5.1 A cópia descarta responsável sem vínculo ativo no projeto — a
       ocorrência nasce sem ele, nunca com um fantasma
-- [ ] F5.2 Responsáveis inativos expostos na regra (campo derivado no
+- [x] F5.2 Responsáveis inativos expostos na regra (campo derivado no
       serializer), com contador no item "Tarefas recorrentes", linha marcada
       no painel e conserto inline — só para admin do projeto
-- [ ] F5.3 Confirmação de remoção de membro mostra quantas recorrentes ficam
+- [x] F5.3 Confirmação de remoção de membro mostra quantas recorrentes ficam
       afetadas e oferece **transferir** para outra pessoa na mesma tela
-- [ ] F5.4 Testes: cópia pulando o inativo, contador, e a remoção seguindo
+- [x] F5.4 Testes: cópia pulando o inativo, contador, e a remoção seguindo
       adiante sem travar
 
 ## Ciclo seguinte

@@ -14,6 +14,13 @@ export type TMonthlyMode = "day_of_month" | "last_day" | "weekday_of_month";
 export type TGenerationMode = "schedule" | "after_completion";
 export type TRecurrenceEndMode = "never" | "on_date" | "after_count";
 
+/** Responsável da origem que não é mais membro do projeto. */
+export type TInactiveAssignee = {
+  id: string;
+  display_name: string;
+  avatar_url: string | null;
+};
+
 /** Resumo da origem que a API devolve junto com a regra. */
 export type TRecurringSourceIssue = {
   id: string;
@@ -59,6 +66,8 @@ export type TRecurringWorkItem = {
   next_occurrences: string[];
   /** Etapa onde a ocorrência nasce (padrão: a etapa padrão do projeto). */
   initial_state: string | null;
+  /** Só leitura: responsáveis da origem que saíram do projeto — a geração já os descarta. */
+  inactive_assignees: TInactiveAssignee[];
   project: string;
   workspace: string;
   created_at: string;

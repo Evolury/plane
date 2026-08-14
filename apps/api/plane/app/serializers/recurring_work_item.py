@@ -27,6 +27,7 @@ from .base import BaseSerializer
 class RecurringWorkItemSerializer(BaseSerializer):
     next_occurrences = serializers.SerializerMethodField()
     source_issue_detail = serializers.SerializerMethodField()
+    inactive_assignees = serializers.SerializerMethodField()
 
     class Meta:
         model = RecurringWorkItem
@@ -61,6 +62,30 @@ class RecurringWorkItemSerializer(BaseSerializer):
             "archived_at": origem.archived_at,
             "state_group": origem.state.group if origem.state else None,
         }
+
+    def get_inactive_assignees(self, obj):
+        """Responsáveis da origem que não são mais membros do projeto.
+
+        A geração já os descarta; isto é o que torna o descarte visível para
+        alguém consertar a raiz — corrigir em silêncio seria a outra armadilha.
+        """
+        from plane.db.models import IssueAssignee, ProjectMember
+
+        ativos = set(
+            ProjectMember.objects.filter(project_id=obj.project_id, is_active=True).values_list(
+                "member_id", flat=True
+            )
+        )
+        vinculos = IssueAssignee.objects.filter(issue_id=obj.source_issue_id).select_related("assignee")
+        return [
+            {
+                "id": str(vinculo.assignee_id),
+                "display_name": vinculo.assignee.display_name,
+                "avatar_url": vinculo.assignee.avatar_url,
+            }
+            for vinculo in vinculos
+            if vinculo.assignee_id not in ativos
+        ]
 
     def validate_source_issue(self, origem):
         # A origem é escolhida no nascimento e não muda: trocar de tarefa é

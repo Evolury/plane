@@ -7,16 +7,23 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
+import useSWR from "swr";
+import { AlertTriangle, Repeat } from "lucide-react";
 // types
 import { Button } from "@plane/propel/button";
 import type { IUserLite } from "@plane/types";
 // ui
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // hooks
+import { useMember } from "@/hooks/store/use-member";
 import { useProject } from "@/hooks/store/use-project";
 import { useUser } from "@/hooks/store/user";
 import { useTranslation } from "@plane/i18n";
+// Evolury: remover alguém não desfaz atribuições — a recorrência dele
+// continuaria carimbando toda ocorrência futura (ADR 0010)
+import { RecurringWorkItemService } from "@/services/recurring-work-item.service";
+
+const servicoRecorrente = new RecurringWorkItemService();
 
 type Props = {
   data: Partial<IUserLite>;
@@ -30,19 +37,52 @@ export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMember
   const { data, onSubmit, isOpen, onClose } = props;
   // router
   const { projectId } = useParams();
+  // router
+  const { workspaceSlug } = useParams();
   // states
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [novoResponsavel, setNovoResponsavel] = useState<string>("");
   // store hooks
   const { data: currentUser } = useUser();
   const { getProjectById } = useProject();
+  const {
+    project: { getProjectMemberIds, getProjectMemberDetails },
+  } = useMember();
+
+  // Evolury: quantas recorrentes ficam sem responsável — o ato não é travado,
+  // mas deixa de ser silencioso, e a transferência acontece aqui mesmo.
+  const { data: recorrentes } = useSWR(
+    isOpen && workspaceSlug && projectId && data?.id ? `RECURRING_FOR_MEMBER_${projectId}_${data.id}` : null,
+    () => servicoRecorrente.forMember(workspaceSlug!.toString(), projectId!.toString(), data.id!)
+  );
+  const afetadas = recorrentes?.count ?? 0;
+
+  const outrosMembros = (getProjectMemberIds(projectId?.toString() ?? "", false) ?? []).filter((id) => id !== data?.id);
 
   const handleClose = () => {
     onClose();
     setIsDeleteLoading(false);
+    setNovoResponsavel("");
   };
 
   const handleDeletion = async () => {
     setIsDeleteLoading(true);
+
+    // A transferência vem ANTES: se a remoção falhar, ninguém fica com uma
+    // atribuição fantasma; se a transferência falhar, a remoção segue mesmo
+    // assim — ato de governança não fica refém de metadado.
+    if (afetadas > 0 && workspaceSlug && projectId && data?.id) {
+      try {
+        await servicoRecorrente.transferAssignee(
+          workspaceSlug.toString(),
+          projectId.toString(),
+          data.id,
+          novoResponsavel || undefined
+        );
+      } catch {
+        // segue adiante de propósito
+      }
+    }
 
     await onSubmit();
 
@@ -85,6 +125,32 @@ export const ConfirmProjectMemberRemove = observer(function ConfirmProjectMember
                 )}
               </p>
             </div>
+
+            {/* Evolury: as recorrentes afetadas, com transferência (ADR 0010) */}
+            {afetadas > 0 && (
+              <div className="mt-4 space-y-2 rounded-md bg-warning-subtle p-3 text-left">
+                <div className="flex items-start gap-2 text-12 text-warning-primary">
+                  <Repeat className="mt-0.5 size-3.5 shrink-0" />
+                  <span>{t("recurring_work_items.member_removal.warning", { count: afetadas })}</span>
+                </div>
+                <p className="text-11 text-tertiary">{t("recurring_work_items.member_removal.explanation")}</p>
+                <label className="flex flex-wrap items-center gap-2 text-12">
+                  <span className="text-secondary">{t("recurring_work_items.member_removal.transfer_label")}</span>
+                  <select
+                    value={novoResponsavel}
+                    onChange={(e) => setNovoResponsavel(e.target.value)}
+                    className="rounded-md border border-subtle bg-surface-1 px-2 py-1"
+                  >
+                    <option value="">{t("recurring_work_items.member_removal.transfer_none")}</option>
+                    {outrosMembros.map((id) => (
+                      <option key={id} value={id}>
+                        {getProjectMemberDetails(id, projectId!.toString())?.member?.display_name ?? id}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            )}
           </div>
         </div>
       </div>

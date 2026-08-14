@@ -541,6 +541,21 @@
     "disable_confirmation": {
       "title": "Desativar recorrência",
       "description": "A agenda desta tarefa será excluída. As tarefas já geradas continuam no projeto."
+    },
+    "inactive_assignee": {
+      "one": "{name} não é mais membro do projeto.",
+      "many": "{names} não são mais membros do projeto.",
+      "explanation": "As próximas ocorrências já nascem sem essa pessoa. Escolha outro responsável na tarefa de origem, ou remova a atribuição.",
+      "remove": "Remover atribuição",
+      "removed": "Atribuição removida da tarefa de origem.",
+      "counter": "{count, plural, one {# com responsável inativo} other {# com responsável inativo}}"
+    },
+    "member_removal": {
+      "warning": "{count, plural, one {Esta pessoa é responsável em # tarefa recorrente} other {Esta pessoa é responsável em # tarefas recorrentes}} deste projeto.",
+      "transfer_label": "Transferir para",
+      "transfer_none": "Não transferir — apenas remover a atribuição",
+      "transferred": "Recorrentes transferidas.",
+      "explanation": "A remoção acontece de qualquer forma; as próximas ocorrências nascem sem essa pessoa."
     }
   },
   "epic": {
