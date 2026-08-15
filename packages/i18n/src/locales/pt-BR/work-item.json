@@ -574,6 +574,61 @@
       "clamped": "Com a antecedência atual, esta data seria antes da criação — a subtarefa nasce vencendo no mesmo dia."
     }
   },
+  "issue_properties": {
+    "settings": {
+      "heading": "Propriedades",
+      "description": "Campos próprios do seu processo, guardados na tarefa: valor de contrato, data de aceite, canal de origem. Eles filtram, agrupam e saem na exportação.",
+      "new": "Nova propriedade",
+      "edit": "Editar propriedade",
+      "empty": "Nenhuma propriedade neste projeto. Crie a primeira para começar a guardar o que é seu na tarefa.",
+      "cap_reached": "Este projeto chegou ao limite de {count} propriedades.",
+      "cap_near": "Restam {count} propriedades neste projeto."
+    },
+    "form": {
+      "name": "Nome",
+      "type": "Tipo",
+      "required": "Obrigatória ao criar a tarefa",
+      "required_hint": "Não impede concluir — só criar.",
+      "show_on_card": "Mostrar no cartão",
+      "currency": "Moeda",
+      "decimal_places": "Casas decimais",
+      "options": "Opções",
+      "add_option": "Adicionar opção",
+      "type_locked": "O tipo não muda depois de criada. Seleção única pode virar múltipla."
+    },
+    "type": {
+      "text": "Texto",
+      "number": "Número",
+      "date": "Data",
+      "select": "Seleção única",
+      "multi_select": "Seleção múltipla",
+      "currency": "Moeda"
+    },
+    "state": {
+      "inactive": "Desativada",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "deactivate_hint": "Some dos formulários e dos filtros; os valores continuam guardados."
+    },
+    "usage": {
+      "none": "Nenhuma tarefa usa",
+      "some": "{count, plural, one {# tarefa usa} other {# tarefas usam}}"
+    },
+    "delete": {
+      "title": "Excluir propriedade",
+      "description": "{count, plural, =0 {Nenhuma tarefa perde valor.} one {# tarefa perde o valor preenchido.} other {# tarefas perdem o valor preenchido.}} Esta ação não pode ser desfeita."
+    },
+    "delete_option": {
+      "title": "Excluir opção",
+      "description": "{count, plural, =0 {Nenhuma tarefa usa esta opção.} one {# tarefa fica sem valor nesta propriedade.} other {# tarefas ficam sem valor nesta propriedade.}}"
+    },
+    "toast": {
+      "created": "Propriedade criada.",
+      "updated": "Propriedade alterada.",
+      "deleted": "Propriedade excluída.",
+      "option_deleted": "{count, plural, =0 {Opção excluída.} one {Opção excluída — # tarefa ficou sem valor.} other {Opção excluída — # tarefas ficaram sem valor.}}"
+    }
+  },
   "epic": {
     "new": "Novo Epic",
     "label": "{count, plural, one {Epic} other {Epics}}",

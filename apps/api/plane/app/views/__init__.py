@@ -3,6 +3,7 @@
 # See the LICENSE file for details.
 
 from .project.recurring_work_item import RecurringWorkItemViewSet
+from .project.issue_property import IssuePropertyOptionUsageViewSet, IssuePropertyViewSet
 from .project.base import (
     ProjectViewSet,
     ProjectIdentifierEndpoint,

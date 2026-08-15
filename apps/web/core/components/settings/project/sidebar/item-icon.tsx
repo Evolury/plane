@@ -5,7 +5,7 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { Repeat, Users, Zap } from "lucide-react";
+import { ListChecks, Repeat, Users, Zap } from "lucide-react";
 // plane imports
 import type { ISvgIcons } from "@plane/propel/icons";
 import {
@@ -36,4 +36,6 @@ export const PROJECT_SETTINGS_ICONS: Record<TProjectSettingsTabs, LucideIcon | R
   automations: Zap,
   // Evolury: tarefas recorrentes (ADR 0010)
   recurring: Repeat,
+  // Evolury: propriedades personalizadas (ADR 0011)
+  "issue-properties": ListChecks,
 };

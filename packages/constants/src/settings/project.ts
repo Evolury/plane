@@ -116,6 +116,15 @@ export const PROJECT_SETTINGS: Record<TProjectSettingsTabs, TProjectSettingsItem
     access: [EUserProjectRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/recurring/`,
   },
+  // Evolury: propriedades personalizadas (ADR 0011). Porta de admin: criar
+  // propriedade cria trabalho para os outros — todo mundo passa a ver o campo.
+  "issue-properties": {
+    key: "issue-properties",
+    i18n_label: "issue_properties.settings.heading",
+    href: `/issue-properties`,
+    access: [EUserProjectRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/issue-properties/`,
+  },
 };
 
 export const PROJECT_SETTINGS_FLAT_MAP: TProjectSettingsItem[] = Object.values(PROJECT_SETTINGS);
@@ -134,5 +143,9 @@ export const GROUPED_PROJECT_SETTINGS: Record<PROJECT_SETTINGS_CATEGORY, TProjec
     PROJECT_SETTINGS["labels"],
     PROJECT_SETTINGS["estimates"],
   ],
-  [PROJECT_SETTINGS_CATEGORY.EXECUTION]: [PROJECT_SETTINGS["automations"], PROJECT_SETTINGS["recurring"]],
+  [PROJECT_SETTINGS_CATEGORY.EXECUTION]: [
+    PROJECT_SETTINGS["automations"],
+    PROJECT_SETTINGS["recurring"],
+    PROJECT_SETTINGS["issue-properties"],
+  ],
 };
