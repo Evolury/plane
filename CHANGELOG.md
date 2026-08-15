@@ -3,7 +3,7 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
-## Não lançado
+## [1.15.0] — 2026-08-15
 
 ### O ícone da propriedade personalizada
 
@@ -18,6 +18,15 @@ informa nada, obriga a ler o nome de cada um.
 - O ícone aparece na configuração, no painel da tarefa, no cabeçalho da coluna
   da tabela e no seletor de filtro.
 - A API pública e o webhook devolvem o ícone **efetivo**, já resolvido.
+
+### Desenvolvimento
+
+- **O servidor de desenvolvimento abre por outro nome de host.** O Vite 6
+  confere o cabeçalho `Host` contra DNS rebinding e só aceitava `localhost` e
+  IPs — pelo nome do tailnet devolvia 403 da própria aplicação, disfarçado de
+  problema de rede. Junto, a API passou a ser servida pela mesma origem da
+  página, como em produção: `localhost`, IP da rede e nome do tailnet funcionam
+  ao mesmo tempo, sem CORS no caminho. Não afeta produção.
 
 ## [1.14.0] — 2026-08-15
 
