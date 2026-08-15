@@ -96,9 +96,7 @@ def _regra(projeto, create_user, origem=None, **campos):
 
 
 def _subtarefa(projeto, create_user, pai, nome, **campos):
-    padrao = dict(
-        project=projeto, workspace=projeto.workspace, parent=pai, name=nome, created_by=create_user
-    )
+    padrao = dict(project=projeto, workspace=projeto.workspace, parent=pai, name=nome, created_by=create_user)
     padrao.update(campos)
     return Issue.objects.create(**padrao)
 
@@ -243,9 +241,7 @@ class TestAgenda:
 
     @pytest.mark.django_db
     def test_end_on_date_stops_the_series(self, projeto, create_user):
-        regra = _regra(
-            projeto, create_user, end_mode=RecurrenceEndMode.ON_DATE, end_date=date(2026, 8, 20)
-        )
+        regra = _regra(projeto, create_user, end_mode=RecurrenceEndMode.ON_DATE, end_date=date(2026, 8, 20))
 
         datas = proximas_datas(regra, _em_sp(2026, 8, 13), quantidade=5)
 
@@ -280,9 +276,7 @@ class TestGeracao:
         """A tarefa É o molde: nome, prioridade e responsáveis vêm dela."""
         origem = _origem(projeto, create_user, priority="high", description_html="<p>como fazer</p>")
         _concluir(origem)
-        IssueAssignee.objects.create(
-            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
-        )
+        IssueAssignee.objects.create(issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace)
         regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
 
@@ -309,9 +303,7 @@ class TestGeracao:
         vinculo = ProjectMember.objects.create(project=projeto, member=saiu, role=15, is_active=True)
         origem = _origem(projeto, create_user)
         for pessoa in (create_user, saiu):
-            IssueAssignee.objects.create(
-                issue=origem, assignee=pessoa, project=projeto, workspace=projeto.workspace
-            )
+            IssueAssignee.objects.create(issue=origem, assignee=pessoa, project=projeto, workspace=projeto.workspace)
         _concluir(origem)
         regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
@@ -363,9 +355,7 @@ class TestGeracao:
         projeto.save(update_fields=["default_assignee"])
 
         origem = _origem(projeto, create_user)
-        IssueAssignee.objects.create(
-            issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace
-        )
+        IssueAssignee.objects.create(issue=origem, assignee=create_user, project=projeto, workspace=projeto.workspace)
         _concluir(origem)
         regra = _regra(projeto, create_user, origem=origem)
         regra.project.refresh_from_db()
@@ -407,9 +397,7 @@ class TestGeracao:
         projeto.save(update_fields=["default_assignee"])
 
         origem = _origem(projeto, create_user)
-        IssueAssignee.objects.create(
-            issue=origem, assignee=saiu, project=projeto, workspace=projeto.workspace
-        )
+        IssueAssignee.objects.create(issue=origem, assignee=saiu, project=projeto, workspace=projeto.workspace)
         _concluir(origem)
         regra = _regra(projeto, create_user, origem=origem)
         regra.project.refresh_from_db()
@@ -686,16 +674,28 @@ class TestGeracao:
         """
         origem = _concluir(_origem(projeto, create_user))
         preparo = Issue.objects.create(
-            project=projeto, workspace=projeto.workspace, parent=origem, name="Reunir dados",
-            created_by=create_user, sort_order=1,
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Reunir dados",
+            created_by=create_user,
+            sort_order=1,
         )
         revisao = Issue.objects.create(
-            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
-            created_by=create_user, sort_order=2,
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Revisar",
+            created_by=create_user,
+            sort_order=2,
         )
         Issue.objects.create(
-            project=projeto, workspace=projeto.workspace, parent=origem, name="Sem prazo",
-            created_by=create_user, sort_order=3,
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Sem prazo",
+            created_by=create_user,
+            sort_order=3,
         )
         regra = _regra(projeto, create_user, origem=origem, lead_time_days=3)
         RecurringSubtaskSchedule.objects.create(
@@ -726,7 +726,10 @@ class TestGeracao:
         """
         origem = _concluir(_origem(projeto, create_user))
         filha = Issue.objects.create(
-            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Revisar",
             created_by=create_user,
         )
         regra = _regra(projeto, create_user, origem=origem)  # sem antecedência
@@ -749,7 +752,10 @@ class TestGeracao:
         """
         origem = _concluir(_origem(projeto, create_user))
         filha = Issue.objects.create(
-            project=projeto, workspace=projeto.workspace, parent=origem, name="Revisar",
+            project=projeto,
+            workspace=projeto.workspace,
+            parent=origem,
+            name="Revisar",
             created_by=create_user,
         )
         regra = _regra(projeto, create_user, origem=origem, lead_time_days=2)
@@ -768,9 +774,7 @@ class TestGeracao:
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
-    def test_a_skipped_date_does_not_generate_and_the_series_goes_on(
-        self, _atividade, projeto, create_user
-    ):
+    def test_a_skipped_date_does_not_generate_and_the_series_goes_on(self, _atividade, projeto, create_user):
         """Pular é exceção a uma ocorrência, não à agenda (ADR 0010, F9).
 
         A prova de que a série não foi mexida está na segunda rodada: a semana
@@ -844,6 +848,112 @@ class TestGeracao:
 
         assert orfa.issue_id is None and orfa.skipped_at is None
         assert _foi_pulada(regra, regra.next_run_at) is False
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_custom_property_values_come_along(self, _atividade, projeto, create_user):
+        """Valor de propriedade descreve o trabalho, então copia (ADR 0011).
+
+        E copia na ÁRVORE inteira: a subtarefa aninhada carrega o dado dela
+        como qualquer outra tarefa do projeto.
+        """
+        from plane.db.models import IssueProperty, IssuePropertyOption, IssuePropertyValue
+
+        origem = _concluir(_origem(projeto, create_user))
+        filha = _subtarefa(projeto, create_user, origem, "Conferir")
+        neta = _subtarefa(projeto, create_user, filha, "Anexar")
+
+        canal = IssueProperty.objects.create(
+            name="Canal", property_type="select", project=projeto, workspace=projeto.workspace
+        )
+        opcao = IssuePropertyOption.objects.create(
+            issue_property=canal, name="Indicação", project=projeto, workspace=projeto.workspace
+        )
+        contrato = IssueProperty.objects.create(
+            name="Contrato",
+            property_type="currency",
+            currency="BRL",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+        for tarefa in (origem, neta):
+            IssuePropertyValue.objects.create(
+                issue=tarefa,
+                issue_property=canal,
+                value_option=opcao,
+                project=projeto,
+                workspace=projeto.workspace,
+            )
+        IssuePropertyValue.objects.create(
+            issue=origem,
+            issue_property=contrato,
+            value_number="1500.00",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        regra = _regra(projeto, create_user, origem=origem)
+        agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+        tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        da_principal = {v.issue_property_id: v for v in IssuePropertyValue.objects.filter(issue=tarefa)}
+        assert da_principal[canal.id].value_option_id == opcao.id
+        assert str(da_principal[contrato.id].value_number).startswith("1500")
+
+        copia_da_neta = next(c for c in _descendentes(tarefa) if c.name == "Anexar")
+        assert IssuePropertyValue.objects.get(issue=copia_da_neta).value_option_id == opcao.id
+
+    @pytest.mark.django_db
+    @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
+    def test_custom_properties_do_not_raise_the_cost_per_node(
+        self, _atividade, projeto, create_user, django_assert_max_num_queries
+    ):
+        """Os valores entram em bloco: duas idas, quantos nós forem.
+
+        O custo por nó da cópia está fixado em 8 desde a F8; uma consulta por
+        subtarefa o estouraria, e é por isso que a leitura e a gravação são
+        únicas para a árvore inteira.
+        """
+        from plane.db.models import IssueProperty, IssuePropertyValue
+
+        def _com_arvore(nome, ramos, folhas, propriedade):
+            origem = _concluir(_origem(projeto, create_user, name=nome))
+            nos = [origem]
+            for i in range(ramos):
+                pai = _subtarefa(projeto, create_user, origem, f"{nome} {i}")
+                nos.append(pai)
+                for j in range(folhas):
+                    nos.append(_subtarefa(projeto, create_user, pai, f"{nome} {i}.{j}"))
+            IssuePropertyValue.objects.bulk_create(
+                [
+                    IssuePropertyValue(
+                        issue=n,
+                        issue_property=propriedade,
+                        value_text="x",
+                        project=projeto,
+                        workspace=projeto.workspace,
+                    )
+                    for n in nos
+                ]
+            )
+            regra = _regra(projeto, create_user, origem=origem)
+            agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
+            regra.refresh_from_db()
+            return regra
+
+        texto = IssueProperty.objects.create(
+            name="Observação", property_type="text", project=projeto, workspace=projeto.workspace
+        )
+        rasa = _com_arvore("Rasa", 2, 1, texto)
+        funda = _com_arvore("Funda", 4, 3, texto)
+
+        with django_assert_max_num_queries(1000) as pequena:
+            processar_regra(rasa, agora=_em_sp(2026, 8, 17, 8, 5))
+        with django_assert_max_num_queries(1000) as grande:
+            processar_regra(funda, agora=_em_sp(2026, 8, 17, 8, 5))
+
+        por_no = (len(grande.captured_queries) - len(pequena.captured_queries)) / 12
+        assert por_no <= _CONSULTAS_POR_NO
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
@@ -966,9 +1076,7 @@ class TestGeracao:
         # Concluir às 11:00 não ressuscita o período perdido.
         _concluir(primeira)
         assert processar_regra(regra, agora=_em_sp(2026, 8, 24, 11, 0)) is None
-        assert (
-            RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra).count() == 1
-        )
+        assert RecurringWorkItemOccurrence.objects.filter(recurring_work_item=regra).count() == 1
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
@@ -1118,9 +1226,7 @@ class TestUltimoDiaEAposConclusao:
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")
-    def test_completing_a_scheduled_occurrence_does_not_move_the_clock(
-        self, _atividade, projeto, create_user
-    ):
+    def test_completing_a_scheduled_occurrence_does_not_move_the_clock(self, _atividade, projeto, create_user):
         """No modo por agenda, concluir não mexe na agenda."""
         origem = _concluir(_origem(projeto, create_user))
         regra = _regra(projeto, create_user, origem=origem)
