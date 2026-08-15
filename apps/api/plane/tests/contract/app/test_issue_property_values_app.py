@@ -418,3 +418,57 @@ class TestValores:
 
         de_valores = [q for q in captura.captured_queries if "issue_property_values" in q["sql"]]
         assert len(de_valores) == 1, de_valores
+
+    def test_the_public_api_carries_the_values(self, projeto, create_user):
+        """A API pública é como o resto da operação lê a tarefa."""
+        from plane.api.serializers.issue import IssueSerializer as PublicIssueSerializer
+
+        texto = _propriedade(projeto, "Canal", "text")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa, issue_property=texto, value_text="Indicação",
+            project=projeto, workspace=projeto.workspace,
+        )
+
+        dados = PublicIssueSerializer(tarefa).data
+
+        assert dados["property_values"] == {str(texto.id): "Indicação"}
+
+    def test_the_webhook_payload_carries_the_values(self, projeto, create_user):
+        """Mandar a tarefa sem o dado de negócio seria mandar meia tarefa."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa, issue_property=moeda, value_number="99.90",
+            project=projeto, workspace=projeto.workspace,
+        )
+
+        dados = IssueExpandSerializer(tarefa).data
+
+        assert dados["property_values"][str(moeda.id)].startswith("99.9")
+
+    def test_the_public_api_can_read_values_in_bulk(self, projeto, create_user):
+        """Sem o contexto, uma listagem pagaria uma consulta por linha."""
+        from plane.api.serializers.issue import IssueSerializer as PublicIssueSerializer
+        from plane.utils.issue_properties import valores_por_tarefa
+
+        texto = _propriedade(projeto, "Canal", "text")
+        tarefas = [_tarefa(projeto, create_user, nome=f"A{i}") for i in range(10)]
+        IssuePropertyValue.objects.bulk_create(
+            [
+                IssuePropertyValue(
+                    issue=t, issue_property=texto, value_text="x",
+                    project=projeto, workspace=projeto.workspace,
+                )
+                for t in tarefas
+            ]
+        )
+        em_bloco = valores_por_tarefa([t.id for t in tarefas])
+
+        dados = PublicIssueSerializer(
+            tarefas, many=True, context={"valores_de_propriedade": em_bloco}
+        ).data
+
+        assert all(d["property_values"] == {str(texto.id): "x"} for d in dados)

@@ -36,10 +36,9 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P2.2 Modal de criação, com a obrigatoriedade barrando **só a criação**
 - [x] P2.3 Obrigatoriedade não alcança tarefa que já existia
 - [x] P2.4 Atividade de mudança de valor, com o rótulo da propriedade
-- [~] P2.5 Webhook e API pública carregam os valores — **pendente**. A saída do
-  dado foi cumprida em parte na P3.4 (exportação CSV/XLSX); webhook e API
-  pública vão junto da **P4**, que é quando a serialização de tarefa volta a
-  ser mexida
+- [x] P2.5 Webhook e API pública carregam os valores — só leitura; escrever
+      tem endpoint próprio, com a validação por tipo que a serialização daria a
+      volta. A API pública aceita a leitura em bloco pelo contexto
 - [x] P2.6 Testes: cada tipo, obrigatório na criação e não na conclusão,
       retroatividade, e o filtro explícito de `deleted_at` nas junções
 
@@ -62,8 +61,10 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [ ] P4.1 Filtro por propriedade em `issue_filters.py`, hoje uma função por
       campo conhecido
 - [ ] P4.2 Agrupar por seleção única (`grouper.py`)
-- [ ] P4.3 Ordenar por número, data, moeda e texto (`order_queryset.py`, hoje
-      uma allowlist fixa)
+- [x] P4.3 Ordenar por número, data, moeda, texto e seleção — prefixo
+      `property__<uuid>` resolvido ANTES da allowlist, com o id validado como
+      UUID e a propriedade conferida no banco antes de tocar no ORM. Ordena
+      pela coluna tipada, e seleção ordena pela ordem das opções
 - [ ] P4.4 Filtros ricos no front, com o editor certo por tipo
 - [ ] P4.5 Testes: cada operador de cada tipo, e o agrupamento com opção vazia
 

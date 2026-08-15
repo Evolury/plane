@@ -67,10 +67,29 @@ class IssueSerializer(BaseSerializer):
         source="type", queryset=IssueType.objects.all(), required=False, allow_null=True
     )
 
+    # Evolury: propriedades personalizadas (ADR 0011). Só leitura: escrever
+    # valor tem endpoint próprio, com a validação por tipo que recusa "abc"
+    # num campo de número — e deixar escrever por aqui daria a volta nela.
+    property_values = serializers.SerializerMethodField()
+
     class Meta:
         model = Issue
         read_only_fields = ["id", "workspace", "project", "updated_by", "updated_at", "completed_at"]
         exclude = ["description_json", "description_stripped"]
+
+    def get_property_values(self, obj):
+        """Os valores desta tarefa, no mesmo formato do resto da API.
+
+        Vem do contexto quando quem chama preparou a leitura em bloco; senão,
+        uma consulta para esta tarefa. Sem o contexto, uma listagem pagaria uma
+        consulta por linha — o N+1 que o ADR 0011 proibiu.
+        """
+        from plane.utils.issue_properties import valores_por_tarefa
+
+        em_bloco = self.context.get("valores_de_propriedade")
+        if em_bloco is not None:
+            return em_bloco.get(obj.id, {})
+        return valores_por_tarefa([obj.id]).get(obj.id, {})
 
     def validate(self, data):
         if (
@@ -821,8 +840,17 @@ class IssueExpandSerializer(BaseSerializer):
 
     labels = serializers.SerializerMethodField()
     assignees = serializers.SerializerMethodField()
+    # Evolury: propriedades personalizadas no webhook (ADR 0011). O webhook é
+    # o que integra o produto ao resto da operação; mandar a tarefa sem o dado
+    # de negócio que ela carrega seria mandar meia tarefa.
+    property_values = serializers.SerializerMethodField()
     state = StateLiteSerializer(read_only=True)
     description = serializers.JSONField(source="description_json", read_only=True)
+
+    def get_property_values(self, obj):
+        from plane.utils.issue_properties import valores_por_tarefa
+
+        return valores_por_tarefa([obj.id]).get(obj.id, {})
 
     def get_labels(self, obj):
         expand = self.context.get("expand", [])
