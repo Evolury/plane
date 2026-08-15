@@ -38,6 +38,7 @@ export * from "./navigation-preferences";
 // Evolury: minhas tarefas
 export * from "./my-tasks";
 export * from "./recurring-work-item";
+export * from "./issue-property";
 export * from "./page";
 export * from "./payment";
 export * from "./pragmatic";

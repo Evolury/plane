@@ -354,6 +354,11 @@ export const coreRoutes: RouteConfigEntry[] = [
               ":workspaceSlug/settings/projects/:projectId/recurring",
               "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/recurring/page.tsx"
             ),
+            // Evolury: propriedades personalizadas (ADR 0011)
+            route(
+              ":workspaceSlug/settings/projects/:projectId/issue-properties",
+              "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/issue-properties/page.tsx"
+            ),
           ]),
         ]),
       ]),

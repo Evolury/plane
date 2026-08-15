@@ -6,6 +6,8 @@ from django.urls import path
 
 from plane.app.views import (
     RecurringWorkItemViewSet,
+    IssuePropertyViewSet,
+    IssuePropertyOptionUsageViewSet,
     ProjectViewSet,
     DeployBoardViewSet,
     ProjectInvitationsViewset,
@@ -175,5 +177,31 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/recurring-work-items/<uuid:pk>/",
         RecurringWorkItemViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="project-recurring-work-item",
+    ),
+    # Evolury: propriedades personalizadas da tarefa (ADR 0011)
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/",
+        IssuePropertyViewSet.as_view({"get": "list", "post": "create"}),
+        name="project-issue-properties",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/reorder/",
+        IssuePropertyViewSet.as_view({"post": "reorder"}),
+        name="project-issue-properties-reorder",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/<uuid:pk>/options/<uuid:option_id>/usage/",
+        IssuePropertyOptionUsageViewSet.as_view({"get": "retrieve"}),
+        name="project-issue-property-option-usage",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/<uuid:pk>/options/<uuid:option_id>/",
+        IssuePropertyViewSet.as_view({"delete": "delete_option"}),
+        name="project-issue-property-option",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/<uuid:pk>/",
+        IssuePropertyViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="project-issue-property",
     ),
 ]

@@ -11,19 +11,19 @@ precisa virar extensível, e é por isso que as fases estão cortadas assim.
 
 ## P1 — Modelo e configuração (motor inerte)
 
-- [ ] P1.1 Modelos `IssueProperty`, `IssuePropertyOption` e `IssuePropertyValue`,
+- [x] P1.1 Modelos `IssueProperty`, `IssuePropertyOption` e `IssuePropertyValue`,
       com colunas tipadas (`value_text`, `value_number` decimal, `value_date`,
       `value_option`) e a relação de seleção múltipla. Espelha a forma de
       `Estimate` + `EstimatePoint`, que já é config-por-projeto + opções
-- [ ] P1.2 Migração
-- [ ] P1.3 CRUD da propriedade, porta de admin: criar, renomear, reordenar,
+- [x] P1.2 Migração
+- [x] P1.3 CRUD da propriedade, porta de admin: criar, renomear, reordenar,
       ativar/desativar, excluir com aviso de quantas tarefas perdem valor
-- [ ] P1.4 CRUD das opções, com cor e ordem; excluir opção em uso avisa a
+- [x] P1.4 CRUD das opções, com cor e ordem; excluir opção em uso avisa a
       contagem e não bloqueia
-- [ ] P1.5 Teto de 30 por projeto, com aviso na tela antes do limite
-- [ ] P1.6 Trava de troca de tipo, com a exceção seleção única → múltipla
-- [ ] P1.7 Página "Propriedades" em Configurações → Execução
-- [ ] P1.8 Testes: os seis tipos, o teto, a trava de tipo, a conversão que não
+- [x] P1.5 Teto de 30 por projeto, com aviso na tela antes do limite
+- [x] P1.6 Trava de troca de tipo, com a exceção seleção única → múltipla
+- [x] P1.7 Página "Propriedades" em Configurações → Execução
+- [x] P1.8 Testes: os seis tipos, o teto, a trava de tipo, a conversão que não
       perde dado, a exclusão de opção em uso e a porta de admin
 
 Até aqui o recurso é **inerte**: existe configuração e nenhuma tarefa a usa. É

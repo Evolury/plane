@@ -103,4 +103,14 @@ from .recurring_work_item import (
     GenerationMode,
 )
 
+# Evolury: propriedades personalizadas da tarefa (ADR 0011)
+from .issue_property import (
+    IssueProperty,
+    IssuePropertyOption,
+    IssuePropertyValue,
+    PropertyType,
+    TIPOS_DE_SELECAO,
+    TETO_DE_PROPRIEDADES,
+)
+
 from .description import Description, DescriptionVersion
