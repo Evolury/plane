@@ -304,8 +304,11 @@ class TestValores:
         IssuePropertyValue.objects.bulk_create(
             [
                 IssuePropertyValue(
-                    issue=t, issue_property=texto, value_text=f"v{i}",
-                    project=projeto, workspace=projeto.workspace,
+                    issue=t,
+                    issue_property=texto,
+                    value_text=f"v{i}",
+                    project=projeto,
+                    workspace=projeto.workspace,
                 )
                 for i, t in enumerate(tarefas)
             ]
@@ -318,9 +321,7 @@ class TestValores:
         assert resposta.status_code == status.HTTP_200_OK
         assert len(resposta.data["values"]) == 30
 
-    def test_card_only_returns_just_the_marked_properties(
-        self, session_client, workspace, projeto, create_user
-    ):
+    def test_card_only_returns_just_the_marked_properties(self, session_client, workspace, projeto, create_user):
         """Trinta propriedades no cartão fariam do quadro uma planilha ruim.
 
         Quem quer todas tem o layout de tabela, que é onde a largura existe.
@@ -330,25 +331,90 @@ class TestValores:
         tarefa = _tarefa(projeto, create_user)
         for propriedade, valor in ((no_cartao, "A"), (fora, "B")):
             IssuePropertyValue.objects.create(
-                issue=tarefa, issue_property=propriedade, value_text=valor,
-                project=projeto, workspace=projeto.workspace,
+                issue=tarefa,
+                issue_property=propriedade,
+                value_text=valor,
+                project=projeto,
+                workspace=projeto.workspace,
             )
 
-        resposta = session_client.get(
-            f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1"
-        )
+        resposta = session_client.get(f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1")
 
         meus = resposta.data["values"][str(tarefa.id)]
         assert meus == {str(no_cartao.id): "A"}
 
-    def test_card_only_is_empty_without_marked_properties(
-        self, session_client, workspace, projeto, create_user
-    ):
+    def test_card_only_is_empty_without_marked_properties(self, session_client, workspace, projeto, create_user):
         """Projeto que não marcou nada não paga consulta nenhuma pelo cartão."""
         _propriedade(projeto, "Observação", "text")
 
-        resposta = session_client.get(
-            f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1"
-        )
+        resposta = session_client.get(f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1")
 
         assert resposta.data["values"] == {}
+
+    def test_the_export_carries_a_column_per_property(self, projeto, create_user):
+        """Dado que só existe dentro da tela é dado preso.
+
+        E o valor sai como TEXTO legível: id de opção numa planilha não diz
+        nada a ninguém.
+        """
+        from plane.db.models import Issue as IssueModel
+        from plane.utils.porters.serializers.issue import IssueExportSerializer
+
+        canal = _propriedade(projeto, "Canal", "select")
+        opcao = _opcao(canal, "Indicação")
+        contrato = _propriedade(projeto, "Contrato", "currency", currency="BRL")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=canal,
+            value_option=opcao,
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=contrato,
+            value_number="1500.00",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        dados = IssueExportSerializer(
+            IssueModel.objects.filter(pk=tarefa.pk).select_related("project", "state"), many=True
+        ).data
+
+        assert dados[0]["Canal"] == "Indicação"
+        assert dados[0]["Contrato"].startswith("BRL 1500")
+
+    def test_the_export_reads_values_in_one_query(self, projeto, create_user, django_assert_max_num_queries):
+        """Uma consulta de valores para o arquivo inteiro, e não uma por linha.
+
+        O gancho é o `ListSerializer` porque é ele que enxerga o conjunto.
+        """
+        from plane.db.models import Issue as IssueModel
+        from plane.utils.porters.serializers.issue import IssueExportSerializer
+
+        texto = _propriedade(projeto, "Observação", "text")
+        tarefas = [_tarefa(projeto, create_user, nome=f"E{i}") for i in range(20)]
+        IssuePropertyValue.objects.bulk_create(
+            [
+                IssuePropertyValue(
+                    issue=t,
+                    issue_property=texto,
+                    value_text="x",
+                    project=projeto,
+                    workspace=projeto.workspace,
+                )
+                for t in tarefas
+            ]
+        )
+        conjunto = IssueModel.objects.filter(project=projeto).select_related("project", "state")
+
+        # O teto é folgado porque o serializer herdado busca muita coisa por
+        # tarefa; o que este teste fixa é que os VALORES não crescem com as
+        # linhas — 20 tarefas, uma consulta de valores.
+        with django_assert_max_num_queries(400) as captura:
+            IssueExportSerializer(conjunto, many=True).data
+
+        de_valores = [q for q in captura.captured_queries if "issue_property_values" in q["sql"]]
+        assert len(de_valores) == 1, de_valores

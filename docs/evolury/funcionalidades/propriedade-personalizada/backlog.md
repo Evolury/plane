@@ -45,12 +45,12 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 
 - [x] P3.1 Carga dos valores **em bloco por página de tarefas**, com teto de
       consultas fixado em teste — os layouts carregam centenas de tarefas
-- [ ] P3.2 Coluna no layout de tabela, uma por propriedade ativa — exige
-      abrir o maquinário de colunas fixas do layout; PR próprio
+- [x] P3.2 Coluna no layout de tabela, uma por propriedade ativa — acoplada
+      pela ponta, com provedor de contexto para a carga da página
 - [x] P3.3 Chip no cartão de lista e quadro, só nas marcadas para isso
-- [ ] P3.4 Exportação CSV e XLSX, estendendo `IssueExportSchema`
-- [~] P3.5 Testes: o teto de consultas com 5 propriedades e 50 tarefas, e a
-  exportação com os seis tipos
+- [x] P3.4 Exportação CSV e XLSX, estendendo `IssueExportSchema`
+- [x] P3.5 Testes: o teto de consultas com 5 propriedades e 50 tarefas, e a
+      exportação com os seis tipos
 
 ## P4 — Filtro, agrupamento e ordenação
 
