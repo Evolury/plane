@@ -33,6 +33,22 @@ export default defineConfig(() => ({
   },
   server: {
     host: "127.0.0.1",
+    // Evolury: o Vite 6 confere o cabeçalho `Host` para barrar DNS rebinding, e
+    // só aceita `localhost` e IPs. Abrir o dev pelo nome do tailnet devolvia
+    // 403 da própria aplicação — parecia rede, e era isto. O ponto inicial
+    // cobre o tailnet inteiro, então trocar o nome da máquina não quebra.
+    allowedHosts: [".ts.net"],
+    // Evolury: a API atendida pela MESMA origem da página, como em produção.
+    //
+    // Sem isto, `VITE_API_BASE_URL` fixa um endereço só — e quem abre o dev por
+    // outro nome (IP da rede, nome do tailnet) carrega a tela e não fala com a
+    // API, porque `localhost` para o navegador remoto é a máquina dele. Com o
+    // proxy, `API_BASE_URL` fica vazio e cada chamada segue o endereço pelo
+    // qual a página foi aberta. De quebra, some o CORS: mesma origem.
+    proxy: {
+      "/api": { target: "http://127.0.0.1:8000", changeOrigin: true },
+      "/auth": { target: "http://127.0.0.1:8000", changeOrigin: true },
+    },
   },
   // No SSR-specific overrides needed; alias resolves to ESM build
 }));

@@ -85,6 +85,30 @@ docker compose -p planedev restart api
 Isso **não** acontece em produção: lá a API roda de imagem construída, sem
 `bind mount` e sem autoreloader.
 
+## Abrir o dev de outro computador
+
+Três coisas precisam estar certas, e as três já estão no repositório ou no
+`.env` local:
+
+| O quê                       | Onde             | Por quê                                                                                                                                                                                            |
+| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--host 0.0.0.0`            | linha de comando | o padrão do `vite.config.ts` é só `localhost`                                                                                                                                                      |
+| `allowedHosts: [".ts.net"]` | `vite.config.ts` | o Vite 6 confere o `Host` contra DNS rebinding e **só aceita `localhost` e IPs** — pelo nome do tailnet ele devolve **403 da própria aplicação**, o que parece problema de rede e não é            |
+| `proxy` de `/api` e `/auth` | `vite.config.ts` | com `VITE_API_BASE_URL` vazio, cada chamada segue o host pelo qual a página foi aberta; sem isso a URL da API fica fixa num endereço e quem abre por outro carrega a tela sem falar com o servidor |
+
+Com isso, `localhost`, IP da rede e nome do tailnet funcionam **ao mesmo tempo**,
+e o CORS deixa de existir no caminho: mesma origem, como em produção.
+
+Falta um detalhe que **não** dá para resolver no `vite.config.ts`: o
+redirecionamento pós-login é montado pelo servidor, a partir de `APP_BASE_URL`.
+Ele é um endereço só. Aponte-o para o endereço que você usa de fora (em
+`apps/api/.env`), senão o login termina num host que a máquina remota não
+alcança.
+
+Pela rede local ainda é preciso liberar a porta no firewalld — a interface da
+LAN fica na zona `FedoraWorkstation`, que não abre TCP alto; a `tailscale0` está
+na zona `trusted`, e por isso o tailnet funciona sem nada.
+
 ## O seletor de filtros não abre no dev — e não é bug seu
 
 Clicar no funil do cabeçalho não abre nada com `pnpm dev`, e o console registra
