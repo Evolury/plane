@@ -6,6 +6,7 @@
 
 import React, { useState } from "react";
 import { observer } from "mobx-react";
+import { useParams } from "next/navigation";
 import { useTranslation } from "@plane/i18n";
 import type { IIssueDisplayFilterOptions, TIssueGroupByOptions } from "@plane/types";
 // helpers
@@ -29,7 +30,9 @@ export const FilterGroupBy = observer(function FilterGroupBy(props: Props) {
   const selectedGroupBy = displayFilters?.group_by ?? null;
   const selectedSubGroupBy = displayFilters?.sub_group_by ?? null;
 
-  const options = useGroupByOptions(groupByOptions);
+  // Evolury: o projeto entra para o menu oferecer as propriedades dele.
+  const { projectId } = useParams();
+  const options = useGroupByOptions(groupByOptions, projectId?.toString());
 
   return (
     <>
@@ -54,7 +57,7 @@ export const FilterGroupBy = observer(function FilterGroupBy(props: Props) {
                 key={groupBy?.key}
                 isChecked={selectedGroupBy === groupBy?.key}
                 onClick={() => handleUpdate(groupBy.key)}
-                title={t(groupBy.titleTranslationKey)}
+                title={groupBy.title ?? t(groupBy.titleTranslationKey)}
                 multiple={false}
               />
             );

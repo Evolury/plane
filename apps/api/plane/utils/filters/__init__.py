@@ -9,6 +9,15 @@ from .filter_backend import ComplexFilterBackend
 from .converters import LegacyToRichFiltersConverter
 from .filterset import BaseFilterSet, IssueFilterSet
 
+# Evolury: filtro por propriedade personalizada (ADR 0011)
+from .propriedades import FiltroComPropriedades
+
 
 # Public API exports
-__all__ = ["ComplexFilterBackend", "LegacyToRichFiltersConverter", "BaseFilterSet", "IssueFilterSet"]
+__all__ = [
+    "ComplexFilterBackend",
+    "FiltroComPropriedades",
+    "LegacyToRichFiltersConverter",
+    "BaseFilterSet",
+    "IssueFilterSet",
+]

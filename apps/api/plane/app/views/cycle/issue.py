@@ -33,14 +33,15 @@ from plane.utils.order_queryset import order_issue_queryset
 from plane.utils.paginator import GroupedOffsetPaginator, SubGroupedOffsetPaginator
 from plane.app.permissions import allow_permission, ROLE
 from plane.utils.host import base_host
-from plane.utils.filters import ComplexFilterBackend
+# Evolury: backend com propriedade personalizada (ADR 0011)
+from plane.utils.filters import FiltroComPropriedades
 from plane.utils.filters import IssueFilterSet
 
 
 class CycleIssueViewSet(BaseViewSet):
     serializer_class = CycleIssueSerializer
     model = CycleIssue
-    filter_backends = (ComplexFilterBackend,)
+    filter_backends = (FiltroComPropriedades,)
     filterset_class = IssueFilterSet
 
     webhook_event = "cycle_issue"

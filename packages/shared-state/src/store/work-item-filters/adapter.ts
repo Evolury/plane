@@ -166,8 +166,16 @@ class WorkItemFiltersAdapter extends FilterAdapter<TWorkItemFilterProperty, TWor
     const operator = key.substring(lastDoubleUnderscoreIndex + 2);
 
     // Validate property is in allowed list
+    // Evolury: `property_` é o prefixo da propriedade personalizada em todo o
+    // fork — no `group_by`, na API e aqui (ADR 0011). Sem esta linha, um
+    // filtro salvo por propriedade voltaria do servidor e seria descartado em
+    // silêncio na hidratação, derrubando junto o grupo `and` que o continha.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!WORK_ITEM_FILTER_PROPERTY_KEYS.includes(property as any) && !property.startsWith("customproperty_")) {
+    if (
+      !WORK_ITEM_FILTER_PROPERTY_KEYS.includes(property as any) &&
+      !property.startsWith("customproperty_") &&
+      !property.startsWith("property_")
+    ) {
       return false;
     }
 

@@ -271,6 +271,115 @@ PREFIXO_DE_FILTRO = "property_"
 CASAS_DO_BANCO = 6
 
 
+#: Os operadores que cada tipo aceita — a mesma tabela dos dois caminhos.
+#:
+#: `in` para seleção e texto, faixa para número, moeda e data. Nada além
+#: disso: operador que a especificação não declarou não vira consulta.
+OPERADORES_POR_TIPO = {
+    PropertyType.SELECT: ("in",),
+    PropertyType.MULTI_SELECT: ("in",),
+    PropertyType.TEXT: ("in",),
+    PropertyType.NUMBER: ("gte", "lte"),
+    PropertyType.CURRENCY: ("gte", "lte"),
+    PropertyType.DATE: ("gte", "lte"),
+}
+
+
+def q_de_propriedade(propriedade, operadores):
+    """A condição de UMA propriedade, como subconsulta.
+
+    Subconsulta, e não join, por duas razões:
+
+    1. **Composição.** Os filtros ricos montam uma árvore de `and`/`or`/`not`
+       e a aplicam num `.filter()` só. Duas condições de join no mesmo
+       `.filter()` recaem sobre a MESMA linha da tabela de valores — "canal =
+       indicação E tag = urgente" devolveria vazio para uma tarefa que tem as
+       duas. A subconsulta não tem esse problema: cada uma é uma pergunta
+       fechada sobre o conjunto de tarefas.
+    2. **Exclusão lógica.** O join por `property_values__…` não passa pelo
+       gerente do modelo, então valor apagado continuaria pesando. Aqui o
+       `deleted_at__isnull=True` está escrito.
+
+    Devolve `None` quando não sobrou nada válido para perguntar — pedido
+    malformado não vira consulta, nem silenciosamente ampla, nem erro de ORM.
+    """
+    import uuid as _uuid
+
+    from django.db.models import Q
+
+    linhas = IssuePropertyValue.objects.filter(issue_property_id=propriedade.id, deleted_at__isnull=True)
+
+    if propriedade.property_type in TIPOS_DE_SELECAO:
+        validas = []
+        for escolhida in _lista(operadores.get("in")):
+            try:
+                _uuid.UUID(escolhida)
+                validas.append(escolhida)
+            except (ValueError, AttributeError, TypeError):
+                continue
+        if not validas:
+            return None
+        linhas = linhas.filter(value_option_id__in=validas)
+
+    elif propriedade.property_type == PropertyType.TEXT:
+        trecho = operadores.get("in")
+        trecho = trecho[0] if isinstance(trecho, (list, tuple)) else trecho
+        if not trecho:
+            return None
+        linhas = linhas.filter(value_text__icontains=str(trecho))
+
+    else:
+        coluna = "value_date" if propriedade.property_type == PropertyType.DATE else "value_number"
+        tem = False
+        for operador in ("gte", "lte"):
+            bruto = operadores.get(operador)
+            bruto = bruto[0] if isinstance(bruto, (list, tuple)) else bruto
+            if bruto in (None, ""):
+                continue
+            try:
+                convertido = (
+                    parse_date(str(bruto)) if propriedade.property_type == PropertyType.DATE else Decimal(str(bruto))
+                )
+            except (InvalidOperation, ValueError):
+                continue
+            if convertido is None:
+                continue
+            linhas = linhas.filter(**{f"{coluna}__{operador}": convertido})
+            tem = True
+        if not tem:
+            return None
+
+    return Q(pk__in=linhas.values("issue_id"))
+
+
+def _lista(bruto):
+    """Aceita `"a,b"` e `["a", "b"]` — os dois caminhos chegam aqui."""
+    if bruto in (None, ""):
+        return []
+    if isinstance(bruto, (list, tuple)):
+        return [str(v) for v in bruto if v]
+    return [v for v in str(bruto).split(",") if v]
+
+
+def propriedades_por_id(ids):
+    """As propriedades existentes entre os ids pedidos, numa consulta."""
+    validos = []
+    import uuid as _uuid
+
+    for cru in ids:
+        try:
+            _uuid.UUID(str(cru))
+            validos.append(str(cru))
+        except (ValueError, AttributeError, TypeError):
+            continue
+    if not validos:
+        return {}
+    return {
+        str(p.id): p
+        for p in IssueProperty.objects.filter(id__in=validos).only("id", "property_type", "is_active", "project_id")
+    }
+
+
 def filtros_de_propriedade(query_params):
     """Traduz `property_<uuid>` em condições, uma por propriedade.
 
@@ -289,8 +398,6 @@ def filtros_de_propriedade(query_params):
         data             property_<id>_gte / _lte       faixa
     """
     import uuid as _uuid
-
-    from django.db.models import Q
 
     pedidos = {}
     for chave, valor in query_params.items():
@@ -313,66 +420,22 @@ def filtros_de_propriedade(query_params):
     if not pedidos:
         return []
 
-    por_id = {str(p.id): p for p in IssueProperty.objects.filter(id__in=pedidos.keys()).only("id", "property_type")}
+    por_id = propriedades_por_id(pedidos.keys())
 
     condicoes = []
     for propriedade_id, operadores in pedidos.items():
         propriedade = por_id.get(propriedade_id)
         if propriedade is None:
             continue
-        base = Q(property_values__issue_property_id=propriedade_id)
-
-        if propriedade.property_type in (PropertyType.SELECT, PropertyType.MULTI_SELECT):
-            escolhidas = [v for v in (operadores.get("in") or "").split(",") if v]
-            validas = []
-            for escolhida in escolhidas:
-                try:
-                    _uuid.UUID(escolhida)
-                    validas.append(escolhida)
-                except (ValueError, AttributeError, TypeError):
-                    continue
-            if not validas:
-                continue
-            condicoes.append(base & Q(property_values__value_option_id__in=validas))
-            continue
-
-        if propriedade.property_type == PropertyType.TEXT:
-            trecho = operadores.get("in")
-            if trecho:
-                condicoes.append(base & Q(property_values__value_text__icontains=trecho))
-            continue
-
-        coluna = "value_date" if propriedade.property_type == PropertyType.DATE else "value_number"
-        faixa = Q()
-        tem = False
-        for operador, sufixo in (("gte", "__gte"), ("lte", "__lte")):
-            bruto = operadores.get(operador)
-            if not bruto:
-                continue
-            try:
-                convertido = (
-                    parse_date(str(bruto)) if propriedade.property_type == PropertyType.DATE else Decimal(str(bruto))
-                )
-            except (InvalidOperation, ValueError):
-                continue
-            if convertido is None:
-                continue
-            faixa &= Q(**{f"property_values__{coluna}{sufixo}": convertido})
-            tem = True
-        if tem:
-            condicoes.append(base & faixa)
+        condicao = q_de_propriedade(propriedade, operadores)
+        if condicao is not None:
+            condicoes.append(condicao)
 
     return condicoes
 
 
 def aplicar_filtros_de_propriedade(queryset, query_params):
-    """Aplica cada condição em SUA chamada de `.filter()`.
-
-    Uma chamada por propriedade é o que garante um join por propriedade —
-    juntar tudo num `.filter()` só faria a segunda condição recair sobre a
-    linha que a primeira escolheu, e "canal = indicação E tag = urgente"
-    devolveria vazio para uma tarefa que tem as duas.
-    """
+    """Aplica as condições de propriedade ao conjunto."""
     for condicao in filtros_de_propriedade(query_params):
         queryset = queryset.filter(condicao)
     return queryset

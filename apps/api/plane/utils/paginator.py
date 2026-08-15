@@ -681,13 +681,25 @@ class BasePaginator:
             raise ParseError(detail="Invalid cursor parameter.")
 
         if not paginator:
+            # Evolury: import local — `issue_properties` importa modelos, e o
+            # paginador é carregado cedo demais para isso no topo.
+            from plane.utils.issue_properties import alias_de_agrupamento
+
             if group_by_field_name:
                 # Validate against the allowlist before the field name reaches
                 # F()/.values()/.order_by()/Window partition_by in the grouped
                 # paginators below — prevents unauthenticated ORM field-name
                 # injection via user-supplied group_by/sub_group_by query params
                 # (GHSA-wwgj-929g-42cm).
-                if group_by_field_name not in ISSUE_GROUP_BY_ALLOWLIST:
+                # Evolury: propriedade personalizada não cabe na allowlist —
+                # o nome do campo é um id que só existe em tempo de execução.
+                # Ela passa pela MESMA prova por outro caminho:
+                # `alias_de_agrupamento` exige UUID válido e uma propriedade de
+                # seleção única existente. Uma string arbitrária continua sem
+                # passar, que é o que a GHSA acima protege (ADR 0011).
+                if group_by_field_name not in ISSUE_GROUP_BY_ALLOWLIST and (
+                    alias_de_agrupamento(group_by_field_name) is None
+                ):
                     raise ParseError(detail=f"Invalid group_by field: {group_by_field_name}")
 
                 paginator_kwargs["group_by_field_name"] = group_by_field_name
@@ -695,7 +707,9 @@ class BasePaginator:
                 paginator_kwargs["count_filter"] = count_filter
 
                 if sub_group_by_field_name:
-                    if sub_group_by_field_name not in ISSUE_GROUP_BY_ALLOWLIST:
+                    if sub_group_by_field_name not in ISSUE_GROUP_BY_ALLOWLIST and (
+                        alias_de_agrupamento(sub_group_by_field_name) is None
+                    ):
                         raise ParseError(detail=f"Invalid sub_group_by field: {sub_group_by_field_name}")
 
                     paginator_kwargs["sub_group_by_field_name"] = sub_group_by_field_name

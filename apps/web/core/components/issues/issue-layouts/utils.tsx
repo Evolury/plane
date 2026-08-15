@@ -55,6 +55,13 @@ import { ISSUE_FILTER_DEFAULT_DATA } from "@/store/issue/helpers/base-issues.sto
 import { DEFAULT_DISPLAY_PROPERTIES } from "@/store/issue/issue-details/sub_issues_filter.store";
 // constants
 import { ISSUE_GROUP_BY_OPTIONS } from "@plane/constants";
+// Evolury: propriedades personalizadas (ADR 0011)
+import {
+  chaveDePropriedade,
+  encontrarPropriedade,
+  idDaChave,
+  propriedadesAgrupaveis,
+} from "@/components/issue-properties/cache";
 // components
 import {
   SpreadsheetAssigneeColumn,
@@ -158,8 +165,45 @@ export const getGroupByColumns = ({
     team_project: getTeamProjectColumns,
   };
 
+  // Evolury: agrupar por propriedade personalizada (ADR 0011). Fica ANTES do
+  // mapa porque a chave não é fixa — é `property_<uuid>`, e o mapa só conhece
+  // as colunas nativas.
+  const propriedade = idDaChave(groupBy);
+  if (propriedade) return getIssuePropertyColumns(propriedade, projectId);
+
   // Get and return the columns for the specified group by option
-  return groupByColumnMap[groupBy]?.({ isWorkspaceLevel, projectId });
+  return groupByColumnMap[groupBy as GroupByColumnTypes]?.({ isWorkspaceLevel, projectId });
+};
+
+/**
+ * As colunas de uma propriedade de seleção: uma por opção, com a cor
+ * configurada, e a coluna vazia no fim.
+ *
+ * A coluna vazia não é enfeite: sem ela, agrupar esconderia as tarefas sem
+ * valor — e esconder trabalho é o pior que um quadro pode fazer.
+ */
+const getIssuePropertyColumns = (propertyId: string, projectId: string | undefined) => {
+  const propriedade = encontrarPropriedade(propertyId, projectId);
+  if (!propriedade) return undefined;
+  const colunas: IGroupByColumn[] = propriedade.options.map((opcao) => ({
+    id: opcao.id,
+    name: opcao.name,
+    icon: (
+      <span
+        className="size-3 flex-shrink-0 rounded-full"
+        style={{ backgroundColor: opcao.color || "#6b7280" }}
+        aria-hidden="true"
+      />
+    ),
+    payload: {},
+  }));
+  colunas.push({
+    id: "None",
+    name: translate("common.none"),
+    icon: <span className="size-3 flex-shrink-0 rounded-full border border-subtle" aria-hidden="true" />,
+    payload: {},
+  });
+  return colunas;
 };
 
 // Evolury: colunas = etapas pessoais do usuário no workspace (minhas tarefas).
@@ -891,11 +935,28 @@ export const SPREADSHEET_COLUMNS: { [key in keyof IIssueDisplayProperties]: TSpr
 };
 
 export const useGroupByOptions = (
-  options: TIssueGroupByOptions[]
+  options: TIssueGroupByOptions[],
+  /** Evolury: o projeto, para oferecer as propriedades dele (ADR 0011). */
+  projectId?: string
 ): {
   key: TIssueGroupByOptions;
   titleTranslationKey: string;
+  /** Já traduzido — o nome da propriedade é do cliente, não do produto. */
+  title?: string;
 }[] => {
   const groupByOptions = ISSUE_GROUP_BY_OPTIONS.filter((option) => options.includes(option.key));
-  return groupByOptions;
+
+  // Evolury: só seleção única vira coluna. Texto ou moeda dariam uma coluna
+  // por valor distinto, que é ruído e não organização (ADR 0011).
+  //
+  // E só em projeto: no workspace convivem projetos com configurações
+  // diferentes, e um "Canal" que existe em três dos oito seria uma coluna que
+  // mente.
+  const dePropriedade = propriedadesAgrupaveis(projectId).map((propriedade) => ({
+    key: chaveDePropriedade(propriedade.id) as TIssueGroupByOptions,
+    titleTranslationKey: "",
+    title: propriedade.name,
+  }));
+
+  return [...groupByOptions, ...dePropriedade];
 };

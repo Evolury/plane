@@ -156,6 +156,19 @@ class IssueFilterSet(BaseFilterSet):
 
     is_archived = filters.BooleanFilter(method="filter_is_archived")
 
+    # Evolury: o campo-sentinela das propriedades personalizadas (ADR 0011).
+    #
+    # A allowlist de filtros compara nomes, e o "campo" de uma propriedade é um
+    # id que só existe em tempo de execução — declarar um por propriedade seria
+    # declarar um filtro por linha de tabela. `FiltroComPropriedades` traduz
+    # `property_<uuid>__<lookup>` para este nome ANTES da comparação, e só
+    # depois de provar que é um UUID; a condição em si nasce lá, não aqui.
+    #
+    # Por isso o método não filtra nada: se alguém mandar `custom_property`
+    # literal, não há id nenhum para perguntar, e um filtro sem pergunta não
+    # pode virar um filtro que deixa tudo passar por engano.
+    custom_property = filters.CharFilter(method="filter_custom_property")
+
     state_group = filters.CharFilter(field_name="state__group")
     state_group__in = CharInFilter(field_name="state__group", lookup_expr="in")
 
@@ -209,6 +222,10 @@ class IssueFilterSet(BaseFilterSet):
         if value in (False, "false", "False", 0, "0"):
             return Q(archived_at__isnull=True)
         return Q()  # No filter
+
+    def filter_custom_property(self, queryset, name, value):
+        """Evolury: sentinela — a condição real nasce em `FiltroComPropriedades`."""
+        return Q()
 
     # Filter methods with soft delete exclusion for relations
 

@@ -9,6 +9,7 @@ import { isEmpty } from "lodash-es";
 import type { EIssueFilterType } from "@plane/constants";
 import {
   EIssueGroupByToServerOptions,
+  groupByParaServidor,
   EServerGroupByToFilterOptions,
   ENABLE_ISSUE_DEPENDENCIES,
 } from "@plane/constants";
@@ -95,10 +96,9 @@ export class IssueFilterHelperStore implements IIssueFilterHelperStore {
     acceptableParamsByLayout: TIssueParams[]
   ): Partial<Record<TIssueParams, string | boolean>> => {
     const computedDisplayFilters: Partial<Record<TIssueParams, undefined | string[] | boolean | string>> = {
-      group_by: displayFilters?.group_by ? EIssueGroupByToServerOptions[displayFilters.group_by] : undefined,
-      sub_group_by: displayFilters?.sub_group_by
-        ? EIssueGroupByToServerOptions[displayFilters.sub_group_by]
-        : undefined,
+      // Evolury: propriedade personalizada traduz por identidade (ADR 0011)
+      group_by: groupByParaServidor(displayFilters?.group_by),
+      sub_group_by: groupByParaServidor(displayFilters?.sub_group_by),
       order_by: displayFilters?.order_by || undefined,
       sub_issue: displayFilters?.sub_issue ?? true,
     };

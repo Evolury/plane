@@ -40,7 +40,8 @@ from plane.db.models import (
     WorkStage,
     WorkStageIssue,
 )
-from plane.utils.filters import ComplexFilterBackend, IssueFilterSet
+# Evolury: backend com propriedade personalizada (ADR 0011)
+from plane.utils.filters import FiltroComPropriedades, IssueFilterSet
 from plane.utils.grouper import issue_on_results, issue_queryset_grouper
 from plane.utils.issue_filters import issue_filters
 from plane.utils.order_queryset import order_issue_queryset
@@ -196,7 +197,7 @@ class WorkStageViewSet(BaseViewSet):
 
 
 class MyTasksIssuesEndpoint(BaseAPIView):
-    filter_backends = (ComplexFilterBackend,)
+    filter_backends = (FiltroComPropriedades,)
     filterset_class = IssueFilterSet
 
     def apply_annotations(self, issues):

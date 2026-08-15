@@ -6,6 +6,8 @@
 
 export * from "./cycle";
 export * from "./date";
+// Evolury: filtro por propriedade personalizada (ADR 0011)
+export * from "./issue-property";
 export * from "./label";
 export * from "./module";
 export * from "./priority";

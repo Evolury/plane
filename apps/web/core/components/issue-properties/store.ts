@@ -13,9 +13,11 @@
 // A chave inclui os ids da página: mudou a página, muda a chave, e o SWR
 // busca de novo sem que ninguém precise invalidar nada à mão.
 
+import { useEffect, useMemo } from "react";
 import useSWR from "swr";
 import type { TIssueProperty, TPropertyValue } from "@plane/types";
 import { IssuePropertyService } from "@/services/issue-property.service";
+import { guardarPropriedades } from "./cache";
 
 const servico = new IssuePropertyService();
 
@@ -29,7 +31,19 @@ export const usePropriedadesDoProjeto = (workspaceSlug: string, projectId: strin
     () => servico.list(workspaceSlug, projectId),
     { revalidateOnFocus: false }
   );
-  return (data?.properties ?? []).filter((p: TIssueProperty) => p.is_active);
+  // A identidade importa: quem consome monta configs de filtro em `useMemo`,
+  // e uma lista nova a cada render faria os configs nascerem de novo a cada
+  // render — e o registro deles no MobX é o que dispara o próximo render.
+  const ativas = useMemo(() => (data?.properties ?? []).filter((p: TIssueProperty) => p.is_active), [data]);
+
+  // Alimenta a ponte para o MobX: quem desenha as colunas do quadro é uma
+  // função pura, sem acesso a hooks.
+  useEffect(() => {
+    if (projectId) guardarPropriedades(projectId, ativas);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, data]);
+
+  return ativas;
 };
 
 /** Os valores de um conjunto de tarefas — uma chamada para a página inteira. */

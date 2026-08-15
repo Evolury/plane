@@ -144,3 +144,26 @@ class TestAgrupamento:
 
         assert len(linhas) == 1
         assert "label_ids" in linhas[0]
+
+    @pytest.mark.django_db
+    def test_the_paginator_guard_still_refuses_arbitrary_fields(self, projeto, create_user):
+        """A allowlist do paginador existe contra injeção de nome de campo
+        (GHSA-wwgj-929g-42cm), e a propriedade a contorna — então a prova dela
+        precisa ser igualmente rígida.
+
+        Este teste exercita a MESMA função que o paginador consulta.
+        """
+        canal = _select(projeto)
+
+        # Passa: propriedade de seleção existente.
+        assert alias_de_agrupamento(f"property_{canal.id}") is not None
+
+        # Não passa: nada que não seja exatamente isso.
+        for forjado in (
+            "property_state__group",
+            "property_project__workspace__owner__password",
+            "property_' OR 1=1--",
+            f"property_{canal.id}__extra",
+            "propertyx_" + str(canal.id),
+        ):
+            assert alias_de_agrupamento(forjado) is None, forjado

@@ -145,3 +145,131 @@ class TestFiltro:
 
         assert _nomes(projeto, {f"property_{canal.id}": "nao-e-uuid"}) == ["com a", "sem valor"]
         assert _nomes(projeto, {f"property_{canal.id}": f"nao-e-uuid,{a.id}"}) == ["com a"]
+
+
+@pytest.mark.contract
+class TestArvoreDeFiltrosRicos:
+    """A segunda porta: a árvore JSON que a tela manda em `filters`.
+
+    A tela não manda mais um parâmetro por filtro — manda a árvore inteira, e
+    ela vira UM `Q` aplicado numa chamada de `.filter()` só. É exatamente a
+    situação em que um join colidiria consigo mesmo, e é por isso que a
+    condição de propriedade nasce como subconsulta.
+    """
+
+    def _backend(self):
+        from plane.utils.filters import FiltroComPropriedades, IssueFilterSet
+
+        class _View:
+            filterset_class = IssueFilterSet
+
+        return FiltroComPropriedades(), _View()
+
+    def _filtrar(self, projeto, arvore):
+        backend, view = self._backend()
+        base = Issue.issue_objects.filter(project=projeto)
+        return sorted(t.name for t in backend._apply_json_filter(base, arvore, view))
+
+    @pytest.mark.django_db
+    def test_two_properties_in_one_and_node(self, projeto, create_user):
+        canal = _prop(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+        etiqueta = _prop(projeto, "Etiqueta", "multi_select")
+        urgente = _opcao(etiqueta, "Urgente")
+
+        tem_as_duas = _tarefa(projeto, create_user, "tem as duas")
+        _valor(tem_as_duas, canal, value_option=indicacao)
+        _valor(tem_as_duas, etiqueta, value_option=urgente)
+
+        so_uma = _tarefa(projeto, create_user, "só o canal")
+        _valor(so_uma, canal, value_option=indicacao)
+
+        arvore = {
+            "and": [
+                {f"property_{canal.id}__in": [str(indicacao.id)]},
+                {f"property_{etiqueta.id}__in": [str(urgente.id)]},
+            ]
+        }
+        assert self._filtrar(projeto, arvore) == ["tem as duas"]
+
+    @pytest.mark.django_db
+    def test_or_and_not_compose(self, projeto, create_user):
+        canal = _prop(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+        anuncio = _opcao(canal, "Anúncio")
+
+        a = _tarefa(projeto, create_user, "indicação")
+        _valor(a, canal, value_option=indicacao)
+        b = _tarefa(projeto, create_user, "anúncio")
+        _valor(b, canal, value_option=anuncio)
+        _tarefa(projeto, create_user, "sem canal")
+
+        ou = {
+            "or": [
+                {f"property_{canal.id}__in": [str(indicacao.id)]},
+                {f"property_{canal.id}__in": [str(anuncio.id)]},
+            ]
+        }
+        assert self._filtrar(projeto, ou) == ["anúncio", "indicação"]
+
+        nao = {"not": {f"property_{canal.id}__in": [str(indicacao.id)]}}
+        assert self._filtrar(projeto, nao) == ["anúncio", "sem canal"]
+
+    @pytest.mark.django_db
+    def test_property_condition_combines_with_a_product_filter(self, projeto, create_user):
+        canal = _prop(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+
+        urgente = _tarefa(projeto, create_user, "urgente")
+        urgente.priority = "urgent"
+        urgente.save()
+        _valor(urgente, canal, value_option=indicacao)
+
+        baixa = _tarefa(projeto, create_user, "baixa")
+        baixa.priority = "low"
+        baixa.save()
+        _valor(baixa, canal, value_option=indicacao)
+
+        arvore = {"and": [{f"property_{canal.id}__in": [str(indicacao.id)]}, {"priority__in": ["urgent"]}]}
+        assert self._filtrar(projeto, arvore) == ["urgente"]
+
+    @pytest.mark.django_db
+    def test_forged_field_name_is_rejected(self, projeto, create_user):
+        """A allowlist continua sendo allowlist: só passa UUID de propriedade."""
+        from rest_framework.exceptions import ValidationError
+
+        _tarefa(projeto, create_user, "qualquer")
+        for forjado in (
+            "property_workspace__slug",
+            "property_../../etc",
+            "property_1; drop table",
+            "property_created_by__email",
+        ):
+            with pytest.raises(ValidationError):
+                self._filtrar(projeto, {forjado: ["x"]})
+
+    @pytest.mark.django_db
+    def test_inactive_property_filters_nothing_instead_of_breaking(self, projeto, create_user):
+        """Visão salva com propriedade desligada não pode derrubar a tela."""
+        canal = _prop(projeto, "Canal", "select", is_active=False)
+        indicacao = _opcao(canal, "Indicação")
+        tarefa = _tarefa(projeto, create_user, "tem o valor")
+        _valor(tarefa, canal, value_option=indicacao)
+        _tarefa(projeto, create_user, "não tem")
+
+        # As duas voltam: a condição foi descartada, e não aplicada.
+        assert self._filtrar(projeto, {f"property_{canal.id}__in": [str(indicacao.id)]}) == [
+            "não tem",
+            "tem o valor",
+        ]
+
+    @pytest.mark.django_db
+    def test_deleted_value_stops_counting(self, projeto, create_user):
+        """O join não passava pelo gerente do modelo; a subconsulta passa."""
+        canal = _prop(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+        tarefa = _tarefa(projeto, create_user, "teve canal")
+        valor = _valor(tarefa, canal, value_option=indicacao)
+        valor.delete()
+
+        assert self._filtrar(projeto, {f"property_{canal.id}__in": [str(indicacao.id)]}) == []
