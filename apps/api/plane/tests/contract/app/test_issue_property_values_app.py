@@ -426,8 +426,11 @@ class TestValores:
         texto = _propriedade(projeto, "Canal", "text")
         tarefa = _tarefa(projeto, create_user)
         IssuePropertyValue.objects.create(
-            issue=tarefa, issue_property=texto, value_text="Indicação",
-            project=projeto, workspace=projeto.workspace,
+            issue=tarefa,
+            issue_property=texto,
+            value_text="Indicação",
+            project=projeto,
+            workspace=projeto.workspace,
         )
 
         dados = PublicIssueSerializer(tarefa).data
@@ -441,8 +444,11 @@ class TestValores:
         moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL")
         tarefa = _tarefa(projeto, create_user)
         IssuePropertyValue.objects.create(
-            issue=tarefa, issue_property=moeda, value_number="99.90",
-            project=projeto, workspace=projeto.workspace,
+            issue=tarefa,
+            issue_property=moeda,
+            value_number="99.90",
+            project=projeto,
+            workspace=projeto.workspace,
         )
 
         dados = IssueExpandSerializer(tarefa).data
@@ -459,16 +465,71 @@ class TestValores:
         IssuePropertyValue.objects.bulk_create(
             [
                 IssuePropertyValue(
-                    issue=t, issue_property=texto, value_text="x",
-                    project=projeto, workspace=projeto.workspace,
+                    issue=t,
+                    issue_property=texto,
+                    value_text="x",
+                    project=projeto,
+                    workspace=projeto.workspace,
                 )
                 for t in tarefas
             ]
         )
         em_bloco = valores_por_tarefa([t.id for t in tarefas])
 
-        dados = PublicIssueSerializer(
-            tarefas, many=True, context={"valores_de_propriedade": em_bloco}
-        ).data
+        dados = PublicIssueSerializer(tarefas, many=True, context={"valores_de_propriedade": em_bloco}).data
 
         assert all(d["property_values"] == {str(texto.id): "x"} for d in dados)
+
+    def test_currency_refuses_more_decimals_than_configured(self, session_client, workspace, projeto, create_user):
+        """Precisão é RECUSADA, não arredondada.
+
+        Arredondar dinheiro em silêncio troca o número que a pessoa digitou por
+        outro, e ela só descobre no relatório — enquanto recusar acontece na
+        frente dela, com o campo ainda aberto.
+        """
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        duas = _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+        zero = _propriedade(projeto, "Inteiro", "currency", currency="BRL", decimal_places=0)
+
+        recusada = session_client.post(url, {"property": str(duas.id), "value": "1500.999"}, format="json")
+        assert recusada.status_code == status.HTTP_400_BAD_REQUEST
+        assert "2 casa" in str(recusada.data["value"])
+
+        aceita = session_client.post(url, {"property": str(duas.id), "value": "1500.99"}, format="json")
+        assert aceita.status_code == status.HTTP_200_OK
+
+        sem_centavos = session_client.post(url, {"property": str(zero.id), "value": "1500.50"}, format="json")
+        assert sem_centavos.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_a_number_beyond_the_column_precision_is_refused(self, session_client, workspace, projeto, create_user):
+        """Acima de 6 casas o Postgres arredondaria sozinho.
+
+        Arredondamento silencioso é exatamente o que este caminho evita.
+        """
+        tarefa = _tarefa(projeto, create_user)
+        numero = _propriedade(projeto, "Peso", "number")
+
+        resposta = session_client.post(
+            VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id),
+            {"property": str(numero.id), "value": "1.1234567"},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_the_creation_path_validates_precision_too(self, session_client, workspace, projeto):
+        """A criação grava valores pelo mesmo caminho — e a mesma trava vale."""
+        moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+
+        resposta = session_client.post(
+            TAREFAS_URL.format(slug=workspace.slug, project_id=projeto.id),
+            {"name": "Com centavo demais", "property_values": {str(moeda.id): "10.001"}},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert "property_values" in resposta.data
+        # E a tarefa NÃO ficou para trás: quem tentasse de novo criaria a
+        # segunda, e a primeira seguiria no quadro sem o campo obrigatório.
+        assert not Issue.objects.filter(name="Com centavo demais").exists()

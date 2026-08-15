@@ -37,6 +37,12 @@ ser lido de relance.
 Assim a coluna soma com sentido — misturar reais e dólares no mesmo campo daria
 um total que ninguém percebe estar errado.
 
+Se você digitar mais casas do que o campo aceita, ele **avisa e não salva** — em
+vez de arredondar por conta própria e mudar o seu número.
+
+Campos de digitar (texto, número, data, moeda) **salvam quando você sai do
+campo**, ou ao apertar Enter. Escape desfaz o que estava digitando.
+
 **Ordenar por seleção usa a ordem das opções**, e não o alfabeto: se você
 arrastou "Urgente" para o topo da lista, a ordenação respeita isso. Tarefas sem
 valor vão sempre para o fim, subindo ou descendo.
