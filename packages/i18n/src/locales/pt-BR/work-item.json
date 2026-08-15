@@ -594,7 +594,9 @@
       "decimal_places": "Casas decimais",
       "options": "Opções",
       "add_option": "Adicionar opção",
-      "type_locked": "O tipo não muda depois de criada. Seleção única pode virar múltipla."
+      "type_locked": "O tipo não muda depois de criada. Seleção única pode virar múltipla.",
+      "icon": "Ícone",
+      "icon_default": "Usar o ícone padrão do tipo"
     },
     "type": {
       "text": "Texto",

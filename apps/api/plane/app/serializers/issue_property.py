@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 # Module imports
 from plane.db.models import (
+    ICONES_DE_PROPRIEDADE,
     IssueProperty,
     IssuePropertyOption,
     PropertyType,
@@ -46,6 +47,7 @@ class IssuePropertySerializer(BaseSerializer):
             "sort_order",
             "currency",
             "decimal_places",
+            "icon",
             "options",
             "values_count",
             "project",
@@ -66,6 +68,19 @@ class IssuePropertySerializer(BaseSerializer):
         if contagens is not None:
             return contagens.get(obj.id, 0)
         return obj.values.count()
+
+    def validate_icon(self, icone):
+        """Só o que está na lista fechada — ou nada.
+
+        O ícone chega à tela como chave de um mapa de componentes. Texto livre
+        vindo do banco virando nome de componente é o tipo de coisa que esta
+        base não deixa passar, e a lista curta também é decisão de produto:
+        ícone é configuração, não catálogo.
+        """
+        icone = (icone or "").strip()
+        if icone and icone not in ICONES_DE_PROPRIEDADE:
+            raise serializers.ValidationError("Ícone inválido.")
+        return icone
 
     def validate_name(self, nome):
         nome = (nome or "").strip()

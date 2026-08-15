@@ -51,6 +51,20 @@ campo**, ou ao apertar Enter. Escape desfaz o que estava digitando.
 arrastou "Urgente" para o topo da lista, a ordenação respeita isso. Tarefas sem
 valor vão sempre para o fim, subindo ou descendo.
 
+## O ícone do campo
+
+Cada propriedade tem um ícone, e ele aparece na configuração, no painel da
+tarefa, no cabeçalho da coluna da tabela e no seletor de filtro.
+
+**Sem escolher nada, o ícone vem do tipo**: texto é a letra, número é o
+cerquilha, data é o calendário, seleção única é a lista, múltipla são as
+camadas, moeda é o cifrão. Assim dois campos diferentes nunca nascem com o
+mesmo desenho — o que obrigaria a ler o nome de cada um.
+
+Para escolher outro, abra a propriedade e clique em um dos ícones da grade.
+São 30, e a lista é fechada de propósito: ícone é configuração, não catálogo.
+Um link abaixo da grade devolve o campo ao padrão do tipo.
+
 ## Obrigatória
 
 Marcar como obrigatória **impede criar a tarefa** sem preencher.

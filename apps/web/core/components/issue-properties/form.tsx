@@ -14,6 +14,9 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Plus, X } from "lucide-react";
+// Evolury: ícone da propriedade (ADR 0011)
+import { cn } from "@plane/utils";
+import { CHAVES_DE_ICONE, ICONES_DE_PROPRIEDADE, chaveDoIcone } from "./icones";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
@@ -46,6 +49,7 @@ const padrao = (): Partial<TIssueProperty> => ({
   show_on_card: false,
   currency: "BRL",
   decimal_places: 2,
+  icon: "",
 });
 
 export const IssuePropertyForm = observer(function IssuePropertyForm(props: TProps) {
@@ -123,6 +127,50 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
           </select>
           {!!propriedade && <span className="text-11 text-tertiary">{rotulo("form.type_locked")}</span>}
         </label>
+
+        {/* Evolury: o ícone do campo (ADR 0011). Grade em vez de lista suspensa
+            porque a escolha é visual — quem procura um ícone reconhece o
+            desenho, não lembra o nome dele. */}
+        <div className="flex flex-col gap-1 text-13">
+          <span className="text-secondary">{rotulo("form.icon")}</span>
+          <div className="flex flex-wrap gap-1">
+            {CHAVES_DE_ICONE.map((chave) => {
+              const Icone = ICONES_DE_PROPRIEDADE[chave];
+              const escolhido =
+                chaveDoIcone({
+                  icon: dados.icon ?? "",
+                  property_type: dados.property_type as TPropertyType,
+                }) === chave;
+              return (
+                <button
+                  key={chave}
+                  type="button"
+                  aria-label={chave}
+                  aria-pressed={escolhido}
+                  onClick={() => mudar({ icon: chave })}
+                  className={cn(
+                    "grid size-7 place-items-center rounded-md border transition-colors",
+                    escolhido
+                      ? "border-accent-subtle-1 bg-accent-subtle text-accent-primary"
+                      : "border-subtle text-tertiary hover:bg-surface-2"
+                  )}
+                >
+                  <Icone className="size-3.5" />
+                </button>
+              );
+            })}
+          </div>
+          {/* Voltar ao padrão é uma escolha também, e precisa ter caminho de volta. */}
+          {!!dados.icon && (
+            <button
+              type="button"
+              onClick={() => mudar({ icon: "" })}
+              className="self-start text-11 text-tertiary underline underline-offset-2 hover:text-secondary"
+            >
+              {rotulo("form.icon_default")}
+            </button>
+          )}
+        </div>
 
         {dados.property_type === "currency" && (
           <div className="flex gap-3">

@@ -104,6 +104,18 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P7.5 Testes: carga que se explica, recorte, lote com cache por tarefa,
       teto de consultas, 405 na escrita, e projeto alheio
 
+## P8 — O ícone do campo
+
+- [x] P8.1 Padrão por TIPO, para dois campos nunca nascerem com o mesmo desenho
+- [x] P8.2 Escolha explícita, guardada como chave de uma lista fechada — texto
+      livre viraria nome de componente vindo do banco
+- [x] P8.3 O ícone aparece na configuração, no painel, no cabeçalho da tabela e
+      no seletor de filtro (onde era etiqueta para todas)
+- [x] P8.4 A API pública e o webhook devolvem o ícone EFETIVO — quem integra não
+      precisa conhecer a regra do padrão
+- [x] P8.5 Testes: um padrão por tipo sem repetição, escolha vencendo o padrão,
+      chave forjada recusada, e o padrão sempre dentro da lista permitida
+
 ## P6 — Matriz de compatibilidade
 
 - [x] P6.1 Executar a matriz contra os recursos existentes, com evidência,

@@ -31,6 +31,8 @@ export type TIssueProperty = {
   sort_order: number;
   currency: TPropertyCurrency | null;
   decimal_places: number;
+  /** Chave do ícone. Vazio quer dizer "o padrão do tipo", não "sem ícone". */
+  icon: string;
   options: TIssuePropertyOption[];
   /** Só leitura: quantas TAREFAS usam a propriedade — o número do aviso. */
   values_count: number;

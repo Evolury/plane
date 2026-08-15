@@ -17,6 +17,7 @@ O que faltava aqui não era escrever: era LER. Sem as definições, quem recebe
 from rest_framework import serializers
 
 from plane.db.models import IssueProperty, IssuePropertyOption, TIPOS_DE_SELECAO
+from plane.utils.issue_properties import icone_efetivo
 
 from .base import BaseSerializer
 
@@ -30,6 +31,10 @@ class IssuePropertyOptionAPISerializer(BaseSerializer):
 
 class IssuePropertyAPISerializer(BaseSerializer):
     options = serializers.SerializerMethodField()
+    # O ícone EFETIVO: quem integra não deve precisar conhecer a regra de
+    # "vazio quer dizer o padrão do tipo" para desenhar a mesma coisa que a
+    # tela desenha.
+    icon = serializers.SerializerMethodField()
 
     class Meta:
         model = IssueProperty
@@ -43,6 +48,7 @@ class IssuePropertyAPISerializer(BaseSerializer):
             "sort_order",
             "currency",
             "decimal_places",
+            "icon",
             "options",
             "project",
             "workspace",
@@ -50,6 +56,9 @@ class IssuePropertyAPISerializer(BaseSerializer):
             "updated_at",
         ]
         read_only_fields = fields
+
+    def get_icon(self, obj):
+        return icone_efetivo(obj)
 
     def get_options(self, obj):
         """Opções só nas de seleção — nas demais seria lista vazia em todo item."""

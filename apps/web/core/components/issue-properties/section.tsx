@@ -22,6 +22,8 @@ import type { TIssueProperty, TPropertyValue } from "@plane/types";
 // services
 import { IssuePropertyService } from "@/services/issue-property.service";
 // local imports
+// Evolury: ícone da propriedade (ADR 0011)
+import { iconeDaPropriedade } from "./icones";
 import { PropertyValueEditor } from "./value-editor";
 
 const servico = new IssuePropertyService();
@@ -78,8 +80,13 @@ export const IssuePropertiesSection = observer(function IssuePropertiesSection(p
       <div className="space-y-2">
         {propriedades.map((propriedade: TIssueProperty) => (
           <div key={propriedade.id} className="flex items-start gap-2 text-12">
-            <span className="w-1/3 min-w-0 shrink-0 truncate pt-1 text-tertiary">
-              {propriedade.name}
+            <span className="flex w-1/3 min-w-0 shrink-0 items-center gap-1.5 truncate pt-1 text-tertiary">
+              {/* Evolury: o ícone do campo (ADR 0011) */}
+              {(() => {
+                const Icone = iconeDaPropriedade(propriedade);
+                return <Icone className="size-3.5 shrink-0" />;
+              })()}
+              <span className="truncate">{propriedade.name}</span>
               {propriedade.is_required && <span className="text-danger-primary"> *</span>}
             </span>
             <div className="min-w-0 flex-1">

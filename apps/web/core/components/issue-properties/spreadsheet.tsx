@@ -24,6 +24,8 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import type { TIssue, TPropertyValue } from "@plane/types";
 // local imports
+// Evolury: ícone da propriedade (ADR 0011)
+import { iconeDaPropriedade } from "./icones";
 import { usePropriedadesDoProjeto, useValoresDasTarefas } from "./store";
 import { PropertyValueChip } from "./value-chip";
 
@@ -69,6 +71,12 @@ export const SpreadsheetPropertyHeaders = observer(function SpreadsheetPropertyH
           className="h-11 min-w-36 items-center border border-t-0 border-b-0 border-subtle bg-layer-1 py-1 text-13 font-medium"
         >
           <span className="flex h-full w-full items-center gap-1.5 px-page-x text-secondary">
+            {/* Evolury: o ícone do campo (ADR 0011) — a coluna se anuncia
+                antes de ser lida, como as colunas do produto. */}
+            {(() => {
+              const Icone = iconeDaPropriedade(propriedade);
+              return <Icone className="size-3.5 shrink-0 text-tertiary" />;
+            })()}
             <span className="truncate">{propriedade.name}</span>
           </span>
         </th>

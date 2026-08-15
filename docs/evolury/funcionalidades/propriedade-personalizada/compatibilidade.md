@@ -50,22 +50,23 @@ Decisão: [ADR 0011](../../decisoes/0011-propriedades-personalizadas.md).
 
 ## Saída do dado
 
-| #   | Recurso existente    | Tratamento                                              | Verificação                                                           |
-| --- | -------------------- | ------------------------------------------------------- | --------------------------------------------------------------------- |
-| 22  | Exportação CSV/XLSX  | Uma coluna por propriedade, em texto legível            | ✓ `[T]` test_the_export_carries_a_column…                             |
-| 23  | Custo da exportação  | Uma consulta de valores para o arquivo inteiro          | ✓ `[T]` test_the_export_reads_values_in_one_query                     |
-| 24  | API pública          | Só leitura; aceita leitura em bloco pelo contexto       | ✓ `[T]` test_the_public_api_carries_the_values                        |
-| 24b | Definições na API    | Endereço próprio, só leitura, na ordem da tela          | ✓ `[T]` test_the_public_api_serves_the_definitions                    |
-| 24c | Escrita de definição | 405 — configuração de projeto tem um caminho só         | ✓ `[T]` test_the_public_api_definitions_are_read_only                 |
-| 24d | Projeto alheio       | A lista é do projeto pedido, e só dele                  | ✓ `[T]` test_the_public_api_does_not_serve_another_project            |
-| 25  | Webhook              | Carrega os valores no payload                           | ✓ `[T]` test_the_webhook_payload_carries_the_values                   |
-| 25b | Webhook se explica   | Leva a definição dos campos que a tarefa usa            | ✓ `[T]` test_the_webhook_payload_explains_itself · `[V]` payload real |
-| 25c | Recorte do payload   | Só as propriedades preenchidas, não as 30 do projeto    | ✓ `[T]` test_the_webhook_only_carries_what_the_work_item_uses         |
-| 25d | Custo do payload     | Uma consulta de valores por tarefa, não duas            | ✓ `[T]` test_the_webhook_reads_values_once_per_work_item              |
-| 25e | Lote                 | Cada tarefa leva as suas — o cache é por tarefa         | ✓ `[T]` test_each_work_item_gets_its_own_definitions                  |
-| 25f | Campo excluído       | Para de sair, mesmo antes de a cascata assíncrona rodar | ✓ `[T]` test_a_deleted_property_stops_appearing                       |
-| 26  | Espaço público       | Não expõe — o que é interno não vaza por acidente       | ✓ `[I]` fora de escopo declarado                                      |
-| 27  | Atividade            | Uma linha por mudança, com o rótulo e não o id da opção | ✓ `[T]` test_changing_a_value_writes_activity                         |
+| #   | Recurso existente    | Tratamento                                               | Verificação                                                           |
+| --- | -------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
+| 22  | Exportação CSV/XLSX  | Uma coluna por propriedade, em texto legível             | ✓ `[T]` test_the_export_carries_a_column…                             |
+| 23  | Custo da exportação  | Uma consulta de valores para o arquivo inteiro           | ✓ `[T]` test_the_export_reads_values_in_one_query                     |
+| 24  | API pública          | Só leitura; aceita leitura em bloco pelo contexto        | ✓ `[T]` test_the_public_api_carries_the_values                        |
+| 24b | Definições na API    | Endereço próprio, só leitura, na ordem da tela           | ✓ `[T]` test_the_public_api_serves_the_definitions                    |
+| 24c | Escrita de definição | 405 — configuração de projeto tem um caminho só          | ✓ `[T]` test_the_public_api_definitions_are_read_only                 |
+| 24d | Projeto alheio       | A lista é do projeto pedido, e só dele                   | ✓ `[T]` test_the_public_api_does_not_serve_another_project            |
+| 25  | Webhook              | Carrega os valores no payload                            | ✓ `[T]` test_the_webhook_payload_carries_the_values                   |
+| 25b | Webhook se explica   | Leva a definição dos campos que a tarefa usa             | ✓ `[T]` test_the_webhook_payload_explains_itself · `[V]` payload real |
+| 25c | Recorte do payload   | Só as propriedades preenchidas, não as 30 do projeto     | ✓ `[T]` test_the_webhook_only_carries_what_the_work_item_uses         |
+| 25d | Custo do payload     | Uma consulta de valores por tarefa, não duas             | ✓ `[T]` test_the_webhook_reads_values_once_per_work_item              |
+| 25e | Lote                 | Cada tarefa leva as suas — o cache é por tarefa          | ✓ `[T]` test_each_work_item_gets_its_own_definitions                  |
+| 25f | Campo excluído       | Para de sair, mesmo antes de a cascata assíncrona rodar  | ✓ `[T]` test_a_deleted_property_stops_appearing                       |
+| 26  | Espaço público       | Não expõe — o que é interno não vaza por acidente        | ✓ `[I]` fora de escopo declarado                                      |
+| 26b | Ícone na API/webhook | Vai o efetivo, já resolvido — quem integra desenha igual | ✓ `[T]` test_the_public_api_and_the_webhook_serve_the_effective_icon  |
+| 27  | Atividade            | Uma linha por mudança, com o rótulo e não o id da opção  | ✓ `[T]` test_changing_a_value_writes_activity                         |
 
 ## Outros recursos
 

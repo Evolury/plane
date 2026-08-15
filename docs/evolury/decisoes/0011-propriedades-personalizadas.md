@@ -229,6 +229,27 @@ não confia na cascata. Encontrado no ambiente de desenvolvimento, com um valor
 vivo de uma propriedade já excluída: terceira vez que esta armadilha morde a
 base, e a segunda dentro desta funcionalidade.
 
+### O ícone é do campo, e a lista é fechada
+
+Todo campo aparecia com o mesmo desenho de etiqueta. Num seletor onde tudo tem
+o mesmo ícone, o ícone deixa de informar: quem procura precisa ler cada nome,
+que é justamente o trabalho que ele deveria poupar.
+
+Duas decisões, e a segunda é a que importa:
+
+1. **Padrão por tipo.** Vazio no banco quer dizer "o padrão do tipo", e não
+   "sem ícone" — assim o que já existe continua funcionando sem nenhuma
+   escrita, e mudar o padrão de um tipo alcança todo mundo que nunca escolheu.
+2. **A escolha é uma chave de lista fechada**, validada no servidor. O ícone
+   chega à tela como chave de um mapa de componentes; texto livre vindo do
+   banco virando nome de componente é exatamente a classe de coisa que esta
+   base não deixa passar. Guardamos a chave e não o desenho: trocar de
+   biblioteca um dia é refazer o mapa da tela, não migrar dado.
+
+A regra do "efetivo" mora num lugar só, e a API pública e o webhook devolvem
+já resolvido — quem integra não precisa conhecer a convenção do vazio para
+desenhar o mesmo que a tela desenha.
+
 ## Alternativas consideradas
 
 - **Propriedade do workspace, disponível em todos os projetos**: é o contexto

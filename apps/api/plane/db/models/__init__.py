@@ -110,6 +110,8 @@ from .issue_property import (
     IssuePropertyValue,
     PropertyType,
     TIPOS_DE_SELECAO,
+    ICONES_DE_PROPRIEDADE,
+    ICONE_PADRAO_POR_TIPO,
     TETO_DE_PROPRIEDADES,
 )
 

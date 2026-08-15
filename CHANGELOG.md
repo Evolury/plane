@@ -3,6 +3,22 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## Não lançado
+
+### O ícone da propriedade personalizada
+
+Todo campo aparecia com o mesmo desenho de etiqueta — e ícone repetido não
+informa nada, obriga a ler o nome de cada um.
+
+- **Padrão por tipo**: texto é a letra, número o cerquilha, data o calendário,
+  seleção a lista, múltipla as camadas, moeda o cifrão. Dois campos de tipos
+  diferentes não nascem mais iguais.
+- **Escolha explícita**, numa grade de 30 ícones na configuração da
+  propriedade, com um caminho de volta ao padrão.
+- O ícone aparece na configuração, no painel da tarefa, no cabeçalho da coluna
+  da tabela e no seletor de filtro.
+- A API pública e o webhook devolvem o ícone **efetivo**, já resolvido.
+
 ## [1.14.0] — 2026-08-15
 
 ### Os campos no webhook e na API pública
