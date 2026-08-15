@@ -22,7 +22,8 @@ precisa virar extensível, e é por isso que as fases estão cortadas assim.
       contagem e não bloqueia
 - [x] P1.5 Teto de 30 por projeto, com aviso na tela antes do limite
 - [x] P1.6 Trava de troca de tipo, com a exceção seleção única → múltipla
-- [x] P1.7 Página "Propriedades" em Configurações → Execução
+- [x] P1.7 Página "Propriedades" em Configurações → **Estrutura de tarefas**,
+      ao lado de etapa, etiqueta e estimativa — as quatro descrevem a tarefa
 - [x] P1.8 Testes: os seis tipos, o teto, a trava de tipo, a conversão que não
       perde dado, a exclusão de opção em uso e a porta de admin
 
@@ -35,9 +36,10 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P2.2 Modal de criação, com a obrigatoriedade barrando **só a criação**
 - [x] P2.3 Obrigatoriedade não alcança tarefa que já existia
 - [x] P2.4 Atividade de mudança de valor, com o rótulo da propriedade
-- [~] P2.5 Webhook e API pública carregam os valores — **adiado para a P3**:
-  a serialização em bloco por página de tarefas é o mesmo trabalho da
-  leitura dos layouts, e fazê-la duas vezes seria escrever para jogar fora
+- [~] P2.5 Webhook e API pública carregam os valores — **pendente**. A saída do
+  dado foi cumprida em parte na P3.4 (exportação CSV/XLSX); webhook e API
+  pública vão junto da **P4**, que é quando a serialização de tarefa volta a
+  ser mexida
 - [x] P2.6 Testes: cada tipo, obrigatório na criação e não na conclusão,
       retroatividade, e o filtro explícito de `deleted_at` nas junções
 
@@ -48,9 +50,12 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P3.2 Coluna no layout de tabela, uma por propriedade ativa — acoplada
       pela ponta, com provedor de contexto para a carga da página
 - [x] P3.3 Chip no cartão de lista e quadro, só nas marcadas para isso
-- [x] P3.4 Exportação CSV e XLSX, estendendo `IssueExportSchema`
-- [x] P3.5 Testes: o teto de consultas com 5 propriedades e 50 tarefas, e a
-      exportação com os seis tipos
+- [x] P3.4 Exportação CSV e XLSX, estendendo `IssueExportSerializer` de
+      `utils/porters` — que é o exportador VIVO; o `utils/exporters`, com
+      esquema declarativo, não é o que o job usa
+- [x] P3.5 Testes: leitura em bloco de 40 tarefas em uma consulta, página de
+      30 pelo endpoint, recorte do `card_only`, e a exportação com uma
+      consulta de valores para 20 tarefas
 
 ## P4 — Filtro, agrupamento e ordenação
 
