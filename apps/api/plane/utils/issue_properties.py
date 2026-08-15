@@ -73,10 +73,31 @@ def valores_por_tarefa(issue_ids, property_ids=None):
         elif propriedade.property_type == PropertyType.DATE:
             atual[str(propriedade.id)] = linha.value_date.isoformat() if linha.value_date else None
         elif propriedade.property_type in (PropertyType.NUMBER, PropertyType.CURRENCY):
-            atual[str(propriedade.id)] = str(linha.value_number) if linha.value_number is not None else None
+            atual[str(propriedade.id)] = _numero_para_api(propriedade, linha.value_number)
         else:
             atual[str(propriedade.id)] = linha.value_text
     return por_tarefa
+
+
+def _numero_para_api(propriedade, numero):
+    """O número no formato que a configuração pediu.
+
+    `DecimalField` guarda com a precisão da COLUNA — seis casas —, então
+    `str()` de um valor de 2 casas devolve "50.000000". A configuração era
+    respeitada ao gravar e ignorada ao ler, e o campo mostrava um número que
+    ninguém escolheu.
+
+    Moeda é recortada nas casas configuradas; número perde os zeros à direita,
+    porque ali a precisão é de quem digita e não da coluna.
+    """
+    if numero is None:
+        return None
+    if propriedade.property_type == PropertyType.CURRENCY:
+        casas = propriedade.decimal_places or 0
+        return str(numero.quantize(Decimal(1).scaleb(-casas)))
+    # `format(..., "f")` porque `normalize()` sozinho devolve notação
+    # científica em número redondo: Decimal("100").normalize() é 1E+2.
+    return format(numero.normalize(), "f")
 
 
 def esta_vazio(valor):
@@ -182,8 +203,12 @@ def gravar_valor(issue, propriedade, valor):
         IssuePropertyValue.objects.create(**comuns, value_option_id=escolhida)
         return
 
+    # Converter ANTES de apagar. Na ordem inversa, um valor recusado destruía o
+    # que já estava gravado: a pessoa perdia o número novo E o antigo, e o erro
+    # dizia "use no máximo 2 casas" sobre um campo que tinha acabado de esvaziar.
+    campos = _converter(propriedade, valor)
     antigas.delete()
-    IssuePropertyValue.objects.create(**comuns, **_converter(propriedade, valor))
+    IssuePropertyValue.objects.create(**comuns, **campos)
 
 
 def validar_valores(project_id, valores):

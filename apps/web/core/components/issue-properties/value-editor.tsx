@@ -30,10 +30,15 @@ import { cn } from "@plane/utils";
  *
  * Enter confirma sem sair do campo; Escape devolve o valor anterior, que é o
  * jeito de desistir sem inventar um botão de cancelar.
+ *
+ * E se o servidor RECUSAR, o campo volta ao último valor salvo. Recusa que
+ * apaga o que estava lá pune duas vezes: a pessoa perde o número novo e o
+ * antigo, e fica sem saber qual era o certo.
  */
 const CampoQueConfirmaNoBlur = observer(function CampoQueConfirmaNoBlur(props: {
   valor: string;
-  onCommit: (valor: string) => void;
+  /** Rejeita quando o servidor recusa — é o sinal para devolver o valor. */
+  onCommit: (valor: string) => Promise<unknown> | void;
   disabled?: boolean;
   type?: string;
   step?: number | string;
@@ -46,8 +51,13 @@ const CampoQueConfirmaNoBlur = observer(function CampoQueConfirmaNoBlur(props: {
   // a recarga depois de salvar.
   useEffect(() => setRascunho(valor), [valor]);
 
-  const confirmar = () => {
-    if (rascunho !== valor) onCommit(rascunho);
+  const confirmar = async () => {
+    if (rascunho === valor) return;
+    try {
+      await onCommit(rascunho);
+    } catch {
+      setRascunho(valor);
+    }
   };
 
   return (

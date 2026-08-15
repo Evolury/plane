@@ -61,6 +61,9 @@ export const IssuePropertiesSection = observer(function IssuePropertiesSection(p
       const mensagem = (erro as Record<string, string>)?.value ?? t("common.something_went_wrong");
       setToast({ type: TOAST_TYPE.ERROR, title: t("toast.error"), message: String(mensagem) });
       await mutate();
+      // Repropaga para o editor devolver o último valor salvo: recusa que
+      // apaga o campo faz a pessoa perder o número novo E o antigo.
+      throw erro;
     } finally {
       setEmVoo((atual) => {
         const { [propriedadeId]: _, ...resto } = atual;

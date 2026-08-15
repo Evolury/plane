@@ -100,8 +100,9 @@ class TestValores:
         assert lidos[str(data.id)] == "2026-08-20"
         assert lidos[str(unica.id)] == str(a.id)
         assert sorted(lidos[str(multipla.id)]) == sorted([str(b.id), str(c.id)])
-        assert lidos[str(numero.id)].startswith("12.5")
-        assert lidos[str(moeda.id)].startswith("1999.9")
+        # Formatado como a configuração pediu, e não como a coluna guarda.
+        assert lidos[str(numero.id)] == "12.5"
+        assert lidos[str(moeda.id)] == "1999.90"
 
     def test_an_invalid_value_is_refused(self, session_client, workspace, projeto, create_user):
         """Recusar na hora é o ponto.
@@ -533,3 +534,79 @@ class TestValores:
         # E a tarefa NÃO ficou para trás: quem tentasse de novo criaria a
         # segunda, e a primeira seguiria no quadro sem o campo obrigatório.
         assert not Issue.objects.filter(name="Com centavo demais").exists()
+
+    def test_reading_uses_the_configured_decimal_places(self, session_client, workspace, projeto, create_user):
+        """A coluna guarda seis casas; a configuração pede outra coisa.
+
+        Sem recortar na leitura, um campo de 2 casas devolvia "50.000000" — e o
+        campo mostrava um número que ninguém escolheu.
+        """
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        duas = _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+        zero = _propriedade(projeto, "Inteiro", "currency", currency="BRL", decimal_places=0)
+        numero = _propriedade(projeto, "Peso", "number")
+
+        session_client.post(url, {"property": str(duas.id), "value": "50"}, format="json")
+        session_client.post(url, {"property": str(zero.id), "value": "100"}, format="json")
+        session_client.post(url, {"property": str(numero.id), "value": "100"}, format="json")
+
+        lidos = session_client.get(url).data["values"]
+
+        assert lidos[str(duas.id)] == "50.00"
+        assert lidos[str(zero.id)] == "100"
+        # Número redondo não pode virar notação científica ("1E+2").
+        assert lidos[str(numero.id)] == "100"
+
+    def test_the_export_also_uses_the_configured_places(self, projeto, create_user):
+        """A exportação lê pelo mesmo caminho — e mostrava o número cru também."""
+        from plane.db.models import Issue as IssueModel
+        from plane.utils.porters.serializers.issue import IssueExportSerializer
+
+        moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=moeda,
+            value_number="50",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        dados = IssueExportSerializer(
+            IssueModel.objects.filter(pk=tarefa.pk).select_related("project", "state"), many=True
+        ).data
+
+        assert dados[0]["Contrato"] == "BRL 50.00"
+
+    def test_a_refused_write_never_destroys_the_stored_value(self, session_client, workspace, projeto, create_user):
+        """Recusar não pode custar o valor que já estava lá.
+
+        O caminho de escrita apagava as linhas antigas ANTES de converter, e a
+        conversão é quem recusa — então a pessoa perdia o número novo E o
+        antigo, com um erro falando de casas decimais sobre um campo vazio.
+        """
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+        session_client.post(url, {"property": str(moeda.id), "value": "100"}, format="json")
+
+        recusada = session_client.post(url, {"property": str(moeda.id), "value": "77.999"}, format="json")
+
+        assert recusada.status_code == status.HTTP_400_BAD_REQUEST
+        assert session_client.get(url).data["values"][str(moeda.id)] == "100.00"
+
+    def test_a_refused_option_never_destroys_the_stored_value(self, session_client, workspace, projeto, create_user):
+        """O mesmo para seleção: opção inválida não pode limpar a escolhida."""
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        canal = _propriedade(projeto, "Canal", "select")
+        boa = _opcao(canal, "Indicação")
+        outra = _propriedade(projeto, "Origem", "select")
+        alheia = _opcao(outra, "Site")
+        session_client.post(url, {"property": str(canal.id), "value": str(boa.id)}, format="json")
+
+        recusada = session_client.post(url, {"property": str(canal.id), "value": str(alheia.id)}, format="json")
+
+        assert recusada.status_code == status.HTTP_400_BAD_REQUEST
+        assert session_client.get(url).data["values"][str(canal.id)] == str(boa.id)
