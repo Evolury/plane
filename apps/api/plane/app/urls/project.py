@@ -8,6 +8,7 @@ from plane.app.views import (
     RecurringWorkItemViewSet,
     IssuePropertyViewSet,
     IssuePropertyOptionUsageViewSet,
+    IssuePropertyValueViewSet,
     ProjectViewSet,
     DeployBoardViewSet,
     ProjectInvitationsViewset,
@@ -203,5 +204,10 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/issue-properties/<uuid:pk>/",
         IssuePropertyViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
         name="project-issue-property",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issues/<uuid:issue_id>/properties/",
+        IssuePropertyValueViewSet.as_view({"get": "list", "post": "create"}),
+        name="project-issue-property-values",
     ),
 ]

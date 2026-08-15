@@ -16,6 +16,9 @@ import { ETabIndices, DEFAULT_WORK_ITEM_FORM_VALUES } from "@plane/constants";
 import type { EditorRefApi } from "@plane/editor";
 // i18n
 import { useTranslation } from "@plane/i18n";
+// Evolury: propriedades personalizadas (ADR 0011)
+import type { TIssueProperty, TPropertyValue } from "@plane/types";
+import { IssuePropertiesCreateFields, obrigatoriasFaltando } from "@/components/issue-properties/create-fields";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TIssue, TWorkspaceDraftIssue } from "@plane/types";
@@ -208,6 +211,10 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workItemTemplateId]);
 
+  // Evolury: valores das propriedades personalizadas do projeto (ADR 0011).
+  const [valoresDePropriedade, setValoresDePropriedade] = useState<Record<string, TPropertyValue>>({});
+  const [definicoesDePropriedade, setDefinicoesDePropriedade] = useState<TIssueProperty[]>([]);
+
   const handleFormSubmit = async (formData: Partial<TIssue>, is_draft_issue = false) => {
     // Check if the editor is ready to discard
     if (!editorRef.current?.isEditorReadyToDiscard()) {
@@ -229,8 +236,22 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
     )
       return;
 
+    // Evolury: obrigatória barra a CRIAÇÃO, e só ela (ADR 0011). O servidor é
+    // quem garante; aqui a mensagem diz o nome do campo em vez de um 400 seco.
+    if (!data?.id) {
+      const faltando = obrigatoriasFaltando(definicoesDePropriedade, valoresDePropriedade);
+      if (faltando.length > 0) {
+        setToast({
+          type: TOAST_TYPE.ERROR,
+          title: t("error"),
+          message: `${t("issue_properties.settings.heading")}: ${faltando.join(", ")}`,
+        });
+        return;
+      }
+    }
+
     const submitData = !data?.id
-      ? formData
+      ? { ...formData, property_values: valoresDePropriedade }
       : {
           ...getChangedIssuefields(formData, dirtyFields as { [key: string]: boolean | undefined }),
           project_id: getValues<"project_id">("project_id"),
@@ -439,6 +460,17 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
                   handleFormChange={handleFormChange}
                   setSelectedParentIssue={setSelectedParentIssue}
                 />
+                {/* Evolury: propriedades personalizadas (ADR 0011). Some
+                    inteiro quando o projeto não configurou nenhuma. */}
+                {projectId && (
+                  <IssuePropertiesCreateFields
+                    workspaceSlug={workspaceSlug?.toString() ?? ""}
+                    projectId={projectId}
+                    valores={valoresDePropriedade}
+                    onChange={setValoresDePropriedade}
+                    onDefinitions={setDefinicoesDePropriedade}
+                  />
+                )}
               </div>
               {showActionButtons && (
                 <div

@@ -53,3 +53,17 @@ export type TIssuePropertyList = {
   /** Teto por projeto, servido pela API para a tela não repetir a constante. */
   cap: number;
 };
+
+/** O valor de uma propriedade no formato da API. Vazio é sempre `null`. */
+export type TPropertyValue = string | string[] | null;
+
+/**
+ * O que a tarefa devolve: as definições ativas e o que ela tem preenchido.
+ *
+ * O nome evita `TIssuePropertyValues`, que já existe herdado em
+ * `issues/issue-property-values.ts` e colidiria no barril de exportação.
+ */
+export type TIssuePropertiesForIssue = {
+  properties: TIssueProperty[];
+  values: Record<string, TPropertyValue>;
+};

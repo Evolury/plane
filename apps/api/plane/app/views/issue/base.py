@@ -70,6 +70,9 @@ from plane.utils.grouper import (
 )
 from plane.utils.host import base_host
 from plane.utils.issue_filters import issue_filters
+
+# Evolury: propriedades personalizadas (ADR 0011)
+from plane.utils.issue_properties import ValorInvalido, faltando_obrigatorias, gravar_valores
 from plane.utils.order_queryset import order_issue_queryset
 from plane.utils.paginator import GroupedOffsetPaginator, SubGroupedOffsetPaginator
 from plane.utils.timezone_converter import user_timezone_converter
@@ -405,6 +408,17 @@ class IssueViewSet(BaseViewSet):
     def create(self, request, slug, project_id):
         project = Project.objects.get(pk=project_id)
 
+        # Evolury: propriedade obrigatória barra a CRIAÇÃO (ADR 0011). É onde a
+        # informação está fresca e o custo de pedir é baixo — e é o único lugar
+        # onde ela barra: nunca a conclusão, e nunca tarefa que já existia.
+        valores_de_propriedade = request.data.get("property_values") or {}
+        faltando = faltando_obrigatorias(project_id, valores_de_propriedade)
+        if faltando:
+            return Response(
+                {"property_values": f"Preencha: {', '.join(faltando)}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = IssueCreateSerializer(
             data=request.data,
             context={
@@ -416,6 +430,17 @@ class IssueViewSet(BaseViewSet):
 
         if serializer.is_valid():
             serializer.save()
+
+            # Evolury: os valores entram junto da criação, numa ida só — pedi-los
+            # numa segunda chamada deixaria a tarefa existir por um instante sem
+            # o que a regra do projeto exige dela.
+            if valores_de_propriedade:
+                nascida = Issue.objects.filter(pk=serializer.data.get("id")).first()
+                if nascida is not None:
+                    try:
+                        gravar_valores(nascida, valores_de_propriedade)
+                    except ValorInvalido as erro:
+                        return Response({"property_values": str(erro)}, status=status.HTTP_400_BAD_REQUEST)
 
             # Track the issue
             issue_activity.delay(
@@ -744,21 +769,11 @@ class ProjectUserDisplayPropertyEndpoint(BaseAPIView):
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST])
     def patch(self, request, slug, project_id):
         try:
-            issue_property = ProjectUserProperty.objects.get(
-                user=request.user, 
-                project_id=project_id
-            )
+            issue_property = ProjectUserProperty.objects.get(user=request.user, project_id=project_id)
         except ProjectUserProperty.DoesNotExist:
-            issue_property = ProjectUserProperty.objects.create(
-                user=request.user, 
-                project_id=project_id
-            )
+            issue_property = ProjectUserProperty.objects.create(user=request.user, project_id=project_id)
 
-        serializer = ProjectUserPropertySerializer(
-            issue_property, 
-            data=request.data,
-            partial=True
-        )
+        serializer = ProjectUserPropertySerializer(issue_property, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

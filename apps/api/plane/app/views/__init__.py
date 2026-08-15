@@ -4,6 +4,7 @@
 
 from .project.recurring_work_item import RecurringWorkItemViewSet
 from .project.issue_property import IssuePropertyOptionUsageViewSet, IssuePropertyViewSet
+from .issue.property_value import IssuePropertyValueViewSet
 from .project.base import (
     ProjectViewSet,
     ProjectIdentifierEndpoint,
