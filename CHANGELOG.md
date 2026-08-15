@@ -3,6 +3,20 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.13.1] — 2026-08-15
+
+### Correções
+
+- **Escrita recusada destruía o valor guardado.** O caminho de escrita apagava
+  o valor antigo **antes** de validar o novo, e é a validação que recusa — então
+  digitar casas decimais demais esvaziava o campo, e a pessoa perdia o número
+  novo e o antigo ao mesmo tempo. O mais grave dos três, e o único que nenhum
+  teste tinha pego.
+- **A moeda ignorava as casas configuradas ao exibir.** A coluna do banco guarda
+  seis casas, e o valor saía cru: um campo de duas casas mostrava `100,000000`.
+  A correção anterior tinha tratado só a gravação.
+- **Recusar deixava o campo vazio** em vez de devolver o último valor salvo.
+
 ## [1.13.0] — 2026-08-15
 
 ### Propriedades personalizadas
