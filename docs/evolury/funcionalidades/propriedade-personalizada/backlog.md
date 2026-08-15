@@ -61,17 +61,21 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P4.1 Filtro por propriedade — devolve um `Q` por propriedade, aplicado
       em chamada própria de `.filter()`. Duas num `.filter()` só colidiriam
       no mesmo join, e a tarefa que tem as duas coisas sumiria
-- [ ] P4.2 Agrupar por seleção única — **não entrou**. Atravessa o `grouper`,
-      o paginador (que usa o nome do campo em `F()`, `values()` e na partição
-      de janela) e o menu do front. É tratável com um alias anotado, mas é
-      mudança no caminho quente e paginado, e pede validação própria
+- [x] P4.2 Agrupar por seleção única — **no backend**. Um alias anotado
+      (`property_<uuid>`) resolve `F()`, `values()` e a partição de janela do
+      paginador, sem reescrever nada. As colunas seguem a ordem das opções, com
+      `"None"` no fim para a tarefa sem valor ter onde caber
+- [ ] P4.2b Agrupar pela INTERFACE — **bloqueado por tipo**: `TIssueGroupByOptions`
+      é união fechada, e o menu, o kanban e a lista são tipados sobre ela
 - [x] P4.3 Ordenar por número, data, moeda, texto e seleção — prefixo
       `property__<uuid>` resolvido ANTES da allowlist, com o id validado como
       UUID e a propriedade conferida no banco antes de tocar no ORM. Ordena
       pela coluna tipada, e seleção ordena pela ordem das opções
-- [ ] P4.4 Filtros ricos no front — **não entrou**. O filtro existe e está
-      testado na API; falta o seletor visual, que depende do sistema de
-      filtros ricos e de um editor por tipo
+- [ ] P4.4 Filtros ricos no front — **bloqueado por tipo**: a chave de condição
+      é `${propriedade}__${operador}` em tipo literal, derivada da união fechada
+      `WORK_ITEM_FILTER_PROPERTY_KEYS`. Id em tempo de execução não entra numa
+      união de compilação sem alargá-la para `string`, o que atravessa o pacote
+      de filtros ricos inteiro
 - [x] P4.5 Testes: cada operador de cada tipo, duas propriedades ao mesmo
       tempo, e filtro forjado que nunca vira consulta
 
@@ -96,7 +100,16 @@ tipo de tarefa, espaço público, e data personalizada em calendário e cronogra
 
 ## Lacunas conhecidas
 
-Duas, ambas declaradas e nenhuma bloqueando o uso do que foi entregue:
-**agrupar por propriedade** (P4.2) e **filtrar pela interface** (P4.4). O
-raciocínio de cada uma está na linha correspondente e na
-[matriz de compatibilidade](compatibilidade.md).
+Duas, e as duas são do MESMO tipo de obstáculo — não de esforço.
+
+`TIssueGroupByOptions` e `WORK_ITEM_FILTER_PROPERTY_KEYS` são **uniões
+fechadas** em `@plane/types`, e o menu de agrupar, os layouts de quadro e lista
+e o pacote de filtros ricos são tipados sobre elas. Uma propriedade
+personalizada é um id que só existe em tempo de execução: para caber ali, a
+união teria de ser alargada para `string`, e isso atravessa toda a filtragem,
+o agrupamento e as visões salvas.
+
+**No backend as duas funcionam e estão testadas.** Quem chama a API agrupa e
+filtra hoje. O que falta é o seletor visual, e ele é um trabalho de refatoração
+de tipos no pacote compartilhado — com risco de regressão em todos os layouts —,
+não uma tela a mais.

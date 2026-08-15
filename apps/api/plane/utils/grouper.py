@@ -46,6 +46,16 @@ def issue_queryset_grouper(
         if group_key in GROUP_FILTER_MAPPER:
             queryset = queryset.filter(GROUP_FILTER_MAPPER[group_key])
 
+    # Evolury: agrupar por propriedade personalizada (ADR 0011). A anotação
+    # basta porque o paginador resolve o nome do campo em `F()`, `values()` e na
+    # partição de janela — anotação atende os três.
+    from plane.utils.issue_properties import anotacao_de_agrupamento
+
+    for group_key in [group_by, sub_group_by]:
+        anotacao = anotacao_de_agrupamento(group_key)
+        if anotacao is not None:
+            queryset = queryset.annotate(**anotacao)
+
     issue_assignee_subquery = Subquery(
         IssueAssignee.objects.filter(
             issue_id=OuterRef("pk"),
@@ -137,6 +147,14 @@ def issue_on_results(
         original_list.remove(FIELD_MAPPER[sub_group_by])
         original_list.append(sub_group_by)
 
+    # Evolury: o alias da propriedade precisa entrar no `values()`, senão o
+    # agrupamento existe na consulta e some da resposta (ADR 0011).
+    from plane.utils.issue_properties import alias_de_agrupamento
+
+    for chave in (group_by, sub_group_by):
+        if alias_de_agrupamento(chave) is not None:
+            required_fields.append(str(chave))
+
     required_fields.extend(original_list)
     return list(issues.values(*required_fields))
 
@@ -148,6 +166,13 @@ def issue_group_values(
     filters: Dict[str, Any] = {},
     queryset: Optional[QuerySet] = None,
 ) -> List[Union[str, Any]]:
+    # Evolury: as colunas de uma propriedade de seleção (ADR 0011).
+    from plane.utils.issue_properties import valores_de_agrupamento
+
+    de_propriedade = valores_de_agrupamento(field)
+    if de_propriedade is not None:
+        return de_propriedade
+
     if field == "state_id":
         queryset = State.objects.filter(is_triage=False, workspace__slug=slug).values_list("id", flat=True)
         if project_id:

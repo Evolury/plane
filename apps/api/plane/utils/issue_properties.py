@@ -316,3 +316,71 @@ def aplicar_filtros_de_propriedade(queryset, query_params):
     for condicao in filtros_de_propriedade(query_params):
         queryset = queryset.filter(condicao)
     return queryset
+
+
+#: Prefixo do `group_by` por propriedade personalizada.
+#:
+#: Sem `__` no meio de propósito: o alias vira anotação do ORM, e o Django
+#: recusa apelido de coluna com `__`. Por isso o id vai em hexadecimal, sem
+#: hífens — `property_<hex>`.
+PREFIXO_DE_AGRUPAMENTO = "property_"
+
+
+def alias_de_agrupamento(group_by):
+    """O id da propriedade quando `group_by` é `property_<hex>`, senão `None`.
+
+    Como na ordenação, a validação vem antes de qualquer coisa tocar o ORM:
+    valor de quem chama não pode virar nome de campo.
+    """
+    import uuid as _uuid
+
+    if not group_by or not str(group_by).startswith(PREFIXO_DE_AGRUPAMENTO):
+        return None
+    cru = str(group_by)[len(PREFIXO_DE_AGRUPAMENTO) :]
+    try:
+        identificador = _uuid.UUID(cru)
+    except (ValueError, AttributeError, TypeError):
+        return None
+    if not IssueProperty.objects.filter(pk=identificador, property_type=PropertyType.SELECT).exists():
+        # Só seleção única agrupa. Texto ou moeda produziriam uma coluna por
+        # valor distinto, que é ruído e não organização (ADR 0011).
+        return None
+    return identificador
+
+
+def anotacao_de_agrupamento(group_by):
+    """A anotação que faz o agrupamento funcionar, ou `None`.
+
+    O paginador usa o nome do campo em `F()`, em `values()` e na partição de
+    janela — tudo isso resolve anotação, e é por isso que agrupar por
+    propriedade cabe no maquinário existente sem reescrevê-lo.
+    """
+    from django.db.models import OuterRef, Subquery
+
+    identificador = alias_de_agrupamento(group_by)
+    if identificador is None:
+        return None
+    return {
+        str(group_by): Subquery(
+            IssuePropertyValue.objects.filter(issue=OuterRef("pk"), issue_property_id=identificador).values(
+                "value_option_id"
+            )[:1]
+        )
+    }
+
+
+def valores_de_agrupamento(group_by):
+    """As colunas do quadro: as opções, na ordem configurada, mais a vazia.
+
+    `"None"` no fim porque tarefa sem valor precisa de uma coluna onde caber —
+    sem ela, agrupar esconderia trabalho, que é o pior que um quadro pode fazer.
+    """
+    identificador = alias_de_agrupamento(group_by)
+    if identificador is None:
+        return None
+    opcoes = list(
+        IssuePropertyOption.objects.filter(issue_property_id=identificador)
+        .order_by("sort_order", "created_at")
+        .values_list("id", flat=True)
+    )
+    return opcoes + ["None"]

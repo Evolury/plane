@@ -68,19 +68,23 @@ Decisão: [ADR 0011](../../decisoes/0011-propriedades-personalizadas.md).
 | 35  | Permissões            | Configurar é admin; preencher é de quem edita; ler é de todos   | ✓ `[T]` test_configuring_is_an_admin_door       |
 | 36  | i18n                  | Chaves em `issue_properties.*`, pt-BR                           | ✓ CI verde                                      |
 
-## Lacunas
+## Lacuna
 
-**Agrupar o quadro por propriedade (linha 20).** A especificação previa
-agrupamento por seleção única, e ele não entrou. O motivo é concreto: o
-agrupamento atravessa o `grouper`, o paginador — que usa o nome do campo em
-`F()`, em `values()` e na partição de janela — e o menu do front. É tratável
-(um alias anotado resolveria), mas é mudança no caminho quente e paginado da
-listagem, e não cabia sem uma rodada de validação própria em todos os layouts.
+Uma só, e ela é de **tipo**, não de esforço.
 
-**Filtro pela interface (linha 21).** O filtro existe e está testado na API; o
-que falta é o seletor visual, que depende do sistema de filtros ricos e de um
-editor por tipo.
+Agrupar e filtrar **funcionam no backend** e estão testados — quem chama a API
+faz as duas coisas hoje. O que falta é o **seletor visual**, e ele esbarra em
+`TIssueGroupByOptions` e `WORK_ITEM_FILTER_PROPERTY_KEYS`, que são uniões
+fechadas em `@plane/types`. O menu de agrupar, os layouts de quadro e lista e o
+pacote de filtros ricos são tipados sobre elas, e a chave de condição é um tipo
+literal `${propriedade}__${operador}`.
 
-As duas estão no [backlog](backlog.md) como pendentes, e nenhuma bloqueia o uso
-do que foi entregue: os campos existem, guardam, mostram, ordenam, exportam e
+Uma propriedade personalizada é um id que só existe em tempo de execução. Para
+caber ali, a união teria de ser alargada para `string` — o que atravessa toda a
+filtragem, o agrupamento e as visões salvas, com risco de regressão em todos os
+layouts. É refatoração de tipos no pacote compartilhado, e merece decisão
+própria em vez de carona.
+
+Nada disso bloqueia o uso do que foi entregue: os campos existem, guardam,
+mostram no cartão e na tabela, ordenam, exportam, viajam no webhook e na API, e
 acompanham a recorrência.
