@@ -4,7 +4,10 @@
  * See the LICENSE file for details.
  */
 
-import { EIssueGroupByToServerOptions, EServerGroupByToFilterOptions } from "@plane/constants";
+// Evolury: `groupByParaServidor` no lugar do enum — a chave de propriedade
+// personalizada é um id de tempo de execução e não indexa o enum (ADR 0011).
+// O espaço público não expõe propriedades, mas o tipo é compartilhado.
+import { EIssueGroupByToServerOptions, EServerGroupByToFilterOptions, groupByParaServidor } from "@plane/constants";
 import type { IssuePaginationOptions, TIssueParams } from "@plane/types";
 
 /**
@@ -35,12 +38,12 @@ export const getPaginationParams = (
 
   // If group by is specifically sent through options, like that for calendar layout, use that to group
   if (options.groupedBy) {
-    paginationParams.group_by = EIssueGroupByToServerOptions[options.groupedBy];
+    paginationParams.group_by = groupByParaServidor(options.groupedBy);
   }
 
   // If group by is specifically sent through options, like that for calendar layout, use that to group
   if (options.subGroupedBy) {
-    paginationParams.sub_group_by = EIssueGroupByToServerOptions[options.subGroupedBy];
+    paginationParams.sub_group_by = groupByParaServidor(options.subGroupedBy);
   }
 
   // If group by is specifically sent through options, like that for calendar layout, use that to group

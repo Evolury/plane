@@ -44,10 +44,7 @@ export const propriedadesAgrupaveis = (projectId: string | undefined): TIssuePro
  * quadro recebe só o `group_by`. O id é UUID e único no banco, então procurar
  * em todos os projetos carregados não é ambíguo — é só menos direto.
  */
-export const encontrarPropriedade = (
-  propertyId: string,
-  projectId?: string
-): TIssueProperty | undefined => {
+export const encontrarPropriedade = (propertyId: string, projectId?: string): TIssueProperty | undefined => {
   if (projectId) {
     const achada = porProjeto.get(projectId)?.find((p) => p.id === propertyId);
     if (achada) return achada;
