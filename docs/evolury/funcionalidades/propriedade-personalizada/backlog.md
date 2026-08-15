@@ -91,6 +91,19 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P5.2 Em bloco, sem estourar o custo por nó fixado em teste (8 consultas)
 - [x] P5.3 Testes: valores na ocorrência, na subtarefa aninhada, e o custo
 
+## P7 — Os campos para quem integra
+
+- [x] P7.1 Webhook leva a DEFINIÇÃO dos campos que a tarefa preenche — nome,
+      tipo, rótulo e cor das opções. O receptor não tem como chamar de volta
+- [x] P7.2 Recorte: só as propriedades preenchidas, e uma consulta de valores
+      por tarefa (não duas, depois de dois métodos passarem a lê-los)
+- [x] P7.3 API pública: endereço próprio para as definições, só leitura, na
+      ordem da tela
+- [x] P7.4 Valor de propriedade excluída para de sair — a cascata é assíncrona
+      e a leitura não pode esperar por ela
+- [x] P7.5 Testes: carga que se explica, recorte, lote com cache por tarefa,
+      teto de consultas, 405 na escrita, e projeto alheio
+
 ## P6 — Matriz de compatibilidade
 
 - [x] P6.1 Executar a matriz contra os recursos existentes, com evidência,

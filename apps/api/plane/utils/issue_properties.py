@@ -59,7 +59,12 @@ def valores_por_tarefa(issue_ids, property_ids=None):
     if not issue_ids:
         return por_tarefa
 
-    linhas = IssuePropertyValue.objects.filter(issue_id__in=issue_ids)
+    # O filtro de exclusão lógica da PROPRIEDADE é explícito porque a junção
+    # não passa pelo gerente do modelo — e porque a cascata que apaga os
+    # valores roda em tarefa assíncrona. Entre o clique e a tarefa, e para
+    # sempre se ela falhar, o valor de um campo excluído continuaria saindo na
+    # API e no webhook como um id que não resolve para nada.
+    linhas = IssuePropertyValue.objects.filter(issue_id__in=issue_ids, issue_property__deleted_at__isnull=True)
     if property_ids is not None:
         linhas = linhas.filter(issue_property_id__in=property_ids)
     linhas = linhas.select_related("issue_property")
@@ -77,6 +82,48 @@ def valores_por_tarefa(issue_ids, property_ids=None):
         else:
             atual[str(propriedade.id)] = linha.value_text
     return por_tarefa
+
+
+def definicoes_das_propriedades(property_ids):
+    """As DEFINIÇÕES dos campos pedidos, em uma consulta.
+
+    O valor sozinho não se explica: `{"<uuid>": "<uuid>"}` é um par de ids
+    opacos para quem recebe. Quem integra precisa do nome do campo, do tipo, e
+    — nas de seleção — do rótulo da opção, senão tem de adivinhar ou fazer uma
+    segunda chamada que nem sempre é possível (webhook não faz).
+
+    A ordem é a mesma da tela: `sort_order` e, no empate, a criação.
+    """
+    if not property_ids:
+        return []
+
+    propriedades = (
+        IssueProperty.objects.filter(id__in=list(property_ids))
+        .prefetch_related("options")
+        .order_by("sort_order", "created_at")
+    )
+
+    definicoes = []
+    for propriedade in propriedades:
+        definicao = {
+            "id": str(propriedade.id),
+            "name": propriedade.name,
+            "property_type": propriedade.property_type,
+            "is_required": propriedade.is_required,
+            "is_active": propriedade.is_active,
+            "currency": propriedade.currency,
+            "decimal_places": propriedade.decimal_places,
+        }
+        if propriedade.property_type in TIPOS_DE_SELECAO:
+            # Só as de seleção levam opções. Nas demais a chave seria uma lista
+            # vazia em todo payload — ruído que quem lê teria de aprender a
+            # ignorar.
+            definicao["options"] = [
+                {"id": str(opcao.id), "name": opcao.name, "color": opcao.color}
+                for opcao in sorted(propriedade.options.all(), key=lambda o: (o.sort_order, o.created_at))
+            ]
+        definicoes.append(definicao)
+    return definicoes
 
 
 def _numero_para_api(propriedade, numero):

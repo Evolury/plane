@@ -33,6 +33,9 @@ from .issue import (
     IssueRelationListCreateAPIEndpoint,
 )
 
+# Evolury: definições de propriedade (ADR 0011)
+from .issue_property import IssuePropertyListAPIEndpoint
+
 from .cycle import (
     CycleListCreateAPIEndpoint,
     CycleListLiteAPIEndpoint,

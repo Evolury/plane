@@ -72,7 +72,7 @@ como ser preenchida.
 | Cartão da lista e do quadro | **só** as marcadas com "mostrar no cartão"   |
 | Layout de tabela            | uma coluna por propriedade ativa             |
 | Exportação CSV e XLSX       | uma coluna por propriedade, em texto legível |
-| API pública e webhook       | os valores, só leitura                       |
+| API pública e webhook       | os valores **e a definição dos campos**      |
 | Histórico da tarefa         | cada mudança, com o nome do campo            |
 
 **No cartão só aparecem as marcadas** porque trinta campos ali fariam do quadro
@@ -115,6 +115,32 @@ criaria uma coluna por valor distinto, que é ruído, e não organização.
 
 Se você desativar uma propriedade que está sendo usada num filtro salvo, a tela
 não quebra: aquela condição simplesmente deixa de filtrar.
+
+## Para quem integra: os campos, e não só os valores
+
+A tarefa sai com os valores em `property_values`, e ali um campo é um id:
+
+```json
+"property_values": { "e418d9f0-…": "88590486-…" }
+```
+
+Sozinho isso não diz nada. Por isso:
+
+- **No webhook**, a carga leva junto a **definição** dos campos que aquela
+  tarefa preenche — nome, tipo e, nas de seleção, o rótulo e a cor de cada
+  opção. Quem recebe entende "Canal = Indicação" sem precisar chamar de volta,
+  que é o que um webhook nem sempre pode fazer.
+- **Na API pública**, as definições do projeto têm endereço próprio:
+
+  ```http
+  GET /api/v1/workspaces/<slug>/projects/<id>/issue-properties/
+  ```
+
+  Vem na mesma ordem da tela. É o que resolve os ids de `property_values` — e
+  como muda pouco, pode ser lido uma vez e guardado.
+
+Os dois são **só leitura**. Criar ou alterar um campo é configuração do
+projeto, e tem um caminho só: a tela.
 
 ## Com tarefas recorrentes
 

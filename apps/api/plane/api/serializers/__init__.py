@@ -30,6 +30,9 @@ from .issue import (
     IssueRelationSerializer,
     RelatedIssueSerializer,
 )
+
+# Evolury: definições de propriedade (ADR 0011)
+from .issue_property import IssuePropertyAPISerializer, IssuePropertyOptionAPISerializer
 from .state import StateLiteSerializer, StateSerializer
 from .cycle import (
     CycleSerializer,

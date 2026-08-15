@@ -11,6 +11,7 @@ semanas depois, na ordenação ou no relatório.
 """
 
 import pytest
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -610,3 +611,194 @@ class TestValores:
 
         assert recusada.status_code == status.HTTP_400_BAD_REQUEST
         assert session_client.get(url).data["values"][str(canal.id)] == str(boa.id)
+
+
+@pytest.mark.contract
+class TestDefinicoesNaSaida:
+    """Os CAMPOS, e não só os valores (ADR 0011).
+
+    `property_values` devolve `{"<uuid>": "<uuid>"}`. Sem o nome do campo e o
+    rótulo da opção, quem integra recebe dois ids opacos: não sabe que aquilo é
+    "Canal = Indicação". Estes testes cobrem os dois lugares onde a definição
+    precisa chegar — o webhook, que não tem chamada de volta, e a API pública,
+    que ganhou o endereço das definições.
+    """
+
+    @pytest.mark.django_db
+    def test_the_webhook_payload_explains_itself(self, projeto, create_user):
+        """O webhook não pode exigir uma segunda chamada para ser entendido."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        canal = _propriedade(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=canal,
+            value_option=indicacao,
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        dados = IssueExpandSerializer(tarefa).data
+
+        assert dados["property_values"] == {str(canal.id): str(indicacao.id)}
+        definicao = next(d for d in dados["properties"] if d["id"] == str(canal.id))
+        assert definicao["name"] == "Canal"
+        assert definicao["property_type"] == "select"
+        assert {"id": str(indicacao.id), "name": "Indicação", "color": indicacao.color} in definicao["options"]
+
+    @pytest.mark.django_db
+    def test_the_webhook_only_carries_what_the_work_item_uses(self, projeto, create_user):
+        """Levar as 30 do projeto em toda tarefa seria pagar por todo mundo."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        usada = _propriedade(projeto, "Canal", "text")
+        _propriedade(projeto, "Contrato", "currency", currency="BRL")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=usada,
+            value_text="Indicação",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        dados = IssueExpandSerializer(tarefa).data
+
+        assert [d["name"] for d in dados["properties"]] == ["Canal"]
+
+    @pytest.mark.django_db
+    def test_a_work_item_without_values_carries_no_definitions(self, projeto, create_user):
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        _propriedade(projeto, "Canal", "text")
+        tarefa = _tarefa(projeto, create_user)
+
+        dados = IssueExpandSerializer(tarefa).data
+
+        assert dados["property_values"] == {}
+        assert dados["properties"] == []
+
+    @pytest.mark.django_db
+    def test_the_webhook_reads_values_once_per_work_item(self, projeto, create_user, django_assert_max_num_queries):
+        """Duas leituras do mesmo dado seriam duas consultas por evento."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        canal = _propriedade(projeto, "Canal", "text")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=canal,
+            value_text="Indicação",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        with django_assert_max_num_queries(50) as captura:
+            IssueExpandSerializer(tarefa).data
+
+        de_valores = [q for q in captura.captured_queries if "issue_property_values" in q["sql"]]
+        assert len(de_valores) == 1, de_valores
+
+    @pytest.mark.django_db
+    def test_the_public_api_serves_the_definitions(self, projeto, create_user, session_client, workspace):
+        """O endereço que resolve os ids de `property_values`."""
+        canal = _propriedade(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+        _propriedade(projeto, "Contrato", "currency", currency="BRL", decimal_places=2)
+
+        url = f"/api/v1/workspaces/{workspace.slug}/projects/{projeto.id}/issue-properties/"
+        resposta = session_client.get(url)
+
+        assert resposta.status_code == status.HTTP_200_OK
+        itens = resposta.data["results"] if isinstance(resposta.data, dict) else resposta.data
+        por_nome = {i["name"]: i for i in itens}
+        assert set(por_nome) == {"Canal", "Contrato"}
+        assert por_nome["Canal"]["options"][0]["name"] == "Indicação"
+        assert str(indicacao.id) == str(por_nome["Canal"]["options"][0]["id"])
+        assert por_nome["Contrato"]["currency"] == "BRL"
+        assert por_nome["Contrato"]["decimal_places"] == 2
+        # Tipo que não é seleção não carrega lista de opções vazia por engano.
+        assert por_nome["Contrato"]["options"] == []
+
+    @pytest.mark.django_db
+    def test_the_public_api_definitions_are_read_only(self, projeto, create_user, session_client, workspace):
+        """Criar campo é configuração do projeto, e tem um caminho só."""
+        url = f"/api/v1/workspaces/{workspace.slug}/projects/{projeto.id}/issue-properties/"
+
+        resposta = session_client.post(url, {"name": "Novo", "property_type": "text"}, format="json")
+
+        assert resposta.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+    @pytest.mark.django_db
+    def test_the_public_api_does_not_serve_another_project(self, projeto, create_user, session_client, workspace):
+        """Propriedade é do projeto — e quem não é do projeto não a vê."""
+        alheio = Project.objects.create(name="Alheio", identifier="ALH", workspace=workspace, created_by=create_user)
+        _propriedade(alheio, "Secreta", "text")
+        _propriedade(projeto, "Canal", "text")
+
+        url = f"/api/v1/workspaces/{workspace.slug}/projects/{projeto.id}/issue-properties/"
+        resposta = session_client.get(url)
+
+        itens = resposta.data["results"] if isinstance(resposta.data, dict) else resposta.data
+        assert [i["name"] for i in itens] == ["Canal"]
+
+    @pytest.mark.django_db
+    def test_each_work_item_gets_its_own_definitions(self, projeto, create_user):
+        """O cache é por tarefa: em lote, a segunda não pode herdar a primeira."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        canal = _propriedade(projeto, "Canal", "text")
+        contrato = _propriedade(projeto, "Contrato", "currency", currency="BRL")
+        primeira = _tarefa(projeto, create_user, nome="Primeira")
+        segunda = _tarefa(projeto, create_user, nome="Segunda")
+        IssuePropertyValue.objects.create(
+            issue=primeira,
+            issue_property=canal,
+            value_text="Indicação",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+        IssuePropertyValue.objects.create(
+            issue=segunda,
+            issue_property=contrato,
+            value_number="10",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        dados = IssueExpandSerializer([primeira, segunda], many=True).data
+
+        por_tarefa = {d["name"]: [p["name"] for p in d["properties"]] for d in dados}
+        assert por_tarefa == {"Primeira": ["Canal"], "Segunda": ["Contrato"]}
+
+    @pytest.mark.django_db
+    def test_a_deleted_property_stops_appearing(self, projeto, create_user):
+        """Campo excluído não sai mais — nem como id órfão.
+
+        A cascata que apaga os valores roda em tarefa assíncrona. Entre o
+        clique e a tarefa — e para sempre, se ela falhar — o valor continuaria
+        saindo com o id de um campo que não existe mais, e quem recebe não
+        teria como resolvê-lo. Encontrado no `planedev`, com um valor vivo de
+        uma propriedade já excluída.
+        """
+        from plane.api.serializers.issue import IssueExpandSerializer
+
+        canal = _propriedade(projeto, "Canal", "text")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=canal,
+            value_text="Indicação",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+        # Exclusão lógica da propriedade, sem tocar no valor — exatamente o
+        # estado em que o sistema fica antes de a cascata rodar.
+        IssueProperty.objects.filter(pk=canal.id).update(deleted_at=timezone.now())
+
+        dados = IssueExpandSerializer(tarefa).data
+
+        assert dados["property_values"] == {}
+        assert dados["properties"] == []

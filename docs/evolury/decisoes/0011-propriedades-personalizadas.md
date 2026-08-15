@@ -195,6 +195,40 @@ continua fechada ao que o compilador reconhece, continua estreitando nos
 inteiro. Fica registrado porque a estimativa foi por inferência, e o
 compilador teria respondido em minutos.
 
+### Quem integra precisa do campo, e não só do valor
+
+`property_values` devolve `{"<uuid>": "<uuid>"}`. Para o produto isso basta — a
+tela já tem as definições. Para quem integra, são dois ids opacos.
+
+A resposta é diferente nos dois lugares, porque a pergunta é diferente:
+
+- **Webhook**: a carga leva a definição dos campos que **aquela tarefa**
+  preenche. O receptor de um webhook nem sempre pode chamar de volta — pode não
+  ter credencial, pode estar atrás de uma fila —, e uma carga que exige uma
+  segunda chamada para ser entendida é uma carga pela metade. Só os campos
+  preenchidos: levar as 30 do projeto em toda tarefa seria fazer todo mundo
+  pagar pelo caso raro.
+- **API pública**: endereço próprio para as definições. Quem lista tarefas já
+  faz chamadas; repetir as mesmas 30 definições dentro de cada uma das 100
+  tarefas da página seria desperdício. Definição muda pouco, e endereço próprio
+  é o que se pode ler uma vez e guardar.
+
+Os dois são **só leitura**. Criar definição é configuração de projeto, com
+regras que já vivem no caminho da tela — nome único, tipo que não muda, moeda
+obrigatória em campo de moeda. Um segundo caminho de escrita seria um segundo
+lugar para essas regras, e o segundo é sempre o que esquece uma.
+
+### A cascata é assíncrona, e a leitura não pode esperar por ela
+
+Excluir uma propriedade apaga os valores dela **em tarefa assíncrona**. Entre o
+clique e a tarefa — e para sempre, se ela falhar — o valor continuaria saindo
+na API e no webhook com o id de um campo que não existe mais.
+
+Por isso a leitura filtra a exclusão lógica da propriedade explicitamente, e
+não confia na cascata. Encontrado no ambiente de desenvolvimento, com um valor
+vivo de uma propriedade já excluída: terceira vez que esta armadilha morde a
+base, e a segunda dentro desta funcionalidade.
+
 ## Alternativas consideradas
 
 - **Propriedade do workspace, disponível em todos os projetos**: é o contexto
