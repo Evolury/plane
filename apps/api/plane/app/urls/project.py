@@ -9,6 +9,7 @@ from plane.app.views import (
     IssuePropertyViewSet,
     IssuePropertyOptionUsageViewSet,
     IssuePropertyValueViewSet,
+    IssuePropertyValuesBulkViewSet,
     ProjectViewSet,
     DeployBoardViewSet,
     ProjectInvitationsViewset,
@@ -209,5 +210,10 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/issues/<uuid:issue_id>/properties/",
         IssuePropertyValueViewSet.as_view({"get": "list", "post": "create"}),
         name="project-issue-property-values",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/issue-property-values/",
+        IssuePropertyValuesBulkViewSet.as_view({"get": "list"}),
+        name="project-issue-property-values-bulk",
     ),
 ]

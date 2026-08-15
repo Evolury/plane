@@ -116,8 +116,9 @@ export const PROJECT_SETTINGS: Record<TProjectSettingsTabs, TProjectSettingsItem
     access: [EUserProjectRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/recurring/`,
   },
-  // Evolury: propriedades personalizadas (ADR 0011). Porta de admin: criar
-  // propriedade cria trabalho para os outros — todo mundo passa a ver o campo.
+  // Evolury: propriedades personalizadas (ADR 0011). Mora em Estrutura de
+  // tarefas, ao lado de etapa e etiqueta — as três descrevem a tarefa. Porta de
+  // admin: criar propriedade cria trabalho para os outros.
   "issue-properties": {
     key: "issue-properties",
     i18n_label: "issue_properties.settings.heading",
@@ -142,10 +143,9 @@ export const GROUPED_PROJECT_SETTINGS: Record<PROJECT_SETTINGS_CATEGORY, TProjec
     PROJECT_SETTINGS["states"],
     PROJECT_SETTINGS["labels"],
     PROJECT_SETTINGS["estimates"],
-  ],
-  [PROJECT_SETTINGS_CATEGORY.EXECUTION]: [
-    PROJECT_SETTINGS["automations"],
-    PROJECT_SETTINGS["recurring"],
+    // Evolury: propriedade é ESTRUTURA, como etapa, etiqueta e estimativa —
+    // ela descreve a tarefa. Execução é sobre o que roda sozinho.
     PROJECT_SETTINGS["issue-properties"],
   ],
+  [PROJECT_SETTINGS_CATEGORY.EXECUTION]: [PROJECT_SETTINGS["automations"], PROJECT_SETTINGS["recurring"]],
 };

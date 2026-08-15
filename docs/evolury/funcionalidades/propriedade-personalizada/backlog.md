@@ -36,20 +36,21 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 - [x] P2.3 Obrigatoriedade não alcança tarefa que já existia
 - [x] P2.4 Atividade de mudança de valor, com o rótulo da propriedade
 - [~] P2.5 Webhook e API pública carregam os valores — **adiado para a P3**:
-      a serialização em bloco por página de tarefas é o mesmo trabalho da
-      leitura dos layouts, e fazê-la duas vezes seria escrever para jogar fora
+  a serialização em bloco por página de tarefas é o mesmo trabalho da
+  leitura dos layouts, e fazê-la duas vezes seria escrever para jogar fora
 - [x] P2.6 Testes: cada tipo, obrigatório na criação e não na conclusão,
       retroatividade, e o filtro explícito de `deleted_at` nas junções
 
 ## P3 — Leitura em bloco e saída do dado
 
-- [ ] P3.1 Carga dos valores **em bloco por página de tarefas**, com teto de
+- [x] P3.1 Carga dos valores **em bloco por página de tarefas**, com teto de
       consultas fixado em teste — os layouts carregam centenas de tarefas
-- [ ] P3.2 Coluna no layout de tabela, uma por propriedade ativa
-- [ ] P3.3 Chip no cartão de lista e quadro, só nas marcadas para isso
+- [ ] P3.2 Coluna no layout de tabela, uma por propriedade ativa — exige
+      abrir o maquinário de colunas fixas do layout; PR próprio
+- [x] P3.3 Chip no cartão de lista e quadro, só nas marcadas para isso
 - [ ] P3.4 Exportação CSV e XLSX, estendendo `IssueExportSchema`
-- [ ] P3.5 Testes: o teto de consultas com 5 propriedades e 50 tarefas, e a
-      exportação com os seis tipos
+- [~] P3.5 Testes: o teto de consultas com 5 propriedades e 50 tarefas, e a
+  exportação com os seis tipos
 
 ## P4 — Filtro, agrupamento e ordenação
 

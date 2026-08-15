@@ -35,6 +35,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 // local components
 import { CompletionCheck } from "../../completion-check";
 // Evolury: selo "esta tarefa se repete" (ADR 0010, revisão)
+import { IssuePropertyCardValues } from "@/components/issue-properties/card-values";
 import { RecurrenceBadge } from "@/components/recurring-work-items/badge";
 import type { TRenderQuickActions } from "../list/list-view-types";
 import { IssueProperties } from "../properties/all-properties";
@@ -124,6 +125,8 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
         )}
         {/* Evolury: selo "esta tarefa se repete" (ADR 0010, revisão) */}
         {issue.project_id && !isEpic && <RecurrenceBadge projectId={issue.project_id} issueId={issue.id} />}
+        {/* Evolury: propriedades marcadas para o cartão (ADR 0011) */}
+        {issue.project_id && !isEpic && <IssuePropertyCardValues projectId={issue.project_id} issueId={issue.id} />}
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
         <div
           className={cn("absolute -top-1 right-0", {
