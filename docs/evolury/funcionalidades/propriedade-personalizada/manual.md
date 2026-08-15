@@ -96,10 +96,9 @@ precisar sincronizar nada.
 
 ## O que ainda não existe
 
-- **Agrupar o quadro por uma propriedade** — só por etapa, responsável,
-  etiqueta e as demais colunas nativas.
-- **Filtrar pela interface** — o filtro existe na API, e o seletor visual ainda
-  não foi construído.
+- **Escolher "agrupar por" ou "filtrar por" uma propriedade nos menus da tela.**
+  As duas coisas funcionam por trás — quem integra pela API já usa —, mas os
+  seletores visuais ainda não oferecem as propriedades.
 - Tipo pessoa, fórmula e campo calculado.
 - Reaproveitar a mesma propriedade em vários projetos.
 - Propriedade de data no calendário e no cronograma.
