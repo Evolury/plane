@@ -40,6 +40,17 @@ A moeda é da propriedade, não do valor: "Valor do contrato" é em reais **ou**
 em dólares. Guardar moeda por tarefa abriria a porta para somar reais com
 dólares numa coluna só — uma conta errada que ninguém percebe.
 
+**As casas decimais são exigidas na escrita, não arredondadas.** Um valor com
+mais precisão que a configurada é **recusado**, com o número de casas na
+mensagem. Arredondar dinheiro em silêncio troca o número que a pessoa digitou
+por outro, e ela só descobre no relatório; recusar acontece na frente dela, com
+o campo ainda aberto. Vale também para número, contra as 6 casas que a coluna
+do banco guarda.
+
+**Os campos de digitar confirmam ao sair do campo**, e não a cada tecla — Enter
+confirma sem sair, Escape desfaz. Salvar por tecla encheria o histórico da
+tarefa com uma linha por letra.
+
 ## Obrigatória: na criação, nunca na conclusão
 
 Propriedade obrigatória **impede criar** a tarefa sem ela. É onde a informação

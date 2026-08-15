@@ -28,6 +28,7 @@ from django.utils.dateparse import parse_date
 
 # Module imports
 from plane.db.models import (
+    TIPOS_DE_SELECAO,
     IssueProperty,
     IssuePropertyOption,
     IssuePropertyValue,
@@ -120,9 +121,19 @@ def _converter(propriedade, valor):
 
     if propriedade.property_type in (PropertyType.NUMBER, PropertyType.CURRENCY):
         try:
-            return {"value_number": Decimal(str(valor))}
+            numero = Decimal(str(valor))
         except (InvalidOperation, ValueError) as erro:
             raise ValorInvalido(f"{propriedade.name}: número inválido.") from erro
+
+        # A precisão é RECUSADA, não arredondada. Arredondar dinheiro em
+        # silêncio troca o número que a pessoa digitou por outro, e ela só
+        # descobre no relatório — enquanto recusar acontece na frente dela,
+        # com o campo ainda aberto.
+        casas = propriedade.decimal_places if propriedade.property_type == PropertyType.CURRENCY else CASAS_DO_BANCO
+        expoente = -numero.as_tuple().exponent
+        if expoente > casas:
+            raise ValorInvalido(f"{propriedade.name}: use no máximo {casas} casa(s) decimal(is).")
+        return {"value_number": numero}
 
     return {"value_text": str(valor)}
 
@@ -175,6 +186,26 @@ def gravar_valor(issue, propriedade, valor):
     IssuePropertyValue.objects.create(**comuns, **_converter(propriedade, valor))
 
 
+def validar_valores(project_id, valores):
+    """Confere os valores SEM gravar, e levanta `ValorInvalido` no primeiro erro.
+
+    Existe porque a criação da tarefa grava os valores depois de salvar a
+    tarefa: sem esta passagem antes, um valor recusado deixaria a tarefa criada
+    e devolveria erro — e quem tentasse de novo criaria a segunda.
+    """
+    if not valores:
+        return
+    por_id = {str(p.id): p for p in propriedades_ativas(project_id)}
+    for propriedade_id, valor in valores.items():
+        propriedade = por_id.get(str(propriedade_id))
+        if propriedade is None or esta_vazio(valor):
+            continue
+        if propriedade.property_type in TIPOS_DE_SELECAO:
+            _opcoes_validas(propriedade, valor if isinstance(valor, (list, tuple)) else [valor])
+        else:
+            _converter(propriedade, valor)
+
+
 def gravar_valores(issue, valores):
     """Grava um conjunto de valores de uma vez — o caminho da criação da tarefa."""
     if not valores:
@@ -209,6 +240,10 @@ def rotulo_do_valor(propriedade, valor):
 #: Precisa ser prefixo, e não uma chave fixa como os outros filtros, porque o
 #: "campo" aqui é um id que só existe em tempo de execução.
 PREFIXO_DE_FILTRO = "property_"
+
+#: Casas decimais que a coluna do banco guarda. Acima disso o Postgres
+#: arredondaria sozinho, e arredondamento silencioso é o que este módulo evita.
+CASAS_DO_BANCO = 6
 
 
 def filtros_de_propriedade(query_params):

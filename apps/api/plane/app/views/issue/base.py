@@ -77,6 +77,7 @@ from plane.utils.issue_properties import (
     aplicar_filtros_de_propriedade,
     faltando_obrigatorias,
     gravar_valores,
+    validar_valores,
 )
 from plane.utils.order_queryset import order_issue_queryset
 from plane.utils.paginator import GroupedOffsetPaginator, SubGroupedOffsetPaginator
@@ -426,6 +427,14 @@ class IssueViewSet(BaseViewSet):
                 {"property_values": f"Preencha: {', '.join(faltando)}."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # E os valores são conferidos ANTES de a tarefa existir: gravá-los só
+        # depois de salvar deixaria a tarefa criada quando um valor fosse
+        # recusado, e quem tentasse de novo criaria a segunda.
+        try:
+            validar_valores(project_id, valores_de_propriedade)
+        except ValorInvalido as erro:
+            return Response({"property_values": str(erro)}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = IssueCreateSerializer(
             data=request.data,

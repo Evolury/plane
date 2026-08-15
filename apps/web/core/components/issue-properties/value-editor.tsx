@@ -15,10 +15,60 @@
 // serviço, só valor e `onChange`. É o que permite usá-lo igual no painel (onde
 // salva a cada mudança) e no modal de criação (onde só junta o formulário).
 
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import type { TIssueProperty, TPropertyValue } from "@plane/types";
 import { Input } from "@plane/ui";
 import { cn } from "@plane/utils";
+
+/**
+ * Campo de digitar que confirma no BLUR, e não a cada tecla.
+ *
+ * Salvar por tecla transformava "Contrato assinado" em dezessete chamadas e
+ * dezessete linhas de histórico — o histórico da tarefa virava um teclado
+ * registrado, e o que mudou de verdade sumia no meio.
+ *
+ * Enter confirma sem sair do campo; Escape devolve o valor anterior, que é o
+ * jeito de desistir sem inventar um botão de cancelar.
+ */
+const CampoQueConfirmaNoBlur = observer(function CampoQueConfirmaNoBlur(props: {
+  valor: string;
+  onCommit: (valor: string) => void;
+  disabled?: boolean;
+  type?: string;
+  step?: number | string;
+  className?: string;
+}) {
+  const { valor, onCommit, disabled, type, step, className } = props;
+  const [rascunho, setRascunho] = useState(valor);
+
+  // O valor do servidor manda quando muda por fora — outra pessoa editando, ou
+  // a recarga depois de salvar.
+  useEffect(() => setRascunho(valor), [valor]);
+
+  const confirmar = () => {
+    if (rascunho !== valor) onCommit(rascunho);
+  };
+
+  return (
+    <Input
+      type={type}
+      step={step}
+      value={rascunho}
+      disabled={disabled}
+      onChange={(e) => setRascunho(e.target.value)}
+      onBlur={confirmar}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          confirmar();
+        }
+        if (e.key === "Escape") setRascunho(valor);
+      }}
+      className={className}
+    />
+  );
+});
 
 type TProps = {
   propriedade: TIssueProperty;
@@ -78,11 +128,11 @@ export const PropertyValueEditor = observer(function PropertyValueEditor(props: 
 
   if (propriedade.property_type === "date") {
     return (
-      <Input
+      <CampoQueConfirmaNoBlur
         type="date"
-        value={typeof valor === "string" ? valor : ""}
+        valor={typeof valor === "string" ? valor : ""}
         disabled={disabled}
-        onChange={(e) => onChange(e.target.value || null)}
+        onCommit={(novo) => onChange(novo || null)}
         className="w-full"
       />
     );
@@ -94,12 +144,12 @@ export const PropertyValueEditor = observer(function PropertyValueEditor(props: 
         {propriedade.property_type === "currency" && (
           <span className="shrink-0 text-11 text-tertiary">{propriedade.currency}</span>
         )}
-        <Input
+        <CampoQueConfirmaNoBlur
           type="number"
           step={propriedade.property_type === "currency" ? 10 ** -propriedade.decimal_places : "any"}
-          value={typeof valor === "string" || typeof valor === "number" ? String(valor) : ""}
+          valor={typeof valor === "string" || typeof valor === "number" ? String(valor) : ""}
           disabled={disabled}
-          onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
+          onCommit={(novo) => onChange(novo === "" ? null : novo)}
           className="w-full"
         />
       </div>
@@ -107,10 +157,10 @@ export const PropertyValueEditor = observer(function PropertyValueEditor(props: 
   }
 
   return (
-    <Input
-      value={typeof valor === "string" ? valor : ""}
+    <CampoQueConfirmaNoBlur
+      valor={typeof valor === "string" ? valor : ""}
       disabled={disabled}
-      onChange={(e) => onChange(e.target.value || null)}
+      onCommit={(novo) => onChange(novo || null)}
       className="w-full"
     />
   );
