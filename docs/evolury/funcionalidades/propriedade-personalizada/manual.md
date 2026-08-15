@@ -37,8 +37,12 @@ ser lido de relance.
 Assim a coluna soma com sentido — misturar reais e dólares no mesmo campo daria
 um total que ninguém percebe estar errado.
 
-Se você digitar mais casas do que o campo aceita, ele **avisa e não salva** — em
-vez de arredondar por conta própria e mudar o seu número.
+Se você digitar mais casas do que o campo aceita, ele **avisa, não salva e
+devolve o valor que estava lá** — em vez de arredondar por conta própria ou
+deixar o campo vazio.
+
+O campo também **mostra o número com as casas configuradas**: um campo de duas
+casas exibe `100.00`, não `100,000000`.
 
 Campos de digitar (texto, número, data, moeda) **salvam quando você sai do
 campo**, ou ao apertar Enter. Escape desfaz o que estava digitando.
