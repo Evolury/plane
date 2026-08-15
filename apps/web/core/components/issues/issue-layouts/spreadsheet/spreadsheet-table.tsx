@@ -20,6 +20,9 @@ import { useTableKeyboardNavigation } from "@/hooks/use-table-keyboard-navigatio
 import type { TRenderQuickActions } from "../list/list-view-types";
 import { getDisplayPropertiesCount } from "../utils";
 import { SpreadsheetIssueRow } from "./issue-row";
+// Evolury: propriedades personalizadas (ADR 0011) — o provedor busca os
+// valores da PÁGINA uma vez, porque a linha não sabe em que página está.
+import { IssuePropertyValuesProvider } from "@/components/issue-properties/spreadsheet";
 import { SpreadsheetHeader } from "./spreadsheet-header";
 
 type Props = {
@@ -111,44 +114,46 @@ export const SpreadsheetTable = observer(function SpreadsheetTable(props: Props)
   const displayPropertiesCount = getDisplayPropertiesCount(displayProperties, ignoreFieldsForCounting);
 
   return (
-    <table className="w-full overflow-y-auto bg-surface-1" onKeyDown={handleKeyBoardNavigation}>
-      <SpreadsheetHeader
-        displayProperties={displayProperties}
-        displayFilters={displayFilters}
-        handleDisplayFilterUpdate={handleDisplayFilterUpdate}
-        canEditProperties={canEditProperties}
-        isEstimateEnabled={isEstimateEnabled}
-        spreadsheetColumnsList={spreadsheetColumnsList}
-        selectionHelpers={selectionHelpers}
-        isEpic={isEpic}
-      />
-      <tbody>
-        {issueIds.map((id) => (
-          <SpreadsheetIssueRow
-            key={id}
-            issueId={id}
-            displayProperties={displayProperties}
-            quickActions={quickActions}
-            canEditProperties={canEditProperties}
-            nestingLevel={0}
-            isEstimateEnabled={isEstimateEnabled}
-            updateIssue={updateIssue}
-            portalElement={portalElement}
-            containerRef={containerRef}
-            isScrolled={isScrolled}
-            spreadsheetColumnsList={spreadsheetColumnsList}
-            selectionHelpers={selectionHelpers}
-            isEpic={isEpic}
-          />
-        ))}
-      </tbody>
-      {canLoadMoreIssues && (
-        <tfoot ref={setIntersectionElement}>
-          {Array.from({ length: 3 }).map((_, index) => (
-            <SpreadsheetIssueRowLoader key={index} columnCount={displayPropertiesCount} />
+    <IssuePropertyValuesProvider issueIds={issueIds}>
+      <table className="w-full overflow-y-auto bg-surface-1" onKeyDown={handleKeyBoardNavigation}>
+        <SpreadsheetHeader
+          displayProperties={displayProperties}
+          displayFilters={displayFilters}
+          handleDisplayFilterUpdate={handleDisplayFilterUpdate}
+          canEditProperties={canEditProperties}
+          isEstimateEnabled={isEstimateEnabled}
+          spreadsheetColumnsList={spreadsheetColumnsList}
+          selectionHelpers={selectionHelpers}
+          isEpic={isEpic}
+        />
+        <tbody>
+          {issueIds.map((id) => (
+            <SpreadsheetIssueRow
+              key={id}
+              issueId={id}
+              displayProperties={displayProperties}
+              quickActions={quickActions}
+              canEditProperties={canEditProperties}
+              nestingLevel={0}
+              isEstimateEnabled={isEstimateEnabled}
+              updateIssue={updateIssue}
+              portalElement={portalElement}
+              containerRef={containerRef}
+              isScrolled={isScrolled}
+              spreadsheetColumnsList={spreadsheetColumnsList}
+              selectionHelpers={selectionHelpers}
+              isEpic={isEpic}
+            />
           ))}
-        </tfoot>
-      )}
-    </table>
+        </tbody>
+        {canLoadMoreIssues && (
+          <tfoot ref={setIntersectionElement}>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <SpreadsheetIssueRowLoader key={index} columnCount={displayPropertiesCount} />
+            ))}
+          </tfoot>
+        )}
+      </table>
+    </IssuePropertyValuesProvider>
   );
 });

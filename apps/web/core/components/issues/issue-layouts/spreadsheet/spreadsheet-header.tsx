@@ -15,6 +15,7 @@ import { cn } from "@plane/utils";
 import { MultipleSelectGroupAction } from "@/components/core/multiple-select";
 // hooks
 import type { TSelectionHelper } from "@/hooks/use-multiple-select";
+import { SpreadsheetPropertyHeaders } from "@/components/issue-properties/spreadsheet";
 import { SpreadsheetHeaderColumn } from "./spreadsheet-header-column";
 import { useTranslation } from "@plane/i18n";
 
@@ -89,6 +90,8 @@ export const SpreadsheetHeader = observer(function SpreadsheetHeader(props: Prop
             isEpic={isEpic}
           />
         ))}
+        {/* Evolury: colunas das propriedades personalizadas (ADR 0011) */}
+        <SpreadsheetPropertyHeaders />
       </tr>
     </thead>
   );

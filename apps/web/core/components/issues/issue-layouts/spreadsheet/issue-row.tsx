@@ -37,6 +37,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { CompletionCheck } from "../../completion-check";
 import type { TRenderQuickActions } from "../list/list-view-types";
 import { isIssueNew } from "../utils";
+import { SpreadsheetPropertyCells } from "@/components/issue-properties/spreadsheet";
 import { IssueColumn } from "./issue-column";
 
 interface Props {
@@ -413,6 +414,8 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
           isEstimateEnabled={isEstimateEnabled}
         />
       ))}
+      {/* Evolury: células das propriedades personalizadas (ADR 0011) */}
+      <SpreadsheetPropertyCells issue={issueDetail} />
     </>
   );
 });
