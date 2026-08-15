@@ -3,6 +3,54 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.13.0] — 2026-08-15
+
+### Propriedades personalizadas
+
+Campos próprios do processo de cada projeto, guardados na tarefa: valor de
+contrato, data de aceite, canal de origem. Diferente de escrever na descrição,
+eles filtram, ordenam, aparecem na tabela e saem na exportação.
+
+- **Seis tipos**: texto, número, data, seleção única, seleção múltipla e moeda.
+  Moeda declara a moeda e as casas decimais **na configuração**, não na tarefa —
+  assim a coluna soma com sentido.
+- **Configuração em Estrutura de tarefas**, ao lado de etapas, etiquetas e
+  estimativas, com teto de 30 por projeto. Criar é porta de admin; preencher é
+  de quem edita a tarefa.
+- **Obrigatória impede criar, e só isso.** Não impede concluir e não alcança
+  tarefas que já existiam: travar quem terminou o trabalho ensina a preencher
+  qualquer coisa, e exigir o campo do passado viraria dívida do projeto inteiro.
+- **Aparecem** no painel, no peek, na criação, no cartão (só as marcadas), na
+  coluna da tabela, na exportação CSV e XLSX, na API pública e no webhook.
+- **Cada mudança entra no histórico** da tarefa, com o nome do campo e o rótulo
+  da opção — id não diz nada a quem lê meses depois.
+- **Filtrar, ordenar e agrupar** funcionam pela API. Ordenação usa a coluna
+  tipada — em texto, "10" viria antes de "9" — e seleção ordena pela ordem das
+  opções, não pelo alfabeto.
+- **A recorrência copia os valores** para cada ocorrência, na árvore inteira de
+  subtarefas, sem elevar o custo por nó da cópia.
+- **Trocar o tipo é proibido**, exceto seleção única → múltipla, que é a única
+  conversão que não perde dado. Desativar preserva os valores.
+
+- **A moeda exige as casas decimais configuradas.** Valor com mais precisão é
+  recusado, com o número de casas na mensagem — arredondar dinheiro em silêncio
+  trocaria o número digitado por outro, e a pessoa só descobriria no relatório.
+- **Os campos de digitar salvam ao sair do campo**, não a cada tecla: Enter
+  confirma, Escape desfaz. Salvar por tecla enchia o histórico da tarefa com
+  uma linha por letra.
+
+**Ainda não é possível escolher uma propriedade nos menus de "agrupar por" e
+"filtrar por" da tela.** As duas coisas funcionam por trás, e quem integra pela
+API já usa; o seletor visual depende de alargar uniões de tipo no pacote
+compartilhado, o que atravessa toda a filtragem e as visões salvas.
+
+### Infraestrutura
+
+- **Cada compose do repositório ganhou nome de projeto próprio.** Nenhum
+  declarava `name:`, então todos herdavam o nome do diretório — `plane`, o mesmo
+  da produção. Foi assim que um `up` derrubou a API em 11/08, e o sintoma tinha
+  voltado com os containers de teste aparecendo no `ps` da produção.
+
 ## [1.12.0] — 2026-08-14
 
 ### Tarefas recorrentes
