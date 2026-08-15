@@ -50,6 +50,64 @@ class PropertyType(models.TextChoices):
 TIPOS_DE_SELECAO = {PropertyType.SELECT, PropertyType.MULTI_SELECT}
 
 
+#: Os ícones que a propriedade pode vestir.
+#:
+#: Lista curta e fechada, como a das moedas, e pela mesma razão: ícone é
+#: escolha de configuração, não catálogo. Aberta, ela vira campo livre que
+#: chega à tela como nome de componente — e nome de componente vindo do banco
+#: é exatamente o tipo de coisa que este projeto não deixa acontecer.
+#:
+#: A chave é o nome do ícone no `lucide`, que é o conjunto que o produto já
+#: usa. Guardamos a chave, e não o desenho: trocar de biblioteca um dia é
+#: refazer o mapa da tela, não migrar dado.
+ICONES_DE_PROPRIEDADE = (
+    "tag",
+    "hash",
+    "type",
+    "calendar",
+    "clock",
+    "dollar-sign",
+    "percent",
+    "list",
+    "layers",
+    "circle-check",
+    "flag",
+    "star",
+    "target",
+    "triangle-alert",
+    "users",
+    "user",
+    "building",
+    "map-pin",
+    "phone",
+    "mail",
+    "link",
+    "file-text",
+    "folder",
+    "package",
+    "truck",
+    "shopping-cart",
+    "credit-card",
+    "briefcase",
+    "wrench",
+    "sparkles",
+)
+
+#: O ícone de cada tipo, quando ninguém escolheu.
+#:
+#: Existe para o padrão NÃO ser o mesmo desenho em tudo: um campo de dinheiro
+#: com cara de etiqueta obriga a ler o nome para saber o que é, que é justamente
+#: o trabalho que o ícone deveria poupar.
+ICONE_PADRAO_POR_TIPO = {
+    PropertyType.TEXT: "type",
+    PropertyType.NUMBER: "hash",
+    PropertyType.DATE: "calendar",
+    PropertyType.SELECT: "list",
+    PropertyType.MULTI_SELECT: "layers",
+    PropertyType.CURRENCY: "dollar-sign",
+}
+
+
 class IssueProperty(ProjectBaseModel):
     """A definição de uma propriedade no projeto."""
 
@@ -69,6 +127,9 @@ class IssueProperty(ProjectBaseModel):
     # que ninguém percebe.
     currency = models.CharField(max_length=3, null=True, blank=True)
     decimal_places = models.PositiveSmallIntegerField(default=2)
+    # Vazio quer dizer "o padrão do tipo", e não "sem ícone": assim mudar o
+    # padrão de um tipo alcança quem nunca escolheu, sem migração de dado.
+    icon = models.CharField(max_length=32, blank=True, default="")
 
     class Meta:
         constraints = [

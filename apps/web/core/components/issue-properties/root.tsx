@@ -17,6 +17,8 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import useSWR from "swr";
 import { AlertTriangle, Eye, Pause, Pencil, Play, Plus, Trash2 } from "lucide-react";
+// Evolury: ícone da propriedade (ADR 0011)
+import { iconeDaPropriedade } from "./icones";
 import { useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { Button } from "@plane/propel/button";
@@ -133,6 +135,11 @@ export const IssuePropertiesRoot = observer(function IssuePropertiesRoot(props: 
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="flex items-center gap-2 truncate text-13 font-medium">
+                  {/* Evolury: o ícone escolhido, onde ele é escolhido (ADR 0011) */}
+                  {(() => {
+                    const Icone = iconeDaPropriedade(propriedade);
+                    return <Icone className="size-3.5 shrink-0 text-tertiary" />;
+                  })()}
                   {propriedade.name}
                   {propriedade.is_required && <span className="text-danger-primary">*</span>}
                   {propriedade.show_on_card && (

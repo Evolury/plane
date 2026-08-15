@@ -802,3 +802,89 @@ class TestDefinicoesNaSaida:
 
         assert dados["property_values"] == {}
         assert dados["properties"] == []
+
+
+@pytest.mark.contract
+class TestIcone:
+    """O ícone do campo (ADR 0011).
+
+    Antes, tudo aparecia com o mesmo desenho de etiqueta — um seletor onde
+    todos os campos têm o mesmo ícone obriga a ler cada nome, que é justamente
+    o trabalho que o ícone deveria poupar.
+    """
+
+    @pytest.mark.django_db
+    def test_each_type_has_its_own_default(self, projeto, create_user):
+        """Sem escolha nenhuma, dois tipos não podem sair iguais."""
+        from plane.utils.issue_properties import icone_efetivo
+
+        efetivos = {
+            tipo: icone_efetivo(
+                _propriedade(projeto, f"P {tipo}", tipo, **({"currency": "BRL"} if tipo == "currency" else {}))
+            )
+            for tipo in ("text", "number", "date", "select", "multi_select", "currency")
+        }
+
+        assert len(set(efetivos.values())) == len(efetivos), efetivos
+
+    @pytest.mark.django_db
+    def test_the_chosen_icon_wins_over_the_default(self, projeto, create_user):
+        from plane.utils.issue_properties import icone_efetivo
+
+        propriedade = _propriedade(projeto, "Contrato", "currency", currency="BRL", icon="briefcase")
+
+        assert icone_efetivo(propriedade) == "briefcase"
+
+    @pytest.mark.django_db
+    def test_an_unknown_icon_is_refused(self, session_client, workspace, projeto):
+        """Chave livre chegaria à tela como nome de componente."""
+        url = f"/api/workspaces/{workspace.slug}/projects/{projeto.id}/issue-properties/"
+
+        recusada = session_client.post(
+            url, {"name": "Canal", "property_type": "text", "icon": "../../etc/passwd"}, format="json"
+        )
+
+        assert recusada.status_code == status.HTTP_400_BAD_REQUEST
+        assert "icon" in recusada.data
+
+    @pytest.mark.django_db
+    def test_an_empty_icon_is_accepted_and_means_the_default(self, session_client, workspace, projeto):
+        url = f"/api/workspaces/{workspace.slug}/projects/{projeto.id}/issue-properties/"
+
+        criada = session_client.post(url, {"name": "Canal", "property_type": "date", "icon": ""}, format="json")
+
+        assert criada.status_code == status.HTTP_201_CREATED
+        assert IssueProperty.objects.get(pk=criada.data["id"]).icon == ""
+
+    @pytest.mark.django_db
+    def test_the_public_api_and_the_webhook_serve_the_effective_icon(self, projeto, create_user):
+        """Quem integra não deve precisar conhecer a regra do padrão."""
+        from plane.api.serializers.issue import IssueExpandSerializer
+        from plane.utils.issue_properties import definicoes_das_propriedades
+
+        moeda = _propriedade(projeto, "Contrato", "currency", currency="BRL")
+        tarefa = _tarefa(projeto, create_user)
+        IssuePropertyValue.objects.create(
+            issue=tarefa,
+            issue_property=moeda,
+            value_number="10",
+            project=projeto,
+            workspace=projeto.workspace,
+        )
+
+        assert definicoes_das_propriedades([moeda.id])[0]["icon"] == "dollar-sign"
+        assert IssueExpandSerializer(tarefa).data["properties"][0]["icon"] == "dollar-sign"
+
+    @pytest.mark.django_db
+    def test_every_default_icon_is_in_the_allowed_list(self):
+        """O padrão de um tipo não pode ser um ícone que a escrita recusaria.
+
+        A tela guarda o mesmo mapa para traduzir chave em desenho, e ele fica
+        anotado em `icones.tsx`. Aqui só dá para provar o lado do servidor: um
+        padrão fora da lista seria um campo que nasce com um ícone que ninguém
+        consegue escolher de volta depois de trocar.
+        """
+        from plane.db.models import ICONES_DE_PROPRIEDADE, ICONE_PADRAO_POR_TIPO, PropertyType
+
+        assert set(ICONE_PADRAO_POR_TIPO) == set(PropertyType)
+        assert set(ICONE_PADRAO_POR_TIPO.values()) <= set(ICONES_DE_PROPRIEDADE)

@@ -57,6 +57,7 @@ import {
 } from "@plane/utils";
 // Evolury: propriedades personalizadas (ADR 0011)
 import { chaveDePropriedade } from "@/components/issue-properties/cache";
+import { iconeDaPropriedade } from "@/components/issue-properties/icones";
 import { usePropriedadesDoProjeto } from "@/components/issue-properties/store";
 // store hooks
 import { useCycle } from "@/hooks/store/use-cycle";
@@ -202,7 +203,10 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
           getIssuePropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
             label: propriedade.name,
             isEnabled: true,
-            filterIcon: LabelPropertyIcon,
+            // Evolury: o ícone ESCOLHIDO para o campo (ADR 0011). Era etiqueta
+            // para todas, e um seletor onde tudo tem o mesmo desenho obriga a
+            // ler cada nome — o ícone deixava de informar.
+            filterIcon: iconeDaPropriedade(propriedade),
             options: propriedade.options ?? [],
             getOptionIcon: (color) => (
               <span className="flex size-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />

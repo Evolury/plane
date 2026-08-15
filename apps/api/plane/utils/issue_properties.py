@@ -28,6 +28,7 @@ from django.utils.dateparse import parse_date
 
 # Module imports
 from plane.db.models import (
+    ICONE_PADRAO_POR_TIPO,
     TIPOS_DE_SELECAO,
     IssueProperty,
     IssuePropertyOption,
@@ -84,6 +85,15 @@ def valores_por_tarefa(issue_ids, property_ids=None):
     return por_tarefa
 
 
+def icone_efetivo(propriedade):
+    """O ícone que a propriedade veste de fato.
+
+    Vazio no banco quer dizer "o padrão do tipo", e a regra mora aqui — num
+    lugar só — para a tela, a API pública e o webhook desenharem o mesmo.
+    """
+    return propriedade.icon or ICONE_PADRAO_POR_TIPO.get(propriedade.property_type, "tag")
+
+
 def definicoes_das_propriedades(property_ids):
     """As DEFINIÇÕES dos campos pedidos, em uma consulta.
 
@@ -113,6 +123,7 @@ def definicoes_das_propriedades(property_ids):
             "is_active": propriedade.is_active,
             "currency": propriedade.currency,
             "decimal_places": propriedade.decimal_places,
+            "icon": icone_efetivo(propriedade),
         }
         if propriedade.property_type in TIPOS_DE_SELECAO:
             # Só as de seleção levam opções. Nas demais a chave seria uma lista
