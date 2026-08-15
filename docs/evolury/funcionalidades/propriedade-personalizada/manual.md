@@ -98,6 +98,24 @@ escrito — converter texto em número teria de decidir sozinho o que fazer com
 "cerca de 30". A única conversão permitida é seleção única → múltipla, porque
 ela não perde nada: cada valor vira uma lista de um.
 
+## Agrupar e filtrar por uma propriedade
+
+Na tela de tarefas do projeto:
+
+- **Agrupar por** (menu "Exibir") lista as propriedades de **seleção única**
+  junto com estado, prioridade e as demais. O quadro passa a ter uma coluna por
+  opção, na ordem em que você as configurou, e uma coluna "Nenhum" no fim para
+  as tarefas sem valor.
+- **Filtrar** (o ícone de funil) lista as propriedades de **seleção**, única ou
+  múltipla, com as cores das opções. O filtro entra como qualquer outro, e
+  sobrevive ao recarregar a página e a salvar a visão.
+
+Só seleção aparece nos dois menus. Agrupar por um campo de texto ou de dinheiro
+criaria uma coluna por valor distinto, que é ruído, e não organização.
+
+Se você desativar uma propriedade que está sendo usada num filtro salvo, a tela
+não quebra: aquela condição simplesmente deixa de filtrar.
+
 ## Com tarefas recorrentes
 
 Os valores **são copiados** para cada ocorrência, inclusive nas subtarefas
@@ -106,9 +124,9 @@ precisar sincronizar nada.
 
 ## O que ainda não existe
 
-- **Escolher "agrupar por" ou "filtrar por" uma propriedade nos menus da tela.**
-  As duas coisas funcionam por trás — quem integra pela API já usa —, mas os
-  seletores visuais ainda não oferecem as propriedades.
+- **Filtrar por texto, número, dinheiro ou data nos menus da tela.** A API já
+  filtra os quatro (faixa e "contém"); o seletor visual ainda só oferece as de
+  seleção.
 - Tipo pessoa, fórmula e campo calculado.
 - Reaproveitar a mesma propriedade em vários projetos.
 - Propriedade de data no calendário e no cronograma.

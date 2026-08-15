@@ -3,6 +3,30 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## Não lançado
+
+### Propriedades personalizadas nos menus da tela
+
+As duas lacunas declaradas no lançamento — agrupar e filtrar por uma propriedade
+**pela interface** — estão fechadas.
+
+- **Agrupar por**: as propriedades de seleção única aparecem no menu junto com
+  estado e prioridade. O quadro ganha uma coluna por opção, na ordem
+  configurada, e "Nenhum" no fim.
+- **Filtrar**: as propriedades de seleção, única ou múltipla, aparecem no
+  seletor de filtro com as cores das opções. A condição sobrevive ao recarregar
+  a página e a salvar a visão.
+- A condição de propriedade passou a nascer como **subconsulta**, e não como
+  junção: é o que permite duas propriedades na mesma expressão `and` sem que
+  uma anule a outra — e faz o valor apagado parar de contar, o que a junção
+  não fazia.
+- A defesa contra nome de campo forjado continua inteira: um id de propriedade
+  não entra na allowlist, mas passa pela mesma prova por outro caminho — UUID
+  válido e propriedade existente antes de qualquer coisa tocar o ORM.
+
+Texto, número, moeda e data continuam filtrando pela API e ainda não aparecem
+no seletor visual.
+
 ## [1.13.1] — 2026-08-15
 
 ### Correções

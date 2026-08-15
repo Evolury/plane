@@ -146,6 +146,55 @@ nunca é bloqueado, a consequência dele nunca é silenciosa.**
 O Asana corta em 100. Somos o formato simples, e o teto é o que protege a
 tabela — trinta colunas já é mais do que cabe numa tela — e a leitura em bloco.
 
+### Filtrar e agrupar: um prefixo só, e duas portas
+
+A chave de uma propriedade é `property_<uuid>` **em todo lugar** — no
+`group_by`, na ordenação (`property__<uuid>`, com `__` porque ali é caminho de
+ORM), no parâmetro de consulta e na árvore de filtros ricos. O upstream tinha
+deixado um prefixo próprio (`customproperty_`) reservado na edição paga; manter
+dois prefixos para o mesmo conceito custaria mais do que a linha que ensina o
+adaptador a aceitar o nosso.
+
+A API atende por **duas portas**, porque a base tem duas:
+
+1. **Parâmetro de consulta** (`?property_<id>=opção`), que é como os endpoints
+   herdados filtram. Cada condição é aplicada em sua própria chamada.
+2. **Árvore de filtros ricos**, que é o que a tela usa: ela manda a árvore
+   inteira em `filters`, como JSON, e o backend a valida contra o FilterSet
+   antes de virar `Q`.
+
+Na segunda porta a condição precisa nascer como **subconsulta**, não como
+junção. A árvore inteira vira um `Q` só, aplicado numa chamada de `.filter()`,
+e duas junções ali recairiam na mesma linha da tabela de valores — "canal =
+indicação E etiqueta = urgente" devolveria vazio justamente para a tarefa que
+tem as duas. A subconsulta ainda resolve de graça a armadilha da exclusão
+lógica: junção não passa pelo gerente do modelo, subconsulta escrita à mão sim.
+
+### O nome do campo não cabe na allowlist — e não precisa caber
+
+Agrupar e filtrar por campo arbitrário é a família do GHSA-wwgj-929g-42cm, e a
+defesa da base é uma allowlist de nomes. Um id de propriedade **não pode**
+entrar nela: ele só existe em tempo de execução.
+
+A regra que adotamos é que a chave passe pela **mesma prova, por outro
+caminho**: ser um UUID bem formado e existir como propriedade, verificado antes
+de qualquer coisa tocar o ORM. Nada do texto que veio do pedido vira caminho de
+campo. Na árvore de filtros, a validação do upstream continua comparando nomes
+— o que ela compara é um campo-sentinela fixo, para o qual a chave só é
+traduzida **depois** de provada.
+
+### A união fechada aceitou um padrão
+
+`TIssueGroupByOptions` e `WORK_ITEM_FILTER_PROPERTY_KEYS` são uniões fechadas, e
+eu havia registrado que caber ali exigiria alargá-las para `string` —
+refatoração atravessando filtro, agrupamento e visões salvas.
+
+Estava errado. Uma união aceita um membro de **padrão** (`` `property_${string}` ``):
+continua fechada ao que o compilador reconhece, continua estreitando nos
+`switch`, e o custo medido foi de dois erros de compilação no repositório
+inteiro. Fica registrado porque a estimativa foi por inferência, e o
+compilador teria respondido em minutos.
+
 ## Alternativas consideradas
 
 - **Propriedade do workspace, disponível em todos os projetos**: é o contexto

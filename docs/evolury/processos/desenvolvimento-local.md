@@ -85,6 +85,29 @@ docker compose -p planedev restart api
 Isso **não** acontece em produção: lá a API roda de imagem construída, sem
 `bind mount` e sem autoreloader.
 
+## O seletor de filtros não abre no dev — e não é bug seu
+
+Clicar no funil do cabeçalho não abre nada com `pnpm dev`, e o console registra
+`Filters toggle error - filter instance not available`.
+
+A causa é o `StrictMode` em `apps/web/app/entry.client.tsx`. O
+`WorkItemFiltersHOC` cria a instância de filtro num `useMemo` e a apaga no
+`cleanup` do `useEffect`. O `StrictMode` monta, desmonta e remonta: o `cleanup`
+apaga a instância, e o `useMemo` — que já rodou naquele fiber — não a recria.
+
+**Só afeta desenvolvimento**: o `StrictMode` não duplica efeitos em produção.
+
+Para validar qualquer coisa que dependa do seletor de filtros, troque
+
+```tsx
+<StrictMode>
+  <HydratedRouter />
+</StrictMode>
+```
+
+por `<HydratedRouter />`, valide, e **religue antes de cortar**. Confira com
+`git diff apps/web/app/entry.client.tsx` — vazio é o que se espera.
+
 ## Depois de validar
 
 Apague o que você criou no `planedev`. Ele é ambiente compartilhado entre

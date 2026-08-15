@@ -25,6 +25,11 @@ export type TIssueGroupByOptions =
   | "module"
   | "target_date"
   | "team_project"
+  // Evolury: agrupar por propriedade personalizada (ADR 0011). Um LITERAL de
+  // padrão, e não `string`: a união continua fechada — só o formato
+  // `property_<uuid>` entra —, e quem escrever "propriedade" por engano
+  // continua sendo pego pelo compilador.
+  | `property_${string}`
   | null;
 
 export type TIssueOrderByOptions =
@@ -114,7 +119,10 @@ export const WORK_ITEM_FILTER_PROPERTY_KEYS = [
   "created_at",
   "updated_at",
 ] as const;
-export type TWorkItemFilterProperty = (typeof WORK_ITEM_FILTER_PROPERTY_KEYS)[number];
+/** Evolury: filtrar por propriedade personalizada (ADR 0011). */
+export type TWorkItemCustomFilterProperty = `property_${string}`;
+
+export type TWorkItemFilterProperty = (typeof WORK_ITEM_FILTER_PROPERTY_KEYS)[number] | TWorkItemCustomFilterProperty;
 
 export type TWorkItemFilterConditionKey = `${TWorkItemFilterProperty}__${TSupportedOperators}`;
 

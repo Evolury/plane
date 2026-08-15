@@ -52,7 +52,12 @@ import {
   getTargetDateFilterConfig,
   getUpdatedAtFilterConfig,
   isLoaderReady,
+  // Evolury: filtro por propriedade personalizada (ADR 0011)
+  getIssuePropertyFilterConfig,
 } from "@plane/utils";
+// Evolury: propriedades personalizadas (ADR 0011)
+import { chaveDePropriedade } from "@/components/issue-properties/cache";
+import { usePropriedadesDoProjeto } from "@/components/issue-properties/store";
 // store hooks
 import { useCycle } from "@/hooks/store/use-cycle";
 import { useLabel } from "@/hooks/store/use-label";
@@ -176,6 +181,36 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
         ...operatorConfigs,
       }),
     [isFilterEnabled, workItemStates, operatorConfigs, t]
+  );
+
+  // Evolury: um filtro por propriedade personalizada de seleção (ADR 0011).
+  //
+  // Não passa por `isFilterEnabled`: a lista de filtros permitidos é fixa por
+  // página, e estes não existiam quando ela foi escrita. Quem os limita é o
+  // projeto — fora de um projeto a lista chega vazia, e propriedade é sempre
+  // de um projeto.
+  //
+  // Só seleção, única ou múltipla. Texto, número e data filtram por faixa ou
+  // trecho, que é outro formato de operador — a API já os aceita, e a tela
+  // entra depois (backlog P4.5).
+  const propriedades = usePropriedadesDoProjeto(workspaceSlug, projectId ?? "");
+  const propertyFilterConfigs = useMemo(
+    () =>
+      propriedades
+        .filter((propriedade) => propriedade.property_type === "select" || propriedade.property_type === "multi_select")
+        .map((propriedade) =>
+          getIssuePropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
+            label: propriedade.name,
+            isEnabled: true,
+            filterIcon: LabelPropertyIcon,
+            options: propriedade.options ?? [],
+            getOptionIcon: (color) => (
+              <span className="flex size-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            ),
+            ...operatorConfigs,
+          })
+        ),
+    [propriedades, operatorConfigs]
   );
 
   // label filter config
@@ -401,8 +436,12 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
       updatedAtFilterConfig,
       createdByFilterConfig,
       subscriberFilterConfig,
+      // Evolury: as do projeto vêm por último, depois das do produto (ADR 0011)
+      ...propertyFilterConfigs,
     ],
     configMap: {
+      // Evolury: a chave é `property_<id>`, montada em tempo de execução
+      ...Object.fromEntries(propertyFilterConfigs.map((config) => [config.id, config])),
       project_id: projectFilterConfig,
       state_group: stateGroupFilterConfig,
       state_id: stateFilterConfig,

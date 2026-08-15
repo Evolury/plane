@@ -41,6 +41,19 @@ export enum EIssueGroupByToServerOptions {
   "team_project" = "project_id",
 }
 
+/**
+ * Evolury: o nome do agrupamento no servidor (ADR 0011).
+ *
+ * Propriedade personalizada não está no enum porque o id só existe em tempo de
+ * execução — e ali a tradução é a identidade: o alias que o front escolhe é o
+ * mesmo que o `grouper` anota. Esta função é o único ponto que sabe disso.
+ */
+export const groupByParaServidor = (chave: string | null | undefined): string | undefined => {
+  if (!chave) return undefined;
+  if (chave.startsWith("property_")) return chave;
+  return EIssueGroupByToServerOptions[chave as keyof typeof EIssueGroupByToServerOptions];
+};
+
 export enum EIssueGroupBYServerToProperty {
   "state_id" = "state_id",
   "priority" = "priority",

@@ -65,19 +65,24 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
       (`property_<uuid>`) resolve `F()`, `values()` e a partição de janela do
       paginador, sem reescrever nada. As colunas seguem a ordem das opções, com
       `"None"` no fim para a tarefa sem valor ter onde caber
-- [ ] P4.2b Agrupar pela INTERFACE — **bloqueado por tipo**: `TIssueGroupByOptions`
-      é união fechada, e o menu, o kanban e a lista são tipados sobre ela
+- [x] P4.2b Agrupar pela INTERFACE — a propriedade aparece no menu "Agrupar
+      por" e o quadro desenha uma coluna por opção. A união fechada não foi
+      alargada para `string`: ganhou um membro de PADRÃO (`property_${string}`),
+      que continua fechado ao que o compilador reconhece
 - [x] P4.3 Ordenar por número, data, moeda, texto e seleção — prefixo
       `property__<uuid>` resolvido ANTES da allowlist, com o id validado como
       UUID e a propriedade conferida no banco antes de tocar no ORM. Ordena
       pela coluna tipada, e seleção ordena pela ordem das opções
-- [ ] P4.4 Filtros ricos no front — **bloqueado por tipo**: a chave de condição
-      é `${propriedade}__${operador}` em tipo literal, derivada da união fechada
-      `WORK_ITEM_FILTER_PROPERTY_KEYS`. Id em tempo de execução não entra numa
-      união de compilação sem alargá-la para `string`, o que atravessa o pacote
-      de filtros ricos inteiro
+- [x] P4.4 Filtros ricos no front — a propriedade de seleção aparece no
+      seletor de filtro, com as opções e as cores dela, e a condição sobrevive
+      ao recarregamento da página. Mesmo membro de padrão do P4.2b
+- [x] P4.4b Filtro pela ÁRVORE de filtros ricos — a tela manda a árvore
+      inteira em `filters`, como JSON, e não um parâmetro por filtro. A
+      condição de propriedade nasce como SUBCONSULTA para compor sob
+      `and`/`or`/`not` sem colidir consigo mesma no join
 - [x] P4.5 Testes: cada operador de cada tipo, duas propriedades ao mesmo
-      tempo, e filtro forjado que nunca vira consulta
+      tempo, e filtro forjado que nunca vira consulta — pelos DOIS caminhos
+      (parâmetro de consulta e árvore de filtros ricos)
 
 ## P5 — Integração com a recorrência
 
@@ -98,18 +103,44 @@ Tipo pessoa, fórmula, rollup, checkbox, reuso entre projetos, propriedade por
 tipo de tarefa, espaço público, e data personalizada em calendário e cronograma
 ([ADR 0011](../../decisoes/0011-propriedades-personalizadas.md)).
 
-## Lacunas conhecidas
+## Lacunas fechadas — e a estimativa que estava errada
 
-Duas, e as duas são do MESMO tipo de obstáculo — não de esforço.
+As duas lacunas declaradas acima (P4.2b e P4.4) foram fechadas. Vale registrar
+por quê, porque a estimativa anterior errou por muito.
 
-`TIssueGroupByOptions` e `WORK_ITEM_FILTER_PROPERTY_KEYS` são **uniões
-fechadas** em `@plane/types`, e o menu de agrupar, os layouts de quadro e lista
-e o pacote de filtros ricos são tipados sobre elas. Uma propriedade
-personalizada é um id que só existe em tempo de execução: para caber ali, a
-união teria de ser alargada para `string`, e isso atravessa toda a filtragem,
-o agrupamento e as visões salvas.
+Eu havia escrito que `TIssueGroupByOptions` e `WORK_ITEM_FILTER_PROPERTY_KEYS`
+são uniões fechadas e que caber ali exigiria alargá-las para `string` — uma
+refatoração atravessando toda a filtragem, o agrupamento e as visões salvas.
 
-**No backend as duas funcionam e estão testadas.** Quem chama a API agrupa e
-filtra hoje. O que falta é o seletor visual, e ele é um trabalho de refatoração
-de tipos no pacote compartilhado — com risco de regressão em todos os layouts —,
-não uma tela a mais.
+**Não exigiu.** Uma união aceita um membro de tipo literal de PADRÃO:
+
+```ts
+| "team_project"
+| `property_${string}`   // continua fechado: é um padrão, não `string`
+```
+
+O compilador continua recusando `"qualquer_coisa"` e continua estreitando nos
+`switch`. O custo medido foi de **dois** erros de compilação no repositório
+inteiro, não a refatoração que eu previa. A lição não é sobre tipos: é que eu
+declarei um bloqueio por inferência em vez de medir com o compilador — que
+levaria minutos.
+
+## Lacuna que resta (do produto, não desta funcionalidade)
+
+Texto, número, moeda e data **filtram pela API** (`_gte`/`_lte`, contém), mas
+ainda não aparecem no seletor visual: o formato de operador deles é outro
+(faixa e trecho, não lista de opções). É trabalho de tela, não de tipo.
+
+## Achado colateral: no servidor de desenvolvimento o filtro não abre
+
+O botão de filtro não abre nada com `pnpm dev` — e isso é anterior a esta
+funcionalidade. O `WorkItemFiltersHOC` cria a instância de filtro num `useMemo`
+e a apaga no `cleanup` do `useEffect`; sob `StrictMode`, o React monta,
+desmonta e remonta, o `cleanup` apaga a instância, e o `useMemo` não roda de
+novo. A instância some, e o botão só registra "filter instance not available".
+
+Só afeta desenvolvimento — `StrictMode` não duplica efeitos em produção.
+Provado por experimento: com `StrictMode` o seletor não abre; sem ele, abre com
+as 12 opções. Para validar filtros no dev, desligue `StrictMode` em
+`apps/web/app/entry.client.tsx` e religue depois
+([processo](../../processos/desenvolvimento-local.md)).

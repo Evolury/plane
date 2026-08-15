@@ -46,7 +46,8 @@ from plane.utils.host import base_host
 
 # Module imports
 from .. import BaseViewSet, BaseAPIView
-from plane.utils.filters import ComplexFilterBackend
+# Evolury: backend com propriedade personalizada (ADR 0011)
+from plane.utils.filters import FiltroComPropriedades
 from plane.utils.filters import IssueFilterSet
 
 
@@ -54,7 +55,7 @@ class IssueArchiveViewSet(BaseViewSet):
     serializer_class = IssueFlatSerializer
     model = Issue
 
-    filter_backends = (ComplexFilterBackend,)
+    filter_backends = (FiltroComPropriedades,)
     filterset_class = IssueFilterSet
 
     def apply_annotations(self, issues):
