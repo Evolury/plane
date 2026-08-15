@@ -27,6 +27,7 @@ from plane.db.models import (
 
 TAREFAS_URL = "/api/workspaces/{slug}/projects/{project_id}/issues/"
 VALORES_URL = "/api/workspaces/{slug}/projects/{project_id}/issues/{issue_id}/properties/"
+BLOCO_URL = "/api/workspaces/{slug}/projects/{project_id}/issue-property-values/"
 
 
 @pytest.fixture
@@ -289,3 +290,65 @@ class TestValores:
             lidos = valores_por_tarefa([t.id for t in tarefas])
 
         assert len(lidos) == 40
+
+    def test_bulk_reads_a_page_in_one_query(
+        self, session_client, workspace, projeto, create_user, django_assert_max_num_queries
+    ):
+        """A leitura de uma página inteira custa uma consulta.
+
+        É o que sustenta a coluna da tabela e o chip do cartão sem virar o N+1
+        que o ADR 0011 proibiu.
+        """
+        texto = _propriedade(projeto, "Observação", "text")
+        tarefas = [_tarefa(projeto, create_user, nome=f"T{i}") for i in range(30)]
+        IssuePropertyValue.objects.bulk_create(
+            [
+                IssuePropertyValue(
+                    issue=t, issue_property=texto, value_text=f"v{i}",
+                    project=projeto, workspace=projeto.workspace,
+                )
+                for i, t in enumerate(tarefas)
+            ]
+        )
+        url = BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)
+        ids = ",".join(str(t.id) for t in tarefas)
+
+        resposta = session_client.get(f"{url}?issues={ids}")
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert len(resposta.data["values"]) == 30
+
+    def test_card_only_returns_just_the_marked_properties(
+        self, session_client, workspace, projeto, create_user
+    ):
+        """Trinta propriedades no cartão fariam do quadro uma planilha ruim.
+
+        Quem quer todas tem o layout de tabela, que é onde a largura existe.
+        """
+        no_cartao = _propriedade(projeto, "Canal", "text", show_on_card=True)
+        fora = _propriedade(projeto, "Observação", "text")
+        tarefa = _tarefa(projeto, create_user)
+        for propriedade, valor in ((no_cartao, "A"), (fora, "B")):
+            IssuePropertyValue.objects.create(
+                issue=tarefa, issue_property=propriedade, value_text=valor,
+                project=projeto, workspace=projeto.workspace,
+            )
+
+        resposta = session_client.get(
+            f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1"
+        )
+
+        meus = resposta.data["values"][str(tarefa.id)]
+        assert meus == {str(no_cartao.id): "A"}
+
+    def test_card_only_is_empty_without_marked_properties(
+        self, session_client, workspace, projeto, create_user
+    ):
+        """Projeto que não marcou nada não paga consulta nenhuma pelo cartão."""
+        _propriedade(projeto, "Observação", "text")
+
+        resposta = session_client.get(
+            f"{BLOCO_URL.format(slug=workspace.slug, project_id=projeto.id)}?card_only=1"
+        )
+
+        assert resposta.data["values"] == {}

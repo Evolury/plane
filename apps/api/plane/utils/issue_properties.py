@@ -44,17 +44,24 @@ def propriedades_ativas(project_id):
     )
 
 
-def valores_por_tarefa(issue_ids):
+def valores_por_tarefa(issue_ids, property_ids=None):
     """`{issue_id: {property_id: valor}}`, em uma consulta.
 
     Devolve o valor já no formato da API — lista nas de seleção múltipla,
     escalar nas demais —, para que quem chama não precise conhecer o modelo.
+
+    `property_ids` recorta o que volta. Sem ele, quem pede os valores do cartão
+    receberia também os que o cartão não mostra — resposta maior que a pergunta,
+    e dado interno viajando para uma tela que não pediu por ele.
     """
     por_tarefa = defaultdict(dict)
     if not issue_ids:
         return por_tarefa
 
-    linhas = IssuePropertyValue.objects.filter(issue_id__in=issue_ids).select_related("issue_property")
+    linhas = IssuePropertyValue.objects.filter(issue_id__in=issue_ids)
+    if property_ids is not None:
+        linhas = linhas.filter(issue_property_id__in=property_ids)
+    linhas = linhas.select_related("issue_property")
     for linha in linhas:
         propriedade = linha.issue_property
         atual = por_tarefa[linha.issue_id]

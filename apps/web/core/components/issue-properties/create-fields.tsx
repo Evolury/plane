@@ -20,12 +20,10 @@ import type { TIssueProperty, TPropertyValue } from "@plane/types";
 // services
 import { IssuePropertyService } from "@/services/issue-property.service";
 // local imports
+import { chaveDasDefinicoes } from "./store";
 import { PropertyValueEditor } from "./value-editor";
 
 const servico = new IssuePropertyService();
-
-export const chaveDasDefinicoes = (workspaceSlug: string, projectId: string) =>
-  `ISSUE_PROPERTY_DEFINITIONS_${workspaceSlug}_${projectId}`;
 
 /** Os nomes das obrigatórias que ainda estão vazias — a mensagem do bloqueio. */
 export const obrigatoriasFaltando = (

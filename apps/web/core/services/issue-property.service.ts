@@ -110,4 +110,31 @@ export class IssuePropertyService extends APIService {
         throw err?.response?.data;
       });
   }
+
+  /** Os valores de uma PÁGINA de tarefas — uma chamada, não uma por cartão. */
+  async valuesForIssues(
+    workspaceSlug: string,
+    projectId: string,
+    issueIds: string[]
+  ): Promise<{ values: Record<string, Record<string, TPropertyValue>> }> {
+    return this.get(
+      `/api/workspaces/${workspaceSlug}/projects/${projectId}/issue-property-values/?issues=${issueIds.join(",")}`
+    )
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
+  /** Só os valores das propriedades marcadas para o cartão — uma chamada por projeto. */
+  async cardValues(
+    workspaceSlug: string,
+    projectId: string
+  ): Promise<{ values: Record<string, Record<string, TPropertyValue>> }> {
+    return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issue-property-values/?card_only=1`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
 }

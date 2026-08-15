@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.issue_property import IssuePropertySerializer
 from plane.app.views.base import BaseViewSet
+from plane.utils.issue_properties import valores_por_tarefa
 from plane.db.models import (
     IssueProperty,
     IssuePropertyOption,
@@ -202,6 +203,50 @@ class IssuePropertyViewSet(BaseViewSet):
         for identificador, opcao in existentes.items():
             if identificador not in vistas:
                 opcao.delete()
+
+
+class IssuePropertyValuesBulkViewSet(BaseViewSet):
+    """Os valores de uma PÁGINA de tarefas, numa consulta.
+
+    Endpoint próprio, e não campo na listagem de tarefas: a listagem é o
+    caminho quente do produto, com paginação, agrupamento e teto de consultas
+    fixado em teste. É a mesma escolha que o selo do quadro fez na F6.5 da
+    recorrência — uma pergunta enxuta, respondida de uma vez.
+    """
+
+    model = IssueProperty
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="PROJECT")
+    def list(self, request, slug, project_id):
+        # Dois modos, e o segundo existe porque o cartão não conhece a página
+        # em que está: `card_only` devolve o projeto inteiro, limitado às
+        # propriedades marcadas para o cartão — uma marca que é opt-in.
+        if request.GET.get("card_only"):
+            do_cartao = list(
+                IssueProperty.objects.filter(
+                    project_id=project_id, is_active=True, show_on_card=True
+                ).values_list("id", flat=True)
+            )
+            if not do_cartao:
+                return Response({"values": {}}, status=status.HTTP_200_OK)
+            ids = list(
+                IssuePropertyValue.objects.filter(
+                    issue_property_id__in=do_cartao, issue__deleted_at__isnull=True
+                )
+                .values_list("issue_id", flat=True)
+                .distinct()
+            )
+            recorte = do_cartao
+        else:
+            ids = [i for i in (request.GET.get("issues") or "").split(",") if i]
+            recorte = None
+        if not ids:
+            return Response({"values": {}}, status=status.HTTP_200_OK)
+        valores = valores_por_tarefa(ids, property_ids=recorte)
+        return Response(
+            {"values": {str(tarefa): campos for tarefa, campos in valores.items()}},
+            status=status.HTTP_200_OK,
+        )
 
 
 class IssuePropertyOptionUsageViewSet(BaseViewSet):

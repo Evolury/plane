@@ -8,6 +8,7 @@ import { useClosedIssueStyles } from "@/hooks/use-issue-completed";
 // local imports
 import { CompletionCheck } from "../../completion-check";
 // Evolury: selo "esta tarefa se repete" (ADR 0010, revisão)
+import { IssuePropertyCardValues } from "@/components/issue-properties/card-values";
 import { RecurrenceBadge } from "@/components/recurring-work-items/badge";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
 import { useEffect, useRef } from "react";
@@ -268,6 +269,10 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
 
               {/* Evolury: selo "esta tarefa se repete" (ADR 0010, revisão) */}
               {issue.project_id && !isEpic && <RecurrenceBadge projectId={issue.project_id} issueId={issue.id} />}
+              {/* Evolury: propriedades marcadas para o cartão (ADR 0011) */}
+              {issue.project_id && !isEpic && (
+                <IssuePropertyCardValues projectId={issue.project_id} issueId={issue.id} />
+              )}
 
               {/* sub-issues chevron */}
               <div className="grid size-4 flex-shrink-0 place-items-center">

@@ -8,8 +8,8 @@ na descrição — invisível para filtro, agrupamento e relatório.
 
 ## Onde a propriedade mora
 
-**No projeto**, em Configurações → Execução, ao lado das automações e das
-tarefas recorrentes. **Criar, editar e excluir é porta de admin**; preencher
+**No projeto**, em Configurações → Estrutura de tarefas, ao lado de etapas,
+etiquetas e estimativas — as quatro descrevem a tarefa. **Criar, editar e excluir é porta de admin**; preencher
 valor é de quem pode editar a tarefa.
 
 Teto de **30 propriedades por projeto**.
