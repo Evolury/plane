@@ -72,7 +72,12 @@ from plane.utils.host import base_host
 from plane.utils.issue_filters import issue_filters
 
 # Evolury: propriedades personalizadas (ADR 0011)
-from plane.utils.issue_properties import ValorInvalido, faltando_obrigatorias, gravar_valores
+from plane.utils.issue_properties import (
+    ValorInvalido,
+    aplicar_filtros_de_propriedade,
+    faltando_obrigatorias,
+    gravar_valores,
+)
 from plane.utils.order_queryset import order_issue_queryset
 from plane.utils.paginator import GroupedOffsetPaginator, SubGroupedOffsetPaginator
 from plane.utils.timezone_converter import user_timezone_converter
@@ -113,7 +118,10 @@ class IssueListEndpoint(BaseAPIView):
 
         # Apply legacy filters
         filters = issue_filters(request.query_params, "GET")
+        # Evolury: propriedade personalizada filtra em chamada própria — duas
+        # delas em um `.filter()` só colidiriam no mesmo join (ADR 0011).
         issue_queryset = queryset.filter(**filters)
+        issue_queryset = aplicar_filtros_de_propriedade(issue_queryset, request.query_params)
         issue_queryset = issue_queryset.filter(state__deleted_at__isnull=True)
 
         # Add select_related, prefetch_related if fields or expand is not None
@@ -1042,6 +1050,8 @@ class IssueDetailEndpoint(BaseAPIView):
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST])
     def get(self, request, slug, project_id):
         filters = issue_filters(request.query_params, "GET")
+        # Evolury: propriedade personalizada filtra em chamada própria — duas
+        # delas em um `.filter()` só colidiriam no mesmo join (ADR 0011).
 
         # check for the project member role, if the role is 5 then check for the guest_view_all_features
         #  if it is true then show all the issues else show only the issues created by the user
@@ -1096,6 +1106,7 @@ class IssueDetailEndpoint(BaseAPIView):
 
         # Apply legacy filters
         issue = issue.filter(**filters)
+        issue = aplicar_filtros_de_propriedade(issue, request.query_params)
 
         # Total count queryset
         total_issue_queryset = copy.deepcopy(issue)

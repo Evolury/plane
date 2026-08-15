@@ -58,31 +58,45 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 
 ## P4 — Filtro, agrupamento e ordenação
 
-- [ ] P4.1 Filtro por propriedade em `issue_filters.py`, hoje uma função por
-      campo conhecido
-- [ ] P4.2 Agrupar por seleção única (`grouper.py`)
+- [x] P4.1 Filtro por propriedade — devolve um `Q` por propriedade, aplicado
+      em chamada própria de `.filter()`. Duas num `.filter()` só colidiriam
+      no mesmo join, e a tarefa que tem as duas coisas sumiria
+- [ ] P4.2 Agrupar por seleção única — **não entrou**. Atravessa o `grouper`,
+      o paginador (que usa o nome do campo em `F()`, `values()` e na partição
+      de janela) e o menu do front. É tratável com um alias anotado, mas é
+      mudança no caminho quente e paginado, e pede validação própria
 - [x] P4.3 Ordenar por número, data, moeda, texto e seleção — prefixo
       `property__<uuid>` resolvido ANTES da allowlist, com o id validado como
       UUID e a propriedade conferida no banco antes de tocar no ORM. Ordena
       pela coluna tipada, e seleção ordena pela ordem das opções
-- [ ] P4.4 Filtros ricos no front, com o editor certo por tipo
-- [ ] P4.5 Testes: cada operador de cada tipo, e o agrupamento com opção vazia
+- [ ] P4.4 Filtros ricos no front — **não entrou**. O filtro existe e está
+      testado na API; falta o seletor visual, que depende do sistema de
+      filtros ricos e de um editor por tipo
+- [x] P4.5 Testes: cada operador de cada tipo, duas propriedades ao mesmo
+      tempo, e filtro forjado que nunca vira consulta
 
 ## P5 — Integração com a recorrência
 
-- [ ] P5.1 A cópia da ocorrência leva os valores (ADR 0010: o que descreve o
+- [x] P5.1 A cópia da ocorrência leva os valores (ADR 0010: o que descreve o
       trabalho copia)
-- [ ] P5.2 Em bloco, sem estourar o custo por nó fixado em teste (8 consultas)
-- [ ] P5.3 Testes: valores na ocorrência, na subtarefa aninhada, e o custo
+- [x] P5.2 Em bloco, sem estourar o custo por nó fixado em teste (8 consultas)
+- [x] P5.3 Testes: valores na ocorrência, na subtarefa aninhada, e o custo
 
 ## P6 — Matriz de compatibilidade
 
-- [ ] P6.1 Executar a matriz contra os recursos existentes, com evidência,
+- [x] P6.1 Executar a matriz contra os recursos existentes, com evidência,
       como na F6 da recorrência
-- [ ] P6.2 Manual do usuário
+- [x] P6.2 Manual do usuário
 
 ## Fora de escopo
 
 Tipo pessoa, fórmula, rollup, checkbox, reuso entre projetos, propriedade por
 tipo de tarefa, espaço público, e data personalizada em calendário e cronograma
 ([ADR 0011](../../decisoes/0011-propriedades-personalizadas.md)).
+
+## Lacunas conhecidas
+
+Duas, ambas declaradas e nenhuma bloqueando o uso do que foi entregue:
+**agrupar por propriedade** (P4.2) e **filtrar pela interface** (P4.4). O
+raciocínio de cada uma está na linha correspondente e na
+[matriz de compatibilidade](compatibilidade.md).

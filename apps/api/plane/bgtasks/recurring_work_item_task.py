@@ -42,6 +42,7 @@ from plane.db.models import (
     IssueLabel,
     ProjectMember,
     RecurringSubtaskSchedule,
+    IssuePropertyValue,
     RecurringWorkItem,
     RecurringWorkItemOccurrence,
     State,
@@ -97,9 +98,7 @@ def _responsaveis_ativos(regra):
     parece atribuído (ADR 0010).
     """
     return set(
-        ProjectMember.objects.filter(project_id=regra.project_id, is_active=True).values_list(
-            "member_id", flat=True
-        )
+        ProjectMember.objects.filter(project_id=regra.project_id, is_active=True).values_list("member_id", flat=True)
     )
 
 
@@ -157,13 +156,9 @@ def _vinculos_das_tarefas(ids):
     aninhada ter ficado para o ciclo seguinte (ADR 0010).
     """
     responsaveis, etiquetas = {}, {}
-    for tarefa_id, pessoa_id in IssueAssignee.objects.filter(issue_id__in=ids).values_list(
-        "issue_id", "assignee_id"
-    ):
+    for tarefa_id, pessoa_id in IssueAssignee.objects.filter(issue_id__in=ids).values_list("issue_id", "assignee_id"):
         responsaveis.setdefault(tarefa_id, []).append(pessoa_id)
-    for tarefa_id, etiqueta_id in IssueLabel.objects.filter(issue_id__in=ids).values_list(
-        "issue_id", "label_id"
-    ):
+    for tarefa_id, etiqueta_id in IssueLabel.objects.filter(issue_id__in=ids).values_list("issue_id", "label_id"):
         etiquetas.setdefault(tarefa_id, []).append(etiqueta_id)
     return responsaveis, etiquetas
 
@@ -173,9 +168,7 @@ def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
     if ativos is None:
         ativos = _responsaveis_ativos(regra)
     responsaveis = [
-        vinculo.assignee_id
-        for vinculo in IssueAssignee.objects.filter(issue=origem)
-        if vinculo.assignee_id in ativos
+        vinculo.assignee_id for vinculo in IssueAssignee.objects.filter(issue=origem) if vinculo.assignee_id in ativos
     ]
     # Só a tarefa principal cai no padrão do projeto: subtarefa sem responsável
     # é normal, e carimbar todas elas com a mesma pessoa seria ruído.
@@ -206,6 +199,42 @@ def _vencimento_da_subtarefa(agenda, nascimento, vencimento):
     return max(calculada, nascimento)
 
 
+def _copiar_propriedades(origens, copias):
+    """Leva os valores de propriedade personalizada para as cópias (ADR 0011).
+
+    Eles **descrevem o trabalho**, que é o critério do ADR 0010 — o mesmo que
+    traz nome, prioridade e etiqueta. Editar o valor na origem muda as
+    próximas ocorrências, sem sincronização, como todo o resto do molde.
+
+    Em bloco, e não por tarefa: o custo por nó da cópia está fixado em teste, e
+    uma consulta por subtarefa o estouraria. Duas idas ao banco, quantos nós
+    forem — uma para ler, uma para gravar.
+    """
+    if not origens:
+        return
+    linhas = list(IssuePropertyValue.objects.filter(issue_id__in=list(origens)))
+    if not linhas:
+        return
+    IssuePropertyValue.objects.bulk_create(
+        [
+            IssuePropertyValue(
+                issue=copias[linha.issue_id],
+                issue_property_id=linha.issue_property_id,
+                value_text=linha.value_text,
+                value_number=linha.value_number,
+                value_date=linha.value_date,
+                value_option_id=linha.value_option_id,
+                project_id=copias[linha.issue_id].project_id,
+                workspace_id=copias[linha.issue_id].workspace_id,
+            )
+            for linha in linhas
+            if linha.issue_id in copias
+        ],
+        batch_size=200,
+        ignore_conflicts=True,
+    )
+
+
 def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento=None):
     """A árvore inteira de subtarefas, aberta na etapa padrão do projeto.
 
@@ -230,9 +259,7 @@ def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento
     responsaveis_da, etiquetas_da = _vinculos_das_tarefas(ids)
     agendas = {
         agenda.subtask_id: agenda
-        for agenda in RecurringSubtaskSchedule.objects.filter(
-            recurring_work_item=regra, subtask_id__in=ids
-        )
+        for agenda in RecurringSubtaskSchedule.objects.filter(recurring_work_item=regra, subtask_id__in=ids)
     }
 
     copia_de = {origem.id: copia}
@@ -272,6 +299,7 @@ def _copiar_subtarefas(origem, copia, regra, ativos, nascimento=None, vencimento
         etiquetas += linhas_de_etiqueta
 
     _gravar_vinculos(responsaveis, etiquetas)
+    return copia_de
 
 
 def _foi_pulada(regra, previsto_para):
@@ -327,13 +355,13 @@ def _criar_ocorrencia(regra, previsto_para, agora):
         )
         ativos = _responsaveis_ativos(regra)
         _copiar_relacionados(origem, tarefa, regra, ativos, usar_padrao=True)
-        _copiar_subtarefas(origem, tarefa, regra, ativos, nascimento, vencimento)
+        copias = _copiar_subtarefas(origem, tarefa, regra, ativos, nascimento, vencimento) or {origem.id: tarefa}
+        # A origem e a árvore inteira, numa leitura só (ADR 0011).
+        _copiar_propriedades(list(copias.keys()), copias)
 
         ocorrencia.issue = tarefa
         ocorrencia.save(update_fields=["issue"])
-        RecurringWorkItem.objects.filter(pk=regra.pk).update(
-            occurrences_created=regra.occurrences_created + 1
-        )
+        RecurringWorkItem.objects.filter(pk=regra.pk).update(occurrences_created=regra.occurrences_created + 1)
 
     # Ocorrência é tarefa como qualquer outra: história, webhook e notificação.
     # O ator é quem criou a regra — atividade sem ator é buraco no histórico.
@@ -492,11 +520,7 @@ def agendar_apos_conclusao(issue_id, novo_estado_id):
     if ocorrencia is not None:
         regra = ocorrencia.recurring_work_item
     else:
-        regra = (
-            RecurringWorkItem.objects.filter(source_issue_id=issue_id)
-            .select_related("project")
-            .first()
-        )
+        regra = RecurringWorkItem.objects.filter(source_issue_id=issue_id).select_related("project").first()
     if regra is None:
         return None
     if regra.generation_mode != GenerationMode.AFTER_COMPLETION or not regra.is_active:

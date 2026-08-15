@@ -202,3 +202,117 @@ def rotulo_do_valor(propriedade, valor):
     if propriedade.property_type == PropertyType.CURRENCY:
         return f"{propriedade.currency} {valor}"
     return str(valor)
+
+
+#: O prefixo dos parâmetros de filtro por propriedade personalizada.
+#:
+#: Precisa ser prefixo, e não uma chave fixa como os outros filtros, porque o
+#: "campo" aqui é um id que só existe em tempo de execução.
+PREFIXO_DE_FILTRO = "property_"
+
+
+def filtros_de_propriedade(query_params):
+    """Traduz `property_<uuid>` em condições, uma por propriedade.
+
+    Devolve uma LISTA de `Q`, e não um dicionário de `kwargs`, por uma razão
+    de correção: os filtros do produto viram `kwargs` de uma única chamada de
+    `.filter()`, e duas propriedades ali colidiriam no mesmo join — a segunda
+    condição recairia sobre a linha que a primeira já escolheu, e o resultado
+    seria vazio sem ninguém entender por quê. Cada `Q` é aplicado em sua
+    própria chamada, que é o que força um join por propriedade.
+
+    Operadores, um por tipo, e só os que a especificação declarou:
+
+        seleção          property_<id>=opcao,opcao      tem qualquer uma
+        texto            property_<id>=trecho           contém
+        número/moeda     property_<id>_gte / _lte       faixa
+        data             property_<id>_gte / _lte       faixa
+    """
+    import uuid as _uuid
+
+    from django.db.models import Q
+
+    pedidos = {}
+    for chave, valor in query_params.items():
+        if not chave.startswith(PREFIXO_DE_FILTRO) or not valor:
+            continue
+        resto = chave[len(PREFIXO_DE_FILTRO) :]
+        operador = "in"
+        for sufixo in ("_gte", "_lte"):
+            if resto.endswith(sufixo):
+                resto, operador = resto[: -len(sufixo)], sufixo[1:]
+                break
+        try:
+            _uuid.UUID(resto)
+        except (ValueError, AttributeError, TypeError):
+            # Id malformado é pedido de quem chama, e pedido malformado não
+            # vira consulta — nem silenciosamente ampla, nem erro de ORM.
+            continue
+        pedidos.setdefault(resto, {})[operador] = valor
+
+    if not pedidos:
+        return []
+
+    por_id = {str(p.id): p for p in IssueProperty.objects.filter(id__in=pedidos.keys()).only("id", "property_type")}
+
+    condicoes = []
+    for propriedade_id, operadores in pedidos.items():
+        propriedade = por_id.get(propriedade_id)
+        if propriedade is None:
+            continue
+        base = Q(property_values__issue_property_id=propriedade_id)
+
+        if propriedade.property_type in (PropertyType.SELECT, PropertyType.MULTI_SELECT):
+            escolhidas = [v for v in (operadores.get("in") or "").split(",") if v]
+            validas = []
+            for escolhida in escolhidas:
+                try:
+                    _uuid.UUID(escolhida)
+                    validas.append(escolhida)
+                except (ValueError, AttributeError, TypeError):
+                    continue
+            if not validas:
+                continue
+            condicoes.append(base & Q(property_values__value_option_id__in=validas))
+            continue
+
+        if propriedade.property_type == PropertyType.TEXT:
+            trecho = operadores.get("in")
+            if trecho:
+                condicoes.append(base & Q(property_values__value_text__icontains=trecho))
+            continue
+
+        coluna = "value_date" if propriedade.property_type == PropertyType.DATE else "value_number"
+        faixa = Q()
+        tem = False
+        for operador, sufixo in (("gte", "__gte"), ("lte", "__lte")):
+            bruto = operadores.get(operador)
+            if not bruto:
+                continue
+            try:
+                convertido = (
+                    parse_date(str(bruto)) if propriedade.property_type == PropertyType.DATE else Decimal(str(bruto))
+                )
+            except (InvalidOperation, ValueError):
+                continue
+            if convertido is None:
+                continue
+            faixa &= Q(**{f"property_values__{coluna}{sufixo}": convertido})
+            tem = True
+        if tem:
+            condicoes.append(base & faixa)
+
+    return condicoes
+
+
+def aplicar_filtros_de_propriedade(queryset, query_params):
+    """Aplica cada condição em SUA chamada de `.filter()`.
+
+    Uma chamada por propriedade é o que garante um join por propriedade —
+    juntar tudo num `.filter()` só faria a segunda condição recair sobre a
+    linha que a primeira escolheu, e "canal = indicação E tag = urgente"
+    devolveria vazio para uma tarefa que tem as duas.
+    """
+    for condicao in filtros_de_propriedade(query_params):
+        queryset = queryset.filter(condicao)
+    return queryset

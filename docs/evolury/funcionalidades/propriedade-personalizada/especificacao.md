@@ -82,8 +82,8 @@ de uso sem que ninguém queira apagar o histórico.
 | Modal de criação                               | sim                            |
 | Coluna no layout de tabela                     | sim                            |
 | Chip no cartão (lista e quadro)                | sim, só nas marcadas para isso |
-| Filtro                                         | sim                            |
-| Agrupar (seleção única)                        | sim                            |
+| Filtro                                         | na API; **sem seletor visual** |
+| Agrupar (seleção única)                        | **não entrou** — ver backlog   |
 | Ordenar (número, data, moeda, texto)           | sim                            |
 | Exportação CSV e XLSX                          | sim                            |
 | API pública e webhook                          | sim                            |
