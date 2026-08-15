@@ -38,6 +38,7 @@ import { useProjectState } from "@/hooks/store/use-project-state";
 // plane web components
 import { IssueParentSelectRoot } from "@/components/issues/parent-select-root";
 // Evolury: a recorrência mora na tarefa (ADR 0010, revisão)
+import { IssuePropertiesSection } from "@/components/issue-properties/section";
 import { RecurrenceSection } from "@/components/recurring-work-items/section";
 import type { TIssueOperations } from "../issue-detail";
 import { IssueCycleSelect } from "../issue-detail/cycle-select";
@@ -249,6 +250,14 @@ export const PeekOverviewProperties = observer(function PeekOverviewProperties(p
 
         {/* Evolury: a recorrência mora na tarefa (ADR 0010, revisão) */}
         <RecurrenceSection workspaceSlug={workspaceSlug} projectId={projectId} issueId={issueId} />
+        {/* Evolury: propriedades personalizadas (ADR 0011). Some inteira
+                quando o projeto não configurou nenhuma. */}
+        <IssuePropertiesSection
+          workspaceSlug={workspaceSlug}
+          projectId={projectId}
+          issueId={issueId}
+          disabled={disabled}
+        />
       </div>
     </div>
   );

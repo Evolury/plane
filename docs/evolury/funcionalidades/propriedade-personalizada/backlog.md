@@ -31,12 +31,14 @@ de propósito — dá para revisar o modelo antes de existir dado dependendo del
 
 ## P2 — Valor na tarefa
 
-- [ ] P2.1 Leitura e escrita do valor no painel e no peek, um editor por tipo
-- [ ] P2.2 Modal de criação, com a obrigatoriedade barrando **só a criação**
-- [ ] P2.3 Obrigatoriedade não alcança tarefa que já existia
-- [ ] P2.4 Atividade de mudança de valor, com o rótulo da propriedade
-- [ ] P2.5 Webhook e API pública carregam os valores
-- [ ] P2.6 Testes: cada tipo, obrigatório na criação e não na conclusão,
+- [x] P2.1 Leitura e escrita do valor no painel e no peek, um editor por tipo
+- [x] P2.2 Modal de criação, com a obrigatoriedade barrando **só a criação**
+- [x] P2.3 Obrigatoriedade não alcança tarefa que já existia
+- [x] P2.4 Atividade de mudança de valor, com o rótulo da propriedade
+- [~] P2.5 Webhook e API pública carregam os valores — **adiado para a P3**:
+      a serialização em bloco por página de tarefas é o mesmo trabalho da
+      leitura dos layouts, e fazê-la duas vezes seria escrever para jogar fora
+- [x] P2.6 Testes: cada tipo, obrigatório na criação e não na conclusão,
       retroatividade, e o filtro explícito de `deleted_at` nas junções
 
 ## P3 — Leitura em bloco e saída do dado
