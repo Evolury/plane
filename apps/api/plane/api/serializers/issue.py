@@ -844,13 +844,37 @@ class IssueExpandSerializer(BaseSerializer):
     # o que integra o produto ao resto da operação; mandar a tarefa sem o dado
     # de negócio que ela carrega seria mandar meia tarefa.
     property_values = serializers.SerializerMethodField()
+    # Evolury: e o valor sozinho não se explica. `{"<uuid>": "<uuid>"}` é um
+    # par de ids opacos: sem o nome do campo e o rótulo da opção, quem recebe
+    # teria de fazer uma segunda chamada autenticada para entender o que
+    # chegou — e um webhook é justamente o caso em que essa chamada de volta
+    # nem sempre existe. Vão só as propriedades que ESTA tarefa preenche.
+    properties = serializers.SerializerMethodField()
     state = StateLiteSerializer(read_only=True)
     description = serializers.JSONField(source="description_json", read_only=True)
 
-    def get_property_values(self, obj):
+    def _valores_de(self, obj):
+        """Os valores desta tarefa, uma vez só por tarefa.
+
+        O cache é por id, e não um atributo solto: a mesma instância do
+        serializer atende várias tarefas em `many=True`, e um cache sem dono
+        devolveria os valores da tarefa anterior.
+        """
         from plane.utils.issue_properties import valores_por_tarefa
 
-        return valores_por_tarefa([obj.id]).get(obj.id, {})
+        dono, valores = getattr(self, "_cache_de_valores", (None, None))
+        if dono != obj.id:
+            valores = valores_por_tarefa([obj.id]).get(obj.id, {})
+            self._cache_de_valores = (obj.id, valores)
+        return valores
+
+    def get_property_values(self, obj):
+        return self._valores_de(obj)
+
+    def get_properties(self, obj):
+        from plane.utils.issue_properties import definicoes_das_propriedades
+
+        return definicoes_das_propriedades(self._valores_de(obj).keys())
 
     def get_labels(self, obj):
         expand = self.context.get("expand", [])

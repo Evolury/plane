@@ -5,6 +5,30 @@ versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
 ## Não lançado
 
+### Os campos no webhook e na API pública
+
+A tarefa já saía com os valores das propriedades, mas ali um campo é um id:
+`{"e418d9f0-…": "88590486-…"}` não diz a ninguém que aquilo é "Canal =
+Indicação". Agora diz.
+
+- **Webhook**: a carga leva a **definição** dos campos que aquela tarefa
+  preenche — nome, tipo, e o rótulo e a cor de cada opção. O receptor entende o
+  que chegou sem precisar de uma segunda chamada, que é justamente o que um
+  webhook nem sempre pode fazer. Só os campos preenchidos entram.
+- **API pública**: as definições do projeto ganharam endereço próprio,
+  `GET /api/v1/workspaces/<slug>/projects/<id>/issue-properties/`, na mesma
+  ordem da tela. Definição muda pouco: lê-se uma vez e guarda.
+- Os dois são só leitura. Criar campo é configuração do projeto, e continua
+  tendo um caminho só.
+
+### Correções
+
+- **Valor de campo excluído continuava saindo.** A cascata que apaga os valores
+  roda em tarefa assíncrona, e entre o clique e a tarefa — ou para sempre, se
+  ela falhar — o valor seguia aparecendo na API e no webhook com o id de um
+  campo que não existe mais. Encontrado ao conferir uma carga real de webhook,
+  não por teste.
+
 ### Propriedades personalizadas nos menus da tela
 
 As duas lacunas declaradas no lançamento — agrupar e filtrar por uma propriedade
