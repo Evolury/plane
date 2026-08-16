@@ -54,6 +54,7 @@ import {
   isLoaderReady,
   // Evolury: filtro por propriedade personalizada (ADR 0011)
   getIssuePropertyFilterConfig,
+  getDatePropertyFilterConfig,
 } from "@plane/utils";
 // Evolury: propriedades personalizadas (ADR 0011)
 import { chaveDePropriedade } from "@/components/issue-properties/cache";
@@ -191,28 +192,47 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   // projeto — fora de um projeto a lista chega vazia, e propriedade é sempre
   // de um projeto.
   //
-  // Só seleção, única ou múltipla. Texto, número e data filtram por faixa ou
-  // trecho, que é outro formato de operador — a API já os aceita, e a tela
-  // entra depois (backlog P4.5).
+  // Seleção e DATA. Texto, número e moeda continuam só na API: eles precisam
+  // de um campo de DIGITAR, e o pacote de filtros ricos só tem formatos de
+  // ESCOLHER (lista e calendário). Acrescentar um formato novo esbarra nos
+  // genéricos de operador do upstream — está medido no backlog, não é um
+  // construtor a mais.
   const propriedades = usePropriedadesDoProjeto(workspaceSlug, projectId ?? "");
   const propertyFilterConfigs = useMemo(
     () =>
       propriedades
-        .filter((propriedade) => propriedade.property_type === "select" || propriedade.property_type === "multi_select")
+        .filter((propriedade) => propriedade.property_type === "date")
         .map((propriedade) =>
-          getIssuePropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
-            label: propriedade.name,
+          // Evolury: data reaproveita o construtor do produto (ADR 0011) — ele
+          // já oferece "é" e "entre", que é exatamente o par que o backend
+          // aceita como `__exact` e `__range`.
+          getDatePropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
+            propertyDisplayName: propriedade.name,
             isEnabled: true,
-            // Evolury: o ícone ESCOLHIDO para o campo (ADR 0011). Era etiqueta
-            // para todas, e um seletor onde tudo tem o mesmo desenho obriga a
-            // ler cada nome — o ícone deixava de informar.
             filterIcon: iconeDaPropriedade(propriedade),
-            options: propriedade.options ?? [],
-            getOptionIcon: (color) => (
-              <span className="flex size-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            ),
             ...operatorConfigs,
           })
+        )
+        .concat(
+          propriedades
+            .filter(
+              (propriedade) => propriedade.property_type === "select" || propriedade.property_type === "multi_select"
+            )
+            .map((propriedade) =>
+              getIssuePropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
+                label: propriedade.name,
+                isEnabled: true,
+                // Evolury: o ícone ESCOLHIDO para o campo (ADR 0011). Era etiqueta
+                // para todas, e um seletor onde tudo tem o mesmo desenho obriga a
+                // ler cada nome — o ícone deixava de informar.
+                filterIcon: iconeDaPropriedade(propriedade),
+                options: propriedade.options ?? [],
+                getOptionIcon: (color) => (
+                  <span className="flex size-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                ),
+                ...operatorConfigs,
+              })
+            )
         ),
     [propriedades, operatorConfigs]
   );

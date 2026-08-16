@@ -150,11 +150,33 @@ inteiro, não a refatoração que eu previa. A lição não é sobre tipos: é q
 declarei um bloqueio por inferência em vez de medir com o compilador — que
 levaria minutos.
 
-## Lacuna que resta (do produto, não desta funcionalidade)
+## P9 — Os outros tipos no seletor de filtro
 
-Texto, número, moeda e data **filtram pela API** (`_gte`/`_lte`, contém), mas
-ainda não aparecem no seletor visual: o formato de operador deles é outro
-(faixa e trecho, não lista de opções). É trabalho de tela, não de tipo.
+- [x] P9.1 **Data** no seletor, com "é" e "entre" — reaproveita o construtor do
+      produto, e o backend passou a aceitar `__exact` e `__range` (a faixa vira
+      o mesmo par `gte`/`lte` do caminho por parâmetro)
+- [ ] P9.2 **Texto, número e moeda** — bloqueados por um formato de campo que
+      não existe. Ver abaixo
+
+## A lacuna que resta, e por que ela não é um construtor a mais
+
+Texto, número e moeda **filtram pela API** desde a P4. O que falta é a tela, e
+a barreira é de formato, não de operador.
+
+O pacote de filtros ricos tem quatro formatos de campo — `date`, `date_range`,
+`single_select` e `multi_select` — e **todos são de ESCOLHER**: calendário ou
+lista. Texto e número precisam de um campo de **DIGITAR**, que ali não existe.
+
+O upstream deixou pontos de extensão vazios (`EXTENDED_FILTER_FIELD_TYPE`,
+`TExtendedExactOperatorConfigs`), e a tentativa de usá-los foi feita e revertida
+em 15/08/2026: alargar as uniões de configuração por operador faz o TypeScript
+inferir os genéricos de `createOperatorConfigEntry` como INTERSEÇÃO em vez de
+união, e passa a quebrar arquivos do próprio upstream que hoje compilam
+(`configs/properties/shared.ts`, `work-item-filters/configs/filters/shared.ts`).
+
+Ou seja: não é acrescentar um construtor — é mexer nos genéricos de operador do
+pacote compartilhado, com regressão em quem já os usa. Fica medido assim para a
+próxima tentativa começar sabendo onde bate.
 
 ## Achado colateral, já corrigido
 
