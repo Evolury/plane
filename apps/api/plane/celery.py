@@ -74,6 +74,13 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.cleanup_task.delete_email_notification_logs",
         "schedule": crontab(hour=2, minute=45),  # UTC 02:45
     },
+    # Evolury: registro de execuções das automações (ADR 0012). Junto das
+    # outras podas, e pelo mesmo motivo: o log é a resposta a "por que não
+    # rodou?", e uma resposta que ninguém apaga vira uma tabela que só cresce.
+    "check-every-day-to-delete-automation-runs": {
+        "task": "plane.bgtasks.cleanup_task.delete_automation_runs",
+        "schedule": crontab(hour=2, minute=50),
+    },
     "check-every-day-to-delete-page-versions": {
         "task": "plane.bgtasks.cleanup_task.delete_page_versions",
         "schedule": crontab(hour=3, minute=0),  # UTC 03:00

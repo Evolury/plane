@@ -67,8 +67,13 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
       duas que ensinam a diferença entre reagir e repetir
 - [ ] F3.7 Tela do catálogo de receitas no estado vazio (as constantes existem;
       falta o cartão que abre o editor já preenchido)
-- [ ] F3.8 Poda de `AutomationRun` e `AutomationCreation` antigos em
-      `cleanup_task.py`, como os logs de API
+- [x] F3.8 Poda de `AutomationRun` em `cleanup_task.py`, com **duas janelas**:
+      30 dias para a execução que fez algo (é o que se audita depois) e 7 dias
+      para a que parou na condição (é o que faz volume, e "não casou" repetido
+      cinco mil vezes diz o mesmo que uma vez). `AutomationCreation` **fica de
+      fora de propósito**: parece log e é a garantia de idempotência — apagá-la
+      por idade traria de volta o defeito que ela impede. Ela se limpa pelo
+      CASCADE do `hard_delete` da tarefa
 
 ## Corrigido depois da auditoria de 16/08/2026
 

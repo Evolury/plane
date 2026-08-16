@@ -462,6 +462,20 @@ WEBHOOK_LOG_RETENTION_DAYS = _retention_days("WEBHOOK_LOG_RETENTION_DAYS", 14)
 # Email notification logs are retained on their own window.
 EMAIL_LOG_RETENTION_DAYS = _retention_days("EMAIL_LOG_RETENTION_DAYS", 7)
 
+# Evolury: registro de execuções das automações (ADR 0012).
+#
+# Duas janelas, e não uma, porque as duas metades do registro valem coisas
+# diferentes:
+#
+# - a execução que FEZ algo (ou tentou e falhou) é o que se audita depois:
+#   "o que a regra mexeu no mês passado?";
+# - a que parou na condição responde "por que não rodou?", uma pergunta que se
+#   faz enquanto se escreve a regra, não meses depois. E é ela que faz volume:
+#   numa regra de condição estreita em projeto movimentado, "não casou"
+#   repetido cinco mil vezes diz exatamente o mesmo que diria uma vez.
+AUTOMATION_RUN_RETENTION_DAYS = _retention_days("AUTOMATION_RUN_RETENTION_DAYS", 30)
+AUTOMATION_SKIPPED_RUN_RETENTION_DAYS = _retention_days("AUTOMATION_SKIPPED_RUN_RETENTION_DAYS", 7)
+
 # Instance Changelog URL
 INSTANCE_CHANGELOG_URL = os.environ.get("INSTANCE_CHANGELOG_URL", "")
 

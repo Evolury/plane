@@ -24,6 +24,7 @@ from plane.bgtasks.automation_task import executar_automacao
 from plane.db.models import (
     Automation,
     AutomationCreation,
+    AutomationRun,
     AutomationRunStatus,
     AutomationTrigger,
     Issue,
@@ -238,6 +239,98 @@ class TestFronteiraComRecorrencia:
 
         assert automacao_casa(regra, {"tipo": "criada", "de_recorrencia": False}) is True
         assert automacao_casa(regra, {"tipo": "criada"}) is True
+
+
+@pytest.mark.contract
+class TestPodaDoRegistro:
+    """A poda do log, e o que ela NÃO pode levar junto."""
+
+    @pytest.mark.django_db
+    def test_execucao_antiga_e_apagada_e_a_recente_fica(self, projeto, workspace, estado):
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from plane.bgtasks.cleanup_task import delete_automation_runs
+
+        regra = _regra(projeto, workspace, [])
+        antiga = AutomationRun.objects.create(
+            automation=regra, workspace=workspace, status=AutomationRunStatus.MATCHED
+        )
+        recente = AutomationRun.objects.create(
+            automation=regra, workspace=workspace, status=AutomationRunStatus.MATCHED
+        )
+        AutomationRun.objects.filter(pk=antiga.pk).update(created_at=timezone.now() - timedelta(days=45))
+
+        delete_automation_runs()
+
+        assert not AutomationRun.objects.filter(pk=antiga.pk).exists()
+        assert AutomationRun.objects.filter(pk=recente.pk).exists()
+
+    @pytest.mark.django_db
+    def test_a_que_nao_casou_tem_janela_mais_curta(self, projeto, workspace, estado):
+        """"Não casou" repetido cinco mil vezes diz o mesmo que uma vez — e é
+        essa metade que faz volume."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from plane.bgtasks.cleanup_task import delete_automation_runs
+
+        regra = _regra(projeto, workspace, [])
+        pulada = AutomationRun.objects.create(
+            automation=regra, workspace=workspace, status=AutomationRunStatus.SKIPPED
+        )
+        executada = AutomationRun.objects.create(
+            automation=regra, workspace=workspace, status=AutomationRunStatus.MATCHED
+        )
+        dez_dias = timezone.now() - timedelta(days=10)
+        AutomationRun.objects.filter(pk__in=[pulada.pk, executada.pk]).update(created_at=dez_dias)
+
+        delete_automation_runs()
+
+        assert not AutomationRun.objects.filter(pk=pulada.pk).exists()
+        # A que fez algo é o que se audita depois; sobrevive à janela curta.
+        assert AutomationRun.objects.filter(pk=executada.pk).exists()
+
+    @pytest.mark.django_db
+    def test_a_poda_nao_toca_na_idempotencia(self, projeto, workspace, estado):
+        """`AutomationCreation` parece log e não é.
+
+        Apagá-la por idade traria de volta exatamente o defeito que ela existe
+        para impedir: a regra recriaria o checklist na próxima vez que a tarefa
+        passasse pela mesma etapa. Ela se limpa pelo caminho certo — o
+        `hard_delete` da tarefa, via CASCADE.
+        """
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from plane.bgtasks.cleanup_task import delete_automation_runs
+
+        origem = _tarefa(projeto, workspace, estado)
+        regra = _regra(projeto, workspace, [])
+        marca = AutomationCreation.objects.create(
+            automation=regra, workspace=workspace, source_issue=origem, chave="Conferir"
+        )
+        AutomationCreation.objects.filter(pk=marca.pk).update(created_at=timezone.now() - timedelta(days=400))
+
+        delete_automation_runs()
+
+        assert AutomationCreation.objects.filter(pk=marca.pk).exists()
+
+    @pytest.mark.django_db
+    def test_apagar_a_tarefa_de_verdade_leva_a_marca_junto(self, projeto, workspace, estado):
+        """O caminho certo de limpeza: o CASCADE do `hard_delete`."""
+        origem = _tarefa(projeto, workspace, estado)
+        regra = _regra(projeto, workspace, [])
+        AutomationCreation.objects.create(
+            automation=regra, workspace=workspace, source_issue=origem, chave="Conferir"
+        )
+
+        Issue.all_objects.filter(pk=origem.pk).delete()
+
+        assert AutomationCreation.objects.filter(source_issue_id=origem.pk).count() == 0
 
 
 @pytest.mark.contract

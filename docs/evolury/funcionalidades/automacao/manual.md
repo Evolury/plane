@@ -113,6 +113,15 @@ Dentro de "Executada", uma ação pode aparecer como **"já estava assim"**: a
 regra rodou e não mudou nada porque o valor já era o esperado. É o que explica
 uma regra que roda todo dia sem mexer em nada.
 
+## Por quanto tempo o registro fica
+
+Execução que **fez algo** (ou tentou e falhou): 30 dias. Execução que **parou na
+condição**: 7 dias — ela responde "por que não rodou?", pergunta que se faz
+enquanto se escreve a regra, e é a que enche a lista.
+
+O que a regra mudou na tarefa continua no **histórico da tarefa**, para sempre;
+o registro de execuções é a visão pela regra, não pela tarefa.
+
 ## Travas que existem para o seu bem
 
 - Uma regra **não responde ao que ela mesma fez**.
