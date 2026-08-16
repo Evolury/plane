@@ -3,6 +3,37 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.16.0] — 2026-08-16
+
+### Filtrar por propriedade de data
+
+A propriedade de **data** entra no seletor de filtro, com calendário e os
+operadores **é** e **entre** — reaproveitando o mesmo componente que já atende
+"Data de início" e "Data de conclusão".
+
+O backend passou a aceitar o vocabulário da tela (`__exact` e `__range`) e o
+traduz para o par `gte`/`lte` que já existia, em vez de manter dois formatos de
+faixa. Faixa malformada continua sendo ignorada, e não vira consulta errada.
+
+**Texto, número e moeda seguem só na API.** Eles precisam de um campo de
+digitar, e o pacote de filtros ricos só oferece formatos de escolher; o motivo
+técnico está medido no backlog.
+
+### Correções
+
+- **O seletor de filtros não abria no ambiente de desenvolvimento.** A instância
+  de filtro era criada num `useMemo` e apagada no encerramento do efeito — sob
+  `StrictMode`, que monta, desmonta e remonta o mesmo componente, sobrava uma
+  referência órfã. Não afetava produção, mas obrigava a desligar o `StrictMode`
+  para validar qualquer coisa que dependesse de filtros.
+
+### Desenvolvimento
+
+- **A limpeza passou a morar dentro do comando que faz a sujeira.** `pnpm
+  test:api` roda os testes e desliga a stack de teste ao terminar — ela ficava
+  de pé consumindo quase dois núcleos de CPU sem atender ninguém. O deploy poda
+  as imagens que o próprio build deixou órfãs.
+
 ## [1.15.0] — 2026-08-15
 
 ### O ícone da propriedade personalizada
