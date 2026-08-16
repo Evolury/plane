@@ -41,7 +41,16 @@ from plane.utils.issue_properties import (
 CAMPO_SENTINELA = "custom_property"
 
 #: Os sufixos que a árvore de filtros usa, e o operador interno de cada um.
-LOOKUPS = {"in": "in", "exact": "in", "contains": "in", "gte": "gte", "lte": "lte"}
+LOOKUPS = {
+    "in": "in",
+    "contains": "in",
+    "gte": "gte",
+    "lte": "lte",
+    # `exact` só vira "in" nos tipos de lista e texto; nos demais é igualdade
+    # de verdade, e quem decide é `q_de_propriedade`, que conhece o tipo.
+    "exact": "exact",
+    "range": "range",
+}
 
 
 def partes_da_chave(nome):

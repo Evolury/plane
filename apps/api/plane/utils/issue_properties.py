@@ -337,9 +337,11 @@ OPERADORES_POR_TIPO = {
     PropertyType.SELECT: ("in",),
     PropertyType.MULTI_SELECT: ("in",),
     PropertyType.TEXT: ("in",),
-    PropertyType.NUMBER: ("gte", "lte"),
-    PropertyType.CURRENCY: ("gte", "lte"),
-    PropertyType.DATE: ("gte", "lte"),
+    # `exact` e `range` entraram com o seletor visual: a tela de filtros ricos
+    # oferece "é exatamente" e "entre", e manda um `range` com "início,fim".
+    PropertyType.NUMBER: ("gte", "lte", "exact", "range"),
+    PropertyType.CURRENCY: ("gte", "lte", "exact", "range"),
+    PropertyType.DATE: ("gte", "lte", "exact", "range"),
 }
 
 
@@ -388,22 +390,42 @@ def q_de_propriedade(propriedade, operadores):
 
     else:
         coluna = "value_date" if propriedade.property_type == PropertyType.DATE else "value_number"
-        tem = False
-        for operador in ("gte", "lte"):
-            bruto = operadores.get(operador)
+
+        def _no_tipo_da_coluna(bruto):
+            """Um valor cru no tipo da coluna, ou `None` se não couber."""
             bruto = bruto[0] if isinstance(bruto, (list, tuple)) else bruto
             if bruto in (None, ""):
-                continue
+                return None
             try:
-                convertido = (
-                    parse_date(str(bruto)) if propriedade.property_type == PropertyType.DATE else Decimal(str(bruto))
-                )
+                if propriedade.property_type == PropertyType.DATE:
+                    return parse_date(str(bruto))
+                return Decimal(str(bruto))
             except (InvalidOperation, ValueError):
-                continue
+                return None
+
+        # `range` é a faixa que a tela manda como "início,fim". Vira o mesmo
+        # par gte/lte do caminho por parâmetro — um formato só a partir daqui.
+        faixa = operadores.get("range")
+        faixa = faixa[0] if isinstance(faixa, (list, tuple)) else faixa
+        limites = {}
+        if faixa:
+            pedacos = [p.strip() for p in str(faixa).split(",")]
+            if len(pedacos) == 2:
+                limites = {"gte": pedacos[0], "lte": pedacos[1]}
+
+        tem = False
+        exato = _no_tipo_da_coluna(operadores.get("exact"))
+        if exato is not None:
+            linhas = linhas.filter(**{coluna: exato})
+            tem = True
+
+        for operador in ("gte", "lte"):
+            convertido = _no_tipo_da_coluna(limites.get(operador, operadores.get(operador)))
             if convertido is None:
                 continue
             linhas = linhas.filter(**{f"{coluna}__{operador}": convertido})
             tem = True
+
         if not tem:
             return None
 

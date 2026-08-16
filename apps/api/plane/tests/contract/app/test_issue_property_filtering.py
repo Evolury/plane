@@ -273,3 +273,77 @@ class TestArvoreDeFiltrosRicos:
         valor.delete()
 
         assert self._filtrar(projeto, {f"property_{canal.id}__in": [str(indicacao.id)]}) == []
+
+
+@pytest.mark.contract
+class TestOperadoresDaTela:
+    """`exact` e `range`, que são o que o seletor visual emite.
+
+    A tela de filtros ricos oferece "é" e "entre", e serializa como
+    `property_<id>__exact` e `property_<id>__range` com "início,fim". O caminho
+    por parâmetro de consulta já falava `_gte`/`_lte`; estes traduzem para o
+    mesmo lugar, para não existirem dois formatos de faixa no backend.
+    """
+
+    def _filtrar(self, projeto, arvore):
+        from plane.utils.filters import FiltroComPropriedades, IssueFilterSet
+
+        class _View:
+            filterset_class = IssueFilterSet
+
+        base = Issue.issue_objects.filter(project=projeto)
+        return sorted(t.name for t in FiltroComPropriedades()._apply_json_filter(base, arvore, _View()))
+
+    @pytest.mark.django_db
+    def test_exact_on_a_date(self, projeto, create_user):
+        aceite = _prop(projeto, "Aceite", "date")
+        no_dia = _tarefa(projeto, create_user, "no dia")
+        _valor(no_dia, aceite, value_date="2026-08-20")
+        outro = _tarefa(projeto, create_user, "outro dia")
+        _valor(outro, aceite, value_date="2026-08-21")
+
+        assert self._filtrar(projeto, {f"property_{aceite.id}__exact": "2026-08-20"}) == ["no dia"]
+
+    @pytest.mark.django_db
+    def test_range_on_a_date(self, projeto, create_user):
+        aceite = _prop(projeto, "Aceite", "date")
+        for nome, dia in (("antes", "2026-08-01"), ("dentro", "2026-08-15"), ("depois", "2026-09-01")):
+            _valor(_tarefa(projeto, create_user, nome), aceite, value_date=dia)
+
+        assert self._filtrar(projeto, {f"property_{aceite.id}__range": "2026-08-10,2026-08-20"}) == ["dentro"]
+
+    @pytest.mark.django_db
+    def test_range_on_a_number(self, projeto, create_user):
+        peso = _prop(projeto, "Peso", "number")
+        for nome, valor in (("leve", "1"), ("medio", "10"), ("pesado", "100")):
+            _valor(_tarefa(projeto, create_user, nome), peso, value_number=valor)
+
+        assert self._filtrar(projeto, {f"property_{peso.id}__range": "5,50"}) == ["medio"]
+
+    @pytest.mark.django_db
+    def test_exact_on_currency_respects_the_value(self, projeto, create_user):
+        contrato = _prop(projeto, "Contrato", "currency", currency="BRL")
+        certo = _tarefa(projeto, create_user, "certo")
+        _valor(certo, contrato, value_number="1999.90")
+        _valor(_tarefa(projeto, create_user, "errado"), contrato, value_number="1999.91")
+
+        assert self._filtrar(projeto, {f"property_{contrato.id}__exact": "1999.90"}) == ["certo"]
+
+    @pytest.mark.django_db
+    def test_a_malformed_range_does_not_filter_at_all(self, projeto, create_user):
+        """Faixa quebrada não pode virar consulta ampla nem erro de ORM."""
+        peso = _prop(projeto, "Peso", "number")
+        _valor(_tarefa(projeto, create_user, "uma"), peso, value_number="10")
+        _tarefa(projeto, create_user, "outra")
+
+        for quebrada in ("5", "5,10,20", "abc,def", ""):
+            assert self._filtrar(projeto, {f"property_{peso.id}__range": quebrada}) == ["outra", "uma"], quebrada
+
+    @pytest.mark.django_db
+    def test_text_keeps_answering_contains(self, projeto, create_user):
+        """A tela manda `__contains`; o backend já traduzia para `icontains`."""
+        obs = _prop(projeto, "Observação", "text")
+        _valor(_tarefa(projeto, create_user, "com trecho"), obs, value_text="entrega em SP")
+        _valor(_tarefa(projeto, create_user, "sem trecho"), obs, value_text="entrega em RJ")
+
+        assert self._filtrar(projeto, {f"property_{obs.id}__contains": "SP"}) == ["com trecho"]
