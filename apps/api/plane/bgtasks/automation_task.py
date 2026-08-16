@@ -119,7 +119,14 @@ def executar_automacao(automacao, tarefa, evento, profundidade=0):
         # como "não casou" esconderia uma regra quebrada atrás de um resultado
         # que parece normal.
         _registrar(
-            automacao, tarefa, AutomationRunStatus.FAILED, evento, [], f"condição inválida: {erro}", comeco, profundidade
+            automacao,
+            tarefa,
+            AutomationRunStatus.FAILED,
+            evento,
+            [],
+            f"condição inválida: {erro}",
+            comeco,
+            profundidade,
         )
         return AutomationRunStatus.FAILED
 

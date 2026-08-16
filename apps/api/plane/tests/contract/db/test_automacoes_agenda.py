@@ -25,7 +25,6 @@ from plane.bgtasks.automation_task import TETO_POR_RODADA, executar_agendada, ro
 from plane.db.models import (
     Automation,
     AutomationRun,
-    AutomationRunStatus,
     AutomationTrigger,
     Cycle,
     CycleIssue,
