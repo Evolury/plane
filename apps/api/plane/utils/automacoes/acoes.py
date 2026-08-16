@@ -31,10 +31,12 @@ from datetime import timedelta
 # Django imports
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
+from django.utils.html import escape
 
 # Module imports
-from plane.db.models import IssueProperty, State
+from plane.db.models import Issue, IssueProperty, State
 from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
+from plane.utils.automacoes.variaveis import aplicar as aplicar_variaveis
 from plane.utils.issue_properties import (
     ValorInvalido,
     gravar_valor,
@@ -340,6 +342,228 @@ def _mudar_propriedade(tarefa, config, contexto):
         profundidade=contexto["profundidade"] + 1,
     )
     return _resultado("set_property", APLICADA, f"{propriedade.name}: {de or '—'} → {para or '—'}")
+
+
+# --------------------------------------------------------------------------
+# A voz — comentar e notificar (F2)
+# --------------------------------------------------------------------------
+
+
+@acao("add_comment")
+def _comentar(tarefa, config, contexto):
+    """Escreve um comentário em nome do robô.
+
+    Passa pelo mesmo caminho da tela: cria o `IssueComment` e dispara
+    `comment.activity.created`. É o que faz a menção, a notificação de quem
+    acompanha e o webhook saírem exatamente como saem quando uma pessoa comenta.
+    """
+    from plane.bgtasks.issue_activities_task import issue_activity
+    from plane.db.models import IssueComment
+
+    texto = aplicar_variaveis(config.get("text"), tarefa, contexto)
+    if not texto.strip():
+        raise AcaoInvalida("ação de comentário sem texto")
+
+    # O corpo do comentário é HTML no produto. O texto da regra é digitado como
+    # texto simples, e escapá-lo aqui evita que uma regra vire injeção de marcação
+    # na tela de quem lê.
+    html = f"<p>{escape(texto)}</p>"
+    comentario = IssueComment.objects.create(
+        issue=tarefa,
+        project_id=tarefa.project_id,
+        workspace_id=tarefa.workspace_id,
+        actor_id=contexto["ator_id"],
+        comment_html=html,
+        comment_stripped=texto,
+    )
+
+    issue_activity.delay(
+        type="comment.activity.created",
+        requested_data=json.dumps({"id": str(comentario.id), "comment_html": html}, cls=DjangoJSONEncoder),
+        current_instance=None,
+        issue_id=str(tarefa.id),
+        actor_id=str(contexto["ator_id"]),
+        project_id=str(tarefa.project_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+        automacao_origem=str(contexto["automacao"].id),
+        automacao_profundidade=contexto["profundidade"] + 1,
+    )
+    return _resultado("add_comment", APLICADA, texto[:120])
+
+
+@acao("notify")
+def _notificar(tarefa, config, contexto):
+    """Avisa pessoas escolhidas, no sino e por e-mail.
+
+    Diferente do aviso que já sai de qualquer mudança: aquele vai para quem
+    ACOMPANHA a tarefa; este vai para quem a regra escolheu, com a mensagem que
+    a regra escreveu. É a diferença entre "algo mudou" e "isto é com você".
+
+    O e-mail entra pela mesma fila de sempre (`EmailNotificationLog`, recolhida
+    de cinco em cinco minutos) — reusar o agrupamento dela evita que uma regra
+    ativa vire uma mensagem por evento na caixa de entrada de alguém.
+    """
+    from plane.db.models import EmailNotificationLog, Notification, User
+
+    destinatarios = set(str(item) for item in (config.get("users") or []))
+    especiais = set(config.get("especiais") or [])
+    if "assignees" in especiais:
+        destinatarios.update(
+            str(item)
+            for item in tarefa.issue_assignee.filter(deleted_at__isnull=True).values_list("assignee_id", flat=True)
+        )
+    if "creator" in especiais and tarefa.created_by_id:
+        destinatarios.add(str(tarefa.created_by_id))
+    if "trigger_actor" in especiais:
+        quem = (contexto.get("evento") or {}).get("actor_id")
+        if quem:
+            destinatarios.add(str(quem))
+
+    # O robô nunca é destinatário: notificação para quem não abre o produto é
+    # linha morta no banco.
+    destinatarios.discard(str(contexto["ator_id"]))
+    if not destinatarios:
+        return _resultado("notify", SEM_EFEITO, "ninguém para avisar")
+
+    texto = aplicar_variaveis(config.get("text"), tarefa, contexto) or tarefa.name
+    dados = {
+        "issue": {
+            "id": str(tarefa.id),
+            "name": tarefa.name,
+            "identifier": tarefa.project.identifier,
+            "sequence_id": tarefa.sequence_id,
+            "state_name": tarefa.state.name if tarefa.state_id else "",
+            "state_group": tarefa.state.group if tarefa.state_id else "",
+            "project_id": str(tarefa.project_id),
+            "workspace_slug": tarefa.project.workspace.slug,
+        },
+        "automation": {"id": str(contexto["automacao"].id), "name": contexto["automacao"].name},
+    }
+
+    existentes = set(str(item) for item in User.objects.filter(pk__in=destinatarios).values_list("pk", flat=True))
+    Notification.objects.bulk_create(
+        [
+            Notification(
+                workspace_id=tarefa.workspace_id,
+                project_id=tarefa.project_id,
+                sender="in_app:automation",
+                triggered_by_id=contexto["ator_id"],
+                receiver_id=pessoa,
+                entity_identifier=tarefa.id,
+                entity_name="issue",
+                title=texto,
+                message={"text": texto},
+                message_stripped=texto,
+                data=dados,
+            )
+            for pessoa in existentes
+        ],
+        batch_size=50,
+    )
+
+    if config.get("email", True):
+        EmailNotificationLog.objects.bulk_create(
+            [
+                EmailNotificationLog(
+                    triggered_by_id=contexto["ator_id"],
+                    receiver_id=pessoa,
+                    entity_identifier=tarefa.id,
+                    entity_name="issue",
+                    entity="issue",
+                    new_value=texto[:300],
+                    data=dados,
+                )
+                for pessoa in existentes
+            ],
+            batch_size=50,
+            ignore_conflicts=True,
+        )
+
+    return _resultado("notify", APLICADA, f"{len(existentes)} pessoa(s) avisada(s)")
+
+
+# --------------------------------------------------------------------------
+# Arquivar, ciclo e módulo (F2)
+# --------------------------------------------------------------------------
+
+
+@acao("archive")
+def _arquivar(tarefa, config, contexto):
+    """Arquiva a tarefa.
+
+    O produto só arquiva o que está concluído ou cancelado — a mesma trava do
+    arquivamento automático herdado. Uma regra que arquivasse trabalho em
+    andamento faria sumir da tela algo que ninguém terminou.
+    """
+    if tarefa.archived_at is not None:
+        return _resultado("archive", SEM_EFEITO, "a tarefa já estava arquivada")
+    grupo = tarefa.state.group if tarefa.state_id else None
+    if grupo not in ("completed", "cancelled"):
+        return _resultado("archive", SEM_EFEITO, "só arquiva tarefa concluída ou cancelada")
+
+    quando = timezone.now().date()
+    Issue.objects.filter(pk=tarefa.pk).update(archived_at=quando)
+
+    from plane.bgtasks.issue_activities_task import issue_activity
+
+    issue_activity.delay(
+        type="issue.activity.updated",
+        requested_data=json.dumps({"archived_at": str(quando)}, cls=DjangoJSONEncoder),
+        current_instance=json.dumps({"archived_at": None}, cls=DjangoJSONEncoder),
+        issue_id=str(tarefa.id),
+        actor_id=str(contexto["ator_id"]),
+        project_id=str(tarefa.project_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+        automacao_origem=str(contexto["automacao"].id),
+        automacao_profundidade=contexto["profundidade"] + 1,
+    )
+    return _resultado("archive", APLICADA, f"arquivada em {quando}")
+
+
+@acao("add_to_cycle")
+def _incluir_no_ciclo(tarefa, config, contexto):
+    """Põe a tarefa no ciclo ativo do projeto.
+
+    "Ativo", e não um ciclo escolhido na regra: um id fixo aqui envelheceria na
+    virada do próximo ciclo, e a regra passaria a alimentar um ciclo encerrado
+    sem ninguém perceber.
+    """
+    from plane.bgtasks.issue_activities_task import issue_activity
+    from plane.db.models import Cycle, CycleIssue
+
+    agora = timezone.now()
+    ciclo = (
+        Cycle.objects.filter(project_id=tarefa.project_id, start_date__lte=agora, end_date__gte=agora)
+        .order_by("start_date")
+        .first()
+    )
+    if ciclo is None:
+        return _resultado("add_to_cycle", SEM_EFEITO, "o projeto não tem ciclo ativo agora")
+
+    if CycleIssue.objects.filter(issue=tarefa, cycle=ciclo, deleted_at__isnull=True).exists():
+        return _resultado("add_to_cycle", SEM_EFEITO, f"a tarefa já estava no ciclo {ciclo.name}")
+
+    # Uma tarefa mora em um ciclo só: o vínculo antigo sai antes.
+    CycleIssue.objects.filter(issue=tarefa).delete()
+    CycleIssue.objects.create(
+        issue=tarefa, cycle=ciclo, project_id=tarefa.project_id, workspace_id=tarefa.workspace_id
+    )
+
+    issue_activity.delay(
+        type="cycle.activity.created",
+        requested_data=json.dumps({"cycles_list": [str(tarefa.id)]}, cls=DjangoJSONEncoder),
+        current_instance=json.dumps({"created_cycle_issues": [], "updated_cycle_issues": []}, cls=DjangoJSONEncoder),
+        issue_id=str(tarefa.id),
+        actor_id=str(contexto["ator_id"]),
+        project_id=str(tarefa.project_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+        automacao_origem=str(contexto["automacao"].id),
+        automacao_profundidade=contexto["profundidade"] + 1,
+    )
+    return _resultado("add_to_cycle", APLICADA, f"incluída no ciclo {ciclo.name}")
 
 
 def executar(tipo, tarefa, config, contexto):

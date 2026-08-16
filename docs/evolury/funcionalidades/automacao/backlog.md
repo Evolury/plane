@@ -37,18 +37,18 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
 
 ## F2 — O relógio e a voz
 
-- [ ] F2.1 Gatilho agendado: `trigger_config` com frequência, dias e horário no
+- [x] F2.1 Gatilho agendado: `trigger_config` com frequência, dias e horário no
       fuso do produto (ADR 0006); `next_run_at` e tarefa no Celery beat a cada
       15 min, mesma cadência das recorrentes
-- [ ] F2.2 Execução em lote: uma linha de `AutomationRun` resume a rodada, com
+- [x] F2.2 Execução em lote: uma linha de `AutomationRun` resume a rodada, com
       as tarefas alcançadas em `actions_result`
-- [ ] F2.3 Ação **comentar**, com a lista fechada de variáveis
+- [x] F2.3 Ação **comentar**, com a lista fechada de variáveis
       (`{{tarefa}}`, `{{responsável}}`, `{{quem_disparou}}`, `{{estado}}`,
       `{{vencimento}}`) — sem funções, sem aninhamento
-- [ ] F2.4 Ação **notificar**: `Notification` no sino + fila de e-mail existente
-- [ ] F2.5 Ação **arquivar**
-- [ ] F2.6 Ação **incluir no ciclo ativo / módulo**
-- [ ] F2.7 Editor do gatilho agendado, e simulação que mostra a próxima rodada
+- [x] F2.4 Ação **notificar**: `Notification` no sino + fila de e-mail existente
+- [x] F2.5 Ação **arquivar**
+- [x] F2.6 Ação **incluir no ciclo ativo**
+- [x] F2.7 Editor do gatilho agendado, com dias da semana e horário do fuso do projeto
 
 ## F3 — Criação e ergonomia
 
@@ -62,6 +62,14 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
       API
 
 ## Dívidas conhecidas
+
+- [ ] A ação de módulo ficou de fora da F2.6: ciclo tem "o ativo agora", que é
+      uma resposta sem ambiguidade; módulo não tem equivalente, e escolher um id
+      fixo na regra envelheceria do mesmo jeito que um ciclo fixo. Precisa de
+      uma decisão de produto antes de virar código.
+- [ ] A simulação do editor conta tarefas da condição; para regra agendada ela
+      responde exatamente a pergunta certa ("a varredura vai pegar quantas?"),
+      mas não mostra QUANDO é a próxima rodada. O dado existe (`next_run_at`).
 
 - [ ] O detalhe de `set_assignees` e `set_labels` no registro mostra contagem
       ("1 → 2 responsável(is)"), e não nomes. Legível, mas menos útil que o de

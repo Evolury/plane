@@ -57,17 +57,21 @@ CAMPOS_POR_ID = {"state_id", "assignee_id", "label_id", "module_id", "cycle_id"}
 #: pequeno se alguém montar um ciclo.
 TETO_DE_PROFUNDIDADE = 3
 
-#: Os gatilhos que respondem a evento — os que esta fase entende.
+#: Os gatilhos que respondem a evento — os que o despacho acorda.
 #:
 #: Mora aqui, e não na tarefa Celery que os usa, porque quem também precisa da
-#: lista é a validação do serializer: uma regra agendada gravada antes de a F2
-#: existir seria uma regra que nunca roda, e regra muda é o defeito que este
-#: recurso mais precisa evitar.
+#: lista é o despacho: a agendada nunca entra por evento, quem a chama é o
+#: relógio.
 GATILHOS_DE_EVENTO = [
     AutomationTrigger.WORK_ITEM_CREATED,
     AutomationTrigger.FIELD_CHANGED,
     AutomationTrigger.COMMENT_ADDED,
 ]
+
+#: Os gatilhos que a tela pode gravar. Um gatilho fora desta lista seria uma
+#: regra que nunca roda, e regra muda é o defeito que este recurso mais precisa
+#: evitar — por isso a recusa é na hora de salvar, não na hora de executar.
+GATILHOS_ACEITOS = [*GATILHOS_DE_EVENTO, AutomationTrigger.SCHEDULED]
 
 
 def _valor_da_ponta(linha, ponta):

@@ -64,6 +64,27 @@ export const CAMPOS_DA_CONDICAO: TWorkItemFilterProperty[] = [
 export const PRIORIDADES_DA_AUTOMACAO = ["urgent", "high", "medium", "low", "none"] as const;
 
 /**
+ * As variáveis do texto de comentário e notificação.
+ *
+ * **Lista fechada, e não linguagem.** O Jira resolve isto com *smart values*,
+ * que têm funções, aninhamento e modo de depuração próprio. O que não estiver
+ * aqui fica literal na tela — quem escreveu `{{orçamento}}` sem querer vê o que
+ * escreveu, em vez de ver o comentário sumir.
+ */
+export const VARIAVEIS_DA_AUTOMACAO = ["tarefa", "responsável", "quem_disparou", "estado", "vencimento"] as const;
+
+/** Dias da semana, 0 = domingo (ADR 0005). */
+export const DIAS_DA_SEMANA_DA_AUTOMACAO = [
+  { valor: 0, i18n: "automations.weekday.sunday" },
+  { valor: 1, i18n: "automations.weekday.monday" },
+  { valor: 2, i18n: "automations.weekday.tuesday" },
+  { valor: 3, i18n: "automations.weekday.wednesday" },
+  { valor: 4, i18n: "automations.weekday.thursday" },
+  { valor: 5, i18n: "automations.weekday.friday" },
+  { valor: 6, i18n: "automations.weekday.saturday" },
+] as const;
+
+/**
  * As receitas prontas do estado vazio.
  *
  * Existem por adoção, não por poder: a lição do monday é que quem chega numa

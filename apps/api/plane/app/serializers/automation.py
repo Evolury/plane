@@ -15,7 +15,7 @@ from rest_framework import serializers
 
 # Module imports
 from plane.db.models import Automation, AutomationRun
-from plane.utils.automacoes.gatilhos import GATILHOS_DE_EVENTO
+from plane.utils.automacoes.gatilhos import GATILHOS_ACEITOS
 from plane.utils.automacoes.validacao import validar_acoes, validar_condicao, validar_gatilho
 
 from .base import BaseSerializer
@@ -65,7 +65,7 @@ class AutomationSerializer(BaseSerializer):
         condicao = attrs.get("condition", instancia.condition if instancia else None)
         acoes = attrs.get("actions", instancia.actions if instancia else None)
 
-        attrs["trigger_config"] = validar_gatilho(trigger_type, trigger_config, GATILHOS_DE_EVENTO, project_id)
+        attrs["trigger_config"] = validar_gatilho(trigger_type, trigger_config, GATILHOS_ACEITOS, project_id)
         attrs["condition"] = validar_condicao(condicao)
         attrs["actions"] = validar_acoes(acoes, project_id)
 

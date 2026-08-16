@@ -18,12 +18,12 @@
 
 import { observer } from "mobx-react";
 import { Plus, Trash2 } from "lucide-react";
-import { PRIORIDADES_DA_AUTOMACAO } from "@plane/constants";
+import { PRIORIDADES_DA_AUTOMACAO, VARIAVEIS_DA_AUTOMACAO } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { AUTOMATION_ACTION } from "@plane/types";
 import type { TAutomationAction, TAutomationActionType, TIssueProperty } from "@plane/types";
 import { Button } from "@plane/propel/button";
-import { CustomSelect, Input } from "@plane/ui";
+import { CustomSelect, Input, TextArea } from "@plane/ui";
 import { useLabel } from "@/hooks/store/use-label";
 import { useMember } from "@/hooks/store/use-member";
 import { useProjectState } from "@/hooks/store/use-project-state";
@@ -42,6 +42,13 @@ const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]
   set_labels: { mode: "add", labels: [] },
   set_date: { field: "target_date", date_mode: "relative", offset_days: 0 },
   set_property: { property_id: "", value: "" },
+  add_comment: { text: "" },
+  notify: { users: [], especiais: ["assignees"], text: "", email: true },
+  // Arquivar e ciclo não têm o que configurar: a primeira age na tarefa que
+  // disparou, a segunda usa o ciclo ATIVO — um id fixo aqui envelheceria na
+  // virada do próximo ciclo.
+  archive: {},
+  add_to_cycle: {},
 };
 
 export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps) {
@@ -71,18 +78,16 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
 
   const rotuloDoTipo = (tipo: TAutomationActionType) => t(`automations.action_option.${tipo}`);
 
-  const alternarNaLista = (indice: number, chave: "assignees" | "labels" | "especiais", valor: string) => {
+  type TChaveDeLista = "assignees" | "labels" | "especiais" | "users";
+
+  const alternarNaLista = (indice: number, chave: TChaveDeLista, valor: string) => {
     const atual = new Set((acoes[indice].config[chave] as string[] | undefined) ?? []);
     if (atual.has(valor)) atual.delete(valor);
     else atual.add(valor);
     atualizarConfig(indice, { [chave]: Array.from(atual) });
   };
 
-  const fichas = (
-    indice: number,
-    chave: "assignees" | "labels" | "especiais",
-    itens: { valor: string; rotulo: string }[]
-  ) => {
+  const fichas = (indice: number, chave: TChaveDeLista, itens: { valor: string; rotulo: string }[]) => {
     const escolhidos = new Set((acoes[indice].config[chave] as string[] | undefined) ?? []);
     return (
       <div className="flex flex-wrap gap-1.5">
@@ -246,6 +251,56 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
           </div>
         );
 
+      case AUTOMATION_ACTION.ADD_COMMENT:
+        return (
+          <div className="flex flex-col gap-1">
+            <TextArea
+              value={config.text ?? ""}
+              onChange={(evento) => atualizarConfig(indice, { text: evento.target.value })}
+              placeholder={t("automations.comment_placeholder")}
+              rows={3}
+            />
+            <AjudaDeVariaveis />
+          </div>
+        );
+
+      case AUTOMATION_ACTION.NOTIFY:
+        return (
+          <div className="flex flex-col gap-2">
+            {fichas(indice, "especiais", [
+              { valor: "assignees", rotulo: t("automations.notify_target.assignees") },
+              { valor: "creator", rotulo: t("automations.special.creator") },
+              { valor: "trigger_actor", rotulo: t("automations.special.trigger_actor") },
+            ])}
+            {fichas(
+              indice,
+              "users",
+              membros.map((membro) => ({ valor: membro!.id, rotulo: membro!.display_name }))
+            )}
+            <TextArea
+              value={config.text ?? ""}
+              onChange={(evento) => atualizarConfig(indice, { text: evento.target.value })}
+              placeholder={t("automations.notify_placeholder")}
+              rows={2}
+            />
+            <AjudaDeVariaveis />
+            <label className="flex items-center gap-2 text-12 text-secondary">
+              <input
+                type="checkbox"
+                checked={config.email !== false}
+                onChange={(evento) => atualizarConfig(indice, { email: evento.target.checked })}
+              />
+              {t("automations.notify_email")}
+            </label>
+          </div>
+        );
+
+      case AUTOMATION_ACTION.ARCHIVE:
+        return <p className="text-12 text-tertiary">{t("automations.archive_hint")}</p>;
+
+      case AUTOMATION_ACTION.ADD_TO_CYCLE:
+        return <p className="text-12 text-tertiary">{t("automations.cycle_hint")}</p>;
+
       default:
         return null;
     }
@@ -293,6 +348,21 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
         ))}
       </CustomSelect>
     </div>
+  );
+});
+
+/**
+ * As variáveis disponíveis, ditas na tela.
+ *
+ * Escondê-las obrigaria a pessoa a saber de cor o que existe — e o custo de não
+ * saber é um comentário automático com `{{orçamento}}` literal no meio.
+ */
+const AjudaDeVariaveis = observer(function AjudaDeVariaveis() {
+  const { t } = useTranslation();
+  return (
+    <p className="text-11 text-tertiary">
+      {t("automations.variables_hint")} {VARIAVEIS_DA_AUTOMACAO.map((nome) => `{{${nome}}}`).join(" · ")}
+    </p>
   );
 });
 

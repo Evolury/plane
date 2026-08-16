@@ -285,7 +285,8 @@
     "trigger_option": {
       "created": "A work item is created",
       "field_changed": "A field changes",
-      "commented": "Someone comments"
+      "commented": "Someone comments",
+      "scheduled": "At a set time"
     },
     "action_option": {
       "set_state": "Change the state",
@@ -293,7 +294,12 @@
       "set_assignees": "Change assignees",
       "set_labels": "Change labels",
       "set_date": "Set a date",
-      "set_property": "Fill in a property"
+      "set_property": "Fill in a property",
+      "add_comment": "Comment",
+      "notify": "Notify",
+      "archive": "Archive",
+      "add_to_cycle": "Add to active cycle",
+      "limite": "Round limit"
     },
     "field": {
       "state": "State",
@@ -342,7 +348,15 @@
       "remove_label": "remove the label",
       "set_date": "set",
       "relative_days": "in {dias} day(s)",
-      "set_property": "fill in"
+      "set_property": "fill in",
+      "every_day": "every day",
+      "every_week": "every week on",
+      "every_day_short": "every day",
+      "at": "at",
+      "add_comment": "comment",
+      "notify": "notify",
+      "archive": "archive the work item",
+      "add_to_cycle": "add to the active cycle"
     },
     "runs": {
       "empty": "This rule has not run yet.",
@@ -357,6 +371,33 @@
         "sem_efeito": "already like this",
         "erro": "error"
       }
+    },
+    "comment_placeholder": "What the comment should say. Use {{tarefa}}, {{responsável}}…",
+    "notify_placeholder": "The notice text (optional).",
+    "notify_email": "Also send by email",
+    "variables_hint": "Variables:",
+    "archive_hint": "Archives the work item. Only for completed or cancelled ones.",
+    "cycle_hint": "Adds the work item to the project's active cycle at run time.",
+    "notify_target": {
+      "assignees": "the assignees"
+    },
+    "schedule": {
+      "frequency": "Frequency",
+      "daily": "Every day",
+      "weekly": "Every week",
+      "time": "Time",
+      "weekdays": "On which days",
+      "weekdays_hint": "With nothing selected, it runs every day.",
+      "timezone_hint": "The time is in the project's timezone."
+    },
+    "weekday": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
     }
   }
 }

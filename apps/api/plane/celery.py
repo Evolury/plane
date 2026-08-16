@@ -42,6 +42,13 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.recurring_work_item_task.generate_recurring_work_items",
         "schedule": crontab(minute="*/15"),
     },
+    # Evolury: automações agendadas (ADR 0012). Mesma cadência da recorrência,
+    # e pelo mesmo motivo: a agenda tem horário, e "toda segunda às 8h" com um
+    # job diário seria "toda segunda, em algum momento".
+    "run-scheduled-automations-every-fifteen-minutes": {
+        "task": "plane.bgtasks.automation_task.rodar_automacoes_agendadas",
+        "schedule": crontab(minute="*/15"),
+    },
     # Occurs once every day
     "check-every-day-to-delete-hard-delete": {
         "task": "plane.bgtasks.deletion_task.hard_delete",

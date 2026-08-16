@@ -32,6 +32,12 @@ export type TAutomationTriggerConfig = {
   field?: string;
   from?: string[];
   to?: string[];
+  // scheduled — o horário é local ao PROJETO (ADR 0006), não ao servidor
+  frequency?: "daily" | "weekly";
+  /** "HH:MM". */
+  time?: string;
+  /** 0 = domingo (ADR 0005). Vazio quer dizer todos, nunca nenhum. */
+  weekdays?: number[];
 };
 
 export const AUTOMATION_ACTION = {
@@ -41,6 +47,11 @@ export const AUTOMATION_ACTION = {
   SET_LABELS: "set_labels",
   SET_DATE: "set_date",
   SET_PROPERTY: "set_property",
+  // F2 — a voz e o resto
+  ADD_COMMENT: "add_comment",
+  NOTIFY: "notify",
+  ARCHIVE: "archive",
+  ADD_TO_CYCLE: "add_to_cycle",
 } as const;
 export type TAutomationActionType = (typeof AUTOMATION_ACTION)[keyof typeof AUTOMATION_ACTION];
 
@@ -58,7 +69,7 @@ export type TAutomationActionConfig = {
   // set_assignees / set_labels
   mode?: TAutomationListMode;
   assignees?: string[];
-  especiais?: TAutomationSpecialAssignee[];
+  especiais?: (TAutomationSpecialAssignee | TAutomationNotifyTarget)[];
   labels?: string[];
   // set_date
   //
@@ -72,7 +83,17 @@ export type TAutomationActionConfig = {
   // set_property
   property_id?: string;
   value?: unknown;
+  // add_comment / notify — texto com a lista FECHADA de variáveis
+  // ({{tarefa}}, {{responsável}}, {{quem_disparou}}, {{estado}}, {{vencimento}}).
+  // O que não estiver na lista fica literal, e não vira erro.
+  text?: string;
+  // notify
+  users?: string[];
+  email?: boolean;
 };
+
+/** Papéis que a ação de notificar aceita, além de pessoas escolhidas. */
+export type TAutomationNotifyTarget = "assignees" | "creator" | "trigger_actor";
 
 export type TAutomationAction = {
   type: TAutomationActionType;

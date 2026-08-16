@@ -16,12 +16,11 @@
 // que só produz regra que nunca casa.
 
 import { observer } from "mobx-react";
-import { CAMPOS_DE_GATILHO } from "@plane/constants";
+import { CAMPOS_DE_GATILHO, DIAS_DA_SEMANA_DA_AUTOMACAO, PRIORIDADES_DA_AUTOMACAO } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { AUTOMATION_TRIGGER } from "@plane/types";
 import type { TAutomationTrigger, TAutomationTriggerConfig, TIssueProperty } from "@plane/types";
-import { CustomSelect } from "@plane/ui";
-import { PRIORIDADES_DA_AUTOMACAO } from "@plane/constants";
+import { CustomSelect, Input } from "@plane/ui";
 import { useLabel } from "@/hooks/store/use-label";
 import { useMember } from "@/hooks/store/use-member";
 import { useProjectState } from "@/hooks/store/use-project-state";
@@ -74,7 +73,15 @@ export const GatilhoDaAutomacao = observer(function GatilhoDaAutomacao(props: TP
   const rotuloDoGatilho = () => {
     if (trigger === AUTOMATION_TRIGGER.WORK_ITEM_CREATED) return t("automations.trigger_option.created");
     if (trigger === AUTOMATION_TRIGGER.COMMENT_ADDED) return t("automations.trigger_option.commented");
+    if (trigger === AUTOMATION_TRIGGER.SCHEDULED) return t("automations.trigger_option.scheduled");
     return t("automations.trigger_option.field_changed");
+  };
+
+  /** Cada gatilho começa com a configuração que ele precisa, e só ela. */
+  const configPadrao = (novo: TAutomationTrigger): TAutomationTriggerConfig => {
+    if (novo === AUTOMATION_TRIGGER.FIELD_CHANGED) return { field: "", to: [] };
+    if (novo === AUTOMATION_TRIGGER.SCHEDULED) return { frequency: "daily", time: "08:00", weekdays: [] };
+    return {};
   };
 
   const escolhidos = new Set(config.to ?? []);
@@ -90,9 +97,7 @@ export const GatilhoDaAutomacao = observer(function GatilhoDaAutomacao(props: TP
       <CustomSelect
         value={trigger}
         label={rotuloDoGatilho()}
-        onChange={(valor: TAutomationTrigger) =>
-          onChange(valor, valor === AUTOMATION_TRIGGER.FIELD_CHANGED ? { field: "", to: [] } : {})
-        }
+        onChange={(valor: TAutomationTrigger) => onChange(valor, configPadrao(valor))}
         input
       >
         <CustomSelect.Option value={AUTOMATION_TRIGGER.WORK_ITEM_CREATED}>
@@ -104,7 +109,71 @@ export const GatilhoDaAutomacao = observer(function GatilhoDaAutomacao(props: TP
         <CustomSelect.Option value={AUTOMATION_TRIGGER.COMMENT_ADDED}>
           {t("automations.trigger_option.commented")}
         </CustomSelect.Option>
+        <CustomSelect.Option value={AUTOMATION_TRIGGER.SCHEDULED}>
+          {t("automations.trigger_option.scheduled")}
+        </CustomSelect.Option>
       </CustomSelect>
+
+      {trigger === AUTOMATION_TRIGGER.SCHEDULED && (
+        <div className="flex flex-col gap-3 border-l-2 border-subtle pl-3">
+          <div className="flex flex-wrap items-end gap-2">
+            <div>
+              <label className="mb-1 block text-12 text-tertiary">{t("automations.schedule.frequency")}</label>
+              <CustomSelect
+                value={config.frequency ?? "daily"}
+                label={t(`automations.schedule.${config.frequency === "weekly" ? "weekly" : "daily"}`)}
+                onChange={(valor: "daily" | "weekly") => onChange(trigger, { ...config, frequency: valor })}
+                input
+              >
+                <CustomSelect.Option value="daily">{t("automations.schedule.daily")}</CustomSelect.Option>
+                <CustomSelect.Option value="weekly">{t("automations.schedule.weekly")}</CustomSelect.Option>
+              </CustomSelect>
+            </div>
+            <div>
+              <label className="mb-1 block text-12 text-tertiary">{t("automations.schedule.time")}</label>
+              <Input
+                type="time"
+                value={config.time ?? "08:00"}
+                onChange={(evento) => onChange(trigger, { ...config, time: evento.target.value })}
+                className="w-28"
+              />
+            </div>
+          </div>
+
+          {config.frequency === "weekly" && (
+            <div>
+              <label className="mb-1 block text-12 text-tertiary">{t("automations.schedule.weekdays")}</label>
+              <div className="flex flex-wrap gap-1.5">
+                {DIAS_DA_SEMANA_DA_AUTOMACAO.map((dia) => {
+                  const marcado = (config.weekdays ?? []).includes(dia.valor);
+                  return (
+                    <button
+                      key={dia.valor}
+                      type="button"
+                      onClick={() => {
+                        const atuais = new Set(config.weekdays ?? []);
+                        if (atuais.has(dia.valor)) atuais.delete(dia.valor);
+                        else atuais.add(dia.valor);
+                        onChange(trigger, { ...config, weekdays: Array.from(atuais).toSorted() });
+                      }}
+                      className={
+                        marcado
+                          ? "border-accent-primary rounded-sm border bg-accent-primary/10 px-2 py-1 text-12 text-accent-primary"
+                          : "rounded-sm border border-subtle px-2 py-1 text-12 text-secondary hover:bg-layer-1"
+                      }
+                    >
+                      {t(dia.i18n)}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-1 text-11 text-tertiary">{t("automations.schedule.weekdays_hint")}</p>
+            </div>
+          )}
+
+          <p className="text-11 text-tertiary">{t("automations.schedule.timezone_hint")}</p>
+        </div>
+      )}
 
       {trigger === AUTOMATION_TRIGGER.FIELD_CHANGED && (
         <div className="flex flex-col gap-3 border-l-2 border-subtle pl-3">

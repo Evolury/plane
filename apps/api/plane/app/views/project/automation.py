@@ -18,6 +18,7 @@ from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.automation import AutomationRunSerializer, AutomationSerializer
 from plane.app.views.base import BaseViewSet
 from plane.db.models import Automation, Workspace
+from plane.utils.automacoes.agenda import reagendar
 from plane.utils.automacoes.condicao import CondicaoInvalida, tarefas_que_casam
 
 #: Teto da leitura do log. O registro é grande por natureza — uma regra ativa
@@ -53,6 +54,9 @@ class AutomationViewSet(BaseViewSet):
             project_id=project_id,
             workspace_id=Workspace.objects.values_list("id", flat=True).get(slug=slug),
         )
+        # Sem isto a regra agendada nasce sem relógio, e o job — que varre por
+        # `next_run_at` — nunca a enxerga. Mesma armadilha das recorrentes.
+        reagendar(regra)
         return Response(AutomationSerializer(regra).data, status=status.HTTP_201_CREATED)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
@@ -65,7 +69,12 @@ class AutomationViewSet(BaseViewSet):
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(AutomationSerializer(serializer.save()).data, status=status.HTTP_200_OK)
+        regra = serializer.save()
+        # A agenda pode ter mudado — ou a regra pode ter deixado de ser
+        # agendada, e aí o relógio antigo precisa sumir para o job não a pegar.
+        if {"trigger_type", "trigger_config"} & set(request.data):
+            reagendar(regra)
+        return Response(AutomationSerializer(regra).data, status=status.HTTP_200_OK)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def destroy(self, request, slug, project_id, pk):

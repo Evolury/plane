@@ -17,6 +17,7 @@
 
 import React from "react";
 import { useTranslation } from "@plane/i18n";
+import { DIAS_DA_SEMANA_DA_AUTOMACAO } from "@plane/constants";
 import { AUTOMATION_TRIGGER } from "@plane/types";
 import type { TAutomation, TAutomationAction } from "@plane/types";
 import { cn } from "@plane/utils";
@@ -31,6 +32,19 @@ type TProps = {
 const Destaque = ({ children }: { children: React.ReactNode }) => (
   <span className="font-medium text-primary">{children}</span>
 );
+
+/**
+ * Encurta o texto do comentário sem cortar palavra — nem, pior, no meio de uma
+ * variável, o que produzia coisas como `está em {{e` na frase-resumo.
+ */
+const resumir = (texto: string | undefined, teto = 42) => {
+  const limpo = (texto ?? "").trim();
+  if (!limpo) return "—";
+  if (limpo.length <= teto) return limpo;
+  const corte = limpo.slice(0, teto);
+  const espaco = corte.lastIndexOf(" ");
+  return `${(espaco > teto / 2 ? corte.slice(0, espaco) : corte).trimEnd()}…`;
+};
 
 export const FraseDaAutomacao = function FraseDaAutomacao(props: TProps) {
   const { regra, rotulos, className } = props;
@@ -58,6 +72,27 @@ export const FraseDaAutomacao = function FraseDaAutomacao(props: TProps) {
           <>
             {t("automations.sentence.field_changed")} {campo} {t("automations.sentence.to")}{" "}
             <Destaque>{lista(destinos)}</Destaque>
+          </>
+        );
+      }
+      case AUTOMATION_TRIGGER.SCHEDULED: {
+        const hora = config.time ?? "08:00";
+        if (config.frequency === "weekly") {
+          const dias = (config.weekdays ?? [])
+            .map((dia) => DIAS_DA_SEMANA_DA_AUTOMACAO.find((item) => item.valor === dia))
+            .filter(Boolean)
+            .map((item) => t(item!.i18n));
+          return (
+            <>
+              {t("automations.sentence.every_week")}{" "}
+              <Destaque>{dias.length > 0 ? lista(dias) : t("automations.sentence.every_day_short")}</Destaque>{" "}
+              {t("automations.sentence.at")} <Destaque>{hora}</Destaque>
+            </>
+          );
+        }
+        return (
+          <>
+            {t("automations.sentence.every_day")} {t("automations.sentence.at")} <Destaque>{hora}</Destaque>
           </>
         );
       }
@@ -122,6 +157,27 @@ export const FraseDaAutomacao = function FraseDaAutomacao(props: TProps) {
             {t("automations.sentence.set_property")} <Destaque>{rotulos.propriedade(config.property_id)}</Destaque>
           </>
         );
+      case "add_comment":
+        return (
+          <>
+            {t("automations.sentence.add_comment")} <Destaque>{resumir(config.text)}</Destaque>
+          </>
+        );
+      case "notify": {
+        const pessoas = (config.users ?? []).map((id) => rotulos.valorDoCampo("assignee_id", id));
+        const papeis = (config.especiais ?? []).map((papel) =>
+          papel === "assignees" ? t("automations.notify_target.assignees") : t(`automations.special.${papel}`)
+        );
+        return (
+          <>
+            {t("automations.sentence.notify")} <Destaque>{lista([...papeis, ...pessoas]) || "—"}</Destaque>
+          </>
+        );
+      }
+      case "archive":
+        return <Destaque>{t("automations.sentence.archive")}</Destaque>;
+      case "add_to_cycle":
+        return <Destaque>{t("automations.sentence.add_to_cycle")}</Destaque>;
       default:
         return <>{item.type}</>;
     }

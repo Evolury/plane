@@ -27,6 +27,12 @@ descreve o processo do time e às vezes carrega decisão de gestão.
 | **Uma tarefa for criada** | qualquer tarefa nova no projeto. Rascunho **não** dispara.         |
 | **Um campo for alterado** | você escolhe o campo, e opcionalmente só quando ele virar um valor |
 | **Alguém comentar**       | um comentário novo na tarefa                                       |
+| **Em um horário**         | todo dia, ou em dias escolhidos da semana, numa hora               |
+
+O horário do gatilho agendado é o do **fuso do projeto**: "toda manhã às 8h" é
+8h de quem lê o quadro. A varredura roda de quinze em quinze minutos, então a
+regra dispara na primeira passagem depois da hora marcada. Se o servidor ficar
+fora do ar, a rodada seguinte roda **uma vez** — atraso não acumula.
 
 O campo pode ser estado, prioridade, responsáveis, etiquetas, data de início,
 vencimento, ciclo, módulo — **ou qualquer propriedade personalizada do
@@ -48,7 +54,21 @@ nada — é a forma de descobrir o alcance da condição antes de ligar a regra.
 ## Então (as ações)
 
 Mudar o estado · mudar a prioridade · mudar responsáveis · mudar etiquetas ·
-definir data (fixa ou "daqui a N dias") · preencher propriedade personalizada.
+definir data (fixa ou "daqui a N dias") · preencher propriedade personalizada ·
+**comentar** · **notificar** · **arquivar** · **incluir no ciclo ativo**.
+
+No texto de comentário e de notificação você pode usar cinco variáveis:
+`{{tarefa}}`, `{{responsável}}`, `{{quem_disparou}}`, `{{estado}}` e
+`{{vencimento}}`. O que não estiver nessa lista fica escrito como está — não
+existe linguagem de fórmula aqui, de propósito.
+
+**Notificar** avisa quem a regra escolheu (pessoas, os responsáveis, quem criou,
+quem disparou), no sino e por e-mail. É diferente do aviso automático que
+qualquer mudança já gera: aquele vai para quem _acompanha_ a tarefa.
+
+**Arquivar** só age em tarefa concluída ou cancelada. **Incluir no ciclo** usa o
+ciclo ativo no momento da execução — nunca um ciclo escolhido de véspera, que
+envelheceria na virada.
 
 As ações rodam **na ordem em que aparecem**, e cada uma enxerga o que a anterior
 fez.

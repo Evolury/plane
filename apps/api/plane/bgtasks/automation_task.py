@@ -35,8 +35,9 @@ from plane.db.models import (
     Issue,
 )
 from plane.utils.automacoes import acoes as registro_de_acoes
+from plane.utils.automacoes.agenda import reagendar
 from plane.utils.automacoes.ator import ator_da_automacao
-from plane.utils.automacoes.condicao import CondicaoInvalida, casa
+from plane.utils.automacoes.condicao import CondicaoInvalida, casa, tarefas_que_casam
 from plane.utils.automacoes.gatilhos import automacao_casa
 from plane.utils.exception_logger import log_exception
 
@@ -161,5 +162,107 @@ def avaliar_automacoes(evento, profundidade=0):
                 )
                 continue
             executar_automacao(automacao, tarefa, evento, profundidade)
+    except Exception as erro:
+        log_exception(erro)
+
+
+#: Teto de tarefas alcançadas por rodada agendada.
+#:
+#: Uma regra agendada sem condição pega o projeto inteiro. Sem teto, a primeira
+#: rodada de um projeto grande viraria dez mil escritas numa tacada — e o
+#: sintoma apareceria como "o produto travou", não como "a minha regra pegou
+#: demais". O corte é registrado no log, nunca silencioso: silêncio aqui seria
+#: a regra parecer ter agido em tudo.
+TETO_POR_RODADA = 500
+
+
+def executar_agendada(automacao, agora=None):
+    """Roda uma regra agendada sobre todas as tarefas que casam.
+
+    Uma linha de registro para a rodada inteira, e não uma por tarefa: quem lê o
+    log quer saber "a varredura das 8h pegou quantas?", e quinhentas linhas
+    idênticas responderiam pior do que uma.
+    """
+    agora = agora or timezone.now()
+    comeco = time.monotonic()
+    evento = {"tipo": "agendada", "automacao_origem": None, "actor_id": None}
+
+    try:
+        casam = tarefas_que_casam(automacao.project_id, automacao.condition)
+    except CondicaoInvalida as erro:
+        _registrar(automacao, None, AutomationRunStatus.FAILED, evento, [], f"condição inválida: {erro}", comeco, 0)
+        reagendar(automacao, agora)
+        return AutomationRunStatus.FAILED
+
+    total = casam.count()
+    tarefas = list(casam[:TETO_POR_RODADA])
+
+    contexto = {
+        "ator_id": ator_da_automacao(automacao.workspace_id).id,
+        "automacao": automacao,
+        "evento": evento,
+        "profundidade": 0,
+    }
+
+    resultados, houve_erro = [], False
+    for tarefa in tarefas:
+        for acao in automacao.actions or []:
+            if not isinstance(acao, dict):
+                continue
+            tarefa.refresh_from_db()
+            resultado = registro_de_acoes.executar(acao.get("type"), tarefa, acao.get("config"), contexto)
+            if resultado["status"] == registro_de_acoes.ERRO:
+                houve_erro = True
+            # O log da rodada guarda a tarefa junto do resultado — sem isso,
+            # "12 aplicadas" não diz em quais.
+            resultados.append({**resultado, "tarefa": f"#{tarefa.sequence_id} {tarefa.name}"})
+
+    if total > TETO_POR_RODADA:
+        resultados.append(
+            {
+                "tipo": "limite",
+                "status": registro_de_acoes.SEM_EFEITO,
+                "detalhe": f"{total} tarefas casaram; esta rodada tratou as primeiras {TETO_POR_RODADA}",
+            }
+        )
+
+    status = AutomationRunStatus.FAILED if houve_erro else AutomationRunStatus.MATCHED
+    _registrar(automacao, None, status, {**evento, "total": total}, resultados, "", comeco, 0)
+    Automation.objects.filter(pk=automacao.pk).update(
+        last_run_at=agora,
+        run_count=F("run_count") + 1,
+        error_count=F("error_count") + (1 if houve_erro else 0),
+    )
+    reagendar(automacao, agora)
+    return status
+
+
+@shared_task
+def rodar_automacoes_agendadas():
+    """O relógio: as regras cuja hora passou.
+
+    Roda de quinze em quinze minutos, a mesma cadência das tarefas recorrentes —
+    "toda segunda às 8h" com um job diário seria "toda segunda, em algum
+    momento".
+
+    Atraso não acumula: uma regra vencida há dois dias roda UMA vez e é
+    reagendada para a frente, porque `reagendar` sempre calcula a partir de
+    agora. Sem isso, um dia de fila fora do ar viraria uma rodada por dia
+    perdido, todas de uma vez.
+    """
+    try:
+        agora = timezone.now()
+        vencidas = Automation.objects.filter(
+            is_active=True,
+            trigger_type=AutomationTrigger.SCHEDULED,
+            next_run_at__isnull=False,
+            next_run_at__lte=agora,
+        ).select_related("project")
+
+        for automacao in vencidas:
+            if _estourou_o_teto(automacao):
+                _desligar(automacao, f"desligada automaticamente: passou de {TETO_POR_HORA} execuções em uma hora")
+                continue
+            executar_agendada(automacao, agora)
     except Exception as erro:
         log_exception(erro)

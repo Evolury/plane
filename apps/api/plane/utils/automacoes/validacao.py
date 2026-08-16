@@ -16,6 +16,9 @@ mesma prova que o quadro faz a cada carregamento, então uma árvore que passa
 aqui é uma árvore que o motor consegue executar.
 """
 
+# Python imports
+import re
+
 # Third party imports
 from rest_framework import serializers
 
@@ -35,6 +38,9 @@ CAMPOS_DE_GATILHO = set(CAMPO_DO_HISTORICO.values())
 PRIORIDADES = {"urgent", "high", "medium", "low", "none"}
 MODOS_DE_LISTA = {"add", "remove", "replace"}
 
+#: "08:00", "8:5" — hora e minuto, com ou sem zero à esquerda.
+HORARIO = re.compile(r"^\d{1,2}:\d{1,2}$")
+
 
 def _erro(mensagem):
     raise serializers.ValidationError(mensagem)
@@ -46,6 +52,21 @@ def validar_gatilho(trigger_type, trigger_config, gatilhos_aceitos, project_id):
         _erro({"trigger_type": f"Gatilho '{trigger_type}' não está disponível."})
 
     config = trigger_config or {}
+
+    if trigger_type == "scheduled":
+        frequencia = config.get("frequency", "daily")
+        if frequencia not in ("daily", "weekly"):
+            _erro({"trigger_config": "A frequência precisa ser diária ou semanal."})
+        horario = config.get("time") or "08:00"
+        if not HORARIO.match(str(horario)):
+            _erro({"trigger_config": "O horário precisa estar no formato HH:MM."})
+        dias = config.get("weekdays") or []
+        if not isinstance(dias, list) or any(dia not in range(7) for dia in dias):
+            _erro({"trigger_config": "Os dias da semana precisam ser números de 0 (domingo) a 6."})
+        # Semanal sem dia escolhido é lida como "todos os dias" no cálculo, e
+        # não como "nenhum" — o contrário seria uma regra que nunca roda.
+        return {"frequency": frequencia, "time": str(horario), "weekdays": dias}
+
     if trigger_type != "field_changed":
         return {}
 
@@ -145,6 +166,22 @@ def _validar_acao(acao, project_id):
             pk=config.get("property_id") or None, project_id=project_id, is_active=True
         ).exists():
             _erro({"actions": "A propriedade escolhida não existe neste projeto."})
+
+    elif tipo == "add_comment":
+        if not (config.get("text") or "").strip():
+            _erro({"actions": "Escreva o texto do comentário."})
+
+    elif tipo == "notify":
+        pessoas = config.get("users") or []
+        especiais = config.get("especiais") or []
+        if not pessoas and not especiais:
+            _erro({"actions": "Escolha quem será avisado."})
+        if pessoas and User.objects.filter(pk__in=pessoas).count() != len(set(pessoas)):
+            _erro({"actions": "Uma das pessoas escolhidas não existe."})
+
+    # `archive` e `add_to_cycle` não têm configuração: a primeira arquiva a
+    # tarefa que disparou, a segunda usa o ciclo ATIVO — um id de ciclo fixo
+    # envelheceria na virada do próximo.
 
     return {"type": tipo, "config": config}
 
