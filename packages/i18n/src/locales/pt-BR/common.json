@@ -915,7 +915,9 @@
     "date_range": {
       "from": "A partir de {date}",
       "till": "Até {date}",
-      "between": "{start} até {end}"
+      "between": "{start} até {end}",
+      "after": "Depois de",
+      "before": "e antes de"
     },
     "rename_folder": "Renomear pasta",
     "download": "Baixar",

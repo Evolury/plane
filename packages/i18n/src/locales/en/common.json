@@ -915,7 +915,9 @@
     "date_range": {
       "from": "From {date}",
       "till": "Till {date}",
-      "between": "{start} to {end}"
+      "between": "{start} to {end}",
+      "after": "After",
+      "before": "and before"
     },
     "rename_folder": "Rename folder",
     "download": "Download",
