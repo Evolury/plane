@@ -61,7 +61,7 @@ const WorkItemFilterRoot = observer(function WorkItemFilterRoot(props: TWorkItem
     ...entityConfigProps
   } = props;
   // store hooks
-  const { getOrCreateFilter, deleteFilter } = useWorkItemFilters();
+  const { getFilter, getOrCreateFilter, deleteFilter } = useWorkItemFilters();
   // derived values
   const workItemEntityID = useMemo(
     () => (isTemporary ? `TEMP-${entityId ?? uuidv4()}` : entityId),
@@ -73,31 +73,49 @@ const WorkItemFilterRoot = observer(function WorkItemFilterRoot(props: TWorkItem
     allowedFilters: filtersToShowByLayout ? filtersToShowByLayout : [],
     ...entityConfigProps,
   });
-  // get or create filter instance
-  const workItemLayoutFilter = useMemo(
-    () =>
-      getOrCreateFilter({
-        entityType,
-        entityId: workItemEntityID,
-        initialExpression: initialUserFilters,
-        onExpressionChange: updateFilters,
-        expressionOptions: {
-          saveViewOptions,
-          updateViewOptions,
-        },
-        showOnMount,
-      }),
+  // Evolury: os parâmetros num lugar só — a instância precisa ser pedida em
+  // dois momentos (na renderização e ao montar), e divergir entre eles daria
+  // duas instâncias com configurações diferentes.
+  const parametrosDoFiltro = useMemo(
+    () => ({
+      entityType,
+      entityId: workItemEntityID,
+      initialExpression: initialUserFilters,
+      onExpressionChange: updateFilters,
+      expressionOptions: { saveViewOptions, updateViewOptions },
+      showOnMount,
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityType, workItemEntityID, saveViewOptions, updateViewOptions, updateFilters]
   );
 
-  // delete filter instance when component unmounts
-  useEffect(
-    () => () => {
-      deleteFilter(entityType, workItemEntityID);
-    },
-    [deleteFilter, entityType, workItemEntityID]
+  // get or create filter instance
+  const filtroInicial = useMemo(
+    () => getOrCreateFilter(parametrosDoFiltro),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [parametrosDoFiltro]
   );
+
+  // Evolury: a instância VIVA, lida do store a cada renderização.
+  //
+  // Sem isto, o seletor de filtros não abria em desenvolvimento. O `StrictMode`
+  // monta, desmonta e remonta o MESMO fiber: o `cleanup` abaixo apagava a
+  // instância, e o `useMemo` — que já rodou naquele fiber — não a recriava. O
+  // que sobrava era uma referência órfã, e o botão só registrava
+  // "filter instance not available".
+  //
+  // A dupla resolve o ciclo inteiro: o efeito recria ao (re)montar, e a leitura
+  // do store entrega sempre a que está viva, e não a que foi memorizada.
+  const workItemLayoutFilter = getFilter(entityType, workItemEntityID) ?? filtroInicial;
+
+  useEffect(() => {
+    // Recria quando o `cleanup` de uma montagem anterior a apagou. É idempotente:
+    // se ainda existir, o store devolve a mesma e só atualiza os callbacks.
+    getOrCreateFilter(parametrosDoFiltro);
+    return () => {
+      deleteFilter(entityType, workItemEntityID);
+    };
+  }, [getOrCreateFilter, deleteFilter, parametrosDoFiltro, entityType, workItemEntityID]);
 
   useEffect(() => {
     workItemLayoutFilter.configManager.setAreConfigsReady(workItemFiltersConfig.areAllConfigsInitialized);

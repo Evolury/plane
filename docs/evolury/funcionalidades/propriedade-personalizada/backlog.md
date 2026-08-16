@@ -156,16 +156,12 @@ Texto, número, moeda e data **filtram pela API** (`_gte`/`_lte`, contém), mas
 ainda não aparecem no seletor visual: o formato de operador deles é outro
 (faixa e trecho, não lista de opções). É trabalho de tela, não de tipo.
 
-## Achado colateral: no servidor de desenvolvimento o filtro não abre
+## Achado colateral, já corrigido
 
-O botão de filtro não abre nada com `pnpm dev` — e isso é anterior a esta
-funcionalidade. O `WorkItemFiltersHOC` cria a instância de filtro num `useMemo`
-e a apaga no `cleanup` do `useEffect`; sob `StrictMode`, o React monta,
-desmonta e remonta, o `cleanup` apaga a instância, e o `useMemo` não roda de
-novo. A instância some, e o botão só registra "filter instance not available".
+O seletor de filtros não abria no servidor de desenvolvimento: o
+`WorkItemFiltersHOC` criava a instância num `useMemo` e a apagava no `cleanup`
+do efeito, e o `StrictMode` — que monta, desmonta e remonta o mesmo fiber —
+deixava uma referência órfã.
 
-Só afeta desenvolvimento — `StrictMode` não duplica efeitos em produção.
-Provado por experimento: com `StrictMode` o seletor não abre; sem ele, abre com
-as 12 opções. Para validar filtros no dev, desligue `StrictMode` em
-`apps/web/app/entry.client.tsx` e religue depois
-([processo](../../processos/desenvolvimento-local.md)).
+Corrigido em 15/08/2026: o efeito passou a recriar ao montar, e a renderização
+lê a instância viva do store. `useMemo` não é dono de ciclo de vida.
