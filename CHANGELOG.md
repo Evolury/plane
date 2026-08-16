@@ -3,6 +3,55 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.18.0] — 2026-08-16
+
+**Minor**: chega funcionalidade nova de verdade a quem usa o produto — a maior
+desde o começo do fork, e a que mais pesa comercialmente.
+
+### Automações personalizadas
+
+O menu **Configurações → Execução → Automações** entregava duas caixas fixas:
+arquivar e fechar tarefas paradas. Dois interruptores, não um recurso. Agora o
+time escreve as próprias regras, no formato **quando / se / então**.
+
+- **Quatro gatilhos**: tarefa criada, campo alterado, alguém comentar, e em um
+  horário. O do meio é parametrizado e sozinho cobre estado, prioridade,
+  responsável, etiqueta, datas, ciclo, módulo e **toda propriedade
+  personalizada do projeto**.
+- **A condição é a mesma linha de filtros do quadro.** Tudo que você filtra na
+  tela, filtra na regra — inclusive as propriedades personalizadas. Não é
+  economia de código: é a garantia de que filtro e automação nunca discordem
+  sobre o que "prioridade é urgente" quer dizer.
+- **Doze ações**: mudar estado, prioridade, responsáveis, etiquetas e datas;
+  preencher propriedade; comentar; notificar (no sino e por e-mail); arquivar;
+  incluir no ciclo ativo ou num módulo; criar tarefa e criar subtarefas.
+- **Registro de execuções** por regra, que responde "por que não rodou?" —
+  inclusive quando a resposta é "a condição não casou" ou "já estava assim".
+- **Seis receitas prontas** no estado vazio, que abrem o editor preenchido.
+- As mudanças feitas por uma regra aparecem no histórico creditadas a
+  **Automação**, e não a você nem a quem criou o projeto.
+
+**A fronteira com Tarefas recorrentes é de propósito, não de sobreposição**: a
+agenda cuida da rotina, o evento cuida da reação. Criar tarefa por horário é
+trabalho das recorrentes, e a combinação é recusada com uma frase que aponta
+para lá. Ocorrência de recorrência não dispara regra de "tarefa criada", a menos
+que a regra peça.
+
+Uma regra cria o checklist **uma vez por tarefa**: disparar de novo não duplica.
+
+### Correções
+
+- **A alteração de valor de propriedade personalizada** passou a entrar no
+  mesmo funil de histórico das demais mudanças, com chave estável. Renomear a
+  propriedade não quebra mais nada que dependa dela.
+
+### Qualidade
+
+- **`pnpm lint:api`**: o linter da API não tinha entrada local, e uma bateria
+  "verde" cobria só metade do repositório.
+- **Regra de lint desligada** cuja correção automática não compila neste alvo de
+  TypeScript — ela editava código no gancho de pré-commit e quebrava o build.
+
 ## [1.17.1] — 2026-08-16
 
 **Patch, e não minor**: nada de novo chega a quem usa o produto em produção. O
