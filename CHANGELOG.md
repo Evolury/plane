@@ -3,6 +3,27 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.17.0] — 2026-08-16
+
+### Os seis tipos filtram pela tela
+
+Texto, número e moeda entram no seletor de filtro, fechando a última lacuna do
+recurso: agora **todos os seis tipos** de propriedade filtram pela interface.
+
+| Tipo | Como filtra |
+| --- | --- |
+| Seleção única e múltipla | escolhendo opções, com as cores |
+| Data | "é" um dia, ou "entre" dois |
+| Texto | **contém** um trecho |
+| Número e moeda | "é" um valor, ou "entre" dois — a moeda mostra o símbolo |
+
+O que faltava era um formato de campo: os quatro que existiam são de
+**escolher** (calendário ou lista), e esses três precisam de **digitar**.
+
+Os campos confirmam ao sair — Enter confirma, Escape devolve o que estava —, e a
+faixa só filtra com as duas pontas preenchidas: meia faixa mostraria um recorte
+que ninguém pediu.
+
 ## [1.16.0] — 2026-08-16
 
 ### Filtrar por propriedade de data
