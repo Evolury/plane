@@ -157,6 +157,20 @@ por exemplo:
 docker builder prune -af
 ```
 
+## O gancho de pré-commit cobra erro, não aviso
+
+`lint-staged` roda `oxfmt` e `oxlint --fix` nos arquivos preparados. **Erro
+barra o commit; aviso não.**
+
+Foi assim a partir de 16/08/2026, e a razão é prática: com `--deny-warnings`,
+qualquer commit que tocasse um arquivo herdado era barrado por avisos que já
+estavam lá. O resultado real não era código mais limpo — era `--no-verify` em
+todo commit, e um gancho que não protegia nada.
+
+Quem cobra aviso é a CI, com **orçamento por pacote**
+(`oxlint --max-warnings=N`). É lá que a dívida herdada pode encolher aos poucos:
+baixando o número quando um arquivo é limpo, em vez de exigir tudo de uma vez.
+
 ## Depois de validar
 
 Apague o que você criou no `planedev`. Ele é ambiente compartilhado entre
