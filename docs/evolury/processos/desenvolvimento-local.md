@@ -105,11 +105,15 @@ Três coisas precisam estar certas, e as três já estão no repositório ou no
 Com isso, `localhost`, IP da rede e nome do tailnet funcionam **ao mesmo tempo**,
 e o CORS deixa de existir no caminho: mesma origem, como em produção.
 
-Falta um detalhe que **não** dá para resolver no `vite.config.ts`: o
-redirecionamento pós-login é montado pelo servidor, a partir de `APP_BASE_URL`.
-Ele é um endereço só. Aponte-o para o endereço que você usa de fora (em
-`apps/api/.env`), senão o login termina num host que a máquina remota não
-alcança.
+O redirecionamento pós-login é montado pelo **servidor**, e por isso não cabia
+no `vite.config.ts`. Resolvido do lado do Django: com `TRUST_REQUEST_ORIGIN="1"`
+no `apps/api/.env`, ele segue a origem de quem chamou — desde que ela esteja em
+`CORS_ALLOWED_ORIGINS`.
+
+Assim, entrar por `localhost` termina em `localhost`, e entrar pelo nome do
+tailnet termina no tailnet. **A variável não existe em produção**, onde o
+endereço é um e fixo; e mesmo ligada, origem fora da lista nunca é seguida —
+seguir o que o pedido mandar seria redirecionamento aberto.
 
 Pela rede local ainda é preciso liberar a porta no firewalld — a interface da
 LAN fica na zona `FedoraWorkstation`, que não abre TCP alto; a `tailscale0` está
