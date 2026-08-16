@@ -348,6 +348,12 @@ export const coreRoutes: RouteConfigEntry[] = [
                 ":workspaceSlug/settings/projects/:projectId/automations",
                 "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/automations/page.tsx"
               ),
+              // Evolury: editor de uma automação personalizada (ADR 0012).
+              // O id "novo" é o caminho de criação.
+              route(
+                ":workspaceSlug/settings/projects/:projectId/automations/:automationId",
+                "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/automations/[automationId]/page.tsx"
+              ),
             ]),
             // Evolury: tarefas recorrentes (ADR 0010)
             route(

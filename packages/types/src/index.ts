@@ -39,6 +39,8 @@ export * from "./navigation-preferences";
 export * from "./my-tasks";
 export * from "./recurring-work-item";
 export * from "./issue-property";
+// Evolury: automações personalizadas (ADR 0012)
+export * from "./automacao";
 export * from "./page";
 export * from "./payment";
 export * from "./pragmatic";

@@ -115,4 +115,12 @@ from .issue_property import (
     TETO_DE_PROPRIEDADES,
 )
 
+# Evolury: automações personalizadas — quando / se / então (ADR 0012)
+from .automation import (
+    Automation,
+    AutomationRun,
+    AutomationRunStatus,
+    AutomationTrigger,
+)
+
 from .description import Description, DescriptionVersion

@@ -2,7 +2,8 @@
   "automations": {
     "settings": {
       "title": "Automações personalizadas",
-      "create_automation": "Criar automação"
+      "create_automation": "Criar automação",
+      "description": "As regras que o seu time escreve: quando algo acontece, se a tarefa se encaixa, então faça isto."
     },
     "scope": {
       "label": "Escopo",
@@ -267,6 +268,94 @@
             "all": "Todos"
           }
         }
+      }
+    },
+    "active": "Ativa",
+    "days": "dias",
+    "condition_hint": "Sem condição, a regra vale para toda tarefa que disparar o gatilho.",
+    "condition_empty": "+ Restringir a quais tarefas (hoje: todas)",
+    "trigger_field_label": "Qual campo",
+    "trigger_field_placeholder": "Escolha um campo",
+    "trigger_to_label": "Só quando mudar para",
+    "trigger_to_hint": "Sem escolher nada, qualquer mudança no campo dispara a regra.",
+    "pick_state": "Escolha um estado",
+    "pick_priority": "Escolha uma prioridade",
+    "pick_property": "Escolha uma propriedade",
+    "pick_value": "Valor",
+    "trigger_option": {
+      "created": "Uma tarefa for criada",
+      "field_changed": "Um campo for alterado",
+      "commented": "Alguém comentar"
+    },
+    "action_option": {
+      "set_state": "Mudar o estado",
+      "set_priority": "Mudar a prioridade",
+      "set_assignees": "Mudar responsáveis",
+      "set_labels": "Mudar etiquetas",
+      "set_date": "Definir data",
+      "set_property": "Preencher propriedade"
+    },
+    "field": {
+      "state": "Estado",
+      "priority": "Prioridade",
+      "assignee": "Responsáveis",
+      "label": "Etiquetas",
+      "start_date": "Data de início",
+      "target_date": "Data de vencimento",
+      "module": "Módulo",
+      "cycle": "Ciclo"
+    },
+    "mode": {
+      "add": "Acrescentar",
+      "remove": "Remover",
+      "replace": "Substituir"
+    },
+    "date_mode": {
+      "relative": "Daqui a",
+      "fixed": "Data fixa"
+    },
+    "special": {
+      "creator": "quem criou a tarefa",
+      "trigger_actor": "quem disparou a regra"
+    },
+    "tab": {
+      "editar": "Editar",
+      "execucoes": "Execuções"
+    },
+    "simulate": {
+      "button": "Simular",
+      "result": "{total} tarefa(s) se encaixam agora"
+    },
+    "sentence": {
+      "when": "Quando",
+      "created": "uma tarefa for criada",
+      "commented": "alguém comentar",
+      "field_changed": "mudar o campo",
+      "to": "para",
+      "conditions_match": "a tarefa se encaixar nos filtros",
+      "no_action": "não fazer nada",
+      "set_state": "mudar o estado para",
+      "set_priority": "mudar a prioridade para",
+      "add_assignee": "atribuir a",
+      "remove_assignee": "remover de",
+      "add_label": "acrescentar a etiqueta",
+      "remove_label": "remover a etiqueta",
+      "set_date": "definir",
+      "relative_days": "daqui a {dias} dia(s)",
+      "set_property": "preencher"
+    },
+    "runs": {
+      "empty": "Esta regra ainda não rodou.",
+      "only_after_save": "O registro de execuções aparece depois de salvar a regra.",
+      "status": {
+        "matched": "Executada",
+        "skipped": "Condição não casou",
+        "failed": "Falhou"
+      },
+      "result": {
+        "aplicada": "aplicada",
+        "sem_efeito": "já estava assim",
+        "erro": "erro"
       }
     }
   }

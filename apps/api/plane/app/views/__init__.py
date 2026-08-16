@@ -3,6 +3,9 @@
 # See the LICENSE file for details.
 
 from .project.recurring_work_item import RecurringWorkItemViewSet
+
+# Evolury: automações personalizadas (ADR 0012)
+from .project.automation import AutomationViewSet
 from .project.issue_property import (
     IssuePropertyOptionUsageViewSet,
     IssuePropertyValuesBulkViewSet,

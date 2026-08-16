@@ -33,6 +33,9 @@ from plane.db.models import (
     EstimatePoint,
 )
 from plane.settings.redis import redis_instance
+
+# Evolury: automações personalizadas (ADR 0012)
+from plane.utils.automacoes.despacho import despachar_atividades
 from plane.utils.exception_logger import log_exception
 from plane.utils.issue_relation_mapper import get_inverse_relation
 from plane.utils.personal_stage import sync_personal_stages_on_completion
@@ -1534,6 +1537,11 @@ def issue_activity(
     notification=False,
     origin=None,
     intake=None,
+    # Evolury: rastro do encadeamento entre automações (ADR 0012). Ação humana
+    # entra com profundidade 0 e sem origem — que é o que os 124 chamadores
+    # existentes continuam mandando, sem saber que estes parâmetros existem.
+    automacao_origem=None,
+    automacao_profundidade=0,
 ):
     try:
         issue_activities = []
@@ -1618,6 +1626,22 @@ def issue_activity(
                 requested_data=requested_data,
                 current_instance=current_instance,
             )
+
+        # Evolury: automações personalizadas (ADR 0012). Este é o funil por onde
+        # passam TODAS as mudanças de tarefa — 124 chamadas em 24 arquivos caem
+        # aqui —, então é o único enxerto necessário. Fica DEPOIS da gravação
+        # das atividades porque é delas que o gatilho lê o que mudou, e a função
+        # não levanta exceção: automação com defeito não pode derrubar o
+        # histórico de quem estava só arrastando um cartão.
+        despachar_atividades(
+            tipo=type,
+            issue_id=issue_id,
+            project_id=project_id,
+            actor_id=actor_id,
+            linhas=issue_activities_created,
+            automacao_origem=automacao_origem,
+            profundidade=automacao_profundidade,
+        )
 
         return
     except Exception as e:

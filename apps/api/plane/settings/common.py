@@ -344,6 +344,14 @@ CELERY_IMPORTS = (
     # issue version tasks
     "plane.bgtasks.issue_version_sync",
     "plane.bgtasks.issue_description_version_sync",
+    # Evolury: automações personalizadas (ADR 0012).
+    #
+    # Declarado aqui, e não deixado a cargo de um import transitivo: o worker
+    # não carrega as URLs, então uma tarefa só fica registrada se alguém no
+    # caminho de inicialização importar o módulo. Sem esta linha, o despacho
+    # funciona, a mensagem chega à fila — e o worker a DESCARTA com
+    # "unregistered task", que na tela vira uma regra que simplesmente não roda.
+    "plane.bgtasks.automation_task",
 )
 
 FILE_SIZE_LIMIT = int(os.environ.get("FILE_SIZE_LIMIT", 5242880))

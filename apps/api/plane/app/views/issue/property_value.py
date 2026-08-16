@@ -8,9 +8,6 @@
 # porta de admin é CONFIGURAR a propriedade, porque isso cria trabalho para os
 # outros; preencher o campo é o trabalho.
 
-# Django imports
-from django.utils import timezone
-
 # Third party imports
 from rest_framework import status
 from rest_framework.response import Response
@@ -18,7 +15,8 @@ from rest_framework.response import Response
 # Module imports
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.views.base import BaseViewSet
-from plane.db.models import Issue, IssueActivity, IssueProperty
+from plane.db.models import Issue, IssueProperty
+from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
 from plane.utils.issue_properties import (
     ValorInvalido,
     gravar_valor,
@@ -84,34 +82,18 @@ class IssuePropertyValueViewSet(BaseViewSet):
         except ValorInvalido as erro:
             return Response({"value": str(erro)}, status=status.HTTP_400_BAD_REQUEST)
 
-        self._registrar_atividade(tarefa, propriedade, anterior, novo, request.user.id)
+        # A mudança entra no histórico e acorda as automações que esperavam por
+        # ela. As duas coisas moram juntas em `registrar_atividade_de_propriedade`
+        # porque agora há dois chamadores — a tela e a própria automação — e o
+        # histórico precisa sair idêntico dos dois (ADR 0012).
+        registrar_atividade_de_propriedade(
+            tarefa=tarefa,
+            propriedade=propriedade,
+            de=rotulo_do_valor(propriedade, anterior),
+            para=rotulo_do_valor(propriedade, novo),
+            actor_id=request.user.id,
+        )
         return Response(
             {"property": str(propriedade.id), "value": novo},
             status=status.HTTP_200_OK,
-        )
-
-    def _registrar_atividade(self, tarefa, propriedade, anterior, novo, actor_id):
-        """A mudança de valor entra no histórico da tarefa.
-
-        A tarefa passou a carregar informação de negócio, e mudança sem
-        histórico é buraco no rastro (ADR 0011). O que se grava é o RÓTULO, e
-        não o id da opção — id não diz nada a quem lê seis meses depois.
-        """
-        de = rotulo_do_valor(propriedade, anterior)
-        para = rotulo_do_valor(propriedade, novo)
-        if de == para:
-            return
-        IssueActivity.objects.create(
-            issue=tarefa,
-            actor_id=actor_id,
-            verb="updated",
-            old_value=de,
-            new_value=para,
-            # O nome da propriedade é o campo: é o que o histórico precisa
-            # dizer, e ele é do projeto de quem lê.
-            field=propriedade.name,
-            project_id=tarefa.project_id,
-            workspace_id=tarefa.workspace_id,
-            comment=f"alterou {propriedade.name} para",
-            epoch=int(timezone.now().timestamp()),
         )
