@@ -174,6 +174,21 @@ export const FraseDaAutomacao = function FraseDaAutomacao(props: TProps) {
           </>
         );
       }
+      case "create_work_item":
+        return (
+          <>
+            {t("automations.sentence.create_work_item")} <Destaque>{resumir(config.name)}</Destaque>
+          </>
+        );
+      case "create_subtasks": {
+        const nomes = (config.names ?? []).filter(Boolean);
+        return (
+          <>
+            {t("automations.sentence.create_subtasks", { total: nomes.length })}{" "}
+            <Destaque>{resumir(nomes.join(", "), 60)}</Destaque>
+          </>
+        );
+      }
       case "archive":
         return <Destaque>{t("automations.sentence.archive")}</Destaque>;
       case "add_to_cycle":

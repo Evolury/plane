@@ -299,7 +299,9 @@
       "notify": "Notify",
       "archive": "Archive",
       "add_to_cycle": "Add to active cycle",
-      "limite": "Round limit"
+      "limite": "Round limit",
+      "create_work_item": "Create work item",
+      "create_subtasks": "Create sub-work items"
     },
     "field": {
       "state": "State",
@@ -356,7 +358,9 @@
       "add_comment": "comment",
       "notify": "notify",
       "archive": "archive the work item",
-      "add_to_cycle": "add to the active cycle"
+      "add_to_cycle": "add to the active cycle",
+      "create_work_item": "create the work item",
+      "create_subtasks": "create {total} sub-work item(s):"
     },
     "runs": {
       "empty": "This rule has not run yet.",
@@ -398,6 +402,22 @@
       "thursday": "Thu",
       "friday": "Fri",
       "saturday": "Sat"
+    },
+    "create_name_placeholder": "Name of the work item to create",
+    "subtask_placeholder": "Sub-work item name",
+    "add_subtask": "Add sub-work item",
+    "inherit_assignees": "Inherit assignees from the work item",
+    "due_in_days": "Due in (days)",
+    "create_idempotency_hint": "This rule creates the checklist once per work item. Firing again does not duplicate it.",
+    "include_recurring": "Also apply to recurring work items",
+    "include_recurring_hint": "By default, a recurring occurrence does not fire this rule — the series' source item is already configured.",
+    "recipes": {
+      "urgent_notify": "When it turns urgent, assign to whoever changed it",
+      "new_gets_label": "Every new work item gets a label",
+      "done_clears_due": "On completion, clear the priority",
+      "comment_reopens": "A comment reopens the work item",
+      "review_checklist": "On entering review, create the checklist",
+      "due_tomorrow": "Every morning, notify whoever has work due"
     }
   }
 }

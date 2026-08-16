@@ -41,6 +41,13 @@ MODOS_DE_LISTA = {"add", "remove", "replace"}
 #: "08:00", "8:5" — hora e minuto, com ou sem zero à esquerda.
 HORARIO = re.compile(r"^\d{1,2}:\d{1,2}$")
 
+#: As ações que dão à luz. Só existem em gatilho de EVENTO — ver `validar_acoes`.
+ACOES_DE_CRIACAO = {"create_work_item", "create_subtasks"}
+
+#: Um checklist é um checklist, não um projeto. Vinte é folgado para o uso real
+#: e barra a lista colada de mil linhas que viraria mil tarefas num disparo.
+TETO_DE_SUBTAREFAS_POR_REGRA = 20
+
 
 def _erro(mensagem):
     raise serializers.ValidationError(mensagem)
@@ -179,6 +186,17 @@ def _validar_acao(acao, project_id):
         if pessoas and User.objects.filter(pk__in=pessoas).count() != len(set(pessoas)):
             _erro({"actions": "Uma das pessoas escolhidas não existe."})
 
+    elif tipo == "create_work_item":
+        if not (config.get("name") or "").strip():
+            _erro({"actions": "Dê um nome à tarefa que será criada."})
+
+    elif tipo == "create_subtasks":
+        nomes = [str(item).strip() for item in (config.get("names") or []) if str(item).strip()]
+        if not nomes:
+            _erro({"actions": "Liste ao menos uma subtarefa."})
+        if len(nomes) > TETO_DE_SUBTAREFAS_POR_REGRA:
+            _erro({"actions": f"No máximo {TETO_DE_SUBTAREFAS_POR_REGRA} subtarefas por regra."})
+
     # `archive` e `add_to_cycle` não têm configuração: a primeira arquiva a
     # tarefa que disparou, a segunda usa o ciclo ATIVO — um id de ciclo fixo
     # envelheceria na virada do próximo.
@@ -186,7 +204,7 @@ def _validar_acao(acao, project_id):
     return {"type": tipo, "config": config}
 
 
-def validar_acoes(acoes, project_id):
+def validar_acoes(acoes, project_id, trigger_type=None):
     """O "então" tem pelo menos uma ação, e todas são executáveis?
 
     Regra sem ação é o silêncio mais caro de todos: ela dispara, casa a
@@ -194,4 +212,24 @@ def validar_acoes(acoes, project_id):
     """
     if not isinstance(acoes, list) or not acoes:
         _erro({"actions": "A regra precisa de ao menos uma ação."})
-    return [_validar_acao(acao, project_id) for acao in acoes]
+
+    validadas = [_validar_acao(acao, project_id) for acao in acoes]
+
+    # Agendado + criar É recorrência. Oferecer as duas coisas seria oferecer dois
+    # caminhos para o mesmo destino, e o pior deles: Tarefas recorrentes tem
+    # calendário, antecedência, controle de ocorrência aberta e pulo, nada disso
+    # cabendo numa ação de automação. A combinação não existe — e a recusa é aqui,
+    # ao salvar, e não num aviso que a pessoa fecha sem ler.
+    if trigger_type == "scheduled":
+        criacao = [acao["type"] for acao in validadas if acao["type"] in ACOES_DE_CRIACAO]
+        if criacao:
+            _erro(
+                {
+                    "actions": (
+                        "Criar tarefa por horário é o que as Tarefas recorrentes fazem, com calendário e "
+                        "controle de ocorrência aberta. Use uma regra de evento, ou crie uma tarefa recorrente."
+                    )
+                }
+            )
+
+    return validadas

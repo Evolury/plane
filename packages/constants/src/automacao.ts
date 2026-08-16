@@ -125,4 +125,25 @@ export const RECEITAS_DE_AUTOMACAO = [
     trigger_config: {},
     actions: [{ type: "set_state", config: { state_id: "" } }],
   },
+  {
+    // A receita que existe para mostrar a diferença entre reagir e repetir:
+    // o checklist nasce PORQUE a tarefa entrou numa etapa, não porque é terça.
+    chave: "checklist_de_homologacao",
+    i18n: "automations.recipes.review_checklist",
+    trigger_type: "field_changed",
+    trigger_config: { field: "state_id", to: [] },
+    actions: [
+      {
+        type: "create_subtasks",
+        config: { names: ["Conferir requisitos", "Testar", "Aprovar"], herdar_responsaveis: true },
+      },
+    ],
+  },
+  {
+    chave: "vence_amanha_avisa",
+    i18n: "automations.recipes.due_tomorrow",
+    trigger_type: "scheduled",
+    trigger_config: { frequency: "daily", time: "08:00", weekdays: [] },
+    actions: [{ type: "notify", config: { especiais: ["assignees"], text: "", email: true } }],
+  },
 ] as const;

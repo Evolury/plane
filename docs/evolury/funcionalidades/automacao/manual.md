@@ -29,6 +29,10 @@ descreve o processo do time e às vezes carrega decisão de gestão.
 | **Alguém comentar**       | um comentário novo na tarefa                                       |
 | **Em um horário**         | todo dia, ou em dias escolhidos da semana, numa hora               |
 
+Tarefa nascida de uma **recorrência** não dispara a regra de "tarefa criada",
+porque a origem daquela série já é um molde preenchido. Se você quiser o
+contrário, marque "valer também para tarefas de recorrência" na própria regra.
+
 O horário do gatilho agendado é o do **fuso do projeto**: "toda manhã às 8h" é
 8h de quem lê o quadro. A varredura roda de quinze em quinze minutos, então a
 regra dispara na primeira passagem depois da hora marcada. Se o servidor ficar
@@ -65,6 +69,19 @@ existe linguagem de fórmula aqui, de propósito.
 **Notificar** avisa quem a regra escolheu (pessoas, os responsáveis, quem criou,
 quem disparou), no sino e por e-mail. É diferente do aviso automático que
 qualquer mudança já gera: aquele vai para quem _acompanha_ a tarefa.
+
+**Criar tarefa** e **criar subtarefas** existem só em regra de **evento** — a
+criação por horário é o que as Tarefas recorrentes fazem, com calendário e
+controle de ocorrência aberta, e a combinação nem aparece no menu.
+
+Uma regra cria o conjunto **uma vez por tarefa**: mover para Homologação, voltar
+e mover de novo não recria o checklist. Acrescentar um item à regra e disparar de
+novo cria só o item novo. A tarefa criada nasce na etapa padrão do projeto, pode
+herdar os responsáveis do pai e pode vencer em N dias contados da criação — e
+**nunca** vira uma tarefa recorrente.
+
+Subtarefa não é criada na tarefa que é **origem de uma recorrência ativa**: ali,
+uma subtarefa nova mudaria todas as ocorrências futuras. O registro diz isso.
 
 **Arquivar** só age em tarefa concluída ou cancelada. **Incluir no ciclo** usa o
 ciclo ativo no momento da execução — nunca um ciclo escolhido de véspera, que

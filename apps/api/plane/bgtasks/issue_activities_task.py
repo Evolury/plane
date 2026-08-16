@@ -1542,6 +1542,9 @@ def issue_activity(
     # existentes continuam mandando, sem saber que estes parâmetros existem.
     automacao_origem=None,
     automacao_profundidade=0,
+    # Evolury: quem criou foi a recorrência? Por padrão, ocorrência de rotina
+    # NÃO acorda regra de "tarefa criada" (ADR 0012) — só a regra que pedir.
+    automacao_de_recorrencia=False,
 ):
     try:
         issue_activities = []
@@ -1641,6 +1644,7 @@ def issue_activity(
             linhas=issue_activities_created,
             automacao_origem=automacao_origem,
             profundidade=automacao_profundidade,
+            de_recorrencia=automacao_de_recorrencia,
         )
 
         return

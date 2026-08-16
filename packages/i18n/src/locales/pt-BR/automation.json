@@ -299,7 +299,9 @@
       "notify": "Notificar",
       "archive": "Arquivar",
       "add_to_cycle": "Incluir no ciclo ativo",
-      "limite": "Limite da rodada"
+      "limite": "Limite da rodada",
+      "create_work_item": "Criar tarefa",
+      "create_subtasks": "Criar subtarefas"
     },
     "field": {
       "state": "Estado",
@@ -356,7 +358,9 @@
       "add_comment": "comentar",
       "notify": "notificar",
       "archive": "arquivar a tarefa",
-      "add_to_cycle": "incluir no ciclo ativo"
+      "add_to_cycle": "incluir no ciclo ativo",
+      "create_work_item": "criar a tarefa",
+      "create_subtasks": "criar {total} subtarefa(s):"
     },
     "runs": {
       "empty": "Esta regra ainda não rodou.",
@@ -398,6 +402,22 @@
       "thursday": "Qui",
       "friday": "Sex",
       "saturday": "Sáb"
+    },
+    "create_name_placeholder": "Nome da tarefa que será criada",
+    "subtask_placeholder": "Nome da subtarefa",
+    "add_subtask": "Acrescentar subtarefa",
+    "inherit_assignees": "Herdar responsáveis da tarefa",
+    "due_in_days": "Vencer em (dias)",
+    "create_idempotency_hint": "Esta regra cria o checklist uma vez por tarefa. Disparar de novo não duplica.",
+    "include_recurring": "Valer também para tarefas de recorrência",
+    "include_recurring_hint": "Por padrão, ocorrência de tarefa recorrente não dispara esta regra — a tarefa de origem da série já nasce configurada.",
+    "recipes": {
+      "urgent_notify": "Quando virar urgente, atribuir a quem mudou",
+      "new_gets_label": "Toda tarefa nova recebe uma etiqueta",
+      "done_clears_due": "Ao concluir, limpar a prioridade",
+      "comment_reopens": "Comentário reabre a tarefa",
+      "review_checklist": "Ao entrar em homologação, criar o checklist",
+      "due_tomorrow": "Toda manhã, avisar quem tem tarefa vencendo"
     }
   }
 }

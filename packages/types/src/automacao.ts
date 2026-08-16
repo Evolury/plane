@@ -52,6 +52,10 @@ export const AUTOMATION_ACTION = {
   NOTIFY: "notify",
   ARCHIVE: "archive",
   ADD_TO_CYCLE: "add_to_cycle",
+  // F3 — a criação. Só existe em gatilho de EVENTO: agendado + criar é
+  // recorrência, e a combinação é recusada ao salvar (ADR 0012).
+  CREATE_WORK_ITEM: "create_work_item",
+  CREATE_SUBTASKS: "create_subtasks",
 } as const;
 export type TAutomationActionType = (typeof AUTOMATION_ACTION)[keyof typeof AUTOMATION_ACTION];
 
@@ -90,6 +94,17 @@ export type TAutomationActionConfig = {
   // notify
   users?: string[];
   email?: boolean;
+  // create_work_item / create_subtasks
+  //
+  // Sem campo de recorrência, de propósito: a tarefa nascida de uma reação é
+  // tarefa comum. Criação por agenda é trabalho de Tarefas recorrentes.
+  /** create_work_item: o nome da tarefa. Aceita as mesmas variáveis do texto. */
+  name?: string;
+  /** create_subtasks: a lista do checklist, um nome por item. */
+  names?: string[];
+  herdar_responsaveis?: boolean;
+  /** Vencimento relativo ao dia da criação. Nunca data fixa, que vence e some. */
+  due_in_days?: number;
 };
 
 /** Papéis que a ação de notificar aceita, além de pessoas escolhidas. */
@@ -109,6 +124,8 @@ export type TAutomation = {
   is_active: boolean;
   trigger_type: TAutomationTrigger;
   trigger_config: TAutomationTriggerConfig;
+  /** Ocorrência de recorrência dispara esta regra de "tarefa criada"? */
+  include_recurring: boolean;
   /** A árvore de filtro, no formato que o backend já aceita. `null` = todas. */
   condition: unknown;
   actions: TAutomationAction[];
@@ -126,7 +143,17 @@ export type TAutomation = {
 };
 
 export type TAutomationPayload = Partial<
-  Pick<TAutomation, "name" | "description" | "is_active" | "trigger_type" | "trigger_config" | "condition" | "actions">
+  Pick<
+    TAutomation,
+    | "name"
+    | "description"
+    | "is_active"
+    | "trigger_type"
+    | "trigger_config"
+    | "include_recurring"
+    | "condition"
+    | "actions"
+  >
 >;
 
 /** Uma linha do registro de execuções. */

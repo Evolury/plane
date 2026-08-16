@@ -86,6 +86,63 @@ gravava `IssueActivity` direto e usava o nome como campo. A gravação passou pa
 `registrar_atividade_de_propriedade`, com duas chaves para a mesma mudança: o
 nome para quem lê o histórico, o id (`property_<uuid>`) para quem casa a regra.
 
+### Criação é reação, e recorrência é rotina — não é sobreposição
+
+Esta seção substitui um erro de enquadramento da primeira redação, que chamava a
+relação entre a ação de criar e o ADR 0010 de "sobreposição declarada". Não é
+sobreposição: são propósitos diferentes.
+
+|                | Recorrência (ADR 0010)                                        | Criação por automação (aqui)              |
+| -------------- | ------------------------------------------------------------- | ----------------------------------------- |
+| **Quem manda** | o relógio                                                     | o evento                                  |
+| **Serve para** | rotina — o que acontece porque é terça                        | reação — o que acontece porque algo mudou |
+| **O molde**    | uma tarefa de origem viva, com campos preenchidos             | uma linha de formulário na regra          |
+| **Precisa de** | calendário, antecedência, controle de ocorrência aberta, pulo | nada disso                                |
+
+Pesquisa de mercado em 16/08/2026 confirma a separação, e mostra **onde ela é
+feita na estrutura e onde é deixada ao usuário**:
+
+- A [Notion documenta](https://www.notion.com/help/database-automations) que
+  "_a trigger won't be activated in response to a recurring template
+  automatically creating a page_" — separação deliberada, "to prevent cascading
+  triggers and overlapping operations".
+- O [ClickUp](https://help.clickup.com/hc/en-us/articles/30241682127127-Create-an-Automation)
+  faz o mesmo: tarefa nascida de recorrência não dispara automação de "tarefa
+  criada".
+- A Asana foi ao contrário — [encadeamento de regras](https://forum.asana.com/t/new-automation-rule-chaining/133517)
+  — e colhe relato de disparo não intencional.
+
+Daí as três decisões:
+
+1. **"Gatilho agendado + criar tarefa" não existe.** Agendado mais criação _é_
+   recorrência, e recusar ao salvar é melhor do que avisar numa caixa que a
+   pessoa fecha. A mensagem aponta para Tarefas recorrentes.
+2. **A tarefa criada por regra nunca ganha recorrência**, nem herda a da origem.
+3. **Ocorrência de recorrência não dispara regra de "tarefa criada"**, por
+   padrão — a origem da série já é um molde preenchido, e uma regra de
+   nascimento brigaria com ele a cada ciclo. Há um interruptor por regra
+   (`include_recurring`) para quem quiser o contrário, porque a separação não
+   pode virar mais um silêncio.
+
+### O defeito número um da criação é duplicata, não laço
+
+As travas de laço deste ADR foram desenhadas antes da pesquisa. Ela mostrou que,
+nos produtos que têm o recurso, a reclamação recorrente é outra:
+
+- Asana: [rule creating duplicate subtasks](https://forum.asana.com/t/asana-rule-creating-duplicate-subtasks/1055523).
+- Jira: [automation creates duplicates when cloning](https://community.atlassian.com/forums/Jira-questions/Automation-creates-duplicates-when-cloning/qaq-p/2862831),
+  com a criação chegando a levantar o evento mais de uma vez.
+
+A resposta consolidada é **idempotência** ([LogicLot](https://logiclot.io/docs/automation-idempotency-deduplication),
+[Arthea](https://www.arthea.ai/blog/automation-idempotency-keys)): chave de
+deduplicação, ou verificar antes de criar. `AutomationCreation` guarda
+(regra, tarefa de origem, nome do item) com **unicidade no banco** — a mesma
+forma que a recorrência já usa aqui, onde a garantia é do banco e não da
+confiança de que o job roda uma vez só.
+
+O efeito prático: mover para Homologação, voltar e mover de novo **não** recria o
+checklist; acrescentar um item à regra e disparar de novo cria só o item novo.
+
 ### Doze ações, todas por caminhos que já existem
 
 Estado, prioridade, responsáveis, etiquetas, datas, propriedade personalizada
@@ -144,10 +201,13 @@ quanto não ter registro nenhum.
   vira condição de automação sem trabalho.
 - A regra sobrevive a renomeações de estado, etiqueta e propriedade.
 - Não há encadeamento ilimitado, e não há linguagem de expressão para depurar.
-- **Sobreposição declarada com o ADR 0010:** a ação "criar tarefa" (F3) faz algo
-  que tarefas recorrentes já fazem melhor para o caso agendado. Ela entrou por
-  decisão de produto, com as travas acima e com um aviso na tela quando a
-  combinação for "agendada + criar tarefa".
+- **Fronteira com o ADR 0010, não sobreposição:** a criação por regra responde a
+  evento; a criação por agenda é da recorrência. A combinação que confundiria as
+  duas é recusada ao salvar, e não avisada na tela.
+- Subtarefa por regra é **recusada na tarefa que é origem de uma recorrência
+  ativa**: mexer no molde muda todas as ocorrências futuras, que é o defeito
+  onde [as subtarefas se acumulam na tarefa recorrente](https://forum.asana.com/t/recurring-tasks-with-subtasks/606330)
+  da Asana.
 - Uma tarefa Celery nova precisa ser declarada em `CELERY_IMPORTS`. Descoberto
   na verificação visual: sem a declaração, o despacho funciona, a mensagem chega
   à fila e o worker a descarta com "unregistered task" — na tela, uma regra que

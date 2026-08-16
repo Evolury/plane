@@ -152,7 +152,16 @@ def automacao_casa(automacao, evento) -> bool:
     gatilho = automacao.trigger_type
 
     if gatilho == AutomationTrigger.WORK_ITEM_CREATED:
-        return evento.get("tipo") == "criada"
+        if evento.get("tipo") != "criada":
+            return False
+        # Ocorrência de recorrência é rotina, não reação. A origem daquela série
+        # já é um molde preenchido — responsável, etiqueta, propriedades —, e uma
+        # regra de nascimento brigaria com ele a cada ciclo. Notion e ClickUp
+        # fazem a mesma separação, e explicitamente. Quem quiser o contrário liga
+        # `include_recurring` na regra.
+        if evento.get("de_recorrencia") and not automacao.include_recurring:
+            return False
+        return True
 
     if gatilho == AutomationTrigger.COMMENT_ADDED:
         return evento.get("tipo") == "comentada"

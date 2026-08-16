@@ -20,8 +20,8 @@ import { observer } from "mobx-react";
 import { Plus, Trash2 } from "lucide-react";
 import { PRIORIDADES_DA_AUTOMACAO, VARIAVEIS_DA_AUTOMACAO } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { AUTOMATION_ACTION } from "@plane/types";
-import type { TAutomationAction, TAutomationActionType, TIssueProperty } from "@plane/types";
+import { AUTOMATION_ACTION, AUTOMATION_TRIGGER } from "@plane/types";
+import type { TAutomationAction, TAutomationActionType, TAutomationTrigger, TIssueProperty } from "@plane/types";
 import { Button } from "@plane/propel/button";
 import { CustomSelect, Input, TextArea } from "@plane/ui";
 import { useLabel } from "@/hooks/store/use-label";
@@ -32,8 +32,19 @@ type TProps = {
   projectId: string;
   acoes: TAutomationAction[];
   propriedades: TIssueProperty[];
+  /** O gatilho da regra — é ele que decide se criar tarefa está no cardápio. */
+  trigger: TAutomationTrigger;
   onChange: (acoes: TAutomationAction[]) => void;
 };
+
+/**
+ * Criar só existe em gatilho de EVENTO.
+ *
+ * Agendado + criar É recorrência, e o produto já tem Tarefas recorrentes, com
+ * calendário, antecedência e controle de ocorrência aberta. Esconder a opção é
+ * melhor do que oferecê-la com um aviso: aviso a pessoa fecha, cardápio ela lê.
+ */
+const ACOES_DE_CRIACAO = new Set<string>([AUTOMATION_ACTION.CREATE_WORK_ITEM, AUTOMATION_ACTION.CREATE_SUBTASKS]);
 
 const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]> = {
   set_state: { state_id: "" },
@@ -49,10 +60,12 @@ const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]
   // virada do próximo ciclo.
   archive: {},
   add_to_cycle: {},
+  create_work_item: { name: "", herdar_responsaveis: false },
+  create_subtasks: { names: [""], herdar_responsaveis: true },
 };
 
 export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps) {
-  const { projectId, acoes, propriedades, onChange } = props;
+  const { projectId, acoes, propriedades, trigger, onChange } = props;
   const { t } = useTranslation();
   const { getProjectStates } = useProjectState();
   const { getProjectLabelIds, getLabelById } = useLabel();
@@ -295,6 +308,29 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
           </div>
         );
 
+      case AUTOMATION_ACTION.CREATE_WORK_ITEM:
+        return (
+          <div className="flex flex-col gap-2">
+            <Input
+              value={config.name ?? ""}
+              onChange={(evento) => atualizarConfig(indice, { name: evento.target.value })}
+              placeholder={t("automations.create_name_placeholder")}
+            />
+            <AjudaDeVariaveis />
+            <OpcoesDaCriacao indice={indice} config={config} atualizarConfig={atualizarConfig} />
+          </div>
+        );
+
+      case AUTOMATION_ACTION.CREATE_SUBTASKS:
+        return (
+          <div className="flex flex-col gap-2">
+            <ListaDeSubtarefas nomes={config.names ?? [""]} onChange={(names) => atualizarConfig(indice, { names })} />
+            <AjudaDeVariaveis />
+            <OpcoesDaCriacao indice={indice} config={config} atualizarConfig={atualizarConfig} />
+            <p className="text-11 text-tertiary">{t("automations.create_idempotency_hint")}</p>
+          </div>
+        );
+
       case AUTOMATION_ACTION.ARCHIVE:
         return <p className="text-12 text-tertiary">{t("automations.archive_hint")}</p>;
 
@@ -341,11 +377,13 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
           </Button>
         }
       >
-        {Object.values(AUTOMATION_ACTION).map((tipo) => (
-          <CustomSelect.Option key={tipo} value={tipo}>
-            {rotuloDoTipo(tipo)}
-          </CustomSelect.Option>
-        ))}
+        {Object.values(AUTOMATION_ACTION)
+          .filter((tipo) => trigger !== AUTOMATION_TRIGGER.SCHEDULED || !ACOES_DE_CRIACAO.has(tipo))
+          .map((tipo) => (
+            <CustomSelect.Option key={tipo} value={tipo}>
+              {rotuloDoTipo(tipo)}
+            </CustomSelect.Option>
+          ))}
       </CustomSelect>
     </div>
   );
@@ -363,6 +401,85 @@ const AjudaDeVariaveis = observer(function AjudaDeVariaveis() {
     <p className="text-11 text-tertiary">
       {t("automations.variables_hint")} {VARIAVEIS_DA_AUTOMACAO.map((nome) => `{{${nome}}}`).join(" · ")}
     </p>
+  );
+});
+
+/** A lista de subtarefas — um campo por linha, como um checklist se escreve. */
+const ListaDeSubtarefas = observer(function ListaDeSubtarefas(props: {
+  nomes: string[];
+  onChange: (nomes: string[]) => void;
+}) {
+  const { nomes, onChange } = props;
+  const { t } = useTranslation();
+
+  const trocar = (indice: number, valor: string) => onChange(nomes.map((n, i) => (i === indice ? valor : n)));
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {nomes.map((nome, indice) => (
+        // A posição é a identidade aqui: o campo é controlado pelo pai e não
+        // guarda estado próprio, então reordenar não embaralha nada.
+        // eslint-disable-next-line react/no-array-index-key
+        <div key={indice} className="flex items-center gap-1.5">
+          <span className="text-11 text-tertiary">{indice + 1}.</span>
+          <Input
+            value={nome}
+            onChange={(evento) => trocar(indice, evento.target.value)}
+            placeholder={t("automations.subtask_placeholder")}
+            className="flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => onChange(nomes.filter((_, i) => i !== indice))}
+            className="hover:text-danger text-tertiary"
+            aria-label={t("common.remove")}
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ))}
+      <Button variant="secondary" size="sm" className="w-fit" onClick={() => onChange([...nomes, ""])}>
+        <Plus className="size-3.5" />
+        {t("automations.add_subtask")}
+      </Button>
+    </div>
+  );
+});
+
+/** As duas opções que valem para qualquer criação. */
+const OpcoesDaCriacao = observer(function OpcoesDaCriacao(props: {
+  indice: number;
+  config: TAutomationAction["config"];
+  atualizarConfig: (indice: number, mudanca: Record<string, unknown>) => void;
+}) {
+  const { indice, config, atualizarConfig } = props;
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <label className="flex items-center gap-2 text-12 text-secondary">
+        <input
+          type="checkbox"
+          checked={Boolean(config.herdar_responsaveis)}
+          onChange={(evento) => atualizarConfig(indice, { herdar_responsaveis: evento.target.checked })}
+        />
+        {t("automations.inherit_assignees")}
+      </label>
+      <label className="flex items-center gap-2 text-12 text-secondary">
+        {t("automations.due_in_days")}
+        <Input
+          type="number"
+          value={config.due_in_days === undefined ? "" : String(config.due_in_days)}
+          onChange={(evento) =>
+            atualizarConfig(indice, {
+              due_in_days: evento.target.value === "" ? undefined : Number(evento.target.value),
+            })
+          }
+          className="w-20"
+          placeholder="—"
+        />
+      </label>
+    </div>
   );
 });
 

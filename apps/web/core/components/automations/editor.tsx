@@ -83,6 +83,7 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
     Boolean(regra?.condition && Object.keys(regra.condition as object).length > 0)
   );
   const [acoes, setAcoes] = useState<TAutomationAction[]>(regra?.actions ?? []);
+  const [incluirRecorrentes, setIncluirRecorrentes] = useState(regra?.include_recurring ?? false);
   const [salvando, setSalvando] = useState(false);
   const [simulacao, setSimulacao] = useState<number | undefined>(undefined);
   const [aba, setAba] = useState<"editar" | "execucoes">("editar");
@@ -98,6 +99,7 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
     setCondicao((regra.condition as TWorkItemFilterExpression) ?? {});
     setMostrarCondicao(Boolean(regra.condition && Object.keys(regra.condition as object).length > 0));
     setAcoes(regra.actions ?? []);
+    setIncluirRecorrentes(regra.include_recurring ?? false);
   }, [regra]);
 
   const simular = useCallback(async () => {
@@ -123,6 +125,7 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
       is_active: ativa,
       trigger_type: trigger,
       trigger_config: triggerConfig,
+      include_recurring: incluirRecorrentes,
       condition: mostrarCondicao && Object.keys(condicao).length > 0 ? condicao : null,
       actions: acoes,
     };
@@ -218,6 +221,20 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
                 setTriggerConfig(novaConfig);
               }}
             />
+            {trigger === AUTOMATION_TRIGGER.WORK_ITEM_CREATED && (
+              <label className="mt-3 flex items-start gap-2 text-12 text-secondary">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={incluirRecorrentes}
+                  onChange={(evento) => setIncluirRecorrentes(evento.target.checked)}
+                />
+                <span>
+                  {t("automations.include_recurring")}
+                  <span className="block text-11 text-tertiary">{t("automations.include_recurring_hint")}</span>
+                </span>
+              </label>
+            )}
           </Secao>
 
           <Secao
@@ -259,6 +276,7 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
               projectId={projectId}
               acoes={acoes}
               propriedades={rotulos.propriedades}
+              trigger={trigger}
               onChange={setAcoes}
             />
           </Secao>

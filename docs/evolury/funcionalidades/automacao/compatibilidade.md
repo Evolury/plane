@@ -24,7 +24,10 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 | #   | Recurso existente              | Tratamento                                                                  | Verificação                              |
 | --- | ------------------------------ | --------------------------------------------------------------------------- | ---------------------------------------- |
 | 8   | Automações fixas (arquivar)    | Convivem: a lista nova fica abaixo das duas caixas                          | ✓ `[V]` captura da tela                  |
-| 9   | Tarefas recorrentes (ADR 0010) | Sobreposição declarada; a ação de criar tarefa é da F3, com aviso na tela   | ✓ `[I]` ADR 0012, consequências          |
+| 9   | Tarefas recorrentes (ADR 0010) | Fronteira, não sobreposição: agendado + criar é recusado ao salvar          | ✓ `[T]` mensagem aponta para Recorrentes |
+| 9a  | Ocorrência de recorrência      | Não dispara regra de "tarefa criada" por padrão; interruptor por regra      | ✓ `[T]` padrão e interruptor             |
+| 9b  | Molde de recorrência           | Subtarefa por regra é recusada nele — mudaria todas as ocorrências futuras  | ✓ `[T]` recusa com motivo                |
+| 9c  | Tarefa criada por regra        | Nunca ganha recorrência, nem herda a da origem                              | ✓ `[T]` sem `RecurringWorkItem`          |
 | 10  | Filtro rico do quadro          | **É o mesmo componente e a mesma árvore** — não podem divergir              | ✓ `[V]` seletor abre no editor           |
 | 11  | Propriedades personalizadas    | Entram como gatilho e como condição sem código próprio                      | ✓ `[T]` condição por opção de seleção    |
 | 12  | Webhooks                       | Ações emitem atividade normal, então o webhook sai como sempre              | ✓ `[I]` caminho por `issue_activity`     |
@@ -36,12 +39,13 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 
 ## Desempenho
 
-| #   | Cenário                           | Tratamento                                                              | Verificação                         |
-| --- | --------------------------------- | ----------------------------------------------------------------------- | ----------------------------------- |
-| 18  | Projeto sem nenhuma automação     | Caminho quente termina num `EXISTS` indexado                            | ✓ `[T]` despacho não enfileira      |
-| 19  | Edição que não mexe em campo-alvo | Nem enfileira: sem mudança traduzível, o motor não acorda               | ✓ `[T]` editar o nome não enfileira |
-| 20  | Edição em massa                   | Teto de 200 execuções/hora por regra, com desligamento e motivo gravado | ✓ `[T]` teto e desligamento         |
-| 21  | Encadeamento entre regras         | Teto de profundidade 3, verificado na porta                             | ✓ `[T]` acima do teto não enfileira |
+| #   | Cenário                           | Tratamento                                                              | Verificação                              |
+| --- | --------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------- |
+| 18  | Projeto sem nenhuma automação     | Caminho quente termina num `EXISTS` indexado                            | ✓ `[T]` despacho não enfileira           |
+| 19  | Edição que não mexe em campo-alvo | Nem enfileira: sem mudança traduzível, o motor não acorda               | ✓ `[T]` editar o nome não enfileira      |
+| 20  | Edição em massa                   | Teto de 200 execuções/hora por regra, com desligamento e motivo gravado | ✓ `[T]` teto e desligamento              |
+| 21  | Encadeamento entre regras         | Teto de profundidade 3, verificado na porta                             | ✓ `[T]` acima do teto não enfileira      |
+| 22  | Regra que dispara duas vezes      | Criação é idempotente por (regra, origem, nome), com unicidade no banco | ✓ `[T]` 2 disparos, 3 subtarefas · `[V]` |
 
 ## Pendências desta matriz
 

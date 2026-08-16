@@ -52,14 +52,23 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
 
 ## F3 — Criação e ergonomia
 
-- [ ] F3.1 Ação **criar tarefa** e **criar subtarefas**, com as travas de laço e
-      a checagem estática "criada + criar tarefa no mesmo projeto"
-- [ ] F3.2 Aviso na tela quando a regra for _agendada + criar tarefa_, apontando
-      para Tarefas recorrentes (ADR 0010), que faz esse trabalho melhor
-- [ ] F3.3 Catálogo de receitas prontas no estado vazio (as constantes já estão
-      escritas em `packages/constants/src/automacao.ts`, sem tela ainda)
-- [ ] F3.4 Poda de `AutomationRun` antigo em `cleanup_task.py`, como os logs de
-      API
+- [x] F3.1 Ações **criar tarefa** e **criar subtarefas**, com idempotência
+      garantida pelo banco (`AutomationCreation`, unicidade em regra + origem +
+      nome). Redesenhado depois da pesquisa de 16/08: o defeito número um deste
+      recurso é **duplicata**, não laço
+- [x] F3.2 A combinação _agendada + criar_ **deixou de existir** — recusa ao
+      salvar, com a mensagem apontando para Tarefas recorrentes, em vez do aviso
+      de tela que estava planejado e que era fraco
+- [x] F3.3 `include_recurring`: ocorrência de recorrência não dispara regra de
+      "tarefa criada" por padrão, com interruptor por regra
+- [x] F3.4 Recusa de subtarefa em tarefa que é origem de recorrência ativa
+- [x] F3.5 Herança de responsáveis e vencimento relativo na criação
+- [x] F3.6 Catálogo de receitas prontas em `packages/constants`, incluindo as
+      duas que ensinam a diferença entre reagir e repetir
+- [ ] F3.7 Tela do catálogo de receitas no estado vazio (as constantes existem;
+      falta o cartão que abre o editor já preenchido)
+- [ ] F3.8 Poda de `AutomationRun` e `AutomationCreation` antigos em
+      `cleanup_task.py`, como os logs de API
 
 ## Dívidas conhecidas
 

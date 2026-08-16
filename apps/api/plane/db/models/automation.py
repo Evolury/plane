@@ -13,6 +13,7 @@
 
 # Django imports
 from django.db import models
+from django.db.models import Q
 
 # Module imports
 from .base import BaseModel
@@ -58,6 +59,17 @@ class Automation(ProjectBaseModel):
     #   scheduled     → {"frequency": "daily"|"weekly", "weekdays": [...], "time": "08:00"}
     # Os outros dois não têm o que configurar.
     trigger_config = models.JSONField(default=dict, blank=True)
+
+    # Só faz sentido com o gatilho "tarefa criada".
+    #
+    # Por padrão, ocorrência de recorrência NÃO dispara regra de criação —
+    # separação que Notion e ClickUp fazem explicitamente, e que aqui tem um
+    # motivo próprio: a tarefa de origem de uma recorrência é um molde vivo, já
+    # com responsável, etiqueta e valores de propriedade preenchidos. Uma regra
+    # de "quando criada, marque X" brigaria com o molde a cada ocorrência.
+    #
+    # Quem quiser o contrário liga aqui, e passa a valer para as duas origens.
+    include_recurring = models.BooleanField(default=False)
 
     # --- se ---
     # A MESMA árvore JSON que o quadro manda no parâmetro `filters`. No quadro
@@ -142,3 +154,53 @@ class AutomationRun(BaseModel):
 
     def __str__(self):
         return f"{self.automation_id} {self.status} @ {self.created_at}"
+
+
+class AutomationCreation(BaseModel):
+    """O registro de que uma regra JÁ criou algo para uma tarefa de origem.
+
+    Existe por idempotência, e a idempotência existe porque o defeito número um
+    de "criar tarefa por regra" não é laço infinito — é DUPLICATA. Asana e Jira
+    têm os dois relatos clássicos: checklist criado em dobro quando a regra
+    dispara duas vezes, e clone duplicado porque a criação levanta o evento
+    mais de uma vez.
+
+    A forma é a mesma que a recorrência já usa aqui (`RecurringWorkItemOccurrence`,
+    unicidade em regra + data prevista): a garantia mora no BANCO, e não na
+    confiança de que o motor roda uma vez só.
+
+    A chave inclui o nome do item criado. Assim, mover a tarefa para
+    Homologação, voltar e mover de novo não recria o checklist — que é
+    literalmente a reclamação da Asana —, mas acrescentar um item à regra e
+    disparar de novo cria só o item novo.
+    """
+
+    automation = models.ForeignKey(Automation, on_delete=models.CASCADE, related_name="creations")
+    workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="automation_creations")
+    # A tarefa que disparou. A criação só existe em gatilho de EVENTO: agendado
+    # mais criação é recorrência, e essa combinação não é oferecida (ADR 0012).
+    source_issue = models.ForeignKey(
+        "db.Issue", on_delete=models.CASCADE, related_name="automation_creations_as_source"
+    )
+    issue = models.ForeignKey(
+        "db.Issue", on_delete=models.SET_NULL, null=True, blank=True, related_name="automation_creations"
+    )
+    #: O nome do item criado, que é o que distingue um item do outro na mesma
+    #: origem. Vazio quando a ação cria uma tarefa só.
+    chave = models.CharField(max_length=255, blank=True, default="")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["automation", "source_issue", "chave"],
+                condition=Q(deleted_at__isnull=True),
+                name="automation_creation_unique_when_deleted_at_null",
+            )
+        ]
+        verbose_name = "Automation Creation"
+        verbose_name_plural = "Automation Creations"
+        db_table = "automation_creations"
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.automation_id} → {self.issue_id}"

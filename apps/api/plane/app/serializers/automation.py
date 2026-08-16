@@ -67,7 +67,7 @@ class AutomationSerializer(BaseSerializer):
 
         attrs["trigger_config"] = validar_gatilho(trigger_type, trigger_config, GATILHOS_ACEITOS, project_id)
         attrs["condition"] = validar_condicao(condicao)
-        attrs["actions"] = validar_acoes(acoes, project_id)
+        attrs["actions"] = validar_acoes(acoes, project_id, trigger_type)
 
         # Reativar à mão limpa o motivo do desligamento automático: deixá-lo ali
         # faria a tela seguir avisando de um problema que a pessoa já resolveu.

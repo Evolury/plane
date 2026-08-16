@@ -67,6 +67,7 @@ def despachar_atividades(
     linhas,
     automacao_origem=None,
     profundidade=0,
+    de_recorrencia=False,
 ):
     """Decide se há o que avaliar e, havendo, joga para a fila.
 
@@ -109,12 +110,15 @@ def despachar_atividades(
             mudancas=mudancas,
             automacao_origem=automacao_origem,
             profundidade=profundidade,
+            de_recorrencia=de_recorrencia,
         )
     except Exception as erro:
         log_exception(erro)
 
 
-def despachar_evento(evento, issue_id, project_id, actor_id, mudancas, automacao_origem, profundidade):
+def despachar_evento(
+    evento, issue_id, project_id, actor_id, mudancas, automacao_origem, profundidade, de_recorrencia=False
+):
     """Enfileira a avaliação. Import tardio para não fechar ciclo de importação."""
     from plane.bgtasks.automation_task import avaliar_automacoes
 
@@ -126,6 +130,9 @@ def despachar_evento(evento, issue_id, project_id, actor_id, mudancas, automacao
             "actor_id": str(actor_id) if actor_id else None,
             "mudancas": mudancas,
             "automacao_origem": str(automacao_origem) if automacao_origem else None,
+            # Quem nasceu de uma agenda de rotina não é, por padrão, um evento
+            # ao qual reagir. Ver `include_recurring` no modelo.
+            "de_recorrencia": bool(de_recorrencia),
         },
         profundidade=profundidade,
     )

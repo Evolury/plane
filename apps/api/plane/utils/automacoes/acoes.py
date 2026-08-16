@@ -566,6 +566,205 @@ def _incluir_no_ciclo(tarefa, config, contexto):
     return _resultado("add_to_cycle", APLICADA, f"incluída no ciclo {ciclo.name}")
 
 
+# --------------------------------------------------------------------------
+# Criação — tarefa e subtarefas (F3)
+# --------------------------------------------------------------------------
+#
+# Aqui a preocupação central NÃO é laço, é DUPLICATA. Nos produtos que têm este
+# recurso, a reclamação recorrente é a mesma: "a regra criou o checklist duas
+# vezes" (Asana) e "a automação duplicou o clone" (Jira, onde a criação chega a
+# levantar o evento mais de uma vez).
+#
+# A resposta é idempotência garantida pelo BANCO, e não pela confiança de que o
+# motor roda uma vez só — a mesma forma que a recorrência já usa aqui. A chave é
+# (regra, tarefa de origem, nome do item): mover para Homologação, voltar e mover
+# de novo não recria nada; acrescentar um item à regra e disparar de novo cria só
+# o item novo.
+#
+# E o que NUNCA acontece: a tarefa criada não recebe recorrência, nem herda a da
+# origem. Criação por agenda é trabalho de Tarefas recorrentes (ADR 0010), que
+# tem calendário, antecedência e controle de ocorrência aberta; a automação não
+# vai reimplementar nada disso pior. Por isso a combinação "gatilho agendado +
+# criar" nem chega a existir — a validação a recusa.
+
+
+def _ja_criou(automacao, origem, chave):
+    from plane.db.models import AutomationCreation
+
+    return AutomationCreation.objects.filter(
+        automation=automacao, source_issue=origem, chave=chave, deleted_at__isnull=True
+    ).exists()
+
+
+def _e_molde_de_recorrencia(tarefa) -> bool:
+    """A tarefa é a origem de uma recorrência ativa?
+
+    Mexer nela mexe em TODAS as ocorrências futuras. Acrescentar subtarefa a um
+    molde por regra é o defeito que a Asana tem, onde as subtarefas se acumulam
+    na tarefa recorrente ciclo após ciclo.
+    """
+    from plane.db.models import RecurringWorkItem
+
+    return RecurringWorkItem.objects.filter(
+        source_issue=tarefa, is_active=True, deleted_at__isnull=True
+    ).exists()
+
+
+def _nascer(nome, projeto_id, workspace_id, contexto, pai=None, extras=None):
+    """Cria a tarefa e conta a história dela, como qualquer criação do produto."""
+    from plane.bgtasks.issue_activities_task import issue_activity
+
+    campos = {
+        "name": nome[:255],
+        "project_id": projeto_id,
+        "workspace_id": workspace_id,
+        **(extras or {}),
+    }
+    if pai is not None:
+        campos["parent"] = pai
+
+    # A autoria vai pelo `save`, e não no `create`.
+    #
+    # `BaseModel.save` reescreve `created_by` a partir do usuário da requisição
+    # quando não recebe `created_by_id` — e no worker não há requisição, então o
+    # valor passado no `create` era descartado e a tarefa nascia sem autor.
+    # Descoberto na verificação visual: o robô assinava as ALTERAÇÕES e não
+    # assinava as CRIAÇÕES, o que é justamente a metade que interessa aqui.
+    nova = Issue(**campos)
+    nova.save(created_by_id=contexto["ator_id"])
+
+    issue_activity.delay(
+        type="issue.activity.created",
+        requested_data=json.dumps({"name": nova.name}, cls=DjangoJSONEncoder),
+        current_instance=None,
+        issue_id=str(nova.id),
+        actor_id=str(contexto["ator_id"]),
+        project_id=str(projeto_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+        automacao_origem=str(contexto["automacao"].id),
+        automacao_profundidade=contexto["profundidade"] + 1,
+    )
+    return nova
+
+
+def _datas(config):
+    """Vencimento relativo ao dia da criação, quando a regra pedir.
+
+    Relativo, e nunca fixo: "entregar em 3 dias" continua certo no mês que vem;
+    uma data absoluta escrita na regra vence e nunca mais volta a fazer sentido.
+    """
+    dias = config.get("due_in_days")
+    if dias is None:
+        return {}
+    return {"target_date": timezone.localtime().date() + timedelta(days=int(dias))}
+
+
+def _registrar_criacao(automacao, origem, nova, chave):
+    from plane.db.models import AutomationCreation
+
+    AutomationCreation.objects.create(
+        automation=automacao,
+        workspace_id=origem.workspace_id,
+        source_issue=origem,
+        issue=nova,
+        chave=chave,
+    )
+
+
+@acao("create_work_item")
+def _criar_tarefa(tarefa, config, contexto):
+    """Cria UMA tarefa em resposta ao que aconteceu nesta."""
+    nome = aplicar_variaveis(config.get("name"), tarefa, contexto).strip()
+    if not nome:
+        raise AcaoInvalida("ação de criar tarefa sem nome")
+
+    automacao = contexto["automacao"]
+    if _ja_criou(automacao, tarefa, ""):
+        return _resultado("create_work_item", SEM_EFEITO, "esta regra já criou uma tarefa para esta origem")
+
+    # A tarefa nova nasce na etapa PADRÃO do projeto, nunca na etapa da origem.
+    # É a mesma lição já escrita no modelo da recorrência (ADR 0010): a instância
+    # que reaparece dentro da coluna "Concluído" é o defeito mais reclamado do
+    # Asana. `Issue.save` já resolve o padrão sozinho — o que se faz aqui é não
+    # atrapalhar.
+    nova = _nascer(nome, tarefa.project_id, tarefa.workspace_id, contexto, extras=_datas(config))
+    _copiar_responsaveis(tarefa, nova, config, contexto)
+    _registrar_criacao(automacao, tarefa, nova, "")
+    return _resultado("create_work_item", APLICADA, f"criada: {nova.name}")
+
+
+@acao("create_subtasks")
+def _criar_subtarefas(tarefa, config, contexto):
+    """Cria o checklist de subtarefas desta tarefa.
+
+    Uma ação com a LISTA de nomes, e não uma ação por subtarefa. O monday resolve
+    isso encadeando três receitas idênticas; uma lista faz o mesmo com um terço
+    da tela, e mantém o conjunto legível como conjunto.
+    """
+    nomes = [str(item).strip() for item in (config.get("names") or []) if str(item).strip()]
+    if not nomes:
+        raise AcaoInvalida("ação de subtarefas sem nenhum nome")
+
+    if _e_molde_de_recorrencia(tarefa):
+        # Recusa com motivo, e não em silêncio: quem escreveu a regra precisa
+        # saber que ela não vale para o molde — e por quê.
+        return _resultado(
+            "create_subtasks",
+            SEM_EFEITO,
+            "a tarefa é a origem de uma recorrência ativa; subtarefa aqui mudaria todas as ocorrências futuras",
+        )
+
+    automacao = contexto["automacao"]
+    criadas, puladas = [], 0
+    for nome in nomes:
+        rotulo = aplicar_variaveis(nome, tarefa, contexto).strip()[:255]
+        if not rotulo or _ja_criou(automacao, tarefa, rotulo):
+            puladas += 1
+            continue
+        nova = _nascer(rotulo, tarefa.project_id, tarefa.workspace_id, contexto, pai=tarefa, extras=_datas(config))
+        _copiar_responsaveis(tarefa, nova, config, contexto)
+        _registrar_criacao(automacao, tarefa, nova, rotulo)
+        criadas.append(rotulo)
+
+    if not criadas:
+        return _resultado("create_subtasks", SEM_EFEITO, "todas já tinham sido criadas por esta regra")
+    detalhe = ", ".join(criadas)
+    if puladas:
+        detalhe += f" ({puladas} já existia(m))"
+    return _resultado("create_subtasks", APLICADA, detalhe)
+
+
+def _copiar_responsaveis(origem, nova, config, contexto):
+    """Herança do pai, quando a regra pedir.
+
+    É o comportamento que o monday oferece ao criar subitem, e existe por um
+    motivo prático: subtarefa que nasce sem responsável nasce órfã, e ninguém
+    olha para ela.
+    """
+    if not config.get("herdar_responsaveis"):
+        return
+    from plane.db.models import IssueAssignee
+
+    pessoas = list(origem.issue_assignee.filter(deleted_at__isnull=True).values_list("assignee_id", flat=True))
+    if not pessoas:
+        return
+    IssueAssignee.objects.bulk_create(
+        [
+            IssueAssignee(
+                issue=nova,
+                assignee_id=pessoa,
+                project_id=nova.project_id,
+                workspace_id=nova.workspace_id,
+                created_by_id=contexto["ator_id"],
+            )
+            for pessoa in pessoas
+        ],
+        batch_size=20,
+        ignore_conflicts=True,
+    )
+
+
 def executar(tipo, tarefa, config, contexto):
     """Executa uma ação pelo tipo. Tipo desconhecido é erro registrado, não queda."""
     funcao = ACOES.get(tipo)
