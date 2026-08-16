@@ -108,14 +108,32 @@ export const FilterValueInput = observer(function FilterValueInput<P extends TFi
     );
   }
 
+  // Evolury: prova de exaustividade, em tempo de COMPILAÇÃO (ADR 0011).
+  //
+  // Se alguém acrescentar um formato de campo e esquecer o componente que o
+  // desenha, o TypeScript reclama AQUI. Sem isto, o formato novo cairia no
+  // fallback abaixo e a falha seria silenciosa: um filtro que aparece no
+  // seletor, não aceita valor nenhum, e não acusa nada em build nem em teste.
+  //
+  // A variável existe só para o compilador. Se ela deixar de compilar, a
+  // correção não é apagá-la — é escrever o componente que falta e ligá-lo
+  // acima.
+  const formatoSemComponente: never = filterFieldConfig;
+  void formatoSemComponente;
+
   return <AdditionalFilterValueInput {...props} />;
 });
 
 export const AdditionalFilterValueInput = observer(function AdditionalFilterValueInput<
   P extends TFilterProperty,
   V extends TFilterValue,
->(_props: TFilterValueInputProps<P, V>) {
+>(props: TFilterValueInputProps<P, V>) {
   const { t } = useTranslation();
+  // Evolury: a guarda acima cobre o que o compilador enxerga. Isto cobre o que
+  // ele não enxerga: uma condição vinda de visão salva por uma versão mais
+  // nova, com um formato que este código ainda não conhece. Sem o registro, a
+  // tela mostraria "não suportado" e ninguém saberia de qual formato se trata.
+  console.error("Formato de filtro sem componente:", props.filterFieldConfig?.type ?? "(sem tipo)");
   return (
     // Fallback
     <div className="flex h-full cursor-not-allowed items-center px-4 text-11 text-placeholder transition-opacity duration-200">

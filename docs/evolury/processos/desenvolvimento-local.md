@@ -76,6 +76,12 @@ O container monta o código e o Django recarrega sozinho — mas o autoreloader
 `git switch` reescreve a árvore no instante em que ele reinicia. O sintoma é um
 500 com `'X' object has no attribute 'y'`: rota nova, módulo velho.
 
+O sintoma nem sempre é 500. Em 16/08/2026 ele apareceu como **filtro que não
+filtra**: a requisição saía correta, a resposta voltava com a contagem inteira,
+e o mesmo filtro rodado num `manage.py shell` — processo novo, código novo —
+devolvia o resultado certo. Divergência entre o shell e o servidor é assinatura
+de módulo velho.
+
 Antes de investigar um 500 estranho na stack de desenvolvimento:
 
 ```bash
