@@ -3,6 +3,41 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.17.1] — 2026-08-16
+
+**Patch, e não minor**: nada de novo chega a quem usa o produto em produção. O
+que entrou foram duas correções visíveis, uma trava de compilação e trabalho de
+qualidade interno — a única funcionalidade do lote só existe no ambiente de
+desenvolvimento, e fica inerte sem a variável que a liga.
+
+### Correções
+
+- **Duas etiquetas apareciam como identificador na tela.** No filtro por
+  intervalo de datas, lia-se `common.date_range.after` no lugar de "Depois de".
+  As chaves não existiam em nenhum idioma, e nada acusava isso: não quebra, não
+  falha em teste e não erra na compilação. Achadas pela verificação nova.
+- **Remover uma opção do meio da lista embaralhava o que estava sendo
+  digitado.** Ao configurar uma propriedade de seleção, o campo reaproveitado
+  fazia o texto pular de linha.
+
+### Qualidade
+
+- **Formato de filtro sem componente agora quebra o build.** Antes, quem
+  acrescentasse um formato e esquecesse a tela teria um filtro que aparece, não
+  aceita valor e não avisa ninguém.
+- **Verificação de chave de tradução inexistente**, na CI. A que já existia
+  compara os idiomas entre si e não pega a chave que não existe em lugar nenhum.
+- **Os arquivos deste fork estão sem avisos de lint**, incluindo dois de
+  acessibilidade. E o gancho de pré-commit voltou a ser usável: erro barra,
+  aviso não — antes ele barrava por sujeira herdada, e o efeito prático era ser
+  contornado sempre.
+
+### Desenvolvimento
+
+- **O login deixa de jogar todo mundo para um endereço só.** Com a chave
+  ligada, o redirecionamento segue a origem de quem chamou, desde que ela já
+  esteja na lista de origens permitidas. Ausente em produção.
+
 ## [1.17.0] — 2026-08-16
 
 ### Os seis tipos filtram pela tela
@@ -10,12 +45,12 @@ versionamento descrito em [VERSIONING.md](VERSIONING.md).
 Texto, número e moeda entram no seletor de filtro, fechando a última lacuna do
 recurso: agora **todos os seis tipos** de propriedade filtram pela interface.
 
-| Tipo | Como filtra |
-| --- | --- |
-| Seleção única e múltipla | escolhendo opções, com as cores |
-| Data | "é" um dia, ou "entre" dois |
-| Texto | **contém** um trecho |
-| Número e moeda | "é" um valor, ou "entre" dois — a moeda mostra o símbolo |
+| Tipo                     | Como filtra                                              |
+| ------------------------ | -------------------------------------------------------- |
+| Seleção única e múltipla | escolhendo opções, com as cores                          |
+| Data                     | "é" um dia, ou "entre" dois                              |
+| Texto                    | **contém** um trecho                                     |
+| Número e moeda           | "é" um valor, ou "entre" dois — a moeda mostra o símbolo |
 
 O que faltava era um formato de campo: os quatro que existiam são de
 **escolher** (calendário ou lista), e esses três precisam de **digitar**.
@@ -51,7 +86,7 @@ técnico está medido no backlog.
 ### Desenvolvimento
 
 - **A limpeza passou a morar dentro do comando que faz a sujeira.** `pnpm
-  test:api` roda os testes e desliga a stack de teste ao terminar — ela ficava
+test:api` roda os testes e desliga a stack de teste ao terminar — ela ficava
   de pé consumindo quase dois núcleos de CPU sem atender ninguém. O deploy poda
   as imagens que o próprio build deixou órfãs.
 
