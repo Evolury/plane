@@ -186,6 +186,12 @@ def _validar_acao(acao, project_id):
         if pessoas and User.objects.filter(pk__in=pessoas).count() != len(set(pessoas)):
             _erro({"actions": "Uma das pessoas escolhidas não existe."})
 
+    elif tipo == "add_to_module":
+        from plane.db.models import Module
+
+        if not Module.objects.filter(pk=config.get("module_id") or None, project_id=project_id).exists():
+            _erro({"actions": "Escolha um módulo deste projeto."})
+
     elif tipo == "create_work_item":
         if not (config.get("name") or "").strip():
             _erro({"actions": "Dê um nome à tarefa que será criada."})

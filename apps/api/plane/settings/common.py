@@ -476,6 +476,19 @@ EMAIL_LOG_RETENTION_DAYS = _retention_days("EMAIL_LOG_RETENTION_DAYS", 7)
 AUTOMATION_RUN_RETENTION_DAYS = _retention_days("AUTOMATION_RUN_RETENTION_DAYS", 30)
 AUTOMATION_SKIPPED_RUN_RETENTION_DAYS = _retention_days("AUTOMATION_SKIPPED_RUN_RETENTION_DAYS", 7)
 
+# Evolury: teto de execuções que ESCREVEM, por regra, por hora (ADR 0012).
+#
+# O número nasceu em 200 e a medição de carga de 16/08/2026 mostrou que era
+# baixo demais: uma edição em massa de 200 tarefas — operação comum e
+# deliberada — fazia uma regra que age em todas bater exatamente no teto e se
+# desligar por ter feito o trabalho certo.
+#
+# Mil mantém o freio útil para o caso que ele existe para pegar (um ciclo entre
+# regras, que produz milhares por hora em minutos) sem punir a edição em massa.
+# As travas que realmente contêm laço são outras — teto de profundidade, regra
+# que não responde a si mesma, e descarte de ação sem efeito.
+AUTOMATION_RUNS_PER_HOUR_CAP = _retention_days("AUTOMATION_RUNS_PER_HOUR_CAP", 1000)
+
 # Instance Changelog URL
 INSTANCE_CHANGELOG_URL = os.environ.get("INSTANCE_CHANGELOG_URL", "")
 

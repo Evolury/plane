@@ -20,6 +20,7 @@ import time
 from datetime import timedelta
 
 # Django imports
+from django.conf import settings
 from django.db.models import F
 from django.utils import timezone
 
@@ -41,15 +42,17 @@ from plane.utils.automacoes.condicao import CondicaoInvalida, casa, tarefas_que_
 from plane.utils.automacoes.gatilhos import automacao_casa
 from plane.utils.exception_logger import log_exception
 
-#: Teto de execuções por regra, por hora.
+#: Teto de execuções que ESCREVEM, por regra, por hora.
 #:
 #: É o freio de emergência, não o mecanismo principal — as travas de laço são o
-#: teto de profundidade e a regra que não responde a si mesma. Este existe para
-#: o caso que nenhuma das duas prevê: um ciclo entre três regras diferentes, ou
-#: uma edição em massa de dez mil tarefas. Ao estourar, a regra se DESLIGA e
-#: grava o motivo: uma regra que emudece sem explicação é pior do que uma regra
-#: que erra.
-TETO_POR_HORA = 200
+#: teto de profundidade, a regra que não responde a si mesma e o descarte de
+#: ação sem efeito. Este existe para o caso que nenhuma das três prevê: um ciclo
+#: entre regras diferentes. Ao estourar, a regra se DESLIGA e grava o motivo:
+#: uma regra que emudece sem explicação é pior do que uma regra que erra.
+#:
+#: O valor mora em `settings` porque a medição de carga já o corrigiu uma vez —
+#: ver o comentário lá.
+TETO_POR_HORA = settings.AUTOMATION_RUNS_PER_HOUR_CAP
 
 #: Tipo de evento → gatilho correspondente.
 GATILHO_DO_EVENTO = {

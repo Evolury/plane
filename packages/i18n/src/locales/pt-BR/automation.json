@@ -301,7 +301,8 @@
       "add_to_cycle": "Incluir no ciclo ativo",
       "limite": "Limite da rodada",
       "create_work_item": "Criar tarefa",
-      "create_subtasks": "Criar subtarefas"
+      "create_subtasks": "Criar subtarefas",
+      "add_to_module": "Incluir no módulo"
     },
     "field": {
       "state": "Estado",
@@ -360,7 +361,8 @@
       "archive": "arquivar a tarefa",
       "add_to_cycle": "incluir no ciclo ativo",
       "create_work_item": "criar a tarefa",
-      "create_subtasks": "criar {total} subtarefa(s):"
+      "create_subtasks": "criar {total} subtarefa(s):",
+      "add_to_module": "incluir no módulo"
     },
     "runs": {
       "empty": "Esta regra ainda não rodou.",
@@ -417,7 +419,11 @@
       "done_clears_due": "Ao concluir, limpar a prioridade",
       "comment_reopens": "Comentário reabre a tarefa",
       "review_checklist": "Ao entrar em homologação, criar o checklist",
-      "due_tomorrow": "Toda manhã, avisar quem tem tarefa vencendo"
-    }
+      "due_tomorrow": "Toda manhã, avisar quem tem tarefa vencendo",
+      "heading": "Comece por uma destas",
+      "hint": "A receita abre o editor preenchido. O que depende do seu projeto — qual estado, qual etiqueta — fica para você escolher."
+    },
+    "pick_module": "Escolha um módulo",
+    "module_hint": "O módulo é escolhido aqui e vale sempre — diferente do ciclo, que é escolhido na hora da execução."
   }
 }

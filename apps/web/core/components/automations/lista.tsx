@@ -28,6 +28,7 @@ import { AlertModalCore, Loader, ToggleSwitch } from "@plane/ui";
 import { renderFormattedDate } from "@plane/utils";
 import { AutomationService } from "@/services/automation.service";
 import { FraseDaAutomacao } from "./frase";
+import { ReceitasDeAutomacao } from "./receitas";
 import { useRotulos } from "./rotulos";
 
 const servico = new AutomationService();
@@ -87,8 +88,11 @@ export const ListaDeAutomacoes = observer(function ListaDeAutomacoes(props: TPro
     }
   };
 
-  const abrir = (automationId: string) =>
-    navigate(`/${workspaceSlug}/settings/projects/${projectId}/automations/${automationId}/`);
+  const abrir = (automationId: string, receita?: string) =>
+    navigate(
+      `/${workspaceSlug}/settings/projects/${projectId}/automations/${automationId}/` +
+        (receita ? `?receita=${receita}` : "")
+    );
 
   return (
     <>
@@ -119,11 +123,17 @@ export const ListaDeAutomacoes = observer(function ListaDeAutomacoes(props: TPro
             <Loader.Item height="56px" />
           </Loader>
         ) : regras.length === 0 ? (
-          <div className="rounded-md border border-dashed border-subtle px-6 py-10 text-center">
-            <p className="text-13 font-medium text-secondary">{t("automations.empty_state.no_automations.title")}</p>
-            <p className="mx-auto mt-1 max-w-lg text-12 text-tertiary">
-              {t("automations.empty_state.no_automations.description")}
-            </p>
+          <div className="rounded-md border border-dashed border-subtle px-6 py-8">
+            <div className="text-center">
+              <p className="text-13 font-medium text-secondary">{t("automations.empty_state.no_automations.title")}</p>
+              <p className="mx-auto mt-1 max-w-lg text-12 text-tertiary">
+                {t("automations.empty_state.no_automations.description")}
+              </p>
+            </div>
+            {/* A tela em branco explica a sintaxe e não o repertório. As
+                receitas mostram o que dá para fazer — e a diferença entre
+                reagir e repetir — em um clique (ADR 0012, F3.7). */}
+            <ReceitasDeAutomacao className="mt-6" onEscolher={(chave) => abrir("novo", chave)} />
           </div>
         ) : (
           <ul className="flex flex-col divide-y divide-subtle rounded-md border border-subtle">

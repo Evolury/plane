@@ -301,6 +301,55 @@ class TestAcoesDaVoz:
         assert Notification.objects.count() == 0
 
     @pytest.mark.django_db
+    def test_modulo_usa_o_id_escolhido_na_regra(self, projeto, workspace, estados, create_user):
+        """Aqui o id fixo é a resposta certa, ao contrário do ciclo.
+
+        A assimetria é do domínio: um ciclo é sprint que termina, um módulo é
+        contêiner durável. O que se escolhe hoje continua certo em seis meses.
+        """
+        from plane.db.models import Module, ModuleIssue
+        from plane.utils.automacoes.acoes import executar
+        from plane.utils.automacoes.ator import ator_da_automacao
+
+        modulo = Module.objects.create(
+            name="Autenticação", project=projeto, workspace=workspace, lead=create_user
+        )
+        tarefa = _tarefa(projeto, workspace, estados["aberta"])
+        regra = _agendada(projeto, workspace)
+        contexto = {
+            "ator_id": ator_da_automacao(workspace.id).id,
+            "automacao": regra,
+            "evento": {},
+            "profundidade": 0,
+        }
+
+        resultado = executar("add_to_module", tarefa, {"module_id": str(modulo.id)}, contexto)
+
+        assert resultado["status"] == "aplicada"
+        assert ModuleIssue.objects.get(issue=tarefa, deleted_at__isnull=True).module_id == modulo.id
+
+    @pytest.mark.django_db
+    def test_modulo_apagado_nao_derruba_a_regra(self, projeto, workspace, estados):
+        from plane.utils.automacoes.acoes import executar
+        from plane.utils.automacoes.ator import ator_da_automacao
+
+        tarefa = _tarefa(projeto, workspace, estados["aberta"])
+        regra = _agendada(projeto, workspace)
+        contexto = {
+            "ator_id": ator_da_automacao(workspace.id).id,
+            "automacao": regra,
+            "evento": {},
+            "profundidade": 0,
+        }
+
+        resultado = executar(
+            "add_to_module", tarefa, {"module_id": "00000000-0000-0000-0000-000000000000"}, contexto
+        )
+
+        assert resultado["status"] == "sem_efeito"
+        assert "não existe mais" in resultado["detalhe"]
+
+    @pytest.mark.django_db
     def test_arquivar_recusa_tarefa_em_andamento(self, projeto, workspace, estados):
         """Arquivar trabalho não terminado faria sumir da tela o que ninguém acabou."""
         from plane.utils.automacoes.acoes import executar

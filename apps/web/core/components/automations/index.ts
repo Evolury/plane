@@ -13,4 +13,5 @@ export * from "./execucoes";
 export * from "./frase";
 export * from "./gatilho";
 export * from "./lista";
+export * from "./receitas";
 export * from "./rotulos";

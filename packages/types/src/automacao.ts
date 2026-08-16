@@ -52,6 +52,7 @@ export const AUTOMATION_ACTION = {
   NOTIFY: "notify",
   ARCHIVE: "archive",
   ADD_TO_CYCLE: "add_to_cycle",
+  ADD_TO_MODULE: "add_to_module",
   // F3 — a criação. Só existe em gatilho de EVENTO: agendado + criar é
   // recorrência, e a combinação é recusada ao salvar (ADR 0012).
   CREATE_WORK_ITEM: "create_work_item",
@@ -100,6 +101,8 @@ export type TAutomationActionConfig = {
   // tarefa comum. Criação por agenda é trabalho de Tarefas recorrentes.
   /** create_work_item: o nome da tarefa. Aceita as mesmas variáveis do texto. */
   name?: string;
+  /** add_to_module: id fixo — módulo é contêiner durável, ciclo não é. */
+  module_id?: string;
   /** create_subtasks: a lista do checklist, um nome por item. */
   names?: string[];
   herdar_responsaveis?: boolean;

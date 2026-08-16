@@ -788,6 +788,54 @@ def _copiar_responsaveis(origem, nova, config, contexto):
     )
 
 
+@acao("add_to_module")
+def _incluir_no_modulo(tarefa, config, contexto):
+    """Põe a tarefa num módulo escolhido na regra.
+
+    Aqui o id FIXO é a resposta certa, ao contrário do ciclo — e a assimetria é
+    do domínio, não descuido. Um ciclo é uma sprint que termina, então um id
+    escolhido hoje aponta para um contêiner encerrado amanhã. Um módulo é um
+    contêiner durável ("Autenticação", "Relatórios"): o que se escolhe hoje
+    continua sendo o certo daqui a seis meses.
+
+    Módulo apagado não derruba a regra: vira "não existe mais" no registro, como
+    a propriedade desligada.
+    """
+    from plane.bgtasks.issue_activities_task import issue_activity
+    from plane.db.models import Module, ModuleIssue
+
+    modulo_id = config.get("module_id")
+    if not modulo_id:
+        raise AcaoInvalida("ação de módulo sem módulo escolhido")
+
+    modulo = Module.objects.filter(pk=modulo_id, project_id=tarefa.project_id).first()
+    if modulo is None:
+        return _resultado("add_to_module", SEM_EFEITO, "o módulo não existe mais neste projeto")
+
+    if ModuleIssue.objects.filter(issue=tarefa, module=modulo, deleted_at__isnull=True).exists():
+        return _resultado("add_to_module", SEM_EFEITO, f"a tarefa já estava no módulo {modulo.name}")
+
+    ModuleIssue.objects.create(
+        issue=tarefa, module=modulo, project_id=tarefa.project_id, workspace_id=tarefa.workspace_id
+    )
+
+    issue_activity.delay(
+        type="module.activity.created",
+        requested_data=json.dumps({"modules_list": [str(tarefa.id)]}, cls=DjangoJSONEncoder),
+        current_instance=json.dumps(
+            {"created_module_issues": [], "updated_module_issues": []}, cls=DjangoJSONEncoder
+        ),
+        issue_id=str(tarefa.id),
+        actor_id=str(contexto["ator_id"]),
+        project_id=str(tarefa.project_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+        automacao_origem=str(contexto["automacao"].id),
+        automacao_profundidade=contexto["profundidade"] + 1,
+    )
+    return _resultado("add_to_module", APLICADA, f"incluída no módulo {modulo.name}")
+
+
 def executar(tipo, tarefa, config, contexto):
     """Executa uma ação pelo tipo. Tipo desconhecido é erro registrado, não queda."""
     funcao = ACOES.get(tipo)

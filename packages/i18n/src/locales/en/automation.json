@@ -301,7 +301,8 @@
       "add_to_cycle": "Add to active cycle",
       "limite": "Round limit",
       "create_work_item": "Create work item",
-      "create_subtasks": "Create sub-work items"
+      "create_subtasks": "Create sub-work items",
+      "add_to_module": "Add to module"
     },
     "field": {
       "state": "State",
@@ -360,7 +361,8 @@
       "archive": "archive the work item",
       "add_to_cycle": "add to the active cycle",
       "create_work_item": "create the work item",
-      "create_subtasks": "create {total} sub-work item(s):"
+      "create_subtasks": "create {total} sub-work item(s):",
+      "add_to_module": "add to the module"
     },
     "runs": {
       "empty": "This rule has not run yet.",
@@ -417,7 +419,11 @@
       "done_clears_due": "On completion, clear the priority",
       "comment_reopens": "A comment reopens the work item",
       "review_checklist": "On entering review, create the checklist",
-      "due_tomorrow": "Every morning, notify whoever has work due"
-    }
+      "due_tomorrow": "Every morning, notify whoever has work due",
+      "heading": "Start from one of these",
+      "hint": "A recipe opens the editor pre-filled. What depends on your project — which state, which label — is left for you."
+    },
+    "pick_module": "Pick a module",
+    "module_hint": "The module is chosen here and always applies — unlike the cycle, which is resolved at run time."
   }
 }

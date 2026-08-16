@@ -65,8 +65,9 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
 - [x] F3.5 Herança de responsáveis e vencimento relativo na criação
 - [x] F3.6 Catálogo de receitas prontas em `packages/constants`, incluindo as
       duas que ensinam a diferença entre reagir e repetir
-- [ ] F3.7 Tela do catálogo de receitas no estado vazio (as constantes existem;
-      falta o cartão que abre o editor já preenchido)
+- [x] F3.7 Tela do catálogo de receitas no estado vazio. A receita viaja pela
+      URL (`?receita=<chave>`), resolvida contra o catálogo — que continua sendo
+      a única fonte da verdade — e o editor nasce preenchido
 - [x] F3.8 Poda de `AutomationRun` em `cleanup_task.py`, com **duas janelas**:
       30 dias para a execução que fez algo (é o que se audita depois) e 7 dias
       para a que parou na condição (é o que faz volume, e "não casou" repetido
@@ -74,6 +75,27 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
       fora de propósito**: parece log e é a garantia de idempotência — apagá-la
       por idade traria de volta o defeito que ela impede. Ela se limpa pelo
       CASCADE do `hard_delete` da tarefa
+
+## Medição de carga (16/08/2026)
+
+200 tarefas, 5 regras no mesmo campo, uma pegando tudo e quatro de condição
+estreita — a edição em massa que motivou o teto por hora.
+
+|                         |                                      |
+| ----------------------- | ------------------------------------ |
+| Enfileirar 200 edições  | 0,9 s (4,5 ms/tarefa)                |
+| Drenar 1.000 avaliações | 10,9 s                               |
+| Duração por avaliação   | mediana 6 ms · p95 24 ms · máx 36 ms |
+| Falhas                  | 0                                    |
+
+Latência de quem clica: **não medida porque não existe** — o despacho roda dentro
+de `issue_activity`, que já é assíncrona, então o caminho do pedido HTTP não
+ganhou trabalho nenhum.
+
+A medição achou o que a teoria não tinha mostrado: as três regras de condição
+estreita fizeram **200 avaliações e 0 escritas** cada. Com o teto em 200, uma
+única edição em massa as desligaria — punindo justamente as regras bem escritas,
+por não terem feito nada. O teto subiu para 1.000 e passou a morar em `settings`.
 
 ## Corrigido depois da auditoria de 16/08/2026
 
@@ -92,10 +114,11 @@ os dois eram promessas que o produto não cumpria:
 
 ## Dívidas conhecidas
 
-- [ ] A ação de módulo ficou de fora da F2.6: ciclo tem "o ativo agora", que é
-      uma resposta sem ambiguidade; módulo não tem equivalente, e escolher um id
-      fixo na regra envelheceria do mesmo jeito que um ciclo fixo. Precisa de
-      uma decisão de produto antes de virar código.
+- [x] A ação de **módulo** entrou, e a razão de ela ter ficado de fora estava
+      errada: eu supus simetria com o ciclo. Não há. Um ciclo é sprint que
+      termina, então id fixo envelhece; um módulo é contêiner durável
+      ("Autenticação", "Relatórios"), e o id escolhido hoje continua certo em
+      seis meses. Por isso ciclo resolve "o ativo agora" e módulo usa id fixo.
 - [ ] A simulação do editor conta tarefas da condição; para regra agendada ela
       responde exatamente a pergunta certa ("a varredura vai pegar quantas?"),
       mas não mostra QUANDO é a próxima rodada. O dado existe (`next_run_at`).

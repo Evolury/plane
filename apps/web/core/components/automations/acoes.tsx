@@ -26,6 +26,7 @@ import { Button } from "@plane/propel/button";
 import { CustomSelect, Input, TextArea } from "@plane/ui";
 import { useLabel } from "@/hooks/store/use-label";
 import { useMember } from "@/hooks/store/use-member";
+import { useModule } from "@/hooks/store/use-module";
 import { useProjectState } from "@/hooks/store/use-project-state";
 
 type TProps = {
@@ -60,6 +61,7 @@ const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]
   // virada do próximo ciclo.
   archive: {},
   add_to_cycle: {},
+  add_to_module: { module_id: "" },
   create_work_item: { name: "", herdar_responsaveis: false },
   create_subtasks: { names: [""], herdar_responsaveis: true },
 };
@@ -73,10 +75,12 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
     project: { getProjectMemberIds },
   } = useMember();
   const { getUserDetails } = useMember();
+  const { getProjectModuleIds, getModuleById } = useModule();
 
   const estados = getProjectStates(projectId) ?? [];
   const etiquetas = (getProjectLabelIds(projectId) ?? []).map((id) => getLabelById(id)).filter(Boolean);
   const membros = (getProjectMemberIds(projectId, false) ?? []).map((id) => getUserDetails(id)).filter(Boolean);
+  const modulos = (getProjectModuleIds(projectId) ?? []).map((id) => getModuleById(id)).filter(Boolean);
 
   const atualizar = (indice: number, mudanca: Partial<TAutomationAction>) =>
     onChange(acoes.map((acao, i) => (i === indice ? { ...acao, ...mudanca } : acao)));
@@ -336,6 +340,28 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
 
       case AUTOMATION_ACTION.ADD_TO_CYCLE:
         return <p className="text-12 text-tertiary">{t("automations.cycle_hint")}</p>;
+
+      case AUTOMATION_ACTION.ADD_TO_MODULE:
+        return (
+          <div className="flex flex-col gap-1">
+            <CustomSelect
+              value={config.module_id ?? ""}
+              label={modulos.find((m) => m!.id === config.module_id)?.name ?? t("automations.pick_module")}
+              onChange={(valor: string) => atualizarConfig(indice, { module_id: valor })}
+              input
+              maxHeight="lg"
+            >
+              {modulos.map((modulo) => (
+                <CustomSelect.Option key={modulo!.id} value={modulo!.id}>
+                  {modulo!.name}
+                </CustomSelect.Option>
+              ))}
+            </CustomSelect>
+            {/* Ao contrário do ciclo, aqui o id fixo é a resposta certa: módulo
+                é contêiner durável, sprint não é. */}
+            <p className="text-11 text-tertiary">{t("automations.module_hint")}</p>
+          </div>
+        );
 
       default:
         return null;

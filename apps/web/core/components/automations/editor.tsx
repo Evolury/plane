@@ -21,8 +21,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { Play } from "lucide-react";
+import { RECEITAS_DE_AUTOMACAO } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
@@ -54,6 +55,16 @@ type TProps = {
   onSaved: () => void;
 };
 
+/**
+ * Uma cópia editável do que veio do catálogo de receitas.
+ *
+ * O catálogo é `as const`: as listas dentro dele são as MESMAS referências em
+ * toda a aplicação. Sem a cópia profunda, editar o gatilho de uma regra nova
+ * mudaria a receita para quem abrisse a próxima — um defeito que só apareceria
+ * na segunda vez que alguém usasse a tela.
+ */
+const copiaEditavel = <T,>(valor: unknown): T => JSON.parse(JSON.stringify(valor)) as T;
+
 const Secao = (props: { rotulo: string; children: React.ReactNode; acao?: React.ReactNode }) => (
   <section className="rounded-md border border-subtle bg-surface-1 p-4">
     <div className="mb-3 flex items-center justify-between">
@@ -68,13 +79,23 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
   const { workspaceSlug, projectId, regra, onSaved } = props;
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [parametros] = useSearchParams();
   const rotulos = useRotulos(workspaceSlug, projectId);
 
-  const [nome, setNome] = useState(regra?.name ?? "");
+  // A receita vem pela URL, resolvida contra o catálogo — que continua sendo a
+  // única fonte da verdade. Só vale para regra NOVA: numa regra existente ela
+  // apagaria o que a pessoa escreveu.
+  const receita = regra ? undefined : RECEITAS_DE_AUTOMACAO.find((item) => item.chave === parametros.get("receita"));
+
+  const [nome, setNome] = useState(receita ? t(receita.i18n) : (regra?.name ?? ""));
   const [ativa, setAtiva] = useState(regra?.is_active ?? true);
-  const [trigger, setTrigger] = useState<TAutomationTrigger>(regra?.trigger_type ?? AUTOMATION_TRIGGER.FIELD_CHANGED);
+  const [trigger, setTrigger] = useState<TAutomationTrigger>(
+    (receita?.trigger_type as TAutomationTrigger) ?? regra?.trigger_type ?? AUTOMATION_TRIGGER.FIELD_CHANGED
+  );
   const [triggerConfig, setTriggerConfig] = useState<TAutomationTriggerConfig>(
-    regra?.trigger_config ?? { field: "", to: [] }
+    receita
+      ? copiaEditavel<TAutomationTriggerConfig>(receita.trigger_config)
+      : (regra?.trigger_config ?? { field: "", to: [] })
   );
   const [condicao, setCondicao] = useState<TWorkItemFilterExpression>(
     (regra?.condition as TWorkItemFilterExpression) ?? {}
@@ -82,7 +103,9 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
   const [mostrarCondicao, setMostrarCondicao] = useState(
     Boolean(regra?.condition && Object.keys(regra.condition as object).length > 0)
   );
-  const [acoes, setAcoes] = useState<TAutomationAction[]>(regra?.actions ?? []);
+  const [acoes, setAcoes] = useState<TAutomationAction[]>(
+    receita ? copiaEditavel<TAutomationAction[]>(receita.actions) : (regra?.actions ?? [])
+  );
   const [incluirRecorrentes, setIncluirRecorrentes] = useState(regra?.include_recurring ?? false);
   const [salvando, setSalvando] = useState(false);
   const [simulacao, setSimulacao] = useState<number | undefined>(undefined);

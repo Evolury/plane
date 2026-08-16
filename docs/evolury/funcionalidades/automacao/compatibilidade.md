@@ -52,5 +52,6 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 
 - Linhas 12, 13 e 14 estão marcadas `[I]` porque decorrem do funil único; valem
   uma confirmação visual quando a F2 trouxer a ação de notificar.
-- Carga real (200 tarefas × 5 regras) não foi medida. Está no backlog da F2,
-  junto do gatilho agendado, que é quando o volume passa a importar de verdade.
+- Carga real medida em 16/08/2026: 1.000 avaliações drenadas em 10,9 s, mediana
+  de 6 ms por avaliação, zero falhas. Detalhes e o achado sobre o teto por hora
+  estão no [backlog](backlog.md).

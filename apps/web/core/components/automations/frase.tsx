@@ -193,6 +193,8 @@ export const FraseDaAutomacao = function FraseDaAutomacao(props: TProps) {
         return <Destaque>{t("automations.sentence.archive")}</Destaque>;
       case "add_to_cycle":
         return <Destaque>{t("automations.sentence.add_to_cycle")}</Destaque>;
+      case "add_to_module":
+        return <Destaque>{t("automations.sentence.add_to_module")}</Destaque>;
       default:
         return <>{item.type}</>;
     }

@@ -85,7 +85,15 @@ uma subtarefa nova mudaria todas as ocorrências futuras. O registro diz isso.
 
 **Arquivar** só age em tarefa concluída ou cancelada. **Incluir no ciclo** usa o
 ciclo ativo no momento da execução — nunca um ciclo escolhido de véspera, que
-envelheceria na virada.
+envelheceria na virada. **Incluir no módulo**, ao contrário, usa o módulo que
+você escolhe na regra: módulo é contêiner durável, e o que você escolhe hoje
+continua certo daqui a seis meses.
+
+## Não sabe por onde começar
+
+A tela vazia mostra seis **receitas prontas**. Um clique abre o editor já
+preenchido, com o que depende do seu projeto — qual estado, qual etiqueta —
+deixado para você escolher.
 
 As ações rodam **na ordem em que aparecem**, e cada uma enxerga o que a anterior
 fez.
