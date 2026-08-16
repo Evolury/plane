@@ -154,7 +154,9 @@ export const GatilhoDaAutomacao = observer(function GatilhoDaAutomacao(props: TP
                         const atuais = new Set(config.weekdays ?? []);
                         if (atuais.has(dia.valor)) atuais.delete(dia.valor);
                         else atuais.add(dia.valor);
-                        onChange(trigger, { ...config, weekdays: Array.from(atuais).toSorted() });
+                        // `Array.from` já devolve cópia, então o `sort` não
+                        // muda a lista de ninguém.
+                        onChange(trigger, { ...config, weekdays: Array.from(atuais).sort() });
                       }}
                       className={
                         marcado

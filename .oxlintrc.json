@@ -39,6 +39,7 @@
     "unicorn/filename-case": "off",
     "unicorn/no-null": "off",
     "unicorn/prevent-abbreviations": "off",
+    "no-array-sort": "off",
     "no-unused-vars": [
       "warn",
       {
