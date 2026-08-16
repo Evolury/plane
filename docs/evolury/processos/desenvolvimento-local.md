@@ -5,10 +5,10 @@ que já custaram retrabalho. Escrito depois da terceira vez.
 
 ## As duas stacks
 
-| Stack           | Para quê                          | Como                                                                    |
-| --------------- | --------------------------------- | ----------------------------------------------------------------------- |
-| **`planetest`** | pytest da API                     | `docker compose -f docker-compose-test.yml run --rm api-tests pytest …` |
-| **`planedev`**  | banco e API para validação visual | `docker compose -p planedev up -d`                                      |
+| Stack           | Para quê                          | Como                                                                       |
+| --------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| **`planetest`** | pytest da API                     | `pnpm test:api` (ou `bin/testes-api.sh`), que **para a stack ao terminar** |
+| **`planedev`**  | banco e API para validação visual | `docker compose -p planedev up -d`                                         |
 
 Os dois arquivos declaram `name:` próprio desde 14/08/2026, então não é mais
 preciso lembrar do `-p`. **Compose novo neste repositório nasce com `name:`** —
@@ -131,6 +131,29 @@ Para validar qualquer coisa que dependa do seletor de filtros, troque
 
 por `<HydratedRouter />`, valide, e **religue antes de cortar**. Confira com
 `git diff apps/web/app/entry.client.tsx` — vazio é o que se espera.
+
+## Higiene: o que cada ação suja
+
+Medido nesta máquina em 15/08/2026, e por isso a limpeza de duas delas está
+**dentro do próprio comando** — quem depende de lembrar, esquece.
+
+| Ação                             | O que fica                              | Quanto                           | Limpeza                                   |
+| -------------------------------- | --------------------------------------- | -------------------------------- | ----------------------------------------- |
+| `pytest`                         | a stack de teste fica de pé             | 0,27 GB e **171% de CPU** ocioso | **automática** em `pnpm test:api`         |
+| `docker compose build` do deploy | imagens antigas viram órfãs             | 3,85 GB                          | **automática** em `infra/plane/deploy.sh` |
+| `docker compose build` do deploy | cache do BuildKit                       | 15 GB                            | **manual, por marco** — ver abaixo        |
+| `pnpm turbo run build`           | `.turbo`, `apps/web/build`, `dist`      | ~400 MB                          | `rm -rf .turbo apps/web/build`            |
+| validação visual                 | tarefas, propriedades e opções de teste | —                                | apagar o que criou                        |
+| trocar de branch / encerrar      | processos `turbo`/`vite` órfãos         | —                                | `pkill -f "react-router/dev/bin.js dev"`  |
+
+**O cache de build é a exceção deliberada.** Ele existe para o próximo build ser
+rápido; limpá-lo a cada deploy troca 15 GB de disco por minutos em toda
+publicação. O gatilho é pressão de disco ou um marco — depois de uma release,
+por exemplo:
+
+```bash
+docker builder prune -af
+```
 
 ## Depois de validar
 
