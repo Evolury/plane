@@ -9,6 +9,8 @@ import React from "react";
 import { observer } from "mobx-react";
 // plane imports
 import type {
+  TNumberFilterFieldConfig,
+  TTextFilterFieldConfig,
   TFilterConditionNode,
   TFilterValue,
   TFilterProperty,
@@ -19,9 +21,12 @@ import type {
   TDateRangeFilterFieldConfig,
   TFilterConditionNodeForDisplay,
 } from "@plane/types";
-import { FILTER_FIELD_TYPE } from "@plane/types";
+import { EXTENDED_FILTER_FIELD_TYPE, FILTER_FIELD_TYPE } from "@plane/types";
 import type { TFilterValueInputProps } from "../shared";
 import { DateRangeFilterValueInput } from "./date/range";
+// Evolury: campos de digitar (ADR 0011)
+import { NumeroFilterValueInput } from "./digitado/numero";
+import { TextoFilterValueInput } from "./digitado/texto";
 import { SingleDateFilterValueInput } from "./date/single";
 import { MultiSelectFilterValueInput } from "./select/multi";
 import { SingleSelectFilterValueInput } from "./select/single";
@@ -73,6 +78,29 @@ export const FilterValueInput = observer(function FilterValueInput<P extends TFi
     return (
       <DateRangeFilterValueInput<P>
         config={filterFieldConfig as TDateRangeFilterFieldConfig<string>}
+        condition={condition as TFilterConditionNodeForDisplay<P, string>}
+        isDisabled={isDisabled}
+        onChange={(value) => onChange(value as SingleOrArray<V>)}
+      />
+    );
+  }
+
+  // Evolury: campos de DIGITAR — texto, número e moeda (ADR 0011)
+  if (filterFieldConfig?.type === EXTENDED_FILTER_FIELD_TYPE.TEXT) {
+    return (
+      <TextoFilterValueInput<P>
+        config={filterFieldConfig as TTextFilterFieldConfig<string>}
+        condition={condition as TFilterConditionNodeForDisplay<P, string>}
+        isDisabled={isDisabled}
+        onChange={(value) => onChange(value as SingleOrArray<V>)}
+      />
+    );
+  }
+
+  if (filterFieldConfig?.type === EXTENDED_FILTER_FIELD_TYPE.NUMBER) {
+    return (
+      <NumeroFilterValueInput<P>
+        config={filterFieldConfig as TNumberFilterFieldConfig<string>}
         condition={condition as TFilterConditionNodeForDisplay<P, string>}
         isDisabled={isDisabled}
         onChange={(value) => onChange(value as SingleOrArray<V>)}

@@ -336,7 +336,9 @@ CASAS_DO_BANCO = 6
 OPERADORES_POR_TIPO = {
     PropertyType.SELECT: ("in",),
     PropertyType.MULTI_SELECT: ("in",),
-    PropertyType.TEXT: ("in",),
+    # `exact` porque a tela emite esse operador com o rótulo "contém" — em
+    # texto livre, igualdade exata prometeria uma precisão que o dado não tem.
+    PropertyType.TEXT: ("in", "exact"),
     # `exact` e `range` entraram com o seletor visual: a tela de filtros ricos
     # oferece "é exatamente" e "entre", e manda um `range` com "início,fim".
     PropertyType.NUMBER: ("gte", "lte", "exact", "range"),
@@ -382,7 +384,7 @@ def q_de_propriedade(propriedade, operadores):
         linhas = linhas.filter(value_option_id__in=validas)
 
     elif propriedade.property_type == PropertyType.TEXT:
-        trecho = operadores.get("in")
+        trecho = operadores.get("in") or operadores.get("exact")
         trecho = trecho[0] if isinstance(trecho, (list, tuple)) else trecho
         if not trecho:
             return None

@@ -629,6 +629,9 @@
       "updated": "Propriedade alterada.",
       "deleted": "Propriedade excluída.",
       "option_deleted": "{count, plural, =0 {Opção excluída.} one {Opção excluída — # tarefa ficou sem valor.} other {Opção excluída — # tarefas ficaram sem valor.}}"
+    },
+    "filter": {
+      "contains": "contém"
     }
   },
   "epic": {

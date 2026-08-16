@@ -347,3 +347,27 @@ class TestOperadoresDaTela:
         _valor(_tarefa(projeto, create_user, "sem trecho"), obs, value_text="entrega em RJ")
 
         assert self._filtrar(projeto, {f"property_{obs.id}__contains": "SP"}) == ["com trecho"]
+
+    @pytest.mark.django_db
+    def test_text_also_answers_exact_as_contains(self, projeto, create_user):
+        """A tela emite `exact` com o rótulo "contém" — e é assim que o texto responde.
+
+        Igualdade exata em texto livre prometeria uma precisão que o dado não
+        tem: quem escreveu "entrega em SP" não vai digitar isso inteiro.
+        """
+        obs = _prop(projeto, "Observação", "text")
+        _valor(_tarefa(projeto, create_user, "com trecho"), obs, value_text="entrega em SP")
+        _valor(_tarefa(projeto, create_user, "sem trecho"), obs, value_text="entrega em RJ")
+
+        assert self._filtrar(projeto, {f"property_{obs.id}__exact": "SP"}) == ["com trecho"]
+        # e continua sem diferenciar maiúscula
+        assert self._filtrar(projeto, {f"property_{obs.id}__exact": "sp"}) == ["com trecho"]
+
+    @pytest.mark.django_db
+    def test_currency_range_uses_the_typed_column(self, projeto, create_user):
+        """Faixa de dinheiro compara número, não texto — senão 9900 < 9,90."""
+        contrato = _prop(projeto, "Contrato", "currency", currency="BRL")
+        for nome, valor in (("baixo", "990.00"), ("meio", "2500.00"), ("alto", "9900.00")):
+            _valor(_tarefa(projeto, create_user, nome), contrato, value_number=valor)
+
+        assert self._filtrar(projeto, {f"property_{contrato.id}__range": "1000,5000"}) == ["meio"]

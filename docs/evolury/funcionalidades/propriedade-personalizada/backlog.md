@@ -155,28 +155,31 @@ levaria minutos.
 - [x] P9.1 **Data** no seletor, com "é" e "entre" — reaproveita o construtor do
       produto, e o backend passou a aceitar `__exact` e `__range` (a faixa vira
       o mesmo par `gte`/`lte` do caminho por parâmetro)
-- [ ] P9.2 **Texto, número e moeda** — bloqueados por um formato de campo que
-      não existe. Ver abaixo
+- [x] P9.2 **Texto, número e moeda** — o pacote de filtros ricos ganhou o
+      formato que faltava: campo de DIGITAR. Texto filtra por trecho, número e
+      moeda por igualdade e faixa, e a moeda mostra o símbolo no campo
 
-## A lacuna que resta, e por que ela não é um construtor a mais
+## A barreira que eu declarei e que não existia
 
-Texto, número e moeda **filtram pela API** desde a P4. O que falta é a tela, e
-a barreira é de formato, não de operador.
+Vale registrar, porque o erro foi de método.
 
-O pacote de filtros ricos tem quatro formatos de campo — `date`, `date_range`,
-`single_select` e `multi_select` — e **todos são de ESCOLHER**: calendário ou
-lista. Texto e número precisam de um campo de **DIGITAR**, que ali não existe.
+Ao tentar a primeira vez, alarguei as uniões de configuração por operador e o
+TypeScript passou a quebrar arquivos do próprio upstream. Concluí que mexer ali
+era inviável e documentei isso como bloqueio.
 
-O upstream deixou pontos de extensão vazios (`EXTENDED_FILTER_FIELD_TYPE`,
-`TExtendedExactOperatorConfigs`), e a tentativa de usá-los foi feita e revertida
-em 15/08/2026: alargar as uniões de configuração por operador faz o TypeScript
-inferir os genéricos de `createOperatorConfigEntry` como INTERSEÇÃO em vez de
-união, e passa a quebrar arquivos do próprio upstream que hoje compilam
-(`configs/properties/shared.ts`, `work-item-filters/configs/filters/shared.ts`).
+**Era um genérico meu com o padrão errado.** O núcleo declara as uniões com
+`<TFilterValue>` explícito; eu usei o padrão do meu tipo, que era `<string>`.
+Como `createFilterFieldConfig` devolve a união INTEIRA de formatos, um membro
+com genérico incompatível derruba a restrição em todos os pontos de uso — daí
+os erros aparecerem em arquivos que eu não tinha tocado.
 
-Ou seja: não é acrescentar um construtor — é mexer nos genéricos de operador do
-pacote compartilhado, com regressão em quem já os usa. Fica medido assim para a
-próxima tentativa começar sabendo onde bate.
+Corrigido o genérico, a extensão coube nos pontos que o upstream deixou vazios,
+sem nenhuma mudança no núcleo. O que eu chamei de "trabalho nos genéricos do
+pacote compartilhado, com regressão em quem já os usa" era uma linha.
+
+A lição: quando o compilador acusa erro em arquivo alheio depois de uma
+extensão minha, a primeira hipótese é que a extensão está mal declarada — não
+que o alheio é frágil.
 
 ## Achado colateral, já corrigido
 
