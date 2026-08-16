@@ -54,6 +54,10 @@ export const useValoresDasTarefas = (
 ): Record<string, Record<string, TPropertyValue>> => {
   // A ordem não pode entrar na chave: a mesma página em outra ordenação é a
   // mesma pergunta, e ordenar aqui evita buscar tudo de novo por nada.
+  // O lint sugere `toSorted()`, mas o alvo de compilação deste pacote é
+  // anterior a ES2023 e não o conhece. A cópia antes do `sort` faz o mesmo:
+  // não muda a lista de quem chamou.
+  // oxlint-disable-next-line no-array-sort
   const chave = [...issueIds].sort().join(",");
   const { data } = useSWR(
     workspaceSlug && projectId && chave ? `ISSUE_PROPERTY_VALUES_BULK_${projectId}_${chave}` : null,

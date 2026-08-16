@@ -11,7 +11,7 @@
 // interface escolhesse seria perda silenciosa. A única exceção é seleção única
 // → múltipla, que não perde nada: cada valor vira uma lista de um.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { Plus, X } from "lucide-react";
 // Evolury: ícone da propriedade (ADR 0011)
@@ -29,7 +29,7 @@ const servico = new IssuePropertyService();
 
 const TIPOS: TPropertyType[] = ["text", "number", "date", "select", "multi_select", "currency"];
 const MOEDAS: TPropertyCurrency[] = ["BRL", "USD", "EUR"];
-const TIPOS_DE_SELECAO: TPropertyType[] = ["select", "multi_select"];
+const TIPOS_DE_SELECAO = new Set<TPropertyType>(["select", "multi_select"]);
 
 type TProps = {
   workspaceSlug: string;
@@ -40,7 +40,11 @@ type TProps = {
   onSaved: () => void;
 };
 
-type TOpcaoEmEdicao = Pick<TIssuePropertyOption, "name" | "color"> & { id?: string };
+// Evolury: `chaveLocal` existe só para o React. A opção nova ainda não tem id
+// do banco, e usar o índice como chave faz o React reaproveitar o campo errado
+// quando alguém remove uma opção do meio — quem estava digitando vê o texto
+// pular de linha.
+type TOpcaoEmEdicao = Pick<TIssuePropertyOption, "name" | "color"> & { id?: string; chaveLocal?: string };
 
 const padrao = (): Partial<TIssueProperty> => ({
   name: "",
@@ -55,9 +59,17 @@ const padrao = (): Partial<TIssueProperty> => ({
 export const IssuePropertyForm = observer(function IssuePropertyForm(props: TProps) {
   const { workspaceSlug, projectId, propriedade, isOpen, onClose, onSaved } = props;
   const { t } = useTranslation();
+  // Evolury: o foco vai por ref e não por `autoFocus`. O atributo rouba o foco
+  // antes de o leitor de tela anunciar o diálogo, e quem navega por teclado
+  // perde o contexto de onde está.
+  const campoDoNome = useRef<HTMLInputElement>(null);
   const [dados, setDados] = useState<Partial<TIssueProperty>>(padrao());
   const [opcoes, setOpcoes] = useState<TOpcaoEmEdicao[]>([]);
   const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) campoDoNome.current?.focus();
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -68,7 +80,7 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
   const rotulo = (chave: string) => t(`issue_properties.${chave}`);
   const mudar = (campos: Partial<TIssueProperty>) => setDados((atual) => ({ ...atual, ...campos }));
 
-  const ehSelecao = TIPOS_DE_SELECAO.includes(dados.property_type ?? "text");
+  const ehSelecao = TIPOS_DE_SELECAO.has(dados.property_type ?? "text");
   // Depois de criada, o seletor de tipo só oferece o que a API aceita: nada,
   // ou o único caminho que não perde dado.
   const tiposDisponiveis = !propriedade
@@ -109,7 +121,7 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
 
         <label className="flex flex-col gap-1 text-13">
           <span className="text-secondary">{rotulo("form.name")}</span>
-          <Input value={dados.name ?? ""} onChange={(e) => mudar({ name: e.target.value })} autoFocus />
+          <Input value={dados.name ?? ""} onChange={(e) => mudar({ name: e.target.value })} ref={campoDoNome} />
         </label>
 
         <label className="flex flex-col gap-1 text-13">
@@ -205,7 +217,7 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
           <div className="flex flex-col gap-2 text-13">
             <span className="text-secondary">{rotulo("form.options")}</span>
             {opcoes.map((opcao, indice) => (
-              <div key={opcao.id ?? `nova-${indice}`} className="flex items-center gap-2">
+              <div key={opcao.id ?? opcao.chaveLocal} className="flex items-center gap-2">
                 <input
                   type="color"
                   value={opcao.color || "#6b7280"}
@@ -232,7 +244,9 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
             ))}
             <button
               type="button"
-              onClick={() => setOpcoes((atual) => [...atual, { name: "", color: "#6b7280" }])}
+              onClick={() =>
+                setOpcoes((atual) => [...atual, { name: "", color: "#6b7280", chaveLocal: crypto.randomUUID() }])
+              }
               className="flex w-fit items-center gap-1 rounded-sm px-1.5 py-1 text-12 text-tertiary hover:bg-layer-1 hover:text-primary"
             >
               <Plus className="size-3.5" />
@@ -241,8 +255,13 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
           </div>
         )}
 
-        <label className="flex items-start gap-2 text-13">
+        {/* O rótulo TEM texto e está associado pelo `htmlFor`; a regra não o
+            enxerga porque ele vem da tradução em tempo de execução. Silenciada
+            com o motivo, e não por incômodo. */}
+        {/* oxlint-disable-next-line label-has-associated-control */}
+        <label htmlFor="propriedade-obrigatoria" className="flex items-start gap-2 text-13">
           <input
+            id="propriedade-obrigatoria"
             type="checkbox"
             className="mt-1"
             checked={!!dados.is_required}
