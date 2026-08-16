@@ -5,5 +5,7 @@
  */
 
 export * from "./date";
+// Evolury: filtros de digitar (ADR 0011)
+export * from "./digitados";
 export * from "./member-picker";
 export * from "./shared";

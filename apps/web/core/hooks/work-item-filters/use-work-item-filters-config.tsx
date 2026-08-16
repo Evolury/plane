@@ -55,6 +55,8 @@ import {
   // Evolury: filtro por propriedade personalizada (ADR 0011)
   getIssuePropertyFilterConfig,
   getDatePropertyFilterConfig,
+  getTextPropertyFilterConfig,
+  getNumberPropertyFilterConfig,
 } from "@plane/utils";
 // Evolury: propriedades personalizadas (ADR 0011)
 import { chaveDePropriedade } from "@/components/issue-properties/cache";
@@ -192,11 +194,10 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
   // projeto — fora de um projeto a lista chega vazia, e propriedade é sempre
   // de um projeto.
   //
-  // Seleção e DATA. Texto, número e moeda continuam só na API: eles precisam
-  // de um campo de DIGITAR, e o pacote de filtros ricos só tem formatos de
-  // ESCOLHER (lista e calendário). Acrescentar um formato novo esbarra nos
-  // genéricos de operador do upstream — está medido no backlog, não é um
-  // construtor a mais.
+  // Os seis tipos, cada um com o formato de campo que lhe cabe: lista para as
+  // de seleção, calendário para data, e campo de digitar para texto, número e
+  // moeda — este último acrescentado ao pacote de filtros ricos, que só tinha
+  // formatos de ESCOLHER.
   const propriedades = usePropriedadesDoProjeto(workspaceSlug, projectId ?? "");
   const propertyFilterConfigs = useMemo(
     () =>
@@ -212,6 +213,33 @@ export const useWorkItemFiltersConfig = (props: TUseWorkItemFiltersConfigProps):
             filterIcon: iconeDaPropriedade(propriedade),
             ...operatorConfigs,
           })
+        )
+        .concat(
+          propriedades
+            .filter((propriedade) => propriedade.property_type === "text")
+            .map((propriedade) =>
+              getTextPropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
+                propertyDisplayName: propriedade.name,
+                isEnabled: true,
+                rotuloDoOperador: t("issue_properties.filter.contains"),
+                filterIcon: iconeDaPropriedade(propriedade),
+                ...operatorConfigs,
+              })
+            )
+        )
+        .concat(
+          propriedades
+            .filter((propriedade) => propriedade.property_type === "number" || propriedade.property_type === "currency")
+            .map((propriedade) =>
+              getNumberPropertyFilterConfig<TWorkItemFilterProperty>(chaveDePropriedade(propriedade.id))({
+                propertyDisplayName: propriedade.name,
+                isEnabled: true,
+                filterIcon: iconeDaPropriedade(propriedade),
+                prefixo: propriedade.property_type === "currency" ? (propriedade.currency ?? undefined) : undefined,
+                casasDecimais: propriedade.decimal_places,
+                ...operatorConfigs,
+              })
+            )
         )
         .concat(
           propriedades

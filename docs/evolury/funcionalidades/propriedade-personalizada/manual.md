@@ -120,9 +120,16 @@ Na tela de tarefas do projeto:
   junto com estado, prioridade e as demais. O quadro passa a ter uma coluna por
   opção, na ordem em que você as configurou, e uma coluna "Nenhum" no fim para
   as tarefas sem valor.
-- **Filtrar** (o ícone de funil) lista as propriedades de **seleção** — única ou
-  múltipla, com as cores das opções — e as de **data**, com "é" e "entre". O
-  filtro entra como qualquer outro, e sobrevive ao recarregar a página e a
+- **Filtrar** (o ícone de funil) lista **todos os seis tipos**:
+
+  | Tipo                     | Como filtra                                              |
+  | ------------------------ | -------------------------------------------------------- |
+  | Seleção única e múltipla | escolhendo opções, com as cores                          |
+  | Data                     | "é" um dia, ou "entre" dois                              |
+  | Texto                    | **contém** um trecho                                     |
+  | Número e moeda           | "é" um valor, ou "entre" dois — a moeda mostra o símbolo |
+
+  O filtro entra como qualquer outro, e sobrevive ao recarregar a página e a
   salvar a visão.
 
 **Agrupar** aceita só seleção única: agrupar por texto, data ou dinheiro criaria
@@ -165,8 +172,6 @@ precisar sincronizar nada.
 
 ## O que ainda não existe
 
-- **Filtrar por texto, número ou dinheiro nos menus da tela.** A API já filtra
-  os três (faixa e "contém"); o seletor visual oferece seleção e **data**.
 - Tipo pessoa, fórmula e campo calculado.
 - Reaproveitar a mesma propriedade em vários projetos.
 - Propriedade de data no calendário e no cronograma.

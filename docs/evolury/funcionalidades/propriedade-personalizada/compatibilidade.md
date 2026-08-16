@@ -33,20 +33,23 @@ Decisão: [ADR 0011](../../decisoes/0011-propriedades-personalizadas.md).
 
 ## Filtro, ordenação e agrupamento
 
-| #   | Recurso existente          | Tratamento                                                                 | Verificação                                                 |
-| --- | -------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 15  | Filtro da API              | `property_<uuid>`, um `Q` por propriedade em chamada própria               | ✓ `[T]` test_two_properties_at_once_do_not_collide          |
-| 16  | Filtro forjado             | UUID validado e propriedade conferida antes de tocar o ORM                 | ✓ `[T]` test_a_forged_filter_never_becomes_a_query          |
-| 17  | Ordenação                  | `property__<uuid>` resolvido antes da allowlist, pela coluna tipada        | ✓ `[T]` test_number_sorts_as_number                         |
-| 18  | Ordenação forjada          | Quatro entradas forjadas, nenhuma passa                                    | ✓ `[T]` test_a_forged_order_by_falls_back_to_the_default    |
-| 19  | Tarefa sem valor           | Vai para o fim nas duas direções                                           | ✓ `[T]` test_work_items_without_value_go_last…              |
-| 20  | Agrupamento                | Seleção única no menu "Agrupar por"; uma coluna por opção, "Nenhum" no fim | ✓ `[V]` Indicação 2 · Anúncio 2 · Nenhum 8 · `[T]` grouping |
-| 21  | Filtro pela interface      | Seleção no seletor de filtro, com as cores das opções                      | ✓ `[V]` 33 → 2 cartões, chip "Canal is Indicação"           |
-| 21b | Filtro que sobrevive ao F5 | A condição volta do servidor e é reidratada, não descartada                | ✓ `[V]` chip presente após recarregar                       |
-| 21c | Árvore `and`/`or`/`not`    | Subconsulta por propriedade — duas na mesma folha não colidem              | ✓ `[T]` test_two_properties_in_one_and_node                 |
-| 21d | Filtro do produto junto    | Propriedade e prioridade na mesma árvore                                   | ✓ `[T]` test_property_condition_combines_with_a_product…    |
-| 21e | Propriedade desligada      | Visão salva com ela não derruba a tela: a condição é descartada            | ✓ `[T]` test_inactive_property_filters_nothing…             |
-| 21f | Valor apagado              | Para de contar — a subconsulta filtra `deleted_at`, a junção não filtrava  | ✓ `[T]` test_deleted_value_stops_counting                   |
+| #   | Recurso existente          | Tratamento                                                                 | Verificação                                                             |
+| --- | -------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 15  | Filtro da API              | `property_<uuid>`, um `Q` por propriedade em chamada própria               | ✓ `[T]` test_two_properties_at_once_do_not_collide                      |
+| 16  | Filtro forjado             | UUID validado e propriedade conferida antes de tocar o ORM                 | ✓ `[T]` test_a_forged_filter_never_becomes_a_query                      |
+| 17  | Ordenação                  | `property__<uuid>` resolvido antes da allowlist, pela coluna tipada        | ✓ `[T]` test_number_sorts_as_number                                     |
+| 18  | Ordenação forjada          | Quatro entradas forjadas, nenhuma passa                                    | ✓ `[T]` test_a_forged_order_by_falls_back_to_the_default                |
+| 19  | Tarefa sem valor           | Vai para o fim nas duas direções                                           | ✓ `[T]` test_work_items_without_value_go_last…                          |
+| 20  | Agrupamento                | Seleção única no menu "Agrupar por"; uma coluna por opção, "Nenhum" no fim | ✓ `[V]` Indicação 2 · Anúncio 2 · Nenhum 8 · `[T]` grouping             |
+| 21  | Filtro pela interface      | Seleção no seletor de filtro, com as cores das opções                      | ✓ `[V]` 33 → 2 cartões, chip "Canal is Indicação"                       |
+| 21b | Filtro que sobrevive ao F5 | A condição volta do servidor e é reidratada, não descartada                | ✓ `[V]` chip presente após recarregar                                   |
+| 21c | Árvore `and`/`or`/`not`    | Subconsulta por propriedade — duas na mesma folha não colidem              | ✓ `[T]` test_two_properties_in_one_and_node                             |
+| 21d | Filtro do produto junto    | Propriedade e prioridade na mesma árvore                                   | ✓ `[T]` test_property_condition_combines_with_a_product…                |
+| 21e | Propriedade desligada      | Visão salva com ela não derruba a tela: a condição é descartada            | ✓ `[T]` test_inactive_property_filters_nothing…                         |
+| 21g | Texto no seletor           | Campo de digitar, operador rotulado "contém"                               | ✓ `[V]` 32 → 2 tarefas · `[T]` test_text_also_answers_exact_as_contains |
+| 21h | Número e moeda             | "é" e "entre"; a moeda mostra o símbolo no campo                           | ✓ `[V]` faixa 20–100 e BRL 2500,00 · `[T]` currency_range               |
+| 21i | Faixa pela metade          | Uma ponta só não filtra — filtro parcial mostraria o que ninguém pediu     | ✓ `[I]` o campo só confirma com as duas                                 |
+| 21f | Valor apagado              | Para de contar — a subconsulta filtra `deleted_at`, a junção não filtrava  | ✓ `[T]` test_deleted_value_stops_counting                               |
 
 ## Saída do dado
 
