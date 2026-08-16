@@ -10,6 +10,7 @@
     "dev": "turbo run dev --concurrency=18",
     "start": "turbo run start",
     "test:api": "bash bin/testes-api.sh",
+    "lint:api": "bash bin/lint-api.sh",
     "clean": "turbo run clean && rm -rf .turbo && rm -rf .next && rm -rf node_modules && rm -rf dist",
     "fix": "turbo run fix",
     "fix:format": "turbo run fix:format",

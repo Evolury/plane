@@ -2,7 +2,8 @@
   "automations": {
     "settings": {
       "title": "Automações personalizadas",
-      "create_automation": "Criar automação"
+      "create_automation": "Criar automação",
+      "description": "As regras que o seu time escreve: quando algo acontece, se a tarefa se encaixa, então faça isto."
     },
     "scope": {
       "label": "Escopo",
@@ -268,6 +269,161 @@
           }
         }
       }
-    }
+    },
+    "active": "Ativa",
+    "days": "dias",
+    "condition_hint": "Sem condição, a regra vale para toda tarefa que disparar o gatilho.",
+    "condition_empty": "+ Restringir a quais tarefas (hoje: todas)",
+    "trigger_field_label": "Qual campo",
+    "trigger_field_placeholder": "Escolha um campo",
+    "trigger_to_label": "Só quando mudar para",
+    "trigger_to_hint": "Sem escolher nada, qualquer mudança no campo dispara a regra.",
+    "pick_state": "Escolha um estado",
+    "pick_priority": "Escolha uma prioridade",
+    "pick_property": "Escolha uma propriedade",
+    "pick_value": "Valor",
+    "trigger_option": {
+      "created": "Uma tarefa for criada",
+      "field_changed": "Um campo for alterado",
+      "commented": "Alguém comentar",
+      "scheduled": "Em um horário"
+    },
+    "action_option": {
+      "set_state": "Mudar o estado",
+      "set_priority": "Mudar a prioridade",
+      "set_assignees": "Mudar responsáveis",
+      "set_labels": "Mudar etiquetas",
+      "set_date": "Definir data",
+      "set_property": "Preencher propriedade",
+      "add_comment": "Comentar",
+      "notify": "Notificar",
+      "archive": "Arquivar",
+      "add_to_cycle": "Incluir no ciclo ativo",
+      "limite": "Limite da rodada",
+      "create_work_item": "Criar tarefa",
+      "create_subtasks": "Criar subtarefas",
+      "add_to_module": "Incluir no módulo"
+    },
+    "field": {
+      "state": "Estado",
+      "priority": "Prioridade",
+      "assignee": "Responsáveis",
+      "label": "Etiquetas",
+      "start_date": "Data de início",
+      "target_date": "Data de vencimento",
+      "module": "Módulo",
+      "cycle": "Ciclo"
+    },
+    "mode": {
+      "add": "Acrescentar",
+      "remove": "Remover",
+      "replace": "Substituir"
+    },
+    "date_mode": {
+      "relative": "Daqui a",
+      "fixed": "Data fixa"
+    },
+    "special": {
+      "creator": "quem criou a tarefa",
+      "trigger_actor": "quem disparou a regra"
+    },
+    "tab": {
+      "editar": "Editar",
+      "execucoes": "Execuções"
+    },
+    "simulate": {
+      "button": "Simular",
+      "result": "{total} tarefa(s) se encaixam agora"
+    },
+    "sentence": {
+      "when": "Quando",
+      "created": "uma tarefa for criada",
+      "commented": "alguém comentar",
+      "field_changed": "mudar o campo",
+      "to": "para",
+      "conditions_match": "a tarefa se encaixar nos filtros",
+      "no_action": "não fazer nada",
+      "set_state": "mudar o estado para",
+      "set_priority": "mudar a prioridade para",
+      "add_assignee": "atribuir a",
+      "remove_assignee": "remover de",
+      "add_label": "acrescentar a etiqueta",
+      "remove_label": "remover a etiqueta",
+      "set_date": "definir",
+      "relative_days": "daqui a {dias} dia(s)",
+      "set_property": "preencher",
+      "every_day": "todo dia",
+      "every_week": "toda semana em",
+      "every_day_short": "todos os dias",
+      "at": "às",
+      "add_comment": "comentar",
+      "notify": "notificar",
+      "archive": "arquivar a tarefa",
+      "add_to_cycle": "incluir no ciclo ativo",
+      "create_work_item": "criar a tarefa",
+      "create_subtasks": "criar {total} subtarefa(s):",
+      "add_to_module": "incluir no módulo"
+    },
+    "runs": {
+      "empty": "Esta regra ainda não rodou.",
+      "only_after_save": "O registro de execuções aparece depois de salvar a regra.",
+      "status": {
+        "matched": "Executada",
+        "skipped": "Condição não casou",
+        "failed": "Falhou"
+      },
+      "result": {
+        "aplicada": "aplicada",
+        "sem_efeito": "já estava assim",
+        "erro": "erro"
+      }
+    },
+    "comment_placeholder": "O que escrever no comentário. Use {{tarefa}}, {{responsável}}…",
+    "notify_placeholder": "O texto do aviso (opcional).",
+    "notify_email": "Enviar também por e-mail",
+    "variables_hint": "Variáveis:",
+    "archive_hint": "Arquiva a tarefa. Só vale para tarefa concluída ou cancelada.",
+    "cycle_hint": "Inclui a tarefa no ciclo ativo do projeto no momento da execução.",
+    "notify_target": {
+      "assignees": "os responsáveis"
+    },
+    "schedule": {
+      "frequency": "Frequência",
+      "daily": "Todo dia",
+      "weekly": "Toda semana",
+      "time": "Horário",
+      "weekdays": "Em quais dias",
+      "weekdays_hint": "Sem escolher nada, roda todos os dias.",
+      "timezone_hint": "O horário é o do fuso do projeto."
+    },
+    "weekday": {
+      "sunday": "Dom",
+      "monday": "Seg",
+      "tuesday": "Ter",
+      "wednesday": "Qua",
+      "thursday": "Qui",
+      "friday": "Sex",
+      "saturday": "Sáb"
+    },
+    "create_name_placeholder": "Nome da tarefa que será criada",
+    "subtask_placeholder": "Nome da subtarefa",
+    "add_subtask": "Acrescentar subtarefa",
+    "inherit_assignees": "Herdar responsáveis da tarefa",
+    "due_in_days": "Vencer em (dias)",
+    "create_idempotency_hint": "Esta regra cria o checklist uma vez por tarefa. Disparar de novo não duplica.",
+    "include_recurring": "Valer também para tarefas de recorrência",
+    "include_recurring_hint": "Por padrão, ocorrência de tarefa recorrente não dispara esta regra — a tarefa de origem da série já nasce configurada.",
+    "recipes": {
+      "urgent_notify": "Quando virar urgente, atribuir a quem mudou",
+      "new_gets_label": "Toda tarefa nova recebe uma etiqueta",
+      "done_clears_due": "Ao concluir, limpar a prioridade",
+      "comment_reopens": "Comentário reabre a tarefa",
+      "review_checklist": "Ao entrar em homologação, criar o checklist",
+      "due_tomorrow": "Toda manhã, avisar quem tem tarefa vencendo",
+      "heading": "Comece por uma destas",
+      "hint": "A receita abre o editor preenchido. O que depende do seu projeto — qual estado, qual etiqueta — fica para você escolher."
+    },
+    "pick_module": "Escolha um módulo",
+    "module_hint": "O módulo é escolhido aqui e vale sempre — diferente do ciclo, que é escolhido na hora da execução."
   }
 }

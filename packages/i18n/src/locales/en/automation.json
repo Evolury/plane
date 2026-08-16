@@ -2,7 +2,8 @@
   "automations": {
     "settings": {
       "title": "Custom automations",
-      "create_automation": "Create automation"
+      "create_automation": "Create automation",
+      "description": "The rules your team writes: when something happens, if the work item matches, then do this."
     },
     "scope": {
       "label": "Scope",
@@ -268,6 +269,161 @@
           }
         }
       }
-    }
+    },
+    "active": "Active",
+    "days": "days",
+    "condition_hint": "With no condition, the rule applies to every work item that fires the trigger.",
+    "condition_empty": "+ Narrow down which work items (today: all)",
+    "trigger_field_label": "Which field",
+    "trigger_field_placeholder": "Pick a field",
+    "trigger_to_label": "Only when it changes to",
+    "trigger_to_hint": "With nothing selected, any change to the field fires the rule.",
+    "pick_state": "Pick a state",
+    "pick_priority": "Pick a priority",
+    "pick_property": "Pick a property",
+    "pick_value": "Value",
+    "trigger_option": {
+      "created": "A work item is created",
+      "field_changed": "A field changes",
+      "commented": "Someone comments",
+      "scheduled": "At a set time"
+    },
+    "action_option": {
+      "set_state": "Change the state",
+      "set_priority": "Change the priority",
+      "set_assignees": "Change assignees",
+      "set_labels": "Change labels",
+      "set_date": "Set a date",
+      "set_property": "Fill in a property",
+      "add_comment": "Comment",
+      "notify": "Notify",
+      "archive": "Archive",
+      "add_to_cycle": "Add to active cycle",
+      "limite": "Round limit",
+      "create_work_item": "Create work item",
+      "create_subtasks": "Create sub-work items",
+      "add_to_module": "Add to module"
+    },
+    "field": {
+      "state": "State",
+      "priority": "Priority",
+      "assignee": "Assignees",
+      "label": "Labels",
+      "start_date": "Start date",
+      "target_date": "Due date",
+      "module": "Module",
+      "cycle": "Cycle"
+    },
+    "mode": {
+      "add": "Add",
+      "remove": "Remove",
+      "replace": "Replace"
+    },
+    "date_mode": {
+      "relative": "In",
+      "fixed": "Fixed date"
+    },
+    "special": {
+      "creator": "whoever created the work item",
+      "trigger_actor": "whoever fired the rule"
+    },
+    "tab": {
+      "editar": "Edit",
+      "execucoes": "Runs"
+    },
+    "simulate": {
+      "button": "Simulate",
+      "result": "{total} work item(s) match right now"
+    },
+    "sentence": {
+      "when": "When",
+      "created": "a work item is created",
+      "commented": "someone comments",
+      "field_changed": "the field changes",
+      "to": "to",
+      "conditions_match": "the work item matches the filters",
+      "no_action": "do nothing",
+      "set_state": "set the state to",
+      "set_priority": "set the priority to",
+      "add_assignee": "assign to",
+      "remove_assignee": "unassign",
+      "add_label": "add the label",
+      "remove_label": "remove the label",
+      "set_date": "set",
+      "relative_days": "in {dias} day(s)",
+      "set_property": "fill in",
+      "every_day": "every day",
+      "every_week": "every week on",
+      "every_day_short": "every day",
+      "at": "at",
+      "add_comment": "comment",
+      "notify": "notify",
+      "archive": "archive the work item",
+      "add_to_cycle": "add to the active cycle",
+      "create_work_item": "create the work item",
+      "create_subtasks": "create {total} sub-work item(s):",
+      "add_to_module": "add to the module"
+    },
+    "runs": {
+      "empty": "This rule has not run yet.",
+      "only_after_save": "The run log appears after you save the rule.",
+      "status": {
+        "matched": "Ran",
+        "skipped": "Condition did not match",
+        "failed": "Failed"
+      },
+      "result": {
+        "aplicada": "applied",
+        "sem_efeito": "already like this",
+        "erro": "error"
+      }
+    },
+    "comment_placeholder": "What the comment should say. Use {{tarefa}}, {{responsável}}…",
+    "notify_placeholder": "The notice text (optional).",
+    "notify_email": "Also send by email",
+    "variables_hint": "Variables:",
+    "archive_hint": "Archives the work item. Only for completed or cancelled ones.",
+    "cycle_hint": "Adds the work item to the project's active cycle at run time.",
+    "notify_target": {
+      "assignees": "the assignees"
+    },
+    "schedule": {
+      "frequency": "Frequency",
+      "daily": "Every day",
+      "weekly": "Every week",
+      "time": "Time",
+      "weekdays": "On which days",
+      "weekdays_hint": "With nothing selected, it runs every day.",
+      "timezone_hint": "The time is in the project's timezone."
+    },
+    "weekday": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
+    },
+    "create_name_placeholder": "Name of the work item to create",
+    "subtask_placeholder": "Sub-work item name",
+    "add_subtask": "Add sub-work item",
+    "inherit_assignees": "Inherit assignees from the work item",
+    "due_in_days": "Due in (days)",
+    "create_idempotency_hint": "This rule creates the checklist once per work item. Firing again does not duplicate it.",
+    "include_recurring": "Also apply to recurring work items",
+    "include_recurring_hint": "By default, a recurring occurrence does not fire this rule — the series' source item is already configured.",
+    "recipes": {
+      "urgent_notify": "When it turns urgent, assign to whoever changed it",
+      "new_gets_label": "Every new work item gets a label",
+      "done_clears_due": "On completion, clear the priority",
+      "comment_reopens": "A comment reopens the work item",
+      "review_checklist": "On entering review, create the checklist",
+      "due_tomorrow": "Every morning, notify whoever has work due",
+      "heading": "Start from one of these",
+      "hint": "A recipe opens the editor pre-filled. What depends on your project — which state, which label — is left for you."
+    },
+    "pick_module": "Pick a module",
+    "module_hint": "The module is chosen here and always applies — unlike the cycle, which is resolved at run time."
   }
 }

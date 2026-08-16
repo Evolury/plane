@@ -5,6 +5,7 @@
 from django.urls import path
 
 from plane.app.views import (
+    AutomationViewSet,
     RecurringWorkItemViewSet,
     IssuePropertyViewSet,
     IssuePropertyOptionUsageViewSet,
@@ -215,5 +216,27 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/issue-property-values/",
         IssuePropertyValuesBulkViewSet.as_view({"get": "list"}),
         name="project-issue-property-values-bulk",
+    ),
+    # Evolury: automações personalizadas (ADR 0012). "simular" vem antes da
+    # rota com <uuid:pk> porque as duas competem pelo mesmo segmento.
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/automations/",
+        AutomationViewSet.as_view({"get": "list", "post": "create"}),
+        name="project-automations",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/automations/simulate/",
+        AutomationViewSet.as_view({"post": "simular"}),
+        name="project-automations-simulate",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/automations/<uuid:pk>/",
+        AutomationViewSet.as_view({"patch": "partial_update", "delete": "destroy"}),
+        name="project-automation",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/automations/<uuid:pk>/runs/",
+        AutomationViewSet.as_view({"get": "runs"}),
+        name="project-automation-runs",
     ),
 ]

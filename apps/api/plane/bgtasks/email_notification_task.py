@@ -191,7 +191,25 @@ def send_email_notification(issue_id, notification_data, receiver_id, email_noti
                 total_changes = total_changes + len(changes)
                 comment = changes.pop("comment", False)
                 mention = changes.pop("mention", False)
+                # Evolury: o aviso escrito por uma automação (ADR 0012).
+                #
+                # Vai para o bloco de mensagens, e não para a tabela de campos
+                # alterados, porque não é uma mudança de campo — é um texto que
+                # a regra escreveu para alguém ler. Sem este `pop` ele apareceria
+                # como um campo chamado "automation" com um valor solto ao lado.
+                automacao = changes.pop("automation", False)
                 actors_involved.append(actor_id)
+                if automacao:
+                    comments.append(
+                        {
+                            "actor_comments": automacao,
+                            "actor_detail": {
+                                "avatar_url": f"{base_api}{actor.avatar_url}",
+                                "first_name": actor.first_name,
+                                "last_name": actor.last_name,
+                            },
+                        }
+                    )
                 if comment:
                     comments.append(
                         {

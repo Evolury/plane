@@ -10,7 +10,7 @@ from typing import Callable, Iterable
 # Django imports
 from django.conf import settings
 from django.utils import timezone
-from django.db.models import F, Window, Subquery
+from django.db.models import F, Q, Window, Subquery
 from django.db.models.functions import RowNumber
 
 # Third party imports
@@ -18,6 +18,8 @@ from celery import shared_task
 
 # Module imports
 from plane.db.models import (
+    AutomationRun,
+    AutomationRunStatus,
     EmailNotificationLog,
     PageVersion,
     APIActivityLog,
@@ -155,6 +157,45 @@ def get_webhook_logs_queryset():
         .order_by("created_at")
         .values_list("id", flat=True)
         .iterator(chunk_size=BATCH_SIZE)
+    )
+
+
+def get_automation_runs_queryset():
+    """Evolury: execuções de automação fora da janela de retenção (ADR 0012).
+
+    Duas janelas, pelo motivo escrito em `settings.common`: a execução que fez
+    algo é o que se audita depois; a que parou na condição é volume, e responde
+    a uma pergunta que se faz enquanto se escreve a regra.
+
+    O que NÃO entra aqui é `AutomationCreation`. Ela parece log e não é: é a
+    garantia de idempotência da criação, e apagá-la por idade traria de volta
+    exatamente o defeito que ela existe para impedir — a regra recriaria o
+    checklist na próxima vez que a tarefa passasse pela mesma etapa. Ela se
+    limpa sozinha pelo caminho certo: `hard_delete` remove a tarefa de verdade
+    depois de `HARD_DELETE_AFTER_DAYS`, e o CASCADE leva as linhas junto.
+    """
+    agora = timezone.now()
+    corte_geral = agora - timedelta(days=settings.AUTOMATION_RUN_RETENTION_DAYS)
+    corte_das_puladas = agora - timedelta(days=settings.AUTOMATION_SKIPPED_RUN_RETENTION_DAYS)
+    logger.info(f"Automation runs cutoff: {corte_geral} (skipped: {corte_das_puladas})")
+
+    return (
+        AutomationRun.all_objects.filter(
+            Q(created_at__lte=corte_geral)
+            | Q(status=AutomationRunStatus.SKIPPED, created_at__lte=corte_das_puladas)
+        )
+        .values_list("id", flat=True)
+        .iterator(chunk_size=BATCH_SIZE)
+    )
+
+
+@shared_task
+def delete_automation_runs():
+    """Evolury: poda o registro de execuções das automações (ADR 0012)."""
+    process_cleanup_task(
+        queryset_func=get_automation_runs_queryset,
+        model=AutomationRun,
+        task_name="Automation Run",
     )
 
 

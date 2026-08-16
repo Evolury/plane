@@ -33,6 +33,9 @@ from .workspace import (
 # Evolury: etapas pessoais de "Minhas tarefas"
 from .work_stage import WorkStageSerializer, WorkStageIssueSerializer
 from .recurring_work_item import RecurringWorkItemSerializer
+
+# Evolury: automações personalizadas (ADR 0012)
+from .automation import AutomationSerializer, AutomationRunSerializer
 from .project import (
     ProjectSerializer,
     ProjectListSerializer,

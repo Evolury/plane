@@ -375,6 +375,11 @@ def _criar_ocorrencia(regra, previsto_para, agora):
         epoch=int(timezone.now().timestamp()),
         notification=True,
         origin=None,
+        # A ocorrência nasce de uma AGENDA, não de uma reação. Por padrão ela
+        # não acorda regra de "tarefa criada": a origem da recorrência já é um
+        # molde preenchido, e uma regra de nascimento brigaria com ele a cada
+        # ciclo. A regra que quiser o contrário liga `include_recurring`.
+        automacao_de_recorrencia=True,
     )
     return tarefa
 

@@ -6,6 +6,8 @@
 
 export * from "./ai";
 export * from "./analytics";
+// Evolury: automações personalizadas (ADR 0012)
+export * from "./automacao";
 export * from "./auth";
 export * from "./calendar";
 export * from "./chart";

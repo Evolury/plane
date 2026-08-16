@@ -42,6 +42,13 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.recurring_work_item_task.generate_recurring_work_items",
         "schedule": crontab(minute="*/15"),
     },
+    # Evolury: automações agendadas (ADR 0012). Mesma cadência da recorrência,
+    # e pelo mesmo motivo: a agenda tem horário, e "toda segunda às 8h" com um
+    # job diário seria "toda segunda, em algum momento".
+    "run-scheduled-automations-every-fifteen-minutes": {
+        "task": "plane.bgtasks.automation_task.rodar_automacoes_agendadas",
+        "schedule": crontab(minute="*/15"),
+    },
     # Occurs once every day
     "check-every-day-to-delete-hard-delete": {
         "task": "plane.bgtasks.deletion_task.hard_delete",
@@ -66,6 +73,13 @@ app.conf.beat_schedule = {
     "check-every-day-to-delete-email-notification-logs": {
         "task": "plane.bgtasks.cleanup_task.delete_email_notification_logs",
         "schedule": crontab(hour=2, minute=45),  # UTC 02:45
+    },
+    # Evolury: registro de execuções das automações (ADR 0012). Junto das
+    # outras podas, e pelo mesmo motivo: o log é a resposta a "por que não
+    # rodou?", e uma resposta que ninguém apaga vira uma tabela que só cresce.
+    "check-every-day-to-delete-automation-runs": {
+        "task": "plane.bgtasks.cleanup_task.delete_automation_runs",
+        "schedule": crontab(hour=2, minute=50),
     },
     "check-every-day-to-delete-page-versions": {
         "task": "plane.bgtasks.cleanup_task.delete_page_versions",
