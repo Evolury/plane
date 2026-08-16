@@ -109,28 +109,24 @@ Pela rede local ainda é preciso liberar a porta no firewalld — a interface da
 LAN fica na zona `FedoraWorkstation`, que não abre TCP alto; a `tailscale0` está
 na zona `trusted`, e por isso o tailnet funciona sem nada.
 
-## O seletor de filtros não abre no dev — e não é bug seu
+## Corrigido: o seletor de filtros e o `StrictMode`
 
-Clicar no funil do cabeçalho não abre nada com `pnpm dev`, e o console registra
-`Filters toggle error - filter instance not available`.
+Até 15/08/2026, clicar no funil não abria nada com `pnpm dev`, e o console
+registrava `Filters toggle error - filter instance not available`. O contorno
+era desligar o `StrictMode` — e está aqui porque a **causa** vale para qualquer
+recurso com ciclo de vida parecido.
 
-A causa é o `StrictMode` em `apps/web/app/entry.client.tsx`. O
-`WorkItemFiltersHOC` cria a instância de filtro num `useMemo` e a apaga no
-`cleanup` do `useEffect`. O `StrictMode` monta, desmonta e remonta: o `cleanup`
-apaga a instância, e o `useMemo` — que já rodou naquele fiber — não a recria.
+O `WorkItemFiltersHOC` criava a instância de filtro num `useMemo` e a apagava no
+`cleanup` do `useEffect`. O `StrictMode` monta, desmonta e remonta o **mesmo
+fiber**: o `cleanup` apagava a instância, e o `useMemo` — que já rodou naquele
+fiber — não a recriava. Sobrava uma referência órfã.
 
-**Só afeta desenvolvimento**: o `StrictMode` não duplica efeitos em produção.
+A correção é a regra geral: **`useMemo` não é dono de ciclo de vida.** Quem cria
+e destrói é o efeito, e quem renderiza lê o estado vivo em vez de uma referência
+memorizada. Hoje o efeito recria ao (re)montar e o componente lê a instância do
+store a cada renderização.
 
-Para validar qualquer coisa que dependa do seletor de filtros, troque
-
-```tsx
-<StrictMode>
-  <HydratedRouter />
-</StrictMode>
-```
-
-por `<HydratedRouter />`, valide, e **religue antes de cortar**. Confira com
-`git diff apps/web/app/entry.client.tsx` — vazio é o que se espera.
+Não precisa mais mexer no `entry.client.tsx` para validar filtro.
 
 ## Higiene: o que cada ação suja
 
