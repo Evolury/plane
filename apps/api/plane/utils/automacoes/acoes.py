@@ -440,6 +440,29 @@ def _notificar(tarefa, config, contexto):
         },
         "automation": {"id": str(contexto["automacao"].id), "name": contexto["automacao"].name},
     }
+    # A fila de e-mail só monta a mensagem para registros que tenham
+    # `issue_activity` — `create_payload` descarta os demais em silêncio. Sem
+    # esta parte, a linha entrava na fila e o e-mail saía vazio: a notificação
+    # aparecia no sino e não chegava à caixa de entrada, que é justamente o caso
+    # de quem não está com o produto aberto.
+    #
+    # `field` é "automation", e não "comment", porque não houve comentário na
+    # tarefa. `activity_time` é obrigatório: a montagem faz `pop` dele sem
+    # padrão, e a ausência derrubaria o envio do lote inteiro.
+    dados_de_email = {
+        **dados,
+        "issue_activity": {
+            "id": None,
+            "verb": "created",
+            "field": "automation",
+            "actor": str(contexto["ator_id"]),
+            "old_value": "",
+            "new_value": texto,
+            "old_identifier": None,
+            "new_identifier": None,
+            "activity_time": timezone.now().isoformat(),
+        },
+    }
 
     existentes = set(str(item) for item in User.objects.filter(pk__in=destinatarios).values_list("pk", flat=True))
     Notification.objects.bulk_create(
@@ -472,7 +495,7 @@ def _notificar(tarefa, config, contexto):
                     entity_name="issue",
                     entity="issue",
                     new_value=texto[:300],
-                    data=dados,
+                    data=dados_de_email,
                 )
                 for pessoa in existentes
             ],

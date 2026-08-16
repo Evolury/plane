@@ -452,6 +452,23 @@ class TestTravasDeLaco:
         assert regra.disabled_reason == "teste"
 
     @pytest.mark.django_db
+    def test_execucao_que_nao_casou_nao_conta_para_o_teto(self, projeto, workspace):
+        """O teto limita ESTRAGO. Uma edição em massa de 200 tarefas geraria 200
+        execuções puladas numa regra de condição estreita — e desligá-la seria
+        punir justamente a regra bem escrita, por não ter feito nada."""
+        from plane.bgtasks.automation_task import TETO_POR_HORA, _estourou_o_teto
+
+        regra = _regra(projeto, workspace)
+        AutomationRun.objects.bulk_create(
+            [
+                AutomationRun(automation=regra, workspace=workspace, status=AutomationRunStatus.SKIPPED)
+                for _ in range(TETO_POR_HORA * 2)
+            ]
+        )
+
+        assert _estourou_o_teto(regra) is False
+
+    @pytest.mark.django_db
     def test_execucao_antiga_nao_conta_para_o_teto(self, projeto, workspace):
         from plane.bgtasks.automation_task import TETO_POR_HORA, _estourou_o_teto
 

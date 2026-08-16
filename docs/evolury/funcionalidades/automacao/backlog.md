@@ -70,6 +70,21 @@ As três fases juntas são o v1 aprovado. Cada uma é publicável sozinha.
 - [ ] F3.8 Poda de `AutomationRun` e `AutomationCreation` antigos em
       `cleanup_task.py`, como os logs de API
 
+## Corrigido depois da auditoria de 16/08/2026
+
+Dois defeitos encontrados numa auditoria de completude, e não pelos testes —
+os dois eram promessas que o produto não cumpria:
+
+- [x] **O e-mail da ação "notificar" não saía.** `create_payload` só monta
+      mensagem para registro que tenha `issue_activity`, e descarta o resto em
+      silêncio. A carga do aviso passou a incluir a parte que falta, com
+      `field: "automation"`, e a montagem ganhou um `pop` próprio que a manda
+      para o bloco de mensagens em vez da tabela de campos alterados.
+- [x] **O teto por hora desligava regra que não escrevia nada.** A contagem
+      incluía as execuções que pararam na condição. Uma edição em massa de 200
+      tarefas desligava justamente as regras de condição estreita — as bem
+      escritas — por não terem feito nada.
+
 ## Dívidas conhecidas
 
 - [ ] A ação de módulo ficou de fora da F2.6: ciclo tem "o ativo agora", que é

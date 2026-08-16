@@ -21,21 +21,22 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 
 ## Recursos vizinhos
 
-| #   | Recurso existente              | Tratamento                                                                  | Verificação                              |
-| --- | ------------------------------ | --------------------------------------------------------------------------- | ---------------------------------------- |
-| 8   | Automações fixas (arquivar)    | Convivem: a lista nova fica abaixo das duas caixas                          | ✓ `[V]` captura da tela                  |
-| 9   | Tarefas recorrentes (ADR 0010) | Fronteira, não sobreposição: agendado + criar é recusado ao salvar          | ✓ `[T]` mensagem aponta para Recorrentes |
-| 9a  | Ocorrência de recorrência      | Não dispara regra de "tarefa criada" por padrão; interruptor por regra      | ✓ `[T]` padrão e interruptor             |
-| 9b  | Molde de recorrência           | Subtarefa por regra é recusada nele — mudaria todas as ocorrências futuras  | ✓ `[T]` recusa com motivo                |
-| 9c  | Tarefa criada por regra        | Nunca ganha recorrência, nem herda a da origem                              | ✓ `[T]` sem `RecurringWorkItem`          |
-| 10  | Filtro rico do quadro          | **É o mesmo componente e a mesma árvore** — não podem divergir              | ✓ `[V]` seletor abre no editor           |
-| 11  | Propriedades personalizadas    | Entram como gatilho e como condição sem código próprio                      | ✓ `[T]` condição por opção de seleção    |
-| 12  | Webhooks                       | Ações emitem atividade normal, então o webhook sai como sempre              | ✓ `[I]` caminho por `issue_activity`     |
-| 13  | Notificações                   | `notification=True` nas ações; a pessoa é avisada como em qualquer mudança  | ✓ `[I]`                                  |
-| 14  | Etapas pessoais (ADR 0001)     | Mudança de estado pela regra atravessa `sync_personal_stages_on_completion` | ✓ `[I]` mesmo funil                      |
-| 15  | Botão de concluir (ADR 0009)   | É uma mudança de estado — dispara regra de "campo alterado: estado"         | ✓ `[I]`                                  |
-| 16  | Lista de membros               | O robô é `is_bot` e já é excluído das listas por filtros existentes         | ✓ `[I]` `member__is_bot=False`           |
-| 17  | Histórico da tarefa            | A linha da automação aparece creditada a "Automação"                        | ✓ `[V]` `is_bot: true` no `actor_detail` |
+| #   | Recurso existente              | Tratamento                                                                   | Verificação                                     |
+| --- | ------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------- |
+| 8   | Automações fixas (arquivar)    | Convivem: a lista nova fica abaixo das duas caixas                           | ✓ `[V]` captura da tela                         |
+| 9   | Tarefas recorrentes (ADR 0010) | Fronteira, não sobreposição: agendado + criar é recusado ao salvar           | ✓ `[T]` mensagem aponta para Recorrentes        |
+| 9a  | Ocorrência de recorrência      | Não dispara regra de "tarefa criada" por padrão; interruptor por regra       | ✓ `[T]` padrão e interruptor                    |
+| 9b  | Molde de recorrência           | Subtarefa por regra é recusada nele — mudaria todas as ocorrências futuras   | ✓ `[T]` recusa com motivo                       |
+| 9c  | Tarefa criada por regra        | Nunca ganha recorrência, nem herda a da origem                               | ✓ `[T]` sem `RecurringWorkItem`                 |
+| 10  | Filtro rico do quadro          | **É o mesmo componente e a mesma árvore** — não podem divergir               | ✓ `[V]` seletor abre no editor                  |
+| 11  | Propriedades personalizadas    | Entram como gatilho e como condição sem código próprio                       | ✓ `[T]` condição por opção de seleção           |
+| 12  | Webhooks                       | Ações emitem atividade normal, então o webhook sai como sempre               | ✓ `[I]` caminho por `issue_activity`            |
+| 13  | Notificações                   | `notification=True` nas ações; a pessoa é avisada como em qualquer mudança   | ✓ `[I]`                                         |
+| 13a | Fila de e-mail                 | O aviso da regra é montável por `create_payload` e vai ao bloco de mensagens | ✓ `[T]` carga montada, `activity_time` presente |
+| 14  | Etapas pessoais (ADR 0001)     | Mudança de estado pela regra atravessa `sync_personal_stages_on_completion`  | ✓ `[I]` mesmo funil                             |
+| 15  | Botão de concluir (ADR 0009)   | É uma mudança de estado — dispara regra de "campo alterado: estado"          | ✓ `[I]`                                         |
+| 16  | Lista de membros               | O robô é `is_bot` e já é excluído das listas por filtros existentes          | ✓ `[I]` `member__is_bot=False`                  |
+| 17  | Histórico da tarefa            | A linha da automação aparece creditada a "Automação"                         | ✓ `[V]` `is_bot: true` no `actor_detail`        |
 
 ## Desempenho
 

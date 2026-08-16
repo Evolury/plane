@@ -60,8 +60,23 @@ GATILHO_DO_EVENTO = {
 
 
 def _estourou_o_teto(automacao) -> bool:
+    """Passou do teto de execuções que ESCREVERAM, na última hora.
+
+    A contagem exclui as que pararam na condição. O teto existe para limitar
+    estrago, e execução que não casou não escreveu nada — contá-la desligaria,
+    numa edição em massa, justamente as regras de condição estreita, que são as
+    bem escritas. E desligaria por não terem feito nada.
+
+    O custo de registrar as que não casaram continua existindo, mas é problema
+    de volume de log, resolvido por poda — não por desligar a regra.
+    """
     uma_hora_atras = timezone.now() - timedelta(hours=1)
-    return AutomationRun.objects.filter(automation=automacao, created_at__gte=uma_hora_atras).count() >= TETO_POR_HORA
+    return (
+        AutomationRun.objects.filter(automation=automacao, created_at__gte=uma_hora_atras)
+        .exclude(status=AutomationRunStatus.SKIPPED)
+        .count()
+        >= TETO_POR_HORA
+    )
 
 
 def _desligar(automacao, motivo):

@@ -255,6 +255,33 @@ class TestAcoesDaVoz:
         assert EmailNotificationLog.objects.filter(receiver=create_user).count() == 1
 
     @pytest.mark.django_db
+    def test_o_email_do_aviso_e_montavel(self, projeto, workspace, estados, create_user):
+        """A fila de e-mail descarta, em SILÊNCIO, registro sem `issue_activity`.
+
+        Sem isto a linha entrava na fila e o e-mail saía vazio: o aviso aparecia
+        no sino e não chegava à caixa de entrada — que é exatamente o caso de
+        quem não está com o produto aberto, e o motivo de a ação existir.
+        """
+        from plane.bgtasks.email_notification_task import create_payload
+        from plane.utils.automacoes.acoes import executar
+        from plane.utils.automacoes.ator import ator_da_automacao
+
+        tarefa = _tarefa(projeto, workspace, estados["aberta"])
+        regra = _agendada(projeto, workspace)
+        robo = ator_da_automacao(workspace.id)
+        contexto = {"ator_id": robo.id, "automacao": regra, "evento": {}, "profundidade": 0}
+
+        executar("notify", tarefa, {"users": [str(create_user.id)], "text": "Olha isto"}, contexto)
+
+        registro = EmailNotificationLog.objects.get(receiver=create_user)
+        montado = create_payload({str(robo.id): [registro.data]})
+
+        assert montado[str(robo.id)]["automation"]["new_value"] == ["Olha isto"]
+        # A montagem faz `pop` de `activity_time` sem padrão — a ausência
+        # derrubaria o envio do lote inteiro, e não só desta linha.
+        assert "activity_time" in montado[str(robo.id)]
+
+    @pytest.mark.django_db
     def test_notificar_sem_ninguem_nao_grava(self, projeto, workspace, estados):
         from plane.utils.automacoes.acoes import executar
         from plane.utils.automacoes.ator import ator_da_automacao
