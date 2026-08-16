@@ -3,6 +3,8 @@
 # See the LICENSE file for details.
 
 # Django imports
+from urllib.parse import urlparse
+
 from django.conf import settings
 from django.http import HttpRequest
 
@@ -13,6 +15,37 @@ from rest_framework.request import Request
 from plane.utils.ip_address import get_client_ip
 
 
+def _origem_do_pedido(request) -> str | None:
+    """A origem de QUEM chamou, quando ela é reconhecidamente nossa.
+
+    Evolury: existe para o ambiente de desenvolvimento, onde a mesma instância
+    é aberta por vários nomes — `localhost`, o IP da rede e o nome do tailnet.
+    O redirecionamento pós-login é montado pelo servidor a partir de um
+    endereço FIXO, então entrar por um nome e ser jogado noutro é o
+    comportamento padrão — e de outra máquina isso leva a um host que ela não
+    alcança.
+
+    Só age quando `TRUST_REQUEST_ORIGIN` está ligada, e mesmo assim só aceita
+    origem que já está na lista de CORS. Sem a variável — que é o caso de
+    produção — esta função não faz nada, e o comportamento é o de sempre.
+
+    A lista fechada é o ponto: redirecionar para uma origem arbitrária vinda do
+    pedido é a receita de redirecionamento aberto, e não é isso que se faz aqui.
+    """
+    if not getattr(settings, "TRUST_REQUEST_ORIGIN", False):
+        return None
+    origem = request.META.get("HTTP_ORIGIN") or None
+    if not origem:
+        referer = request.META.get("HTTP_REFERER")
+        if referer:
+            partes = urlparse(referer)
+            origem = f"{partes.scheme}://{partes.netloc}" if partes.netloc else None
+    if not origem:
+        return None
+    permitidas = set(getattr(settings, "CORS_ALLOWED_ORIGINS", []) or [])
+    return origem if origem in permitidas else None
+
+
 def base_host(
     request: Request | HttpRequest,
     is_admin: bool = False,
@@ -21,7 +54,7 @@ def base_host(
 ) -> str:
     """Utility function to return host / origin from the request"""
     # Calculate the base origin from request
-    base_origin = settings.WEB_URL or settings.APP_BASE_URL
+    base_origin = _origem_do_pedido(request) or settings.WEB_URL or settings.APP_BASE_URL
 
     # Admin redirection
     if is_admin:
@@ -55,6 +88,9 @@ def base_host(
 
     # App Redirection
     if is_app:
+        # Evolury: a origem do pedido, quando confiável, ganha do endereço fixo
+        if _origem_do_pedido(request):
+            return base_origin
         if settings.APP_BASE_URL:
             return settings.APP_BASE_URL
         else:
