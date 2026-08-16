@@ -171,6 +171,27 @@ Quem cobra aviso é a CI, com **orçamento por pacote**
 (`oxlint --max-warnings=N`). É lá que a dívida herdada pode encolher aos poucos:
 baixando o número quando um arquivo é limpo, em vez de exigir tudo de uma vez.
 
+## Chave de tradução que não existe
+
+O `sync-check` compara os idiomas **entre si**: ele pega chave que falta num e
+sobra no outro. Ele **não** pega a que não existe em lugar nenhum — essa aparece
+na tela como o próprio identificador (`common.save`), sem quebrar nada, sem
+alarme em teste e sem erro de compilação.
+
+Aconteceu aqui, e só foi visto olhando a tela. Por isso existe:
+
+```bash
+pnpm dlx tsx packages/i18n/scripts/chaves-usadas.ts
+```
+
+Ele varre as chamadas `t("a.b.c")` do código e confere contra o pt-BR, que é o
+idioma do produto (ADR 0004). Roda na CI junto com o `sync-check`. Chave montada
+em tempo de execução é ignorada de propósito: adivinhar o valor daria falso
+positivo, e verificação que dá falso positivo é verificação que se aprende a
+ignorar.
+
+Na primeira execução ele achou duas chaves inexistentes em código herdado.
+
 ## Depois de validar
 
 Apague o que você criou no `planedev`. Ele é ambiente compartilhado entre

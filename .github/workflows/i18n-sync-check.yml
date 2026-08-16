@@ -49,3 +49,9 @@ jobs:
 
       - name: Run sync check
         run: pnpm dlx tsx packages/i18n/scripts/sync-check.ts --ci
+
+      # Evolury: o sync-check compara os idiomas ENTRE SI e não pega a chave que
+      # não existe em lugar nenhum — ela aparece na tela como o próprio
+      # identificador, sem quebrar nada e sem alarme.
+      - name: Chaves usadas no código existem no pt-BR
+        run: pnpm dlx tsx packages/i18n/scripts/chaves-usadas.ts --ci
