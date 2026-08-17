@@ -30,6 +30,7 @@ import { cn } from "@plane/utils";
 import { IssuePropertyService } from "@/services/issue-property.service";
 // local imports
 import { IssuePropertyForm } from "./form";
+import { revalidarValoresDoProjeto } from "./store";
 
 const servico = new IssuePropertyService();
 
@@ -61,6 +62,7 @@ export const IssuePropertiesRoot = observer(function IssuePropertiesRoot(props: 
 
   const alternarAtiva = async (propriedade: TIssueProperty) => {
     await servico.update(workspaceSlug, projectId, propriedade.id, { is_active: !propriedade.is_active });
+    revalidarValoresDoProjeto(projectId);
     mutate();
   };
 
@@ -69,6 +71,7 @@ export const IssuePropertiesRoot = observer(function IssuePropertiesRoot(props: 
     setExcluindo(true);
     try {
       await servico.destroy(workspaceSlug, projectId, aExcluir.id);
+      revalidarValoresDoProjeto(projectId);
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("toast.success"), message: rotulo("toast.deleted") });
       mutate();
     } catch {

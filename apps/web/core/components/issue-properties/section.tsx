@@ -25,6 +25,7 @@ import { IssuePropertyService } from "@/services/issue-property.service";
 // Evolury: ícone da propriedade (ADR 0011)
 import { iconeDaPropriedade } from "./icones";
 import { PropertyValueEditor } from "./value-editor";
+import { revalidarValoresDoProjeto } from "./store";
 
 const servico = new IssuePropertyService();
 
@@ -59,6 +60,9 @@ export const IssuePropertiesSection = observer(function IssuePropertiesSection(p
     try {
       await servico.setValue(workspaceSlug, projectId, issueId, propriedadeId, valor);
       await mutate();
+      // O cartão lê de outra chave, do projeto inteiro — sem isto o valor só
+      // aparecia lá depois de recarregar a página.
+      revalidarValoresDoProjeto(projectId);
     } catch (erro) {
       const mensagem = (erro as Record<string, string>)?.value ?? t("common.something_went_wrong");
       setToast({ type: TOAST_TYPE.ERROR, title: t("toast.error"), message: String(mensagem) });
