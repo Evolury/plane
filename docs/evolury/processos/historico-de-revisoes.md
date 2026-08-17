@@ -21,6 +21,7 @@ seguinte começa do lugar errado e nada denuncia o erro.
 | **Releases pendentes**              | nenhuma                         |
 | **Exposições conhecidas em aberto** | nenhuma                         |
 | **Avisos com veredito**             | 22 de 22                        |
+| **Alertas de dependência abertos**  | 0 (triados em 16/08/2026)       |
 
 ---
 
@@ -62,6 +63,55 @@ cobertos e 1 não aplicável — o pendente foi fechado no mesmo dia.
 Também existem **17 identificadores em rascunho**, vistos em branches abertas do
 upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
 públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
+
+---
+
+## 16/08/2026 — alertas de dependência (Dependabot)
+
+Eixo diferente do resto deste arquivo: aqui não são avisos do Plane, são
+vulnerabilidades das **dependências**. Apareceram na saída do `git push` como
+"21 vulnerabilities (6 high, 10 moderate, 5 low)".
+
+**Vinte e um alertas, sete avisos, cinco pacotes.** O número assusta mais do que
+o problema: o Dependabot conta por manifesto, e o Django aparece cinco vezes por
+aviso porque está declarado em cinco arquivos de requirements.
+
+| Pacote            | Avisos                | Escopo              | Caminho existe aqui?                                       | Ação            |
+| ----------------- | --------------------- | ------------------- | ---------------------------------------------------------- | --------------- |
+| `django`          | 3 (2 médios, 1 baixo) | produção            | **Não**, os três                                           | 5.2.15 → 5.2.16 |
+| `react-router`    | 1 alto                | produção            | Não — o aviso é do modo RSC, que não usamos                | 7.18.1 → 7.18.2 |
+| `nanoid`          | 2 altos               | produção            | Improvável — exigem tamanho negativo ou zero vindo de fora | 3.3.8 → 3.3.18  |
+| `js-yaml`         | 1 alto                | produção            | Improvável — exige `!!omap` de origem não confiável        | 4.3.0 → 4.3.1   |
+| `brace-expansion` | 2 altos               | **desenvolvimento** | Não chega a produção                                       | 5.0.7 → 5.0.9   |
+
+Os três do Django foram conferidos **no nosso código**, e é onde estava o único
+risco que valia leitura:
+
+- `CVE-2026-48588` (middleware de cache pode expor resposta privada) — **não há
+  middleware de cache do Django** na configuração;
+- `CVE-2026-53877` (leitura além do heap em `GDALRaster`) — **GeoDjango não é
+  usado**;
+- `CVE-2026-53878` (`DomainNameValidator` aceita quebra de linha) — não é usado
+  diretamente; pode ser alcançado por dentro do próprio Django, e é o único dos
+  três que a atualização fecha por precaução real.
+
+Nenhum tinha caminho demonstrado, e todos foram corrigidos assim mesmo: são
+atualizações de correção, o custo é o de reinstalar, e "não tem caminho hoje" é
+uma afirmação sobre o código de hoje.
+
+As transitivas seguiram o padrão que o repositório já usa — `overrides` no
+`pnpm-workspace.yaml` fixando a versão corrigida.
+
+**Verificação:** 864 testes da API contra o Django 5.2.16, as 60 checagens do
+repositório, lint da API, e o **build completo** dos 16 alvos — este último
+porque `react-router` é dependência de execução das três aplicações web, e
+salto de roteador que só passa no compilador não prova nada.
+
+**Achado estrutural:** as duas checagens `Analyze` (CodeQL) falham com
+"Code Security must be enabled for this repository". Elas passavam no `main` no
+mesmo dia. Enquanto estiver assim, não há varredura de código nos PRs — e todo
+PR nasce com dois vermelhos, o que ensina a ignorar vermelho. Fica como pendência
+do dono do repositório, não do código.
 
 ---
 
