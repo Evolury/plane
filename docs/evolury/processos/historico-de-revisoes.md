@@ -14,15 +14,16 @@ seguinte começa do lugar errado e nada denuncia o erro.
 
 ## Estado atual
 
-|                                     |                                 |
-| ----------------------------------- | ------------------------------- |
-| **Última release revisada**         | `v1.4.1` (upstream, 07/08/2026) |
-| **Data da última revisão**          | 14/08/2026                      |
-| **Releases pendentes**              | nenhuma                         |
-| **Exposições conhecidas em aberto** | nenhuma                         |
-| **Avisos com veredito**             | 22 de 22                        |
-| **Alertas de dependência abertos**  | 0 (16/08/2026)                  |
-| **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026   |
+|                                     |                                                       |
+| ----------------------------------- | ----------------------------------------------------- |
+| **Última release revisada**         | `v1.4.1` (upstream, 07/08/2026)                       |
+| **Data da última revisão**          | 17/08/2026                                            |
+| **Releases pendentes**              | nenhuma                                               |
+| **Branches de segurança revisadas** | `secur-243`, `-245`, `-247`, `-248` — corrigidas      |
+| **Exposições conhecidas em aberto** | `secur-236` (paginação e força bruta) — não analisada |
+| **Avisos com veredito**             | 22 de 22                                              |
+| **Alertas de dependência abertos**  | 0 (16/08/2026)                                        |
+| **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026                         |
 
 ---
 
@@ -64,6 +65,81 @@ cobertos e 1 não aplicável — o pendente foi fechado no mesmo dia.
 Também existem **17 identificadores em rascunho**, vistos em branches abertas do
 upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
 públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
+
+---
+
+## 17/08/2026 — as branches de segurança abertas do upstream
+
+**Sem release nova.** O `master` do upstream continua em `v1.4.1`, e a lista de
+avisos publicados continua em 22 — os mesmos já com veredito. Se a revisão
+tivesse parado aí, teria terminado com "nada a fazer".
+
+O que rendeu foi o outro canal, o que o método chama de identificadores em
+rascunho: **cinco branches `secur-*` abertas no upstream**, com correções ainda
+não mescladas nem divulgadas. Cada uma aponta um ponto do código; nenhuma diz o
+que fazer no nosso.
+
+Método em todas: **medir antes de corrigir**. Uma sonda descartável reproduz o
+ataque contra a nossa base, imprime o que passou, e só então se escreve a
+correção — depois a mesma sonda vira teste permanente. Foi o que evitou
+exagerar (várias leituras que pareciam vazar devolviam lista vazia) e o que
+impediu subestimar (o aviso citava uma rota; havia dezoito com a mesma forma).
+
+| Branch deles | O que era                             | O que medimos aqui                                                    | Nossa correção                   |
+| ------------ | ------------------------------------- | --------------------------------------------------------------------- | -------------------------------- |
+| `secur-245`  | `/convert-document/` sem autenticação | rota do Live aberta a qualquer um                                     | `@Middleware(requireSecretKey)`  |
+| `secur-245`  | SSRF no renderizador de PDF           | `src` de imagem buscava metadados da nuvem, serviço do Docker e disco | guarda `imagemEhSegura`          |
+| `secur-248`  | PUT de projeto sem autorização        | **6 escritas** de fora do projeto, não 1                              | 13 rotas PUT removidas + guardas |
+| `secur-247`  | POST não escopado ao projeto          | publicou quadro alheio na web; arquivou projeto alheio                | atalho só quando não há projeto  |
+| `secur-243`  | IDOR em sub-recursos de tarefa        | 6 escritas e 1 leitura na tarefa de outro projeto, nas duas APIs      | amarração no mixin compartilhado |
+
+### Onde não seguimos o caminho deles
+
+Duas divergências deliberadas, ambas por medição:
+
+**`secur-248`.** Eles acrescentaram um `update` protegido ao `ProjectViewSet`.
+Nós removemos os treze mapeamentos `"put": "update"` da app API, porque a
+varredura mostrou que **nenhum viewset da app API define `update`** — o verbo
+era rota para código que ninguém escreveu, e o aviso citava só um dos treze. A
+ausência de rota não depende de alguém lembrar de decorar nada. Nenhum cliente
+usava: os dois únicos métodos PUT do frontend eram código morto.
+
+Consequência a registrar: **PUT nessas rotas responde 405 aqui e 200 lá.** Quem
+integrar pela app API precisa usar PATCH — que é o que o nosso frontend sempre
+usou.
+
+**`secur-243`.** Eles emendaram `comment.py` e `relation.py`. Nós pusemos a
+regra num mixin das duas classes base, do app e da API pública, porque a sonda
+mostrou o mesmo furo em treze rotas e nas duas portas. A regra é uma só; escrita
+vinte e cinco vezes, seria escrita vinte e quatro vezes certo.
+
+### O que a comparação com eles encontrou no nosso código
+
+O último commit da `secur-245` deles diz _"judge IPv6 literals on their expanded
+form"_ — eles corrigiram o próprio guarda depois de publicá-lo. Fomos conferir:
+o nosso julgava IPv6 por prefixo de texto. **Não estava furado** — o `new URL`
+canonicaliza o host antes, e todos os disfarces chegavam comprimidos —, mas a
+função é exportada e parecia correta por causa de uma normalização que nada no
+código prometia. Passou a normalizar sozinha.
+
+Vale o registro do jeito que aconteceu: a correção veio de ler o histórico
+**deles depois do commit que a gente já tinha copiado a ideia**, não de revisar
+o nosso de novo.
+
+### O que ficou de fora
+
+**`secur-236/appscan-ce-hardening`** — limites de paginação e freio de força
+bruta na autenticação. Não foi analisada nesta revisão. Não é exposição
+demonstrada: é uma branch cujo conteúdo ainda não foi medido contra a nossa
+base. Fica na âncora como pendência nomeada, e não como "nenhuma".
+
+### Defeito no próprio método, corrigido
+
+O passo 2b mandava `git tag --list 'v*' --sort=creatordate --merged
+upstream/master`. Desde que passamos a versionar com o mesmo prefixo `v`, esse
+comando mistura as nossas tags com as deles e **listou as nossas 1.x como se
+fossem releases do upstream a revisar**. Trocado por `git ls-remote --tags
+upstream`, que pergunta ao remoto o que existe lá.
 
 ---
 
