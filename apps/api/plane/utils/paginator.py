@@ -656,6 +656,16 @@ class BasePaginator:
         if per_page > max_per_page:
             raise ParseError(detail=f"Invalid per_page value. Cannot exceed {max_per_page}.")
 
+        # Evolury: zero e negativo também são inválidos, e faltavam.
+        #
+        # O teto e o não numérico já eram recusados com 400; `per_page=0` e
+        # `per_page=-1` passavam por aqui e quebravam lá adiante, no paginador,
+        # virando 500 "Something went wrong please try again later" — que o
+        # cliente lê como falha do servidor e reenvia. Medido nas duas formas
+        # antes desta linha.
+        if per_page < 1:
+            raise ParseError(detail="Invalid per_page value. Must be at least 1.")
+
         return per_page
 
     def paginate(

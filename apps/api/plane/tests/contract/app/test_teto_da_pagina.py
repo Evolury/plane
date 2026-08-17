@@ -150,3 +150,32 @@ class TestAPaginacaoContinuaFuncionando:
         assert len(vistas[0]) == TETO_DE_PAGINA
         assert len(vistas[1]) == TETO_DE_PAGINA
         assert not (vistas[0] & vistas[1]), "a segunda página repetiu a primeira"
+
+
+@pytest.mark.contract
+class TestPerPageNaoPositivo:
+    """`per_page=0` e negativos respondiam 500.
+
+    O não numérico e o acima do teto já eram recusados com 400; zero e negativo
+    passavam por `get_per_page` e quebravam lá adiante, no paginador, virando
+    "Something went wrong please try again later" — que o cliente lê como falha
+    do servidor e reenvia, transformando erro de parâmetro em carga repetida.
+
+    Encontrado na revisão do upstream, no PR #9429 que a branch `secur-236`
+    adiou.
+    """
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("per_page", [0, -1, -100])
+    def test_recusa_com_400_em_vez_de_estourar(self, cliente, workspace, projeto_cheio, per_page):
+        resposta = cliente.get(
+            url(workspace.slug, projeto_cheio.id), {"group_by": "priority", "per_page": per_page}
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+
+    @pytest.mark.django_db
+    def test_uma_linha_por_pagina_continua_valendo(self, cliente, workspace, projeto_cheio):
+        """O menor valor legítimo é 1, e ele não pode ter sido levado junto."""
+        resposta = cliente.get(url(workspace.slug, projeto_cheio.id), {"group_by": "priority", "per_page": 1})
+        assert resposta.status_code == status.HTTP_200_OK, resposta.data
+        assert linhas_do_grupo(resposta) == 1
