@@ -415,6 +415,20 @@ class TestValidacao:
         assert "Condição inválida" in str(erro.value)
 
     @pytest.mark.django_db
+    def test_a_recusa_e_uma_frase_e_nao_a_estrutura_do_drf(self, projeto):
+        """O ADR diz "recusada com uma frase". `str(detail)` entregava o `repr`
+        do dicionário do DRF, com `ErrorDetail(...)` vazando para a tela de quem
+        só queria saber o que digitou errado."""
+        with pytest.raises(Exception) as erro:
+            validar_condicao({"campo_inventado": ["x"]})
+        # `detail` é o que o DRF serializa para o cliente; `str()` da exceção
+        # sempre dá o `repr` e não diz nada sobre o que a tela recebe.
+        mensagem = str(erro.value.detail["condition"])
+        assert "ErrorDetail" not in mensagem
+        assert "campo_inventado" in mensagem
+        assert mensagem.startswith("Condição inválida:")
+
+    @pytest.mark.django_db
     def test_estado_de_outro_projeto_e_recusado(self, projeto, workspace, create_user):
         vizinho = Project.objects.create(
             name="Vizinho", identifier="VIZ", workspace=workspace, project_lead=create_user
