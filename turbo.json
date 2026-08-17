@@ -67,7 +67,8 @@
     "dev": {
       "cache": false,
       "dependsOn": ["^build"],
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["DEV_HOST"]
     },
     "fix": {
       "cache": false,
