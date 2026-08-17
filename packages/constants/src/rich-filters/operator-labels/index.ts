@@ -16,7 +16,7 @@ import {
 /**
  * Empty operator label for unselected state
  */
-export const EMPTY_OPERATOR_LABEL = "--";
+export const EMPTY_OPERATOR_LABEL = "common.rich_filters.operators.empty";
 
 /**
  * Complete operator labels mapping - combines core, extended, and negated labels

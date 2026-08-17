@@ -929,7 +929,16 @@
     "sub_group_by": "Subagrupar por",
     "week_number": "Semana {number}",
     "duration_in_days": "{count, plural, one {# dia} other {# dias}}",
-    "week_short": "S{number}"
+    "week_short": "S{number}",
+    "rich_filters": {
+      "operators": {
+        "is": "é",
+        "is_any_of": "é um de",
+        "between": "entre",
+        "contains": "contém",
+        "empty": "--"
+      }
+    }
   },
   "chart": {
     "x_axis": "Eixo X",

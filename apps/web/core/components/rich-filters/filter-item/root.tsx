@@ -26,6 +26,7 @@ import { FilterItemContainer } from "./container";
 import { InvalidFilterItem } from "./invalid";
 import { FilterItemLoader } from "./loader";
 import { FilterItemProperty } from "./property";
+import { useTranslation } from "@plane/i18n";
 
 export interface IFilterItemProps<P extends TFilterProperty, E extends TExternalFilter> {
   condition: TFilterConditionNodeForDisplay<P, TFilterValue>;
@@ -38,14 +39,18 @@ export const FilterItem = observer(function FilterItem<P extends TFilterProperty
   props: IFilterItemProps<P, E>
 ) {
   const { condition, filter, isDisabled = false, showTransition = true } = props;
+  // Evolury: o rótulo do operador vem como CHAVE de tradução (ver o mapa em
+  // `@plane/constants`), e quem traduz é quem desenha. Rótulo personalizado
+  // definido numa config passa direto: chave inexistente volta como ela mesma.
+  const { t } = useTranslation();
   // derived values
   const filterConfig = condition?.property ? filter.configManager.getConfigByProperty(condition.property) : undefined;
   const operatorOptions = filterConfig
     ?.getAllDisplayOperatorOptionsByValue(condition.value as TFilterValue)
     .map((option) => ({
       value: option.value,
-      content: option.label,
-      query: option.label.toLowerCase(),
+      content: t(option.label),
+      query: t(option.label).toLowerCase(),
     }));
   const selectedOperatorFieldConfig = filterConfig?.getOperatorConfig(condition.operator);
   const selectedOperatorOption = filterConfig?.getDisplayOperatorByValue(
@@ -110,7 +115,7 @@ export const FilterItem = observer(function FilterItem<P extends TFilterProperty
         disabled={isOperatorSelectionDisabled}
         customButton={
           <div className="flex h-full items-center" aria-disabled={isOperatorSelectionDisabled}>
-            {filterConfig.getLabelForOperator(selectedOperatorOption)}
+            {t(filterConfig.getLabelForOperator(selectedOperatorOption))}
           </div>
         }
       />

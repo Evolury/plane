@@ -929,7 +929,16 @@
     "sub_group_by": "Sub-group by",
     "week_number": "Week {number}",
     "duration_in_days": "{count, plural, one {# day} other {# days}}",
-    "week_short": "W{number}"
+    "week_short": "W{number}",
+    "rich_filters": {
+      "operators": {
+        "is": "is",
+        "is_any_of": "is any of",
+        "between": "between",
+        "contains": "contains",
+        "empty": "--"
+      }
+    }
   },
   "chart": {
     "x_axis": "X-axis",

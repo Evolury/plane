@@ -60,6 +60,21 @@ O `turbo run dev` já sobe o watcher de cada pacote. O `build` manual apaga o
 `dist` que o Vite está segurando, e a tela vira um overlay vermelho que não tem
 nada a ver com a mudança em análise.
 
+**E `pnpm check` também apaga.** A armadilha não é só o `build` digitado à
+mão: o `check:types` do turbo depende de `^build`, então rodar a verificação
+completa com o dev no ar apaga o `dist` do mesmo jeito. Aconteceu em 17/08/2026,
+e o sintoma é o mesmo — `Failed to load url .../dist/index.js`.
+
+A recuperação tem um detalhe que custa tempo: **reiniciar o dev não basta**. O
+watcher do `tsdown` reconstrói o que mudou, e se nada mudou no pacote ele
+regenera só os tipos — o `dist/index.js` continua faltando. E `turbo run build`
+responde "FULL TURBO", porque para o turbo a saída está em cache. O caminho é:
+
+```bash
+# com o dev PARADO
+pnpm turbo run build --filter=web^... --force
+```
+
 **Salvar o arquivo basta.** Conferido em 14/08/2026: editar
 `packages/types/src/…` reconstruiu o `dist` sozinho, sem nenhum comando.
 
