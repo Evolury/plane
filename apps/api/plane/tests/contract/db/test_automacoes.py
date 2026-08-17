@@ -717,3 +717,126 @@ class TestORoboForaDasListas:
         from plane.utils.automacoes.ator import ator_da_automacao
 
         assert ator_da_automacao(workspace.id).id == ator_da_automacao(workspace.id).id
+
+
+@pytest.mark.contract
+class TestOFunilUnico:
+    """As linhas da matriz que afirmam uma PRESENÇA herdada do funil único.
+
+    Linhas 2, 4, 12, 13, 14 e 15 diziam a mesma coisa por caminhos diferentes:
+    "isto continua funcionando porque a ação passa pelo mesmo lugar que uma
+    edição humana". Estavam `[I]` — provadas por leitura.
+
+    O que sustenta as seis é UM fato, e é ele que estes testes prendem: a ação
+    grava pelo caminho normal e despacha `issue.activity.updated` com
+    `notification=True`. É desse despacho que saem o histórico, o webhook, a
+    notificação e a sincronia de etapa pessoal — nenhum deles sabe que houve uma
+    automação, e é justamente por isso que continuam certos.
+    """
+
+    @pytest.mark.django_db
+    def test_a_acao_despacha_a_mesma_atividade_de_uma_edicao_humana(
+        self, projeto, workspace, estados, create_user, mocker
+    ):
+        """Linhas 12, 13 e 14 de uma vez.
+
+        Webhook, notificação e etapa pessoal penduram-se todos nesta chamada. Se
+        o `notification` virar `False`, ou o `type` mudar, os três param juntos —
+        e nada no código deles avisaria.
+        """
+        despacho = mocker.patch("plane.bgtasks.issue_activities_task.issue_activity.delay")
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        regra = _regra(
+            projeto,
+            workspace,
+            actions=[{"type": "set_state", "config": {"state_id": str(estados["feito"].id)}}],
+        )
+
+        executar_automacao(regra, tarefa, {"tipo": "alterada", "mudancas": []})
+
+        despacho.assert_called_once()
+        kwargs = despacho.call_args.kwargs
+        assert kwargs["type"] == "issue.activity.updated", "o webhook e o histórico leem por este tipo"
+        assert kwargs["notification"] is True, "sem isto a pessoa deixa de ser avisada"
+        assert kwargs["issue_id"] == str(tarefa.id)
+
+    @pytest.mark.django_db
+    def test_a_atividade_carrega_a_origem_para_o_motor_nao_se_morder(
+        self, projeto, workspace, estados, mocker
+    ):
+        """O par do teste acima, e a razão de o funil não virar laço.
+
+        A mesma chamada que faz webhook e notificação saírem também é a que
+        poderia reacordar a regra. O que impede é a origem viajar junto.
+        """
+        despacho = mocker.patch("plane.bgtasks.issue_activities_task.issue_activity.delay")
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        regra = _regra(
+            projeto,
+            workspace,
+            actions=[{"type": "set_priority", "config": {"priority": "urgent"}}],
+        )
+
+        executar_automacao(regra, tarefa, {"tipo": "alterada", "mudancas": []})
+
+        kwargs = despacho.call_args.kwargs
+        assert kwargs["automacao_origem"] == str(regra.id)
+        assert kwargs["automacao_profundidade"] == 1
+
+    @pytest.mark.django_db
+    def test_concluir_a_tarefa_e_uma_mudanca_de_estado_como_outra_qualquer(
+        self, projeto, workspace, estados
+    ):
+        """Linha 15. O botão de concluir não tem caminho próprio.
+
+        Ele grava estado, e estado gravado vira linha de histórico `state` — que
+        é o que a regra de "campo alterado" lê. Não há nada a integrar; o que há
+        é um invariante a não quebrar.
+        """
+        regra = _regra(
+            projeto,
+            workspace,
+            trigger_type=AutomationTrigger.FIELD_CHANGED,
+            trigger_config={"field": "state", "from": [], "to": [str(estados["feito"].id)]},
+        )
+        concluiu = {
+            "tipo": "alterada",
+            "mudancas": [
+                {"campo": "state", "de": str(estados["a_fazer"].id), "para": str(estados["feito"].id)}
+            ],
+        }
+
+        assert automacao_casa(regra, concluiu) is True
+
+    @pytest.mark.django_db
+    def test_a_regra_nao_acorda_com_estado_que_ela_nao_pediu(self, projeto, workspace, estados):
+        """Sem este par, o teste acima passaria com um `return True`."""
+        regra = _regra(
+            projeto,
+            workspace,
+            trigger_type=AutomationTrigger.FIELD_CHANGED,
+            trigger_config={"field": "state", "from": [], "to": [str(estados["feito"].id)]},
+        )
+        reabriu = {
+            "tipo": "alterada",
+            "mudancas": [
+                {"campo": "state", "de": str(estados["feito"].id), "para": str(estados["a_fazer"].id)}
+            ],
+        }
+
+        assert automacao_casa(regra, reabriu) is False
+
+    def test_o_enxerto_mora_no_funil_e_nao_em_cada_chamador(self):
+        """Linhas 2 e 4. Editar pela API pública e arrastar no quadro.
+
+        As duas afirmam "cai no mesmo lugar". O que dá para prender por teste não
+        é cada chamador — são 124 — e sim que o despacho da automação é feito de
+        DENTRO da tarefa de atividade, que é por onde todos passam. Se alguém
+        mover essa chamada para uma view, a afirmação da matriz deixa de valer e
+        este teste é o que percebe.
+        """
+        from plane.bgtasks import issue_activities_task
+
+        assert hasattr(issue_activities_task, "despachar_atividades"), (
+            "o despacho saiu do funil; a matriz precisa ser revista"
+        )

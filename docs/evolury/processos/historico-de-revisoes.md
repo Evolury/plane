@@ -21,7 +21,7 @@ seguinte começa do lugar errado e nada denuncia o erro.
 | **Releases pendentes**              | nenhuma                                               |
 | **Branches de segurança revisadas** | as cinco: `secur-236`, `-243`, `-245`, `-247`, `-248` |
 | **Exposições conhecidas em aberto** | nenhuma                                               |
-| **Pistas nomeadas, não analisadas** | PRs #9429 e #9335 do upstream (freio de força bruta)  |
+| **Pistas nomeadas, não analisadas** | nenhuma                                               |
 | **Avisos com veredito**             | 22 de 22                                              |
 | **Alertas de dependência abertos**  | 0 (16/08/2026)                                        |
 | **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026                         |
@@ -110,9 +110,22 @@ Duas divergências, as duas por medição:
 
 O último commit da branch deles diz: _"drop overlapping per_page + auth fixes,
 defer to #9429 / #9335"_. O freio de força bruta na autenticação — que era a
-outra metade do título da branch — **saiu dela** e foi para esses dois PRs, cujo
-conteúdo não foi analisado aqui. Fica na âncora como pista nomeada, e não como
-"nenhuma": é a diferença entre não haver nada e não termos olhado.
+outra metade do título da branch deles — **saiu dela** e foi para esses dois PRs.
+
+**Os dois foram analisados no mesmo dia, e os dois eram falha real aqui**
+(publicados na 1.20.0):
+
+- **#9429** — `per_page` zero ou negativo respondia 500. O teto e o valor não
+  numérico já eram recusados com 400; esses dois passavam e quebravam no
+  paginador. Um 500 é pior que um 400 no mesmo lugar, porque o cliente o lê como
+  falha do servidor e reenvia.
+
+- **#9335** — as quatro views de senha estendem `django.views.View`, e o freio do
+  DRF só roda dentro de `APIView.initial()`. Medido: **30 tentativas seguidas de
+  senha errada sem bloqueio**. Com o freio, a 11ª é recusada — e conferido em
+  produção depois do deploy, onde barrou na 10ª.
+
+A âncora deixou de listá-los como pista pendente
 
 ### Lição de método, dolorosa
 
