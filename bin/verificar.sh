@@ -56,6 +56,9 @@ passo "chaves usadas no código" pnpm dlx tsx packages/i18n/scripts/chaves-usada
 if [ $RAPIDO -eq 0 ]; then
   passo "build" pnpm build
   passo "testes da API" bash bin/testes-api.sh -q
+  # Evolury: os testes de JavaScript entraram aqui junto com o job da CI — a
+  # verificação local tem de fazer as mesmas perguntas que barram um PR.
+  passo "testes de JavaScript" pnpm turbo run test
 fi
 
 echo
