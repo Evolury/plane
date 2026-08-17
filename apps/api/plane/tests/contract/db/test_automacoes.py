@@ -298,6 +298,22 @@ class TestAcoes:
         assert tarefa.state_id == estados["feito"].id
 
     @pytest.mark.django_db
+    def test_detalhe_de_etiqueta_mostra_nomes(self, projeto, workspace, estados):
+        """Contagem responde "quantas"; a pergunta de quem lê o log é "quais"."""
+        nova = Label.objects.create(name="urgente", project=projeto, workspace=workspace)
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        regra = _regra(
+            projeto,
+            workspace,
+            actions=[{"type": "set_labels", "config": {"mode": "add", "labels": [str(nova.id)]}}],
+        )
+
+        executar_automacao(regra, tarefa, {"tipo": "alterada", "mudancas": []})
+
+        detalhe = AutomationRun.objects.get(automation=regra).actions_result[0]["detalhe"]
+        assert detalhe == "— → urgente"
+
+    @pytest.mark.django_db
     def test_etiqueta_e_somada_sem_perder_as_que_ja_estavam(self, projeto, workspace, estados):
         antiga = Label.objects.create(name="antiga", project=projeto, workspace=workspace)
         nova = Label.objects.create(name="nova", project=projeto, workspace=workspace)

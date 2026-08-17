@@ -17,8 +17,8 @@ from rest_framework.response import Response
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.automation import AutomationRunSerializer, AutomationSerializer
 from plane.app.views.base import BaseViewSet
-from plane.db.models import Automation, Workspace
-from plane.utils.automacoes.agenda import reagendar
+from plane.db.models import Automation, AutomationTrigger, Workspace
+from plane.utils.automacoes.agenda import proxima_execucao, reagendar
 from plane.utils.automacoes.condicao import CondicaoInvalida, tarefas_que_casam
 
 #: Teto da leitura do log. O registro é grande por natureza — uma regra ativa
@@ -115,6 +115,27 @@ class AutomationViewSet(BaseViewSet):
                     {"id": str(item["id"]), "name": item["name"], "sequence_id": item["sequence_id"]}
                     for item in amostra
                 ],
+                # Para a regra agendada, "quantas casam" só responde metade: a
+                # outra metade é QUANDO. Calculado aqui, pelo mesmo código do
+                # motor — refazer a conta em JavaScript daria duas respostas
+                # possíveis para a mesma pergunta, e o fuso é do projeto.
+                "proxima_execucao": self._proxima_execucao(project_id, request.data.get("trigger_config")),
             },
             status=status.HTTP_200_OK,
         )
+
+    def _proxima_execucao(self, project_id, trigger_config):
+        """Quando a regra agendada rodaria, se fosse salva assim agora.
+
+        Trabalha sobre uma regra de rascunho, não gravada: quem está montando a
+        regra ainda não a salvou, e é exatamente aí que a pergunta importa.
+        """
+        if not trigger_config:
+            return None
+        rascunho = Automation(
+            project_id=project_id,
+            trigger_type=AutomationTrigger.SCHEDULED,
+            trigger_config=trigger_config,
+        )
+        proxima = proxima_execucao(rascunho)
+        return proxima.isoformat() if proxima else None

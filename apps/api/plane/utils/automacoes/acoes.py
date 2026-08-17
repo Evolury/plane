@@ -34,7 +34,7 @@ from django.utils import timezone
 from django.utils.html import escape
 
 # Module imports
-from plane.db.models import Issue, IssueProperty, State
+from plane.db.models import Issue, IssueProperty, Label, State, User
 from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
 from plane.utils.automacoes.variaveis import aplicar as aplicar_variaveis
 from plane.utils.issue_properties import (
@@ -197,6 +197,17 @@ def _pessoas_especiais(config, tarefa, contexto):
     return pessoas
 
 
+def _nomes(modelo, ids, campo="display_name"):
+    """Ids → nomes, na ordem em que vieram.
+
+    O registro de execuções é tela para PESSOA ler: "1 → 2 responsável(is)" diz
+    quantos, e a pergunta de quem lê é QUEM. É a mesma correção já feita no
+    detalhe do estado.
+    """
+    tabela = dict(modelo.objects.filter(pk__in=list(ids)).values_list("pk", campo))
+    return [str(tabela.get(_como_uuid(i), "—")) for i in ids]
+
+
 def _nova_lista(atuais, pedidos, modo):
     """Aplica o modo sobre a lista atual. Devolve `None` quando nada muda."""
     atuais_txt = [str(item) for item in atuais]
@@ -233,7 +244,7 @@ def _mudar_responsaveis(tarefa, config, contexto):
         {"assignee_ids": [str(item) for item in atuais]},
         contexto,
         "set_assignees",
-        f"{len(atuais)} → {len(nova)} responsável(is)",
+        f"{', '.join(_nomes(User, atuais)) or '—'} → {', '.join(_nomes(User, nova)) or '—'}",
     )
 
 
@@ -254,7 +265,7 @@ def _mudar_etiquetas(tarefa, config, contexto):
         {"label_ids": [str(item) for item in atuais]},
         contexto,
         "set_labels",
-        f"{len(atuais)} → {len(nova)} etiqueta(s)",
+        f"{', '.join(_nomes(Label, atuais, 'name')) or '—'} → {', '.join(_nomes(Label, nova, 'name')) or '—'}",
     )
 
 

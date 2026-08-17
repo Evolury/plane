@@ -32,11 +32,13 @@ import type {
   TAutomation,
   TAutomationAction,
   TAutomationPayload,
+  TAutomationSimulation,
   TAutomationTrigger,
   TAutomationTriggerConfig,
   TWorkItemFilterExpression,
 } from "@plane/types";
 import { Input, ToggleSwitch } from "@plane/ui";
+import { renderFormattedDate } from "@plane/utils";
 import { AutomationService } from "@/services/automation.service";
 import { AcoesDaAutomacao } from "./acoes";
 import { CondicaoDaAutomacao } from "./condicao";
@@ -108,7 +110,7 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
   );
   const [incluirRecorrentes, setIncluirRecorrentes] = useState(regra?.include_recurring ?? false);
   const [salvando, setSalvando] = useState(false);
-  const [simulacao, setSimulacao] = useState<number | undefined>(undefined);
+  const [simulacao, setSimulacao] = useState<TAutomationSimulation | undefined>(undefined);
   const [aba, setAba] = useState<"editar" | "execucoes">("editar");
 
   // A regra chega depois da primeira renderização (a lista é carregada por SWR).
@@ -127,12 +129,17 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
 
   const simular = useCallback(async () => {
     try {
-      const resposta = await servico.simulate(workspaceSlug, projectId, mostrarCondicao ? condicao : null);
-      setSimulacao(resposta.total);
+      const resposta = await servico.simulate(
+        workspaceSlug,
+        projectId,
+        mostrarCondicao ? condicao : null,
+        trigger === AUTOMATION_TRIGGER.SCHEDULED ? triggerConfig : undefined
+      );
+      setSimulacao(resposta);
     } catch {
       setToast({ type: TOAST_TYPE.ERROR, title: t("toast.error"), message: t("common.something_went_wrong") });
     }
-  }, [workspaceSlug, projectId, condicao, mostrarCondicao, t]);
+  }, [workspaceSlug, projectId, condicao, mostrarCondicao, trigger, triggerConfig, t]);
 
   const salvar = async () => {
     if (!nome.trim()) {
@@ -266,7 +273,15 @@ export const EditorDeAutomacao = observer(function EditorDeAutomacao(props: TPro
               <div className="flex items-center gap-2">
                 {simulacao !== undefined && (
                   <span className="text-12 text-tertiary">
-                    {t("automations.simulate.result", { total: simulacao })}
+                    {t("automations.simulate.result", { total: simulacao.total })}
+                    {simulacao.proxima_execucao && (
+                      <>
+                        {" · "}
+                        {t("automations.simulate.next_run", {
+                          quando: renderFormattedDate(simulacao.proxima_execucao),
+                        })}
+                      </>
+                    )}
                   </span>
                 )}
                 <Button variant="secondary" size="sm" onClick={() => void simular()}>

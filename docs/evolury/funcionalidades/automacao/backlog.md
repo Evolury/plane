@@ -119,13 +119,13 @@ os dois eram promessas que o produto não cumpria:
       termina, então id fixo envelhece; um módulo é contêiner durável
       ("Autenticação", "Relatórios"), e o id escolhido hoje continua certo em
       seis meses. Por isso ciclo resolve "o ativo agora" e módulo usa id fixo.
-- [ ] A simulação do editor conta tarefas da condição; para regra agendada ela
-      responde exatamente a pergunta certa ("a varredura vai pegar quantas?"),
-      mas não mostra QUANDO é a próxima rodada. O dado existe (`next_run_at`).
+- [x] A simulação passou a mostrar **quando** é a próxima rodada, além de
+      quantas tarefas casam. Calculado no servidor, pelo mesmo código do motor —
+      refazer a conta em JavaScript daria duas respostas possíveis para a mesma
+      pergunta, e o fuso é do projeto. Funciona sobre a regra ainda não salva,
+      que é quando a pergunta importa.
 
-- [ ] O detalhe de `set_assignees` e `set_labels` no registro mostra contagem
-      ("1 → 2 responsável(is)"), e não nomes. Legível, mas menos útil que o de
-      estado, que já mostra nomes.
-- [ ] `RECEITAS_DE_AUTOMACAO` existe em constantes e ainda não é consumido por
-      tela nenhuma (F3.3). Está declarado como `as const` e não afeta o bundle
-      de quem não usa, mas é código sem chamador até a F3.
+- [x] O detalhe de `set_assignees` e `set_labels` passou a mostrar **nomes**.
+      Contagem responde "quantas"; a pergunta de quem lê o registro é "quais".
+- [x] `RECEITAS_DE_AUTOMACAO` ganhou consumidor na F3.7 — o item estava
+      desatualizado desde que a tela de receitas foi ao ar.
