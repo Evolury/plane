@@ -177,4 +177,6 @@ export type TAutomationRun = {
 export type TAutomationSimulation = {
   total: number;
   amostra: { id: string; name: string; sequence_id: number }[];
+  /** Só para regra agendada: quando ela rodaria, calculado no servidor. */
+  proxima_execucao: string | null;
 };

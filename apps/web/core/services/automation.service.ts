@@ -66,8 +66,16 @@ export class AutomationService extends APIService {
   }
 
   /** Quantas tarefas casam com a condição AGORA. Não escreve nada. */
-  async simulate(workspaceSlug: string, projectId: string, condition: unknown): Promise<TAutomationSimulation> {
-    return this.post(`${this.base(workspaceSlug, projectId)}/simulate/`, { condition })
+  async simulate(
+    workspaceSlug: string,
+    projectId: string,
+    condition: unknown,
+    triggerConfig?: unknown
+  ): Promise<TAutomationSimulation> {
+    return this.post(`${this.base(workspaceSlug, projectId)}/simulate/`, {
+      condition,
+      trigger_config: triggerConfig,
+    })
       .then((res) => res?.data)
       .catch((err) => {
         throw err?.response?.data;

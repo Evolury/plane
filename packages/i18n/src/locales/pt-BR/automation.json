@@ -333,7 +333,8 @@
     },
     "simulate": {
       "button": "Simular",
-      "result": "{total} tarefa(s) se encaixam agora"
+      "result": "{total} tarefa(s) se encaixam agora",
+      "next_run": "próxima rodada: {quando}"
     },
     "sentence": {
       "when": "Quando",
