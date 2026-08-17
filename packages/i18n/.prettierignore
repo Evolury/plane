@@ -1,3 +1,10 @@
+# Evolury: gerado por `generate:types`, ignorado pelo git e nunca lido em
+# revisão. Na CI ele nem existe — o checkout é limpo e o arquivo é criado só
+# quando algo roda o build. Aqui ele existe, e reprovava o `check:format` por
+# um motivo que a CI não tem: ruído local, do tipo que ensina a ignorar a
+# verificação.
+src/types/keys.generated.ts
+
 .next/
 .react-router/
 .turbo/
