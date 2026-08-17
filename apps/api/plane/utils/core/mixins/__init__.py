@@ -3,13 +3,16 @@
 # See the LICENSE file for details.
 
 """
-Core mixins for read replica functionality.
-This package provides mixins for different aspects of read replica management
-in Django and Django REST Framework applications.
+Core mixins for Django and Django REST Framework views.
+
+Evolury: nasceu só com o controle de réplica de leitura; hoje guarda também o
+recorte de tarefa por projeto, que as duas APIs — a do app e a pública —
+precisam aplicar do mesmo jeito.
 """
 
-from .view import ReadReplicaControlMixin
+from .view import ReadReplicaControlMixin, TarefaPertenceAoProjetoMixin
 
 __all__ = [
     "ReadReplicaControlMixin",
+    "TarefaPertenceAoProjetoMixin",
 ]
