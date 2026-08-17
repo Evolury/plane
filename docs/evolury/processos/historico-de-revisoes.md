@@ -21,7 +21,8 @@ seguinte começa do lugar errado e nada denuncia o erro.
 | **Releases pendentes**              | nenhuma                         |
 | **Exposições conhecidas em aberto** | nenhuma                         |
 | **Avisos com veredito**             | 22 de 22                        |
-| **Alertas de dependência abertos**  | 15, todos do Django (ver nota)  |
+| **Alertas de dependência abertos**  | 0 (16/08/2026)                  |
+| **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026   |
 
 ---
 
@@ -66,6 +67,64 @@ públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
 
 ---
 
+## 16/08/2026 (noite) — primeira varredura de código (CodeQL)
+
+O repositório passou a ser público, como a AGPL exige. Isso liberou CodeQL e
+scanning de segredos sem custo — em privado, ambos exigiriam licença Code
+Security, e o CLI não teria como rodar nem localmente.
+
+A primeira varredura acusou **116 alertas**, e mais 3 na varredura seguinte.
+Triagem por família, não alerta a alerta:
+
+| Regra                            | Qtd | Veredito | Evidência                                               |
+| -------------------------------- | --- | -------- | ------------------------------------------------------- |
+| `py/url-redirection`             | 110 | coberto  | Ver abaixo — conferido nas 110, não por amostra         |
+| `py/stack-trace-exposure`        | 6   | coberto  | `str()` de exceção PRÓPRIA com mensagens escritas à mão |
+| `py/weak-sensitive-data-hashing` | 2   | coberto  | HMAC-SHA256 com `SECRET_KEY`, não guarda de senha       |
+| `js/insecure-randomness`         | 1   | coberto  | `Math.random()` gera chave de DOM para arrastar         |
+
+### As 110 de redirecionamento
+
+Todas as 110 foram classificadas **mecanicamente**, e não por amostra, porque
+110 é número demais para extrapolar de seis leituras. Elas caem em três formas,
+e as três terminam em `base_host()`:
+
+| Forma                                                                  | Qtd |
+| ---------------------------------------------------------------------- | --- |
+| `get_safe_redirect_url` (o `next_path` passa por `validate_next_path`) | 68  |
+| `urljoin(base_host, …)` sem `next_path` nenhum                         | 25  |
+| `base_host` direto                                                     | 17  |
+
+O host só pode vir do pedido quando `TRUST_REQUEST_ORIGIN` está ligada **e** a
+origem consta em `CORS_ALLOWED_ORIGINS` — lista fechada, sem coringa, e vazia
+não deixa passar nada. Conferido na produção no dia: `TRUST_REQUEST_ORIGIN` é
+`False` e a lista tem uma única origem. O host é constante.
+
+### O que a varredura encontrou de verdade
+
+Nenhuma vulnerabilidade — mas **um defeito de legibilidade no código da
+automação**, apontado por engano pela regra de rastro de pilha. A recusa de uma
+condição inválida chegava à tela assim:
+
+    {'message': ErrorDetail(string="Filtering on field 'x' is not allowed",
+     code='invalid'), 'code': ErrorDetail(...)}
+
+O ADR 0012 diz que regra malformada tem de ser recusada **com uma frase**. Aquilo
+era o `repr` da estrutura interna do DRF. Corrigido em `condicao.py`, com teste
+que reprova se o `ErrorDetail` voltar.
+
+Vale como método: o valor da varredura não foi o que ela afirmou, foi ter feito
+alguém ler aquelas linhas.
+
+### Também ligado neste dia
+
+- **Scanning de segredos**, com proteção de push, padrões não-provedores e
+  validação. Zero alertas; árvore atual conferida à parte.
+- **Correções automáticas de dependência**, que estavam desligadas — é o
+  trabalho que foi feito à mão nos 21 alertas do mesmo dia.
+
+---
+
 ## 16/08/2026 — alertas de dependência (Dependabot)
 
 Eixo diferente do resto deste arquivo: aqui não são avisos do Plane, são
@@ -106,6 +165,10 @@ As transitivas seguiram o padrão que o repositório já usa — `overrides` no
 repositório, lint da API, e o **build completo** dos 16 alvos — este último
 porque `react-router` é dependência de execução das três aplicações web, e
 salto de roteador que só passa no compilador não prova nada.
+
+**Encerrado:** os quinze fecharam quando a varredura do `pip` alcançou, na mesma
+noite. O texto abaixo fica como registro do que foi conferido enquanto o
+contador ainda marcava 15.
 
 **Sobre o contador ficar em 15:** os seis alertas do npm fecharam assim que o
 `pnpm-lock.yaml` mudou. Os quinze do Django continuam abertos por **atraso de

@@ -54,7 +54,31 @@ def aplicar(queryset, condicao):
     try:
         return _BACKEND.filter_queryset(request=None, queryset=queryset, view=_VIEW, filter_data=condicao)
     except DRFValidationError as erro:
-        raise CondicaoInvalida(str(erro.detail)) from erro
+        raise CondicaoInvalida(_frase(erro.detail)) from erro
+
+
+def _frase(detalhe) -> str:
+    """A frase que vai para a tela, e não o `repr` da estrutura do DRF.
+
+    `str(detail)` produzia isto, literalmente, no aviso de erro do editor:
+
+        {'message': ErrorDetail(string="Filtering on field 'x' is not allowed",
+         code='invalid'), 'code': ErrorDetail(...)}
+
+    O ADR 0012 diz que regra malformada tem de ser recusada **com uma frase**.
+    Aquilo não é uma frase — é a estrutura interna do DRF vazando para quem só
+    queria saber o que digitou de errado. Foi o CodeQL que apontou a linha, por
+    outro motivo (achou que era exposição de rastro de pilha, e não é): o que
+    havia ali era um defeito de legibilidade.
+    """
+    if isinstance(detalhe, dict):
+        for chave in ("message", "detail"):
+            if chave in detalhe:
+                return str(detalhe[chave])
+        return "; ".join(str(v) for v in detalhe.values())
+    if isinstance(detalhe, (list, tuple)):
+        return "; ".join(str(item) for item in detalhe)
+    return str(detalhe)
 
 
 def casa(issue_id, condicao) -> bool:
