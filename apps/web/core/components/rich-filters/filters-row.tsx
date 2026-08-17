@@ -55,7 +55,11 @@ export const FiltersRow = observer(function FiltersRow<K extends TFilterProperty
   };
 
   const modalButtonConfig: Partial<TAddFilterButtonProps<K, E>["buttonConfig"]> = {
-    label: !hasAnyConditions ? "Filters" : null,
+    // Evolury: era a string "Filters", em inglês, no meio do código. Passa
+    // despercebida no quadro, onde a variante `modal` quase não aparece; no
+    // cartão de condição da automação ela é o botão principal, e um rótulo em
+    // inglês no meio de uma tela em português é o primeiro que se lê.
+    label: !hasAnyConditions ? t("common.filters") : null,
   };
 
   const handleUpdate = useCallback(async () => {
