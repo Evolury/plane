@@ -25,6 +25,7 @@ from decimal import Decimal, InvalidOperation
 
 # Django imports
 from django.utils.dateparse import parse_date
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 # Module imports
 from plane.db.models import (
@@ -219,12 +220,35 @@ def _converter(propriedade, valor):
 
 def _opcoes_validas(propriedade, ids):
     """Só as opções DESTA propriedade. Id de outra seria vínculo cruzado silencioso."""
-    validas = list(
-        IssuePropertyOption.objects.filter(issue_property=propriedade, id__in=ids).values_list("id", flat=True)
-    )
+    # Evolury: o `id__in` estoura `ValidationError` do Django quando recebe algo
+    # que não é UUID — e aquilo sobe como "Please provide valid detail", uma
+    # frase que não diz nada a quem preencheu o campo. Aqui vira `ValorInvalido`,
+    # que a view transforma em 400 com o nome da propriedade.
+    try:
+        validas = list(
+            IssuePropertyOption.objects.filter(issue_property=propriedade, id__in=ids).values_list("id", flat=True)
+        )
+    except (DjangoValidationError, ValueError, TypeError) as erro:
+        raise ValorInvalido(f"{propriedade.name}: opção inválida.") from erro
     if len(validas) != len(set(str(i) for i in ids)):
         raise ValorInvalido(f"{propriedade.name}: opção inválida.")
     return validas
+
+
+def _uma_opcao(propriedade, valor):
+    """O id escolhido, aceitando tanto `"id"` quanto `["id"]`.
+
+    O tipo que a tela usa é `string | string[]`, e o multi-select sempre aceitou
+    os dois. O select simples fazia `[valor]` sem normalizar: uma lista virava
+    lista dentro de lista, o `id__in` recebia `[["..."]]` e a criação da tarefa
+    respondia 400 com "Please provide valid detail". Aceitar os dois formatos
+    aqui é o que faltava para os dois tipos se comportarem igual.
+    """
+    if isinstance(valor, (list, tuple)):
+        if len(valor) != 1:
+            raise ValorInvalido(f"{propriedade.name}: escolha uma opção só.")
+        valor = valor[0]
+    return valor
 
 
 def gravar_valor(issue, propriedade, valor):
@@ -256,7 +280,7 @@ def gravar_valor(issue, propriedade, valor):
         return
 
     if propriedade.property_type == PropertyType.SELECT:
-        escolhida = _opcoes_validas(propriedade, [valor])[0]
+        escolhida = _opcoes_validas(propriedade, [_uma_opcao(propriedade, valor)])[0]
         antigas.delete()
         IssuePropertyValue.objects.create(**comuns, value_option_id=escolhida)
         return
@@ -283,7 +307,13 @@ def validar_valores(project_id, valores):
         propriedade = por_id.get(str(propriedade_id))
         if propriedade is None or esta_vazio(valor):
             continue
-        if propriedade.property_type in TIPOS_DE_SELECAO:
+        if propriedade.property_type == PropertyType.SELECT:
+            # Evolury: a conferência tem de fazer a MESMA pergunta que a
+            # gravação. Ela aceitava lista de qualquer tamanho aqui e a gravação
+            # recusava depois — a tarefa nascia e o erro vinha em seguida, que é
+            # exatamente o que esta função existe para evitar.
+            _opcoes_validas(propriedade, [_uma_opcao(propriedade, valor)])
+        elif propriedade.property_type in TIPOS_DE_SELECAO:
             _opcoes_validas(propriedade, valor if isinstance(valor, (list, tuple)) else [valor])
         else:
             _converter(propriedade, valor)
