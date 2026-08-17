@@ -729,4 +729,57 @@ describe("PDF Rendering Integration", () => {
       expect(text).toContain("Text after image");
     });
   });
+
+  // Evolury: o guarda de SSRF, provado ONDE ELE VALE — no renderizador inteiro.
+  // O teste de unidade em tests/lib/url-security.test.ts prova que a função
+  // sabe recusar; estes provam que ela está LIGADA. Sem eles, apagar a chamada
+  // em node-renderers.tsx deixa a suíte verde e o servidor aberto.
+  describe("guarda de SSRF nas imagens", () => {
+    it("desenha espaço reservado em vez de buscar endereço interno", async () => {
+      const doc: TipTapDocument = {
+        type: "doc",
+        content: [
+          { type: "image", attrs: { src: "http://169.254.169.254/latest/meta-data/" } },
+          { type: "paragraph", content: [{ type: "text", text: "Texto depois da imagem" }] },
+        ],
+      };
+
+      const text = await extractPdfText(await renderPlaneDocToPdfBuffer(doc));
+
+      expect(text).toContain("[Imagem não permitida]");
+      expect(text).toContain("Texto depois da imagem");
+    });
+
+    it("recusa nome de serviço da rede interna no nó de anexo", async () => {
+      // Este é o caminho que o `startsWith("http")` antigo deixava passar: o
+      // anexo não resolve, o `src` cru do conteúdo vira a URL buscada.
+      const doc: TipTapDocument = {
+        type: "doc",
+        content: [{ type: "imageComponent", attrs: { src: "http://plane-db:5432/" } }],
+      };
+
+      const text = await extractPdfText(await renderPlaneDocToPdfBuffer(doc));
+
+      expect(text).toContain("[Image:");
+    });
+
+    it("não estorva a imagem legítima já resolvida", async () => {
+      // O serviço entrega `data:` reencodado; se o guarda recusasse isto, o PDF
+      // de quem não fez nada de errado sairia furado.
+      const metadata: PDFExportMetadata = {
+        resolvedImageUrls: {
+          "asset-1":
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        },
+      };
+      const doc: TipTapDocument = {
+        type: "doc",
+        content: [{ type: "imageComponent", attrs: { src: "asset-1" } }],
+      };
+
+      const text = await extractPdfText(await renderPlaneDocToPdfBuffer(doc, { metadata }));
+
+      expect(text).not.toContain("[Image:");
+    });
+  });
 });
