@@ -16,6 +16,37 @@ class BaseSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(read_only=True)
 
+    # Evolury: `created_by` e `updated_by` nunca vêm do cliente.
+    #
+    # São campos de auditoria: o `BaseModel.save()` os preenche a partir do
+    # usuário do pedido. Mas ele só mexe em `created_by` na CRIAÇÃO — numa
+    # atualização toca apenas em `updated_by`. Com `fields = "__all__"`, que é o
+    # que a maioria dos serializers usa, os dois entram como escrevíveis, e um
+    # `PATCH` com `created_by` de outra pessoa passava e ficava gravado.
+    #
+    # Medido antes desta correção: `PATCH /projects/<id>/` com
+    # `{"created_by": "<outro usuário>"}` respondeu 200 e o banco passou a
+    # atribuir o projeto a quem nunca o criou.
+    #
+    # Por que aqui e não nos 52 serializers que têm a lacuna: `read_only_fields`
+    # do `Meta` não se herda — cada subclasse declara o seu do zero, então a
+    # regra escrita lá se perde na próxima classe que alguém criar. Forçando em
+    # `get_fields`, vale para toda subclasse, inclusive a de amanhã.
+    #
+    # `created_at`/`updated_at` não entram na lista porque já estão travados por
+    # outro caminho: `auto_now_add`/`auto_now` os tornam não editáveis no modelo,
+    # e o DRF os marca somente-leitura sozinho. Acrescentá-los aqui seria código
+    # que não faz nada — conferido, não suposto.
+    CAMPOS_DE_AUDITORIA = ("created_by", "updated_by")
+
+    def get_fields(self):
+        campos = super().get_fields()
+        for nome in self.CAMPOS_DE_AUDITORIA:
+            campo = campos.get(nome)
+            if campo is not None:
+                campo.read_only = True
+        return campos
+
     def __init__(self, *args, **kwargs):
         # If 'fields' is provided in the arguments, remove it and store it separately.
         # This is done so as not to pass this custom argument up to the superclass.
