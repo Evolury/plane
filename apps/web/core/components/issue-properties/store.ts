@@ -14,7 +14,7 @@
 // busca de novo sem que ninguém precise invalidar nada à mão.
 
 import { useEffect, useMemo } from "react";
-import useSWR from "swr";
+import useSWR, { mutate as mutarGlobal } from "swr";
 import type { TIssueProperty, TPropertyValue } from "@plane/types";
 import { IssuePropertyService } from "@/services/issue-property.service";
 import { guardarPropriedades } from "./cache";
@@ -88,4 +88,32 @@ export const useValoresDeCartao = (
     { revalidateOnFocus: false }
   );
   return data?.values ?? {};
+};
+
+/**
+ * Manda o cartão buscar de novo os valores deste projeto.
+ *
+ * Evolury: o valor da propriedade aparece no cartão só depois de recarregar a
+ * página, e o motivo é que o cartão lê de uma chave PRÓPRIA
+ * (`ISSUE_PROPERTY_CARD_VALUES_<projeto>`), do projeto inteiro, enquanto o
+ * painel da tarefa revalida a chave DELE. São perguntas diferentes ao mesmo
+ * dado, e salvar respondia só uma.
+ *
+ * Vale para os dois jeitos de o cartão ficar desatualizado: preencher o valor
+ * numa tarefa, e ligar ou desligar "mostrar no cartão" na definição — porque o
+ * endereço do cartão devolve apenas as propriedades marcadas, então mudar a
+ * marca muda a resposta inteira.
+ *
+ * `revalidateOnFocus` continua desligado de propósito: a resposta é do projeto
+ * inteiro, e voltar para a aba não é motivo para buscá-la de novo. Quem sabe
+ * que ela mudou é quem acabou de gravar — e é daí que a revalidação sai.
+ */
+export const revalidarValoresDoProjeto = (projectId: string) => {
+  if (!projectId) return;
+  void mutarGlobal(`ISSUE_PROPERTY_CARD_VALUES_${projectId}`);
+  // A leitura por página tem a lista de tarefas na chave, então não dá para
+  // montá-la aqui: revalida por prefixo.
+  void mutarGlobal(
+    (chave) => typeof chave === "string" && chave.startsWith(`ISSUE_PROPERTY_VALUES_BULK_${projectId}_`)
+  );
 };

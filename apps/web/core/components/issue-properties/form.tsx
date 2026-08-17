@@ -24,6 +24,7 @@ import type { TIssueProperty, TIssuePropertyOption, TPropertyCurrency, TProperty
 import { EModalWidth, Input, ModalCore } from "@plane/ui";
 // services
 import { IssuePropertyService } from "@/services/issue-property.service";
+import { revalidarValoresDoProjeto } from "./store";
 
 const servico = new IssuePropertyService();
 
@@ -95,6 +96,7 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
       const corpo = { ...dados, options: ehSelecao ? opcoes : undefined };
       if (propriedade) await servico.update(workspaceSlug, projectId, propriedade.id, corpo);
       else await servico.create(workspaceSlug, projectId, corpo);
+      revalidarValoresDoProjeto(projectId);
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: t("toast.success"),
