@@ -165,6 +165,16 @@ class NotificationViewSet(BaseViewSet, BasePaginator):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Evolury: a única ação de escrita da classe que não declarava guarda.
+    #
+    # Na prática ela já estava contida — o `get_queryset` acima filtra por
+    # `receiver_id=request.user.id`, então ninguém apaga notificação alheia.
+    # O guarda entra para a regra valer por declaração e não por sorte de
+    # queryset: um dia alguém afrouxa aquele filtro sem lembrar disto.
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
+    def destroy(self, request, slug, pk):
+        return super().destroy(request, slug=slug, pk=pk)
+
     @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
     def mark_read(self, request, slug, pk):
         notification = Notification.objects.get(receiver=request.user, workspace__slug=slug, pk=pk)
