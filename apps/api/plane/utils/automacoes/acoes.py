@@ -451,16 +451,26 @@ def _notificar(tarefa, config, contexto):
         },
         "automation": {"id": str(contexto["automacao"].id), "name": contexto["automacao"].name},
     }
-    # A fila de e-mail só monta a mensagem para registros que tenham
-    # `issue_activity` — `create_payload` descarta os demais em silêncio. Sem
-    # esta parte, a linha entrava na fila e o e-mail saía vazio: a notificação
-    # aparecia no sino e não chegava à caixa de entrada, que é justamente o caso
-    # de quem não está com o produto aberto.
+    # `issue_activity` é obrigatório nos DOIS destinos, e por motivos
+    # diferentes:
+    #
+    # * a fila de e-mail só monta a mensagem para registros que a tenham —
+    #   `create_payload` descarta os demais em silêncio, e o e-mail sairia vazio
+    #   justamente para quem não está com o produto aberto;
+    #
+    # * a lista de notificações da tela lê `data.issue_activity.field` com o `?.`
+    #   só no primeiro nível. Sem a chave, a leitura estoura e **a página
+    #   inteira** de notificações vai para a tela de erro — não só o cartão da
+    #   automação. Foi assim que isto apareceu: a caixa de entrada de quem
+    #   recebeu o aviso parou de abrir.
+    #
+    # Por isso o payload é UM só. Ter dois era o defeito: o de e-mail nascia
+    # completo e o da tela nascia sem a chave.
     #
     # `field` é "automation", e não "comment", porque não houve comentário na
     # tarefa. `activity_time` é obrigatório: a montagem faz `pop` dele sem
     # padrão, e a ausência derrubaria o envio do lote inteiro.
-    dados_de_email = {
+    dados_completos = {
         **dados,
         "issue_activity": {
             "id": None,
@@ -489,7 +499,7 @@ def _notificar(tarefa, config, contexto):
                 title=texto,
                 message={"text": texto},
                 message_stripped=texto,
-                data=dados,
+                data=dados_completos,
             )
             for pessoa in existentes
         ],
@@ -506,7 +516,7 @@ def _notificar(tarefa, config, contexto):
                     entity_name="issue",
                     entity="issue",
                     new_value=texto[:300],
-                    data=dados_de_email,
+                    data=dados_completos,
                 )
                 for pessoa in existentes
             ],
