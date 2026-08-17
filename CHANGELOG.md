@@ -3,6 +3,81 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.20.0] — 2026-08-17
+
+**Minor**: duas mudanças que se veem na tela — o operador dos filtros passa a
+falar português e o cartão passa a atualizar sozinho — junto de três correções
+de segurança e do fim da revisão do upstream.
+
+O incremento é minor pelo que se vê, e não pelas correções de segurança: elas
+sozinhas subiriam patch, e nenhuma exige ação de quem opera.
+
+### Na tela
+
+- **O operador dos filtros estava em inglês, sem caminho de tradução.** `is`,
+  `is any of` e `between` eram texto escrito dentro de `@plane/constants` — um
+  pacote sem acesso ao tradutor. Não havia como traduzi-los em tela nenhuma:
+  filtros do quadro, das visões, da exportação e o cartão de condição da
+  automação. Onde se lia "Prioridade is Urgente" agora se lê **"Prioridade é
+  Urgente"**.
+
+- **Valor de propriedade marcado para o cartão só aparecia ao recarregar.** O
+  cartão lê de um endereço próprio, do projeto inteiro, e o painel da tarefa
+  revalidava só o dele. Eram duas perguntas sobre o mesmo dado, e salvar
+  respondia uma. Vale também para ligar e desligar "mostrar no cartão".
+
+- **A criação rápida engolia o motivo da recusa.** Falhava com "Ocorreu algum
+  erro" enquanto o servidor mandava a frase — "Preencha: Local." A leitura da
+  recusa virou uma função só, porque a API responde em quatro formatos conforme
+  quem recusou.
+
+- **Propriedade de seleção recusava o próprio formato que a tela publica.** O
+  tipo é `string | string[]`; o multi-select aceitava os dois e o select simples
+  não, respondendo com uma frase que não explicava nada. De quebra, a
+  conferência e a gravação discordavam — a primeira aceitava a lista e a segunda
+  recusava, depois de a tarefa já existir.
+
+### Segurança
+
+Fim da revisão do upstream de 17/08: as cinco branches `secur-*` foram medidas
+contra a nossa base, e as duas que faltavam renderam três falhas reais.
+
+- **Login por senha não tinha freio de força bruta.** As quatro views de senha
+  estendem `django.views.View`, e o freio do DRF só roda dentro de
+  `APIView.initial()` — nunca correu nelas. O link mágico e a recuperação de
+  senha já tinham; o alvo óbvio de adivinhação, não. Medido: **30 tentativas
+  seguidas sem bloqueio**. Agora a 11ª é recusada.
+
+- **O cliente reescrevia quem criou o projeto.** `created_by` e `updated_by`
+  entravam como escrevíveis, e o `save()` só protege `created_by` na criação —
+  num `PATCH` o valor do cliente ficava. Campo de auditoria existe para
+  responder "quem fez isso"; reescrevê-lo apaga a única coisa que ele serve para
+  responder.
+
+- **O cursor decidia o tamanho da página, sem teto.** `per_page` era limitado, o
+  `cursor.value` não — e nos paginadores agrupados era ele quem mandava. Medido:
+  `per_page=3` com `cursor=100` devolvia 30 linhas.
+
+- **`per_page` zero ou negativo respondia 500.** Erro de parâmetro que o cliente
+  lê como falha do servidor e reenvia.
+
+### Por dentro
+
+- **Os testes de JavaScript não rodavam em lugar nenhum.** A CI conferia
+  formato, lint, tipos e build — nunca `test`. A suíte do Live, que inclui o
+  guarda de SSRF do renderizador de PDF, existia e ninguém a executava; e ela
+  nem era executável fora da máquina do desenvolvedor. Agora roda na CI e na
+  verificação local, e o `apps/web` ganhou runner com regressão dos dois
+  defeitos de interface acima.
+
+- Três linhas da matriz de compatibilidade das automações saíram de "provado por
+  leitura" para "provado por execução" — as que afirmavam uma **ausência**, que
+  são as que envelhecem pior sem teste.
+
+- O servidor de desenvolvimento abre na rede local por variável (`DEV_HOST`), e
+  não por argumento: o turbo não repassa argumento para a tarefa, então a
+  instrução antiga não funcionava.
+
 ## [1.19.0] — 2026-08-17
 
 **Minor**: duas telas que calavam voltam a falar — a seção de condição das
