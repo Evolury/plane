@@ -97,9 +97,17 @@ pacote**, e nós bifurcamos o código-fonte. Esta consulta é o nosso único rad
 ### 2b. Listar as releases novas
 
 ```bash
-git fetch upstream --tags
-git tag --list 'v*' --sort=creatordate --merged upstream/master
+git ls-remote --tags upstream 'refs/tags/v*' | awk -F/ '{print $NF}' | sort -V | tail -20
 ```
+
+> **Por que não `git tag --list`.** Nós versionamos com o mesmo prefixo `v` do
+> upstream, e desde a bifurcação as nossas tags e as deles moram no mesmo
+> espaço de nomes local. `git tag --list 'v*'` devolve as duas famílias
+> misturadas, e `--merged upstream/master` não separa — o resultado engana quem
+> está justamente tentando descobrir o que é deles e o que é nosso. Ler direto
+> do remoto responde a pergunta certa: o que existe **lá**. Descoberto na
+> revisão de 17/08/2026, quando o comando antigo listou as nossas 1.x como se
+> fossem releases do upstream a revisar.
 
 Considerar apenas as tags **posteriores** à última revisada. Se não houver
 nenhuma, a revisão termina aqui — e mesmo assim **registra-se a consulta no
