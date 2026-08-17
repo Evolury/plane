@@ -77,7 +77,15 @@ def sync_with_external_service(entity_name, description_html):
 
         url = normalize_url_path(f"{live_url}/convert-document/")
 
-        response = requests.post(url, json=data, headers=None)
+        # O endpoint do Live exige a chave de servidor: sem ela, ele responde
+        # 401. As duas pontas leem a MESMA variável de ambiente, então não há
+        # nada a configurar — o que faltava era mandá-la.
+        response = requests.post(
+            url,
+            json=data,
+            headers={"live-server-secret-key": settings.LIVE_SERVER_SECRET_KEY},
+            timeout=30,
+        )
         if response.status_code == 200:
             return response.json()
     except requests.RequestException as e:

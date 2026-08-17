@@ -422,6 +422,11 @@ LIVE_BASE_PATH = os.environ.get("LIVE_BASE_PATH", "/live/")
 
 LIVE_URL = urljoin(LIVE_BASE_URL, LIVE_BASE_PATH) if LIVE_BASE_URL else None
 
+# Evolury: a chave que o Live exige em `/convert-document/` (revisão do upstream,
+# 16/08/2026). É a MESMA variável que o serviço Live já lê — as duas pontas
+# compartilham o segredo, e o que faltava era a API mandá-lo.
+LIVE_SERVER_SECRET_KEY = os.environ.get("LIVE_SERVER_SECRET_KEY", "")
+
 # WEB URL
 WEB_URL = os.environ.get("WEB_URL")
 

@@ -7,10 +7,11 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 // helpers
-import { Controller, Post } from "@plane/decorators";
+import { Controller, Middleware, Post } from "@plane/decorators";
 import { convertHTMLDocumentToAllFormats } from "@plane/editor";
 // logger
 import { logger } from "@plane/logger";
+import { requireSecretKey } from "@/lib/auth-middleware";
 import type { TConvertDocumentRequestBody } from "@/types";
 
 // Define the schema with more robust validation
@@ -25,7 +26,19 @@ const convertDocumentSchema = z.object({
 
 @Controller("/convert-document")
 export class DocumentController {
+  /**
+   * Evolury: só de servidor para servidor (revisão do upstream, 16/08/2026).
+   *
+   * O único chamador é a tarefa `copy_s3_object` da API. Sem o middleware, este
+   * endpoint respondia a qualquer um na internet — comprovado em produção, com
+   * um POST anônimo chegando até a validação de esquema. Conversão HTML→Y.js é
+   * cara, e era processamento de graça para quem quisesse.
+   *
+   * A chave já existia (`requireSecretKey`) e não estava aplicada em controller
+   * nenhum. Corresponde ao GHSA-55gq-rf47-9pqx do upstream.
+   */
   @Post("/")
+  @Middleware(requireSecretKey)
   async convertDocument(req: Request, res: Response) {
     try {
       // Validate request body

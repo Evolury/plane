@@ -74,6 +74,7 @@
     "@types/ws": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "pdf-parse": "catalog:",
+    "reflect-metadata": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
