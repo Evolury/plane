@@ -3,6 +3,30 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.18.1] — 2026-08-16
+
+**Patch**: correção de segurança nas dependências. Nada muda na tela.
+
+### Segurança
+
+- **Fechados os 21 alertas de dependência** abertos — que são 7 avisos em 5
+  pacotes: o contador multiplica por manifesto, e o Django aparecia cinco vezes
+  por aviso.
+  - `django` 5.2.15 → **5.2.16** (3 avisos)
+  - `react-router` 7.18.1 → **7.18.2**
+  - `nanoid` 3.3.8 → **3.3.18**
+  - `js-yaml` 4.3.0 → **4.3.1**
+  - `brace-expansion` 5.0.7 → **5.0.9** (só desenvolvimento)
+
+  Os três do Django foram conferidos no nosso código, porque é o framework que
+  atende produção: **nenhum dos três caminhos existe aqui** — não há middleware
+  de cache do Django, GeoDjango não é usado, e o validador de domínio não é
+  chamado diretamente. Corrigidos assim mesmo: "não tem caminho hoje" é uma
+  afirmação sobre o código de hoje.
+
+  Triagem completa em
+  [historico-de-revisoes.md](docs/evolury/processos/historico-de-revisoes.md).
+
 ## [1.18.0] — 2026-08-16
 
 **Minor**: chega funcionalidade nova de verdade a quem usa o produto — a maior
