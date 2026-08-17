@@ -82,11 +82,34 @@ const octetosDeIPv4 = (host: string): number[] | null => {
 };
 
 /**
+ * A forma canônica de um literal IPv6, ou `null` se não for um.
+ *
+ * Existe porque `::1` se escreve de muitas maneiras — `0:0:0:0:0:0:0:1`,
+ * `0000:...:0001`, `::ffff:127.0.0.1` — e comparar prefixo de texto contra uma
+ * delas deixa as outras passarem. Quem canonicaliza é o interpretador de URL da
+ * plataforma, e não uma expansão escrita à mão aqui: a que existe está testada
+ * pelo mundo inteiro, a que eu escrevesse estaria testada por mim.
+ */
+const canonicalizarIPv6 = (host: string): string | null => {
+  try {
+    // `hostname` volta entre colchetes e já comprimido: [::1], [::ffff:7f00:1].
+    return new URL(`http://[${host}]/`).hostname.replace(/^\[|\]$/g, "");
+  } catch {
+    return null;
+  }
+};
+
+/**
  * O host é um literal de endereço que não devemos buscar?
  *
  * Números em hexadecimal (`0x7f.1`), octal ou decimal curto nunca são nome de
  * máquina real e são a forma clássica de contornar comparação ingênua — todos
  * são recusados sem tentar interpretar.
+ *
+ * Vale chamar esta função com texto cru: ela normaliza o IPv6 por conta
+ * própria. Isso não é zelo à toa — `imagemEhSegura` a chama com um host que o
+ * `new URL` já canonicalizou, e sem a normalização daqui a função pareceria
+ * correta ali e estaria errada em qualquer outra chamada. Ela é exportada.
  */
 export const literalDeHostBloqueado = (host: string): boolean => {
   const limpo = host.replace(/^\[|\]$/g, "").toLowerCase();
@@ -98,12 +121,14 @@ export const literalDeHostBloqueado = (host: string): boolean => {
   // é endereço disfarçado, não host.
   if (/^(0x[0-9a-f]+|\d+)(\.(0x[0-9a-f]+|\d+))*$/.test(limpo)) return true;
 
-  // IPv6: sem expandir, recusamos loopback, link-local, único-local e as
-  // formas de transição que embutem IPv4.
   if (limpo.includes(":")) {
-    if (limpo === "::" || limpo === "::1") return true;
-    if (/^(fe[89a-f]|fc|fd)/.test(limpo)) return true; // link-local, site-local, único-local
-    if (/^(::ffff:|::|2002:|2001:0?:|64:ff9b)/.test(limpo)) return true;
+    const canonico = canonicalizarIPv6(limpo);
+    // Tem dois-pontos e não é IPv6 que se leia: não há o que julgar, recusa.
+    if (canonico === null) return true;
+    if (canonico === "::" || canonico === "::1") return true;
+    if (/^(fe[89a-f]|fc|fd)/.test(canonico)) return true; // link-local, site-local, único-local
+    // As formas de transição: todas embutem IPv4 e alcançam a rede de dentro.
+    if (/^(::ffff:|::|2002:|2001:0?:|64:ff9b)/.test(canonico)) return true;
     return false;
   }
 
