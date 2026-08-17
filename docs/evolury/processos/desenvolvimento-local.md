@@ -20,10 +20,18 @@ produção que roda nesta máquina. Ver [ADR de infraestrutura no histórico do 
 
 ```bash
 pnpm turbo run dev --filter=web... --concurrency=15
+
+# para abrir também na rede local ou no tailnet:
+DEV_HOST=0.0.0.0 pnpm turbo run dev --filter=web... --concurrency=15
 ```
 
 O `--concurrency=15` não é enfeite: são 11 tarefas persistentes, e o padrão de
 10 faz o comando abortar antes de começar.
+
+O `DEV_HOST` está em `passThroughEnv` da tarefa `dev` no `turbo.json`, e não em
+`globalEnv`: repassar não é participar do hash de cache. Sem essa declaração o
+turbo apaga a variável e o servidor volta a escutar só em `127.0.0.1` — sem
+dizer nada.
 
 **Espere o `200`, e não o processo.** O servidor aceita conexão antes de os
 pacotes compartilhados terminarem de construir; validar nesse intervalo dá
@@ -96,11 +104,11 @@ Isso **não** acontece em produção: lá a API roda de imagem construída, sem
 Três coisas precisam estar certas, e as três já estão no repositório ou no
 `.env` local:
 
-| O quê                       | Onde             | Por quê                                                                                                                                                                                            |
-| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--host 0.0.0.0`            | linha de comando | o padrão do `vite.config.ts` é só `localhost`                                                                                                                                                      |
-| `allowedHosts: [".ts.net"]` | `vite.config.ts` | o Vite 6 confere o `Host` contra DNS rebinding e **só aceita `localhost` e IPs** — pelo nome do tailnet ele devolve **403 da própria aplicação**, o que parece problema de rede e não é            |
-| `proxy` de `/api` e `/auth` | `vite.config.ts` | com `VITE_API_BASE_URL` vazio, cada chamada segue o host pelo qual a página foi aberta; sem isso a URL da API fica fixa num endereço e quem abre por outro carrega a tela sem falar com o servidor |
+| O quê                       | Onde             | Por quê                                                                                                                                                                                                                      |
+| --------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DEV_HOST=0.0.0.0`          | variável         | o padrão do `vite.config.ts` é só `127.0.0.1`. **Não é argumento de linha de comando**: o `turbo run dev` não repassa argumento para a tarefa — o que roda é `react-router dev --port 3000` puro, e o `host` da config vence |
+| `allowedHosts: [".ts.net"]` | `vite.config.ts` | o Vite 6 confere o `Host` contra DNS rebinding e **só aceita `localhost` e IPs** — pelo nome do tailnet ele devolve **403 da própria aplicação**, o que parece problema de rede e não é                                      |
+| `proxy` de `/api` e `/auth` | `vite.config.ts` | com `VITE_API_BASE_URL` vazio, cada chamada segue o host pelo qual a página foi aberta; sem isso a URL da API fica fixa num endereço e quem abre por outro carrega a tela sem falar com o servidor                           |
 
 Com isso, `localhost`, IP da rede e nome do tailnet funcionam **ao mesmo tempo**,
 e o CORS deixa de existir no caminho: mesma origem, como em produção.
@@ -118,6 +126,20 @@ seguir o que o pedido mandar seria redirecionamento aberto.
 Pela rede local ainda é preciso liberar a porta no firewalld — a interface da
 LAN fica na zona `FedoraWorkstation`, que não abre TCP alto; a `tailscale0` está
 na zona `trusted`, e por isso o tailnet funciona sem nada.
+
+```bash
+sudo firewall-cmd --zone=FedoraWorkstation --add-port=3000/tcp
+```
+
+**Sem `--permanent`, de propósito.** A porta cai no próximo `reload` ou reboot,
+que é o comportamento certo para uma abertura de conveniência: o dev server não
+tem autenticação de rede, e deixar 3000 aberta para a LAN para sempre é uma
+decisão diferente de deixá-la aberta hoje à tarde.
+
+Como o teste de dentro da máquina passa pelo `lo` e **não** atravessa o
+firewall, `curl` para o IP da LAN responde 200 mesmo com a porta fechada. Quem
+descobre o bloqueio é o outro computador — então não conclua "está no ar" a
+partir daqui.
 
 ## Corrigido: o seletor de filtros e o `StrictMode`
 

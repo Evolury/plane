@@ -32,7 +32,16 @@ export default defineConfig(() => ({
     dedupe: ["react", "react-dom", "@headlessui/react"],
   },
   server: {
-    host: "127.0.0.1",
+    // Evolury: quem escuta em `0.0.0.0` é uma variável, e não um argumento.
+    //
+    // A doc dizia para passar `--host 0.0.0.0` na linha de comando, mas o
+    // `turbo run dev --filter=web...` NÃO repassa argumento para a tarefa: o
+    // que roda é `react-router dev --port 3000` puro, e o `host` daqui vence.
+    // Quem seguia a doc via a porta em `127.0.0.1` e concluía que era firewall.
+    //
+    // O padrão continua fechado: só abre quando alguém pedir, de propósito.
+    //   DEV_HOST=0.0.0.0 pnpm turbo run dev --filter=web... --concurrency=15
+    host: process.env.DEV_HOST || "127.0.0.1",
     // Evolury: o Vite 6 confere o cabeçalho `Host` para barrar DNS rebinding, e
     // só aceita `localhost` e IPs. Abrir o dev pelo nome do tailnet devolvia
     // 403 da própria aplicação — parecia rede, e era isto. O ponto inicial
