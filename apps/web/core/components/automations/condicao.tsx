@@ -44,6 +44,16 @@ export const CondicaoDaAutomacao = observer(function CondicaoDaAutomacao(props: 
       <ProjectLevelWorkItemFiltersHOC
         entityType={EIssuesStoreType.PROJECT}
         isTemporary
+        // A linha PRECISA nascer visível aqui, e no quadro não.
+        //
+        // Sem isto, `FiltersRow` some inteira enquanto não houver filtro algum:
+        // a visibilidade padrão da instância é `hasActiveFilters`. No quadro
+        // isso está certo — quem revela a linha é o botão "Filtros" do
+        // cabeçalho. Aqui esse botão não existe: a linha É a interface, e o
+        // botão de acrescentar o primeiro filtro mora dentro dela. O resultado
+        // era um cartão de condição que abria mostrando só a frase de ajuda,
+        // sem nada clicável, e uma condição que não havia como criar.
+        showOnMount
         filtersToShowByLayout={CAMPOS_DA_CONDICAO}
         initialWorkItemFilters={{
           richFilters: condicao,
