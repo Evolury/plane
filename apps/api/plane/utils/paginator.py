@@ -233,8 +233,14 @@ class GroupedOffsetPaginator(OffsetPaginator):
         queryset = self.queryset
 
         page = cursor.offset
-        offset = cursor.offset * cursor.value
-        stop = offset + (cursor.value or limit) + 1
+        # Evolury: o tamanho da página é o `limit`, e não o `cursor.value` —
+        # igual ao `OffsetPaginator` acima. Quem decide quantas linhas voltam
+        # tem de ser o número que passou por `get_per_page`; o `cursor.value`
+        # vinha do cliente e servia de tamanho de página aqui, então `per_page=3`
+        # com `cursor=100:0:0` devolvia 100 por grupo. Nenhum fluxo real perde
+        # nada: todo cursor que o servidor emite já carrega `limit` como valor.
+        offset = cursor.offset * limit
+        stop = offset + limit + 1
 
         # Check if the offset is greater than the max offset
         if self.max_offset is not None and offset >= self.max_offset:
@@ -437,11 +443,11 @@ class SubGroupedOffsetPaginator(OffsetPaginator):
         # the current page
         page = cursor.offset
 
-        # the offset
-        offset = cursor.offset * cursor.value
-
-        # the stop
-        stop = offset + (cursor.value or limit) + 1
+        # Evolury: mesma razão do paginador agrupado acima — o tamanho da
+        # página é o `limit`, que foi validado, e não o `cursor.value`, que vem
+        # do cliente.
+        offset = cursor.offset * limit
+        stop = offset + limit + 1
 
         if self.max_offset is not None and offset >= self.max_offset:
             raise BadPaginationError("Pagination offset too large")
@@ -678,6 +684,27 @@ class BasePaginator:
         try:
             input_cursor = cursor_cls.from_string(request.GET.get(self.cursor_name, f"{per_page}:0:0"))
         except ValueError:
+            raise ParseError(detail="Invalid cursor parameter.")
+
+        # Evolury: o teto por página não valia para o cursor.
+        #
+        # `get_per_page` recusa `per_page` acima de `max_per_page`, mas nos
+        # paginadores AGRUPADOS quem decide o tamanho da página é o
+        # `cursor.value` (`stop = offset + (cursor.value or limit) + 1`), e ele
+        # vinha do cliente sem limite nenhum.
+        #
+        # Medido antes desta linha, com `per_page=3` e 30 tarefas num grupo:
+        #
+        #   cursor=3:0:0       -> 3 linhas   (o teto pedido)
+        #   cursor=100:0:0     -> 30 linhas  (dez vezes o teto)
+        #   cursor=100000:0:0  -> 30 linhas  (tudo o que havia)
+        #
+        # O aviso do upstream falava também de índice negativo derrubando a
+        # requisição com 500. Aqui não: o paginador agrupado FILTRA por
+        # `row_number`, não fatia queryset, então `-5` devolvia página vazia com
+        # 200. Passa a ser 400, que é a resposta honesta para cursor inválido.
+        teto = max(max_per_page, default_per_page)
+        if not 0 <= input_cursor.value <= teto or input_cursor.offset < 0:
             raise ParseError(detail="Invalid cursor parameter.")
 
         if not paginator:
