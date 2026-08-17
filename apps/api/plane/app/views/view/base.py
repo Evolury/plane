@@ -54,6 +54,18 @@ class WorkspaceViewViewSet(BaseViewSet):
     serializer_class = IssueViewSerializer
     model = IssueView
 
+    # Evolury: o `create` do DRF entrava sem guarda nenhuma.
+    #
+    # As outras ações desta classe têm `@allow_permission`; esta não tinha
+    # porque ninguém a escreveu — o `perform_create` abaixo é só o gancho, e
+    # quem responde ao POST é o `CreateModelMixin`. Sem o decorador, valia o
+    # `permission_classes` da BaseViewSet, que é apenas `IsAuthenticated`:
+    # qualquer pessoa autenticada criava visão em qualquer workspace.
+    # Convidado não cria, igual ao resto do produto.
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
+    def create(self, request, slug):
+        return super().create(request, slug=slug)
+
     def perform_create(self, serializer):
         workspace = Workspace.objects.get(slug=self.kwargs.get("slug"))
         serializer.save(workspace_id=workspace.id, owned_by=self.request.user)
@@ -263,6 +275,13 @@ class WorkspaceViewIssuesViewSet(BaseViewSet):
 class IssueViewViewSet(BaseViewSet):
     serializer_class = IssueViewSerializer
     model = IssueView
+
+    # Evolury: mesma falta do `WorkspaceViewViewSet` acima — POST sem guarda.
+    # Aqui doía mais: um membro do workspace criava visão dentro de um projeto
+    # do qual não participa.
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER])
+    def create(self, request, slug, project_id):
+        return super().create(request, slug=slug, project_id=project_id)
 
     def perform_create(self, serializer):
         serializer.save(project_id=self.kwargs.get("project_id"), owned_by=self.request.user)

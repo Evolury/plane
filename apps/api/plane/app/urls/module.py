@@ -26,7 +26,6 @@ urlpatterns = [
         ModuleViewSet.as_view(
             {
                 "get": "retrieve",
-                "put": "update",
                 "patch": "partial_update",
                 "delete": "destroy",
             }
@@ -48,8 +47,6 @@ urlpatterns = [
         ModuleIssueViewSet.as_view(
             {
                 "get": "retrieve",
-                "put": "update",
-                "patch": "partial_update",
                 "delete": "destroy",
             }
         ),
@@ -65,7 +62,6 @@ urlpatterns = [
         ModuleLinkViewSet.as_view(
             {
                 "get": "retrieve",
-                "put": "update",
                 "patch": "partial_update",
                 "delete": "destroy",
             }

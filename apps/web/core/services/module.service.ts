@@ -39,14 +39,6 @@ export class ModuleService extends APIService {
       });
   }
 
-  async updateModule(workspaceSlug: string, projectId: string, moduleId: string, data: any): Promise<any> {
-    return this.put(`/api/workspaces/${workspaceSlug}/projects/${projectId}/modules/${moduleId}/`, data)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
-  }
-
   async getModuleDetails(workspaceSlug: string, projectId: string, moduleId: string): Promise<IModule> {
     return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/modules/${moduleId}/`)
       .then((response) => response?.data)

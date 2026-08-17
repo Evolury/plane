@@ -75,9 +75,26 @@ class IntakeViewSet(BaseViewSet):
         intake = self.get_queryset().first()
         return Response(IntakeSerializer(intake).data, status=status.HTTP_200_OK)
 
+    # Evolury: o decorador estava no método errado, e o POST estourava.
+    #
+    # `perform_create(self, serializer)` não é método de view — não recebe
+    # `request`. O `allow_permission` colocado ali tratava o serializer como
+    # requisição e procurava `kwargs["slug"]`, que não existe: POST /intakes/
+    # respondia 500. O guarda passa para o `create`, que é quem atende o POST,
+    # e o gancho volta a ser só gancho.
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
+    def create(self, request, slug, project_id):
+        return super().create(request, slug=slug, project_id=project_id)
+
     def perform_create(self, serializer):
         serializer.save(project_id=self.kwargs.get("project_id"))
+
+    # Evolury: o PATCH não tinha guarda nenhuma — caía no `partial_update` do
+    # DRF com apenas `IsAuthenticated`, e um membro do workspace editava a
+    # caixa de entrada de um projeto do qual não participa.
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
+    def partial_update(self, request, slug, project_id, pk):
+        return super().partial_update(request, slug=slug, project_id=project_id, pk=pk)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def destroy(self, request, slug, project_id, pk):
