@@ -21,7 +21,7 @@ seguinte começa do lugar errado e nada denuncia o erro.
 | **Releases pendentes**              | nenhuma                         |
 | **Exposições conhecidas em aberto** | nenhuma                         |
 | **Avisos com veredito**             | 22 de 22                        |
-| **Alertas de dependência abertos**  | 0 (triados em 16/08/2026)       |
+| **Alertas de dependência abertos**  | 15, todos do Django (ver nota)  |
 
 ---
 
@@ -106,6 +106,17 @@ As transitivas seguiram o padrão que o repositório já usa — `overrides` no
 repositório, lint da API, e o **build completo** dos 16 alvos — este último
 porque `react-router` é dependência de execução das três aplicações web, e
 salto de roteador que só passa no compilador não prova nada.
+
+**Sobre o contador ficar em 15:** os seis alertas do npm fecharam assim que o
+`pnpm-lock.yaml` mudou. Os quinze do Django continuam abertos por **atraso de
+varredura**, não por correção no lugar errado — conferido: o `main` tem
+`Django==5.2.16`, a declaração é única (em `base.txt`, incluída pelos outros
+quatro manifestos com `-r`), e os alertas não são reavaliados desde antes do
+merge. O ecossistema `pip` é reavaliado em ciclo próprio, mais lento que o do
+`npm`, que reage à mudança do lockfile.
+
+Se ainda estiverem abertos na próxima revisão, aí sim é sinal de outra coisa —
+e o primeiro lugar a olhar é se o Dependabot está seguindo a cadeia de `-r`.
 
 **Achado estrutural:** as duas checagens `Analyze` (CodeQL) falham com
 "Code Security must be enabled for this repository". Elas passavam no `main` no
