@@ -21,8 +21,17 @@ class ProjectBasePermission(BasePermission):
                 workspace__slug=view.workspace_slug, member=request.user, is_active=True
             ).exists()
 
-        ## Only workspace owners or admins can create the projects
-        if request.method == "POST":
+        # Evolury: o atalho de workspace só vale para criar PROJETO.
+        #
+        # O comentário original já dizia a intenção — "only workspace owners or
+        # admins can create the projects" — mas o teste pegava TODO POST, e a
+        # maioria dos POST que passam por aqui cria coisa DENTRO de um projeto.
+        # Resultado medido: um membro do workspace, de fora do projeto,
+        # publicava o quadro de um projeto alheio na web e arquivava projeto
+        # alheio. Criar projeto é decisão de workspace porque ainda não existe
+        # projeto a consultar; todo o resto responde à participação no projeto,
+        # que é o que a checagem abaixo faz.
+        if request.method == "POST" and view.project_id is None:
             return WorkspaceMember.objects.filter(
                 workspace__slug=view.workspace_slug,
                 member=request.user,
@@ -66,8 +75,8 @@ class ProjectMemberPermission(BasePermission):
                 project_id=view.project_id,
                 is_active=True,
             ).exists()
-        ## Only workspace owners or admins can create the projects
-        if request.method == "POST":
+        # Evolury: mesma falha da classe acima — ver o comentário lá.
+        if request.method == "POST" and view.project_id is None:
             return WorkspaceMember.objects.filter(
                 workspace__slug=view.workspace_slug,
                 member=request.user,
