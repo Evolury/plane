@@ -8,6 +8,7 @@ import { Image, Link, Text, View } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
 import type { ReactElement } from "react";
 import { CORE_EXTENSIONS } from "@plane/editor";
+import { imagemEhSegura } from "@/lib/url-security"; // Evolury: guarda de SSRF
 import { BACKGROUND_COLORS, EDITOR_BACKGROUND_COLORS, resolveColorForPdf, TEXT_COLORS } from "./colors";
 import { CheckIcon, ClipboardIcon, DocumentIcon, GlobeIcon, LightbulbIcon, LinkIcon } from "./icons";
 import { applyMarks } from "./mark-renderers";
@@ -265,6 +266,17 @@ export const nodeRenderers: NodeRendererRegistry = {
       return <View key={ctx.getKey()} />;
     }
 
+    // Evolury: este `src` vem do conteúdo da página, e o `@react-pdf/image`
+    // busca o que receber. Sem este guarda, quem escreve numa página faz o
+    // servidor buscar o que quiser dentro da rede (revisão do upstream).
+    if (!imagemEhSegura(src)) {
+      return (
+        <View key={ctx.getKey()} style={pdfStyles.imagePlaceholder}>
+          <Text style={pdfStyles.imagePlaceholderText}>[Imagem não permitida]</Text>
+        </View>
+      );
+    }
+
     const alignmentStyle =
       alignment === "center"
         ? { alignItems: "center" as const }
@@ -308,7 +320,11 @@ export const nodeRenderers: NodeRendererRegistry = {
           ? { alignItems: "flex-end" as const }
           : { alignItems: "flex-start" as const };
 
-    if (!resolvedSrc.startsWith("http") && !resolvedSrc.startsWith("data:")) {
+    // Evolury: o teste anterior era `startsWith("http")`, que aceita
+    // `http://plane-db:5432` de olhos fechados. Quando o anexo resolve, o
+    // serviço já entregou um `data:` reencodado; o que cai aqui sem resolver é
+    // texto cru do conteúdo, e é justamente esse o vetor.
+    if (!imagemEhSegura(resolvedSrc)) {
       return (
         <View key={ctx.getKey()} style={[pdfStyles.imagePlaceholder, alignmentStyle]}>
           <Text style={pdfStyles.imagePlaceholderText}>[Image: {assetId.slice(0, 8)}...]</Text>
