@@ -840,3 +840,57 @@ class TestOFunilUnico:
         assert hasattr(issue_activities_task, "despachar_atividades"), (
             "o despacho saiu do funil; a matriz precisa ser revista"
         )
+
+
+@pytest.mark.contract
+class TestNotificacaoDaAutomacao:
+    """A notificação precisa ser legível pelos DOIS destinos que a consomem.
+
+    Encontrado na validação visual em produção, 17/08/2026: a caixa de entrada
+    de notificações **inteira** ia para a tela de erro depois que uma automação
+    avisava alguém. A lista lê `data.issue_activity.field` com o `?.` só no
+    primeiro nível; sem a chave, estoura no render e derruba a página — não só o
+    cartão daquela notificação.
+
+    O payload nascia em duas versões: a de e-mail, completa, e a da tela, sem a
+    chave. Agora é uma só.
+    """
+
+    @pytest.mark.django_db
+    def test_a_notificacao_carrega_o_bloco_que_a_tela_le(self, projeto, workspace, estados, create_user):
+        from plane.db.models import Notification
+
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        regra = _regra(
+            projeto,
+            workspace,
+            actions=[{"type": "notify", "config": {"users": [str(create_user.id)]}}],
+        )
+
+        executar_automacao(regra, tarefa, {"tipo": "alterada", "mudancas": []})
+
+        aviso = Notification.objects.filter(receiver=create_user).order_by("-created_at").first()
+        assert aviso is not None, "a ação não avisou ninguém"
+        assert "issue_activity" in aviso.data, "sem esta chave a página de notificações inteira quebra"
+        assert aviso.data["issue_activity"]["field"] == "automation"
+        assert aviso.data["issue_activity"]["activity_time"], "a fila de e-mail faz pop disto sem padrão"
+
+    @pytest.mark.django_db
+    def test_a_notificacao_tambem_diz_de_que_tarefa_e_de_que_regra(
+        self, projeto, workspace, estados, create_user
+    ):
+        """O resto do payload, que é o que dá sentido ao cartão."""
+        from plane.db.models import Notification
+
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        regra = _regra(
+            projeto,
+            workspace,
+            actions=[{"type": "notify", "config": {"users": [str(create_user.id)]}}],
+        )
+
+        executar_automacao(regra, tarefa, {"tipo": "alterada", "mudancas": []})
+
+        dados = Notification.objects.filter(receiver=create_user).order_by("-created_at").first().data
+        assert dados["issue"]["id"] == str(tarefa.id)
+        assert dados["automation"]["id"] == str(regra.id)
