@@ -618,3 +618,102 @@ class TestSelecaoDeOpcao:
         condicao = {f"property_{propriedade.id}": [str(comercial.id)]}
         assert casa(de_comercial.id, condicao) is True
         assert casa(de_suporte.id, condicao) is False
+
+
+@pytest.mark.contract
+class TestOQueNaoDeveAcontecer:
+    """As linhas da matriz de compatibilidade que afirmam uma AUSÊNCIA.
+
+    Estavam marcadas `[I]` — provadas por leitura de código. Afirmação de
+    ausência é a que envelhece pior sem teste: o dia em que alguém acrescentar
+    um tipo de evento ao mapa, ou trocar o manager de uma consulta, nada avisa.
+    A leitura continuará dizendo que está certo, porque o código que ela leu
+    mudou de lugar.
+    """
+
+    @pytest.mark.django_db
+    def test_rascunho_nao_dispara_regra(self, projeto, workspace, estados, mocker):
+        """Linha 5. Rascunho usa `issue_draft.*`, fora do mapa de eventos.
+
+        O que se tranca aqui não é o comportamento de hoje — é que acrescentar
+        `issue_draft.activity.created` a `TIPO_DE_EVENTO` deixa de ser uma
+        mudança silenciosa.
+        """
+        from plane.utils.automacoes.despacho import despachar_atividades
+
+        _regra(projeto, workspace, trigger_type=AutomationTrigger.WORK_ITEM_CREATED, trigger_config={})
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        enfileirar = mocker.patch("plane.utils.automacoes.despacho.despachar_evento")
+
+        despachar_atividades(
+            tipo="issue_draft.activity.created",
+            issue_id=str(tarefa.id),
+            project_id=str(projeto.id),
+            actor_id=None,
+            linhas=[],
+        )
+
+        enfileirar.assert_not_called()
+
+    @pytest.mark.django_db
+    def test_tarefa_criada_de_verdade_dispara(self, projeto, workspace, estados, mocker):
+        """O par do teste acima: sem ele, um `return` no topo passaria nos dois."""
+        from plane.utils.automacoes.despacho import despachar_atividades
+
+        _regra(projeto, workspace, trigger_type=AutomationTrigger.WORK_ITEM_CREATED, trigger_config={})
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"])
+        enfileirar = mocker.patch("plane.utils.automacoes.despacho.despachar_evento")
+
+        despachar_atividades(
+            tipo="issue.activity.created",
+            issue_id=str(tarefa.id),
+            project_id=str(projeto.id),
+            actor_id=None,
+            linhas=[],
+        )
+
+        enfileirar.assert_called_once()
+
+    @pytest.mark.django_db
+    def test_regra_nao_alcanca_tarefa_excluida(self, projeto, workspace, estados):
+        """Linha 7. `Issue.objects` filtra `deleted_at`.
+
+        A exclusão do produto é lógica: a linha continua no banco. Se a consulta
+        do motor trocar de manager, a regra passa a agir sobre tarefa que a
+        pessoa apagou — e o histórico vai mostrar o robô mexendo no que não
+        existe mais.
+        """
+        tarefa = _tarefa(projeto, workspace, estados["a_fazer"], prioridade="urgent")
+        condicao = {"and": [{"priority__in": ["urgent"]}]}
+        assert casa(tarefa.id, condicao) is True, "sem isto o teste abaixo não prova nada"
+
+        tarefa.delete()  # exclusão lógica
+
+        assert casa(tarefa.id, condicao) is False
+        assert tarefa.id not in {t.id for t in tarefas_que_casam(projeto.id, condicao)}
+
+
+@pytest.mark.contract
+class TestORoboForaDasListas:
+    """Linha 16. O robô é `is_bot` e some das listas por filtros que já existiam.
+
+    Estava `[I]`: alguém leu `member__is_bot=False` nas consultas e concluiu.
+    O risco não é a consulta mudar — é o robô nascer sem a marca, e aí TODOS os
+    filtros do produto param de excluí-lo de uma vez.
+    """
+
+    @pytest.mark.django_db
+    def test_o_ator_da_automacao_nasce_marcado_como_robo(self, workspace):
+        from plane.utils.automacoes.ator import ator_da_automacao
+
+        robo = ator_da_automacao(workspace.id)
+
+        assert robo.is_bot is True
+        assert robo.email.endswith("@automacao.invalid"), "e-mail em domínio que não recebe correio"
+
+    @pytest.mark.django_db
+    def test_o_mesmo_robo_serve_o_workspace_inteiro(self, workspace):
+        """Um por workspace, e não um por regra — senão a lista de membros enche."""
+        from plane.utils.automacoes.ator import ator_da_automacao
+
+        assert ator_da_automacao(workspace.id).id == ator_da_automacao(workspace.id).id

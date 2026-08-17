@@ -15,9 +15,9 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 | 2   | Editar pela API pública   | Mesmo funil — os 124 chamadores caem na mesma tarefa Celery           | ✓ `[I]` grep dos chamadores                        |
 | 3   | Ações da automação        | Passam pelo `IssueCreateSerializer`: mesma validação que a pessoa     | ✓ `[T]` estado/etiqueta de outro projeto recusados |
 | 4   | Arrastar no quadro        | É `partial_update` do mesmo endpoint                                  | ✓ `[I]`                                            |
-| 5   | Rascunho                  | Não dispara: usa `issue_draft.*`, fora do mapa de eventos             | ✓ `[I]` `TIPO_DE_EVENTO`                           |
+| 5   | Rascunho                  | Não dispara: usa `issue_draft.*`, fora do mapa de eventos             | ✓ `[T]` `TestOQueNaoDeveAcontecer`                 |
 | 6   | Propriedade personalizada | Gravava `IssueActivity` direto; agora despacha pela mesma função      | ✓ `[T]` casamento por id sobrevive a rename        |
-| 7   | Exclusão lógica da tarefa | `Issue.objects` filtra `deleted_at`; regra não age em tarefa excluída | ✓ `[I]` manager                                    |
+| 7   | Exclusão lógica da tarefa | `Issue.objects` filtra `deleted_at`; regra não age em tarefa excluída | ✓ `[T]` `TestOQueNaoDeveAcontecer`                 |
 
 ## Recursos vizinhos
 
@@ -35,7 +35,7 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 | 13a | Fila de e-mail                 | O aviso da regra é montável por `create_payload` e vai ao bloco de mensagens | ✓ `[T]` carga montada, `activity_time` presente |
 | 14  | Etapas pessoais (ADR 0001)     | Mudança de estado pela regra atravessa `sync_personal_stages_on_completion`  | ✓ `[I]` mesmo funil                             |
 | 15  | Botão de concluir (ADR 0009)   | É uma mudança de estado — dispara regra de "campo alterado: estado"          | ✓ `[I]`                                         |
-| 16  | Lista de membros               | O robô é `is_bot` e já é excluído das listas por filtros existentes          | ✓ `[I]` `member__is_bot=False`                  |
+| 16  | Lista de membros               | O robô é `is_bot` e já é excluído das listas por filtros existentes          | ✓ `[T]` `TestORoboForaDasListas`                |
 | 17  | Histórico da tarefa            | A linha da automação aparece creditada a "Automação"                         | ✓ `[V]` `is_bot: true` no `actor_detail`        |
 
 ## Desempenho
@@ -55,3 +55,20 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 - Carga real medida em 16/08/2026: 1.000 avaliações drenadas em 10,9 s, mediana
   de 6 ms por avaliação, zero falhas. Detalhes e o achado sobre o teto por hora
   estão no [backlog](backlog.md).
+
+## Três linhas saíram de `[I]` em 17/08/2026
+
+As linhas 5, 7 e 16 afirmavam uma **ausência** — "não dispara", "não alcança",
+"não aparece" —, e estavam provadas por leitura de código. Afirmação de ausência
+é a que envelhece pior sem teste: no dia em que alguém acrescentar um tipo ao
+mapa de eventos ou trocar o manager de uma consulta, nada avisa, e a leitura
+antiga continua parecendo correta porque o código que ela leu mudou de lugar.
+
+As três passaram a `[T]`, e a prova de que os testes não são decorativos é a
+injeção de defeito: pôr `issue_draft.activity.created` no mapa derruba a linha
+5; trocar `Issue.objects` por `all_objects` na condição derruba a linha 7.
+
+As restantes marcadas `[I]` (2, 4, 12, 13, 14, 15) decorrem do funil único —
+todas as escritas passam por `issue_activity` — e o que elas afirmam é uma
+PRESENÇA que os testes do motor já exercitam por outro caminho. Ficam como
+estão, com o motivo escrito.
