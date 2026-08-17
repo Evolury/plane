@@ -19,8 +19,9 @@ seguinte começa do lugar errado e nada denuncia o erro.
 | **Última release revisada**         | `v1.4.1` (upstream, 07/08/2026)                       |
 | **Data da última revisão**          | 17/08/2026                                            |
 | **Releases pendentes**              | nenhuma                                               |
-| **Branches de segurança revisadas** | `secur-243`, `-245`, `-247`, `-248` — corrigidas      |
-| **Exposições conhecidas em aberto** | `secur-236` (paginação e força bruta) — não analisada |
+| **Branches de segurança revisadas** | as cinco: `secur-236`, `-243`, `-245`, `-247`, `-248` |
+| **Exposições conhecidas em aberto** | nenhuma                                               |
+| **Pistas nomeadas, não analisadas** | PRs #9429 e #9335 do upstream (freio de força bruta)  |
 | **Avisos com veredito**             | 22 de 22                                              |
 | **Alertas de dependência abertos**  | 0 (16/08/2026)                                        |
 | **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026                         |
@@ -65,6 +66,65 @@ cobertos e 1 não aplicável — o pendente foi fechado no mesmo dia.
 Também existem **17 identificadores em rascunho**, vistos em branches abertas do
 upstream e ainda não publicados. Não entram nesta tabela — ela é de avisos
 públicos —, mas servem de pista: foi assim que a falha dos convites apareceu.
+
+---
+
+## 17/08/2026 (fim do dia) — a quinta branch, `secur-236`
+
+Ficou pendente na revisão da manhã e foi fechada no mesmo dia. Duas falhas
+distintas, as duas medidas antes de escritas — e nas duas a **descrição do
+upstream não valia para o nosso código**, por motivos concretos.
+
+### Autoria de projeto reescrita pelo cliente
+
+`PATCH /projects/<id>/` com `{"created_by": "<outro usuário>"}` respondia 200 e
+gravava. Campo de auditoria existe para responder "quem fez isso"; reescrevê-lo
+apaga a única coisa que ele serve para responder.
+
+O comentário deles diz que o `save()` só preenche `created_by` quando está
+`None`, "então um valor enviado sobreviveria". No **nosso** `save()` isso é falso
+na criação: ele sobrescreve com o usuário do pedido. O vetor é o `PATCH`, não o
+`POST`. Adotar a descrição deles teria produzido um teste que passa sem provar
+nada.
+
+Corrigido no `get_fields` das duas classes base, e não nos 52 serializers com a
+lacuna: `read_only_fields` do `Meta` **não se herda**.
+
+### O cursor decidia o tamanho da página
+
+`get_per_page` recusa `per_page` acima do teto, mas nos paginadores agrupados
+quem decidia era o `cursor.value`, que vem do cliente sem limite. Medido com
+`per_page=3` e 30 tarefas num grupo: `cursor=100:0:0` devolvia **30 linhas**.
+
+Duas divergências, as duas por medição:
+
+- O **500 por índice negativo** que eles descrevem não acontece aqui: o
+  paginador agrupado filtra por `row_number`, não fatia queryset. `-5` devolvia
+  página vazia com 200 — recusa disfarçada de resposta.
+- Eles só limitam o valor ao teto, o que deixaria `per_page=3` com `cursor=100`
+  devolvendo 100. Fomos à causa: os agrupados passam a usar o `limit` validado,
+  como o `OffsetPaginator` já fazia. Todo cursor que o servidor emite carrega
+  `limit`, então nenhum fluxo real muda.
+
+### O que eles adiaram, e que fica nomeado
+
+O último commit da branch deles diz: _"drop overlapping per_page + auth fixes,
+defer to #9429 / #9335"_. O freio de força bruta na autenticação — que era a
+outra metade do título da branch — **saiu dela** e foi para esses dois PRs, cujo
+conteúdo não foi analisado aqui. Fica na âncora como pista nomeada, e não como
+"nenhuma": é a diferença entre não haver nada e não termos olhado.
+
+### Lição de método, dolorosa
+
+Uma injeção de defeito **não pegou** e quase passou por prova: o padrão casava
+em três lugares do paginador e o `replace` acertou o não agrupado. A suíte ficou
+verde e por um momento pareceu que o teste era vacuoso. Passou a valer conferir
+que a injeção entrou onde se pensou **antes** de acreditar no verde.
+
+E duas suposições minhas caíram nos próprios testes: que `created_at` ficaria de
+fora por escolha (já é somente-leitura por `auto_now_add`, incluí-lo seria código
+morto), e que a fixture decidiria o `created_by` (fora de um pedido o `save()`
+grava `None`).
 
 ---
 
