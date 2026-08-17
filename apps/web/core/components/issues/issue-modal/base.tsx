@@ -25,6 +25,7 @@ import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
 // services
 import { FileService } from "@/services/file.service";
+import { mensagemDoErro } from "@/lib/mensagem-de-erro";
 const fileService = new FileService();
 // local imports
 import { CreateIssueToastActionItems } from "../create-issue-toast-action-items";
@@ -254,7 +255,7 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("error"),
-        message: error?.error ?? t(is_draft_issue ? "draft_creation_failed" : "issue_creation_failed"),
+        message: mensagemDoErro(error) ?? t(is_draft_issue ? "draft_creation_failed" : "issue_creation_failed"),
       });
       throw error;
     }
@@ -359,7 +360,7 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("error"),
-        message: error?.error ?? t("issue_could_not_be_updated"),
+        message: mensagemDoErro(error) ?? t("issue_could_not_be_updated"),
       });
     }
   };

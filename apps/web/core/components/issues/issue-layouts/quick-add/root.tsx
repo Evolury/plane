@@ -16,6 +16,7 @@ import { PlusIcon } from "@plane/propel/icons";
 import { setPromiseToast } from "@plane/propel/toast";
 import type { IProject, TIssue, EIssueLayoutTypes } from "@plane/types";
 import { cn, createIssuePayload } from "@plane/utils";
+import { mensagemDoErro } from "@/lib/mensagem-de-erro";
 // local imports
 import { QuickAddIssueFormRoot } from "./form";
 import { CreateIssueToastActionItems } from "../../create-issue-toast-action-items";
@@ -127,7 +128,13 @@ export const QuickAddIssueRoot = observer(function QuickAddIssueRoot(props: TQui
         },
         error: {
           title: t("toast.error"),
-          message: (err) => err?.message || t("common.error.message"),
+          // Evolury: `err?.message` não existe nas recusas da nossa API, que
+          // vêm como `{ "property_values": "Preencha: Local." }`. O resultado
+          // era a criação rápida falhar sempre com "Ocorreu algum erro" — sem
+          // dizer que faltava uma propriedade obrigatória, que a criação
+          // rápida nem tem como preencher. A frase do servidor é a única
+          // informação útil ali.
+          message: (err) => mensagemDoErro(err) || t("common.error.message"),
         },
       });
 
