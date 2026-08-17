@@ -3,6 +3,122 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.19.0] — 2026-08-17
+
+**Minor**: duas telas que calavam voltam a falar — a seção de condição das
+automações, que era o motivo de nenhuma regra conseguir ter condição, e a
+criação rápida de tarefa, que escondia o motivo da recusa. Entram também cinco
+correções de segurança encontradas na revisão do upstream.
+
+O incremento é minor pelo que se vê na tela, não pelas correções de segurança:
+elas sozinhas subiriam patch, e nenhuma delas exige ação de quem opera.
+
+### Automações
+
+- **O cartão "SE" abria sem nada dentro.** Clicar em "+ Restringir a quais
+  tarefas" revelava a frase de ajuda e mais nada: o botão para acrescentar o
+  primeiro filtro não estava escondido nem desabilitado — não existia no DOM.
+  Na prática, nenhuma regra nova conseguia ter condição.
+
+  A linha de filtros inteira vive dentro de um `<Transition>` cuja visibilidade
+  padrão é "tem filtro ativo?". No quadro isso está certo, porque quem revela a
+  linha é o botão "Filtros" do cabeçalho. No editor de automação esse botão não
+  existe: a linha **é** a interface. Os três consumidores originais dessa
+  variante — formulário de visão de projeto, de workspace e o de exportação —
+  todos passam `showOnMount`; o cartão de condição era o único que não passava.
+
+- **Rótulo em inglês no botão de filtros.** Era a string `"Filters"` escrita no
+  meio do código. Passa despercebida no quadro, onde essa variante quase não
+  aparece; no cartão de condição é o botão principal. Passou a usar a tradução
+  que já existia, e vale para os quatro lugares que usam a variante.
+
+### Tarefas
+
+- **A criação rápida engolia a frase que o servidor mandou.** Criar tarefa pela
+  linha de criação rápida falhava com "Ocorreu algum erro. Por favor, tente
+  novamente." A API dizia o que era — quando falta propriedade obrigatória, ela
+  recusa com `{"property_values": "Preencha: Local."}` —, mas a tela procurava
+  um campo que não existe nessa resposta.
+
+  Doía mais nesse caso porque a criação rápida **não tem** formulário de
+  propriedades: quem esbarrava na obrigatória não tinha como preenchê-la ali nem
+  como descobrir que era disso que se tratava. O modal completo já tratava bem,
+  e era esse contraste que mantinha o problema invisível.
+
+  A leitura da recusa virou uma função só, porque a API responde em formatos
+  diferentes conforme quem recusou: `property_values` nos nossos endpoints,
+  `error` na app API, `detail` no DRF e `{campo: ["frase"]}` na validação de
+  campo. Cada ponto da tela adivinhava um e errava nos outros.
+
+  > **Nota de uso, não de código:** automação **não** preenche propriedade
+  > obrigatória na criação. O portão da obrigatória roda antes de a tarefa
+  > existir; a regra `work_item_created` roda depois (ADR 0011). Com esta
+  > correção a tela passa a dizer qual propriedade falta, em vez de calar.
+
+### Segurança
+
+Cinco falhas encontradas na revisão do upstream de 17/08/2026. Nenhuma vinha de
+release nova nem de aviso publicado: saíram de **branches `secur-*` abertas** no
+repositório do Plane CE, com correções ainda não mescladas nem divulgadas.
+
+Em todas, o método foi medir antes de corrigir — uma sonda reproduz o ataque
+contra a nossa base e imprime o que passou. Foi isso que evitou exagerar (várias
+leituras que pareciam vazar devolviam lista vazia) e impediu subestimar: o aviso
+citava uma rota, e havia dezoito com a mesma forma.
+
+- **`/convert-document/` do Live não exigia autenticação.** A rota ficava aberta
+  a qualquer um. Passou a exigir a chave de servidor, que a API já tinha.
+
+- **SSRF no renderizador de PDF.** O `src` de uma imagem vem do conteúdo da
+  página, e o `@react-pdf/image` busca o que receber: nome de serviço da rede
+  interna do Docker, endereço de metadados da nuvem, ou um caminho de disco, que
+  o pacote entrega ao `fs.readFile`. Os dois nós de imagem estavam expostos — o
+  segundo tinha um teste `startsWith("http")`, que não protege nada.
+
+  O guarda novo falha fechado e espelha o guarda Python que já existia, com
+  teste comparando as duas listas de faixas bloqueadas. Ele julga IPv6 pela
+  forma canônica: `::1` se escreve de muitas maneiras.
+
+- **Rotas de escrita caíam no CRUD genérico do DRF.** Os arquivos de URL da app
+  API mapeavam `"put": "update"` em treze lugares, e nenhum viewset da app API
+  define `update`. O verbo caía no mixin do DRF, que não sabe nada de papéis,
+  sob apenas `IsAuthenticated`. Medido: um membro do workspace, de fora do
+  projeto, renomeava módulo e tarefa alheios, publicava visão e editava a caixa
+  de entrada de projeto do qual não participa.
+
+  Os treze mapeamentos saíram, e mais dois `PATCH` que apontavam para handler
+  inexistente. Nenhum cliente usava: os dois únicos métodos PUT do frontend eram
+  código morto. As ações de escrita que são intencionais ganharam o guarda das
+  irmãs.
+
+  > **Para quem integra pela app API:** `PUT` nessas rotas passa a responder 405. Use `PATCH`, que é o que o nosso frontend sempre usou. A API pública
+  > (`/api/v1/`) não tinha nenhuma rota PUT e não mudou.
+
+- **Criar dentro de um projeto exigia só ser do workspace.** No ramo do `POST`
+  das classes de permissão, a consulta era `WorkspaceMember` e nunca
+  `ProjectMember` com `project_id`. Medido: um membro do workspace publicava o
+  quadro de um projeto alheio **na web** e arquivava projeto alheio. O atalho de
+  workspace passa a valer só quando não há projeto na URL — que é o caso de
+  criar projeto, onde ainda não existe participação a consultar.
+
+- **A tarefa da URL não precisava ser do projeto da URL.** As rotas de
+  sub-recurso trazem projeto e tarefa no caminho, e nada amarrava um ao outro.
+  Medido, como membro do projeto A apontando para uma tarefa do projeto B:
+  comentário, link, reação, inscrição e relação criados na tarefa alheia,
+  relação alheia apagada, e a lista de subtarefas devolvida na íntegra — nas
+  duas APIs. A regra passou para um mixin das classes base, porque é uma só.
+
+### Processo
+
+- **A revisão do upstream tinha um defeito próprio.** O passo que lista releases
+  novas usava `git tag --list 'v*'`, que desde a nossa bifurcação mistura as
+  nossas tags com as deles — e listou as nossas 1.x como se fossem releases do
+  upstream a revisar. Trocado por consulta ao remoto.
+
+- Histórico da revisão registrado, incluindo as duas divergências deliberadas do
+  caminho do upstream e a branch `secur-236` que ficou de fora, nomeada como
+  pendência em vez de silêncio.
+
 ## [1.18.1] — 2026-08-16
 
 **Patch**: correção de segurança nas dependências. Nada muda na tela.
