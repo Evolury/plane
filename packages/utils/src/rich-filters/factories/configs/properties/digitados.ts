@@ -43,7 +43,7 @@ export const getTextInputConfig = (params: TCreateTextPropertyFilterParams) =>
     placeholder: params.placeholder,
     // O operador é `exact` por baixo, mas quem lê a condição precisa ver o que
     // ela FAZ: em texto livre, a busca é por trecho.
-    operatorLabel: params.rotuloDoOperador ?? "contém",
+    operatorLabel: params.rotuloDoOperador ?? "common.rich_filters.operators.contains",
   });
 
 /** O campo numérico de um operador — `faixa` desenha dois campos. */
