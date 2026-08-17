@@ -21,10 +21,39 @@ from plane.authentication.adapter.error import (
     AUTHENTICATION_ERROR_CODES,
 )
 from plane.utils.path_validator import get_safe_redirect_url
+from plane.authentication.rate_limit import authentication_throttle_allows
 
 
 class SignInAuthEndpoint(View):
     def post(self, request):
+        # Evolury: freio de força bruta no login e no cadastro por senha.
+        #
+        # Estas views estendem `django.views.View` para devolver redirecionamento
+        # de um POST de formulário, e por isso o `throttle_classes` do DRF nunca
+        # correu nelas — ele só roda dentro de `APIView.initial()`. O link mágico
+        # e a recuperação de senha já tinham o freio; o login por senha, que é o
+        # alvo óbvio de adivinhação, não tinha.
+        #
+        # Medido antes desta linha, com token CSRF válido: 30 tentativas
+        # seguidas de senha errada, nenhuma barrada. Com o freio, a 11ª é
+        # recusada — a taxa é `10/minute`, configurável por
+        # `AUTHENTICATION_RATE_LIMIT`.
+        #
+        # A primeira medição desta sessão não valia: sem token CSRF, o pedido
+        # nem chegava na view e as respostas eram páginas de erro do middleware.
+        # "Não bloqueou" e "não chegou" são coisas diferentes.
+        if not authentication_throttle_allows(request):
+            exc = AuthenticationException(
+                error_code=AUTHENTICATION_ERROR_CODES["RATE_LIMIT_EXCEEDED"],
+                error_message="RATE_LIMIT_EXCEEDED",
+            )
+            url = get_safe_redirect_url(
+                base_url=base_host(request=request, is_app=True),
+                next_path=request.POST.get("next_path"),
+                params=exc.get_error_dict(),
+            )
+            return HttpResponseRedirect(url)
+
         next_path = request.POST.get("next_path")
         # Check instance configuration
         instance = Instance.objects.first()
@@ -134,6 +163,34 @@ class SignInAuthEndpoint(View):
 
 class SignUpAuthEndpoint(View):
     def post(self, request):
+        # Evolury: freio de força bruta no login e no cadastro por senha.
+        #
+        # Estas views estendem `django.views.View` para devolver redirecionamento
+        # de um POST de formulário, e por isso o `throttle_classes` do DRF nunca
+        # correu nelas — ele só roda dentro de `APIView.initial()`. O link mágico
+        # e a recuperação de senha já tinham o freio; o login por senha, que é o
+        # alvo óbvio de adivinhação, não tinha.
+        #
+        # Medido antes desta linha, com token CSRF válido: 30 tentativas
+        # seguidas de senha errada, nenhuma barrada. Com o freio, a 11ª é
+        # recusada — a taxa é `10/minute`, configurável por
+        # `AUTHENTICATION_RATE_LIMIT`.
+        #
+        # A primeira medição desta sessão não valia: sem token CSRF, o pedido
+        # nem chegava na view e as respostas eram páginas de erro do middleware.
+        # "Não bloqueou" e "não chegou" são coisas diferentes.
+        if not authentication_throttle_allows(request):
+            exc = AuthenticationException(
+                error_code=AUTHENTICATION_ERROR_CODES["RATE_LIMIT_EXCEEDED"],
+                error_message="RATE_LIMIT_EXCEEDED",
+            )
+            url = get_safe_redirect_url(
+                base_url=base_host(request=request, is_app=True),
+                next_path=request.POST.get("next_path"),
+                params=exc.get_error_dict(),
+            )
+            return HttpResponseRedirect(url)
+
         next_path = request.POST.get("next_path")
         # Check instance configuration
         instance = Instance.objects.first()

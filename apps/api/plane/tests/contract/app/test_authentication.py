@@ -656,6 +656,47 @@ class TestAuthenticationThrottle:
 
 
 @pytest.mark.contract
+class TestFreioNoLoginPorSenha:
+    """O freio que faltava justamente no alvo óbvio de adivinhação.
+
+    As quatro views de senha (login e cadastro, no app e no space) estendem
+    `django.views.View` para devolver redirecionamento de um POST de formulário,
+    então o `throttle_classes` do DRF nunca correu nelas — ele só roda dentro de
+    `APIView.initial()`. O link mágico e a recuperação de senha já tinham o freio
+    manual; o login por senha não tinha.
+
+    Medido antes da correção, com token CSRF válido: **30 tentativas seguidas de
+    senha errada, nenhuma barrada**. Com o freio, a 11ª é recusada.
+
+    A primeira medição desta sessão não valia: sem token CSRF o pedido nem
+    chegava na view, e as respostas eram páginas de erro do middleware. "Não
+    bloqueou" e "não chegou" são coisas diferentes — por isso o teste abaixo
+    confere que as tentativas de dentro do limite chegam a responder 302 sem o
+    erro, e não apenas que a última é barrada.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _limpar(self):
+        cache.clear()
+        yield
+        cache.clear()
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("rota", ["sign-in", "sign-up", "space-sign-in", "space-sign-up"])
+    def test_adivinhacao_repetida_e_barrada(self, django_client, setup_instance, rota):
+        url = reverse(rota)
+        with patch.object(AuthenticationThrottle, "rate", "2/minute"):
+            for _ in range(2):
+                r = django_client.post(url, {"email": "alvo@plane.so", "password": "errada"}, follow=False)
+                assert r.status_code == 302
+                assert "RATE_LIMIT_EXCEEDED" not in r.url, "barrou antes da hora"
+
+            r = django_client.post(url, {"email": "alvo@plane.so", "password": "errada"}, follow=False)
+            assert r.status_code == 302
+            assert "RATE_LIMIT_EXCEEDED" in r.url, "não barrou depois de estourar o limite"
+
+
+@pytest.mark.contract
 class TestBotUserLoginBlocked:
     """Bot service accounts (is_bot=True) must never authenticate through the
     interactive login flow.
