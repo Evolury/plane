@@ -102,8 +102,8 @@ export class EventosController {
       ws.close(1008, "Missing parameters");
       return;
     }
-    if (!SLUG.test(workspaceSlug) || (projectId !== undefined && !UUID.test(projectId))) {
-      logger.warn(`EVENTOS: parâmetro fora de forma recusado: ${workspaceSlug} / ${projectId}`);
+    if (!SLUG.test(workspaceSlug)) {
+      logger.warn(`EVENTOS: slug fora de forma recusado: ${workspaceSlug}`);
       ws.close(1008, "Malformed parameters");
       return;
     }
@@ -124,10 +124,24 @@ export class EventosController {
 
     // A porta do projeto só faz sentido havendo projeto. Sem ele, a identidade
     // já basta: a sala da pessoa entrega o que é dela, e nada mais.
-    if (projectId && !(await this.projectService.podeVer(cookie, workspaceSlug, projectId))) {
-      logger.warn(`EVENTOS: ${userId} sem acesso ao projeto ${projectId}`);
-      ws.close(1008, "Forbidden");
-      return;
+    //
+    // A conferência da FORMA mora aqui dentro, coladinha no uso, e não lá em
+    // cima junto com a do slug. Separá-las manteria o mesmo comportamento e
+    // custaria duas coisas: quem lê teria de juntar dois trechos distantes para
+    // concluir que o valor chega saneado, e o CodeQL — que não consegue fazer
+    // essa junção — reabre o `js/request-forgery`. Validar ao lado de usar
+    // resolve os dois de uma vez.
+    if (projectId !== undefined) {
+      if (!UUID.test(projectId)) {
+        logger.warn(`EVENTOS: id de projeto fora de forma recusado: ${projectId}`);
+        ws.close(1008, "Malformed parameters");
+        return;
+      }
+      if (!(await this.projectService.podeVer(cookie, workspaceSlug, projectId))) {
+        logger.warn(`EVENTOS: ${userId} sem acesso ao projeto ${projectId}`);
+        ws.close(1008, "Forbidden");
+        return;
+      }
     }
 
     // A porta pode ter sido fechada enquanto as checagens corriam. Entrar na
