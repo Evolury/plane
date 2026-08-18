@@ -3,6 +3,33 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.23.0] — 2026-08-18
+
+**Minor**: fecha o [ADR 0013](docs/evolury/decisoes/0013-atualizacao-em-tempo-real.md).
+O valor de propriedade personalizada marcada para o cartão passa a aparecer sem
+recarregar a página, mesmo quando quem gravou foi outra pessoa — ou uma
+automação.
+
+### Na tela
+
+- **Valor de propriedade personalizada agora acompanha.** O cartão lê esse valor
+  de um endereço próprio, do projeto inteiro, e não junto com o resto da tarefa.
+  Era o único dado do cartão que as versões 1.21 e 1.22 ainda não alcançavam:
+  buscar a tarefa de novo não o trazia. Vale para a ação **definir propriedade**
+  das automações e para quem preenche o campo em outra tela.
+
+### Por dentro
+
+- A gravação de valor **não passa** pelo funil por onde passam as outras
+  mudanças de tarefa — ela escreve o histórico direto. Por isso precisou do
+  próprio aviso, num só lugar que cobre os dois caminhos que gravam valor: a
+  tela e a automação.
+
+- Uma injeção de defeito revelou lacuna nos testes desta funcionalidade: eles
+  provavam que o aviso **sabe sair**, não que **é disparado de onde precisa** —
+  apagar a chamada deixava a suíte verde. Entrou um teste que percorre o caminho
+  real.
+
 ## [1.22.0] — 2026-08-18
 
 **Minor**: o quadro passa a acompanhar tudo que muda de fora — inclusive de
