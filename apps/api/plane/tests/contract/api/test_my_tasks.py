@@ -9,7 +9,10 @@
 
 from unittest import mock
 
+from datetime import timedelta
+
 import pytest
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -31,6 +34,7 @@ STAGES_URL = "/api/workspaces/{slug}/my-tasks/stages/"
 STAGE_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/"
 MARK_DEFAULT_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-default/"
 MARK_COMPLETION_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-completion/"
+MARK_BUCKET_URL = "/api/workspaces/{slug}/my-tasks/stages/{pk}/mark-bucket/"
 ISSUES_URL = "/api/workspaces/{slug}/my-tasks/issues/"
 MOVE_URL = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/move/"
 STAGE_URL_ISSUE = "/api/workspaces/{slug}/my-tasks/issues/{issue_id}/stage/"
@@ -605,3 +609,180 @@ class TestMyTasksMove:
         )
         assigned_issue.refresh_from_db()
         assert assigned_issue.state_id == state_before
+
+
+@pytest.mark.contract
+class TestMarcarBaldeDeVencimento:
+    """O endpoint que marca qual balde a etapa recebe (ADR 0014).
+
+    Existe por si porque a constraint parcial exige soltar a antiga antes de
+    marcar a nova — um PATCH comum estouraria com 500 em vez de trocar. E
+    difere do `mark-default` num ponto: a etapa padrão é obrigatória e nunca se
+    desliga; estas quatro são OPCIONAIS.
+    """
+
+    def test_marca_a_etapa_como_destino(self, session_client, workspace, create_user):
+        stages = seed_stages(workspace, create_user)
+        alvo = stages["Em Andamento"]
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=alvo.id), {"balde": "hoje"}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        alvo.refresh_from_db()
+        assert alvo.is_due_today is True
+
+    def test_marcar_solta_a_anterior(self, session_client, workspace, create_user):
+        """Sem soltar antes, a constraint estoura — e o 500 chegaria à tela."""
+        stages = seed_stages(workspace, create_user)
+        anterior = stages["Para Hoje (fila)"]
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id),
+            {"balde": "hoje"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        anterior.refresh_from_db()
+        assert anterior.is_due_today is False
+
+    def test_desligar_deixa_o_balde_SEM_destino(self, session_client, workspace, create_user):
+        """A diferença para o mark-default: aqui a marcação é opcional.
+
+        Balde sem destino é caso legítimo — a varredura simplesmente não move
+        ninguém daquele grupo.
+        """
+        stages = seed_stages(workspace, create_user)
+        alvo = stages["Para Hoje (fila)"]
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=alvo.id),
+            {"balde": "hoje", "ativo": False},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        alvo.refresh_from_db()
+        assert alvo.is_due_today is False
+        assert not WorkStage.objects.filter(workspace=workspace, owner=create_user, is_due_today=True).exists()
+
+    def test_uma_etapa_pode_receber_dois_baldes(self, session_client, workspace, create_user):
+        stages = seed_stages(workspace, create_user)
+        alvo = stages["Para amanhã"]
+
+        session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=alvo.id), {"balde": "depois"}, format="json"
+        )
+
+        alvo.refresh_from_db()
+        assert alvo.is_due_tomorrow is True
+        assert alvo.is_due_later is True
+
+    def test_balde_desconhecido_e_recusado(self, session_client, workspace, create_user):
+        """Recusa com a lista do que vale — recusar sem ensinar é falha barulhenta e inútil."""
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id),
+            {"balde": "semana-que-vem"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "hoje" in str(response.data)
+
+    def test_etapa_de_outra_pessoa_nao_e_encontrada(self, session_client, workspace, create_user, django_user_model):
+        outra = django_user_model.objects.create(email="outra-etapa@plane.so", username="outra_etapa")
+        alheia = WorkStage.objects.create(
+            workspace=workspace, owner=outra, name="Alheia", color="#000", group="backlog"
+        )
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=alheia.id), {"balde": "hoje"}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_opt_out_muda_pelo_patch_comum(self, session_client, workspace, create_user):
+        """`automation_disabled` não tem constraint, então não precisa de endpoint."""
+        stages = seed_stages(workspace, create_user)
+        alvo = stages["Em Andamento"]
+
+        response = session_client.patch(
+            STAGE_URL.format(slug=workspace.slug, pk=alvo.id), {"automation_disabled": True}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK, response.data
+        alvo.refresh_from_db()
+        assert alvo.automation_disabled is True
+
+
+@pytest.mark.contract
+class TestArrastarReagenda:
+    """Arrastar para hoje ou amanhã muda o vencimento (ADR 0014).
+
+    É o que faz etapa e data concordarem: sem isto, a pessoa moveria a tarefa e
+    a varredura a puxaria de volta na madrugada seguinte, porque a data
+    continuaria dizendo outra coisa.
+
+    Só essas duas etapas, e de propósito — "depois" é intervalo aberto e
+    "vencidas" é passado; carimbar ali seria inventar informação.
+    """
+
+    def _mover(self, session_client, workspace, issue, stage):
+        return session_client.post(
+            MOVE_URL.format(slug=workspace.slug, issue_id=issue.id),
+            {"stage_id": str(stage.id)},
+            format="json",
+        )
+
+    def test_arrastar_para_hoje_marca_o_vencimento_de_hoje(
+        self, session_client, workspace, create_user, assigned_issue
+    ):
+        stages = seed_stages(workspace, create_user)
+
+        response = self._mover(session_client, workspace, assigned_issue, stages["Para Hoje (fila)"])
+
+        assert response.status_code == status.HTTP_200_OK, response.data
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.target_date == timezone.now().date()
+
+    def test_arrastar_para_amanha_marca_o_vencimento_de_amanha(
+        self, session_client, workspace, create_user, assigned_issue
+    ):
+        stages = seed_stages(workspace, create_user)
+
+        self._mover(session_client, workspace, assigned_issue, stages["Para amanhã"])
+
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.target_date == timezone.now().date() + timedelta(days=1)
+
+    @pytest.mark.parametrize("etapa", ["Para Depois", "Pendências", "Em Andamento"])
+    def test_arrastar_para_as_outras_NAO_toca_na_data(
+        self, session_client, workspace, create_user, assigned_issue, etapa
+    ):
+        """Sem isto, carimbar em toda etapa passaria nos dois testes acima."""
+        stages = seed_stages(workspace, create_user)
+        assigned_issue.target_date = timezone.now().date() + timedelta(days=30)
+        assigned_issue.save()
+
+        self._mover(session_client, workspace, assigned_issue, stages[etapa])
+
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.target_date == timezone.now().date() + timedelta(days=30)
+
+    def test_arrastar_para_hoje_uma_tarefa_que_ja_vence_hoje_nao_gera_ruido(
+        self, session_client, workspace, create_user, assigned_issue
+    ):
+        """Regravar a mesma data encheria o histórico sem dizer nada."""
+        stages = seed_stages(workspace, create_user)
+        assigned_issue.target_date = timezone.now().date()
+        assigned_issue.save()
+        antes = assigned_issue.updated_at
+
+        self._mover(session_client, workspace, assigned_issue, stages["Para Hoje (fila)"])
+
+        assigned_issue.refresh_from_db()
+        assert assigned_issue.updated_at == antes

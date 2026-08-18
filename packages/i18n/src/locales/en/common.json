@@ -1842,5 +1842,19 @@
     "yesterday": "Yesterday",
     "last_7_days": "Last 7 days",
     "last_30_days": "Last 30 days"
+  },
+  "my_tasks": {
+    "stages": {
+      "buckets": {
+        "overdue": "Overdue",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "later": "Later",
+        "mark": "Set as this bucket's destination",
+        "unmark": "Unset — the bucket gets no destination and moves nobody",
+        "locked": "Stays here",
+        "locked_hint": "The sweep never takes tasks OUT of this stage. Arriving still works."
+      }
+    }
   }
 }

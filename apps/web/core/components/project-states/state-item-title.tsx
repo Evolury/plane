@@ -13,7 +13,12 @@ import { EditIcon, StateGroupIcon } from "@plane/propel/icons";
 import type { IState, TStateOperationsCallbacks } from "@plane/types";
 // local imports
 import { useProjectState } from "@/hooks/store/use-project-state";
-import { StateDelete, StateMarksAsCompletion, StateMarksAsDefault } from "./options";
+// Importes diretos, e não pelo barril: o barril arrasta o módulo inteiro para
+// o pacote de quem só queria um componente.
+import { StateDelete } from "./options/delete";
+import { StateMarksAsCompletion } from "./options/mark-as-completion";
+import { StateMarksAsDefault } from "./options/mark-as-default";
+import { StageBuckets } from "./options/stage-buckets";
 
 type TBaseStateItemTitleProps = {
   stateCount: number;
@@ -26,7 +31,15 @@ type TEnabledStateItemTitleProps = TBaseStateItemTitleProps & {
   disabled: false;
   stateOperationsCallbacks: Pick<
     TStateOperationsCallbacks,
-    "markStateAsDefault" | "deleteState" | "markStateAsCompletion" | "getCompletionStateInfo"
+    | "markStateAsDefault"
+    | "deleteState"
+    | "markStateAsCompletion"
+    | "getCompletionStateInfo"
+    // Evolury: baldes de vencimento (ADR 0014). Opcionais no tipo de origem —
+    // estado de projeto não os passa e não vê nada na tela.
+    | "markStageBucket"
+    | "getStageBucketInfo"
+    | "toggleStageAutomation"
   >;
   shouldTrackEvents: boolean;
 };
@@ -64,6 +77,24 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
           {shouldShowDescription && <p className="text-11 text-secondary">{state.description}</p>}
         </div>
       </div>
+      {/* Evolury: baldes de vencimento e trava da varredura (ADR 0014).
+          FORA do bloco de hover de propósito: marcação não é ação, é
+          INFORMAÇÃO — saber qual etapa recebe as vencidas não pode exigir
+          passar o mouse por oito linhas. Quem some no hover é só o que está
+          desmarcado; ver `StageBuckets`. */}
+      {!disabled &&
+        props.stateOperationsCallbacks.markStageBucket &&
+        props.stateOperationsCallbacks.getStageBucketInfo &&
+        props.stateOperationsCallbacks.toggleStageAutomation && (
+          <StageBuckets
+            stageId={state.id}
+            marcacoes={props.stateOperationsCallbacks.getStageBucketInfo(state.id)}
+            onMarcar={(balde, ativo) => props.stateOperationsCallbacks.markStageBucket!(state.id, balde, ativo)}
+            onAlternarAutomacao={(desativada) =>
+              props.stateOperationsCallbacks.toggleStageAutomation!(state.id, desativada)
+            }
+          />
+        )}
       {!disabled && (
         <div className="hidden items-center gap-2 group-hover:flex">
           {/* Evolury: destino do botão de concluir, só no grupo concluído e só

@@ -12,7 +12,7 @@
 import { action, computed, makeObservable, observable, runInAction } from "mobx";
 // plane imports
 import { MY_TASKS_STAGE_GROUP_ORDER } from "@plane/constants";
-import type { TWorkStage } from "@plane/types";
+import type { TWorkStage, TBaldeDeVencimento } from "@plane/types";
 // services
 import { MyTasksService } from "@/services/my-tasks.service";
 
@@ -52,6 +52,10 @@ export interface IMyTasksStore {
   deleteStage: (workspaceSlug: string, stageId: string) => Promise<void>;
   markStageAsDefault: (workspaceSlug: string, stageId: string) => Promise<void>;
   markStageAsCompletion: (workspaceSlug: string, stageId: string) => Promise<void>;
+  /** Evolury: qual balde de vencimento a etapa recebe (ADR 0014) */
+  markStageBucket: (workspaceSlug: string, stageId: string, balde: TBaldeDeVencimento, ativo: boolean) => Promise<void>;
+  /** Evolury: a varredura não TIRA tarefa desta etapa (ADR 0014) */
+  toggleStageAutomation: (workspaceSlug: string, stageId: string, desativada: boolean) => Promise<void>;
 }
 
 export class MyTasksStore implements IMyTasksStore {
@@ -79,6 +83,8 @@ export class MyTasksStore implements IMyTasksStore {
       deleteStage: action,
       markStageAsDefault: action,
       markStageAsCompletion: action,
+      markStageBucket: action,
+      toggleStageAutomation: action,
     });
     this.myTasksService = new MyTasksService();
   }
@@ -178,6 +184,23 @@ export class MyTasksStore implements IMyTasksStore {
   /** Evolury: destino da tarefa concluída entre as etapas do usuário (ADR 0009) */
   markStageAsCompletion = async (workspaceSlug: string, stageId: string) => {
     await this.myTasksService.markStageAsCompletion(workspaceSlug, stageId);
+    await this.fetchStages(workspaceSlug);
+  };
+
+  /**
+   * Evolury: qual balde de vencimento esta etapa recebe (ADR 0014).
+   *
+   * Rebusca as etapas porque marcar SOLTA a anterior — a resposta muda duas
+   * linhas da tela, e não só a que foi clicada.
+   */
+  markStageBucket = async (workspaceSlug: string, stageId: string, balde: TBaldeDeVencimento, ativo: boolean) => {
+    await this.myTasksService.markStageBucket(workspaceSlug, stageId, balde, ativo);
+    await this.fetchStages(workspaceSlug);
+  };
+
+  /** Evolury: a varredura não tira tarefa desta etapa (ADR 0014). */
+  toggleStageAutomation = async (workspaceSlug: string, stageId: string, desativada: boolean) => {
+    await this.myTasksService.updateStage(workspaceSlug, stageId, { automation_disabled: desativada });
     await this.fetchStages(workspaceSlug);
   };
 

@@ -4,6 +4,8 @@
  * See the LICENSE file for details.
  */
 
+import type { TBaldeDeVencimento } from "./my-tasks";
+
 export type TStateGroups = "backlog" | "unstarted" | "started" | "completed" | "cancelled";
 
 export interface IState {
@@ -42,4 +44,21 @@ export type TStateOperationsCallbacks = {
   // saber de nenhum dos dois.
   markStateAsCompletion?: (stateId: string) => Promise<void>;
   getCompletionStateInfo?: (stateId: string) => { isCompletion: boolean; isExplicit: boolean };
+  // Evolury: baldes de vencimento e opt-out da varredura (ADR 0014). Opcionais
+  // pelo mesmo motivo dos dois acima — só "Minhas tarefas" sabe responder, e o
+  // componente compartilhado não deve saber que eles existem. Estado de projeto
+  // não passa nenhum, e nada aparece na tela dele.
+  markStageBucket?: (stageId: string, balde: TBaldeDeVencimento, ativo: boolean) => Promise<void>;
+  getStageBucketInfo?: (stageId: string) => TMarcacoesDaEtapa;
+  toggleStageAutomation?: (stageId: string, desativada: boolean) => Promise<void>;
+};
+
+/** Evolury: o que a linha da etapa mostra sobre a varredura (ADR 0014). */
+export type TMarcacoesDaEtapa = {
+  hoje: boolean;
+  amanha: boolean;
+  depois: boolean;
+  vencidas: boolean;
+  /** A varredura não TIRA tarefa daqui. De saída, nunca de chegada. */
+  semAutomacao: boolean;
 };

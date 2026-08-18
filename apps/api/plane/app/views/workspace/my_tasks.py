@@ -15,9 +15,12 @@
 
 # Python imports
 import copy
+import json
+from datetime import timedelta
 
 # Django imports
 from django.db import IntegrityError, transaction
+from django.utils import timezone
 from django.db.models import Case, F, Func, OuterRef, Q, Subquery, UUIDField, Value, When
 from django.db.models.functions import Coalesce
 
@@ -29,6 +32,8 @@ from rest_framework.response import Response
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers import WorkStageIssueSerializer, WorkStageSerializer
 from plane.app.views.base import BaseAPIView, BaseViewSet
+from plane.bgtasks.issue_activities_task import issue_activity
+from plane.utils.etapas_por_vencimento import MARCACAO_DO_BALDE, dia_local
 from plane.db.models import (
     DEFAULT_WORK_STAGES,
     CycleIssue,
@@ -193,6 +198,40 @@ class WorkStageViewSet(BaseViewSet):
                 is_completion=False
             )
             WorkStage.objects.filter(pk=stage.pk).update(is_completion=True)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
+    def mark_bucket(self, request, slug, pk):
+        """Evolury: qual balde de vencimento esta etapa recebe (ADR 0014).
+
+        Endpoint próprio pelo mesmo motivo dos dois acima: a constraint parcial
+        exige desmarcar a antiga antes de marcar a nova, e um PATCH comum
+        estouraria com 500 em vez de trocar.
+
+        A diferença em relação a eles é o `ativo=false`: a etapa padrão é
+        obrigatória e nunca se desliga, e estas quatro são OPCIONAIS — desligar
+        deixa o balde sem destino, que é caso legítimo e faz a varredura não
+        mover ninguém daquele grupo.
+        """
+        stage = self.get_queryset().filter(pk=pk).first()
+        if stage is None:
+            return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        campo = MARCACAO_DO_BALDE.get(request.data.get("balde"))
+        if campo is None:
+            return Response(
+                {"balde": f"Balde desconhecido. Use um de: {', '.join(sorted(MARCACAO_DO_BALDE))}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        ativo = bool(request.data.get("ativo", True))
+
+        with transaction.atomic():
+            # Mesma ordem do mark_default: solta a antiga antes de marcar a nova.
+            WorkStage.objects.filter(workspace=stage.workspace, owner=request.user, **{campo: True}).update(
+                **{campo: False}
+            )
+            if ativo:
+                WorkStage.objects.filter(pk=stage.pk).update(**{campo: True})
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -484,5 +523,54 @@ class MyTasksIssueMoveEndpoint(BaseAPIView):
                 association.sort_order = sort_order
             association.save()
 
+        # Evolury: arrastar para a etapa de hoje ou de amanhã REAGENDA a tarefa
+        # (ADR 0014).
+        #
+        # É o que faz a etapa e a data concordarem: sem isto, a pessoa moveria a
+        # tarefa e a varredura a puxaria de volta na madrugada seguinte, porque
+        # a data continuaria dizendo outra coisa.
+        #
+        # Só estas duas etapas, e de propósito: "depois" é intervalo aberto e
+        # "vencidas" é passado — carimbar ali seria inventar informação.
+        #
+        # Mora no servidor, e não no cliente, porque o efeito tem de valer para
+        # qualquer caminho que mova a tarefa. E passa por `issue_activity`, o
+        # que faz a mudança aparecer no histórico, acordar as regras do ADR 0012
+        # e propagar pelo canal do ADR 0013 — como qualquer edição feita à mão.
+        _reagendar_se_a_etapa_pedir(request, issue, stage)
+
         serializer = WorkStageIssueSerializer(association)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def _reagendar_se_a_etapa_pedir(request, issue, stage):
+    """Põe o vencimento em hoje ou amanhã quando a etapa de destino pede.
+
+    Evolury: ADR 0014. Silenciosa quando não há o que fazer — mover para
+    qualquer outra etapa não toca na data, e mover para uma data que já é a
+    atual não gera histórico à toa.
+    """
+    if stage.is_due_today:
+        dias = 0
+    elif stage.is_due_tomorrow:
+        dias = 1
+    else:
+        return
+
+    novo = dia_local(getattr(request.user, "user_timezone", None)) + timedelta(days=dias)
+    if issue.target_date == novo:
+        return
+
+    anterior = json.dumps({"target_date": str(issue.target_date) if issue.target_date else None})
+    Issue.objects.filter(pk=issue.pk).update(target_date=novo)
+
+    issue_activity.delay(
+        type="issue.activity.updated",
+        requested_data=json.dumps({"target_date": str(novo)}),
+        current_instance=anterior,
+        issue_id=str(issue.pk),
+        actor_id=str(request.user.id),
+        project_id=str(issue.project_id),
+        epoch=int(timezone.now().timestamp()),
+        notification=True,
+    )
