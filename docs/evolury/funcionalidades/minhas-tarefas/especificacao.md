@@ -34,6 +34,10 @@ Espelham a mecânica dos estados de projeto:
   padrão**.
 - Existe exatamente **uma etapa padrão** por usuário/workspace: é a "primeira
   etapa", onde todo item atribuído aparece até ser movido.
+- Além do padrão, a etapa pode receber **marcações de vencimento** — hoje,
+  amanhã, depois, vencidas — e um interruptor de **sem automação**. As duas
+  coisas governam a varredura diária descrita abaixo. Ver
+  [ADR 0014](../../decisoes/0014-etapas-por-vencimento.md).
 - Excluir uma etapa migra os itens associados a ela para a etapa padrão. A
   etapa padrão não pode ser excluída (mesma regra do estado padrão de projeto).
 - A gestão vive na própria página (painel/aba "Etapas"), sem rota de
@@ -44,17 +48,25 @@ Espelham a mecânica dos estados de projeto:
 No primeiro acesso à página, as etapas são criadas automaticamente para o
 usuário naquele workspace:
 
-| Ordem | Nome             | Grupo        | Padrão |
-| ----- | ---------------- | ------------ | ------ |
-| 1     | Recém-atribuídas | não iniciado | ✓      |
-| 2     | Hoje             | iniciado     |        |
-| 3     | Em breve         | não iniciado |        |
-| 4     | Depois           | backlog      |        |
-| 5     | Concluídas       | concluído    |        |
+| Ordem | Nome             | Grupo        | Marcações                    |
+| ----- | ---------------- | ------------ | ---------------------------- |
+| 1     | Recentes         | não iniciado | padrão · **sem automação**   |
+| 2     | Em Andamento     | iniciado     | —                            |
+| 3     | Para Hoje (fila) | iniciado     | hoje                         |
+| 4     | Pendências       | em espera    | vencidas · **sem automação** |
+| 5     | Para amanhã      | em espera    | amanhã                       |
+| 6     | Para Depois      | em espera    | depois                       |
+| 7     | Concluídas       | concluído    | conclusão                    |
+| 8     | Cancelado        | cancelado    | —                            |
 
-O seed é ponto de partida, não imposição: tudo é renomeável, recolorível e
-excluível (exceto a regra da etapa padrão única). Nomes seguem pt-BR, idioma
-padrão da instância.
+**Recentes e Pendências nascem fora da automação**, e não por acaso. Recentes é
+onde se toma conhecimento do que chegou — esvaziá-la toda madrugada a impediria
+de cumprir esse papel. Pendências costuma receber, à mão, coisa que a pessoa quer
+manter à vista mesmo com vencimento futuro.
+
+O seed é ponto de partida, não imposição: tudo é renomeável, recolorível,
+excluível e remarcável (exceto a regra da etapa padrão única). Nomes seguem
+pt-BR, idioma padrão da instância.
 
 ## Conteúdo da página
 
@@ -105,6 +117,43 @@ sem sair do contexto dele.
   (ADR 0001).
 - A etapa efetiva é buscada sob demanda quando o popover abre (o payload de
   work item fora da página não carrega a anotação).
+
+## Movimentação diária pelo vencimento
+
+Decisão e alternativas descartadas no
+[ADR 0014](../../decisoes/0014-etapas-por-vencimento.md). O comportamento:
+
+Toda madrugada, no fuso de cada pessoa, a tarefa vai para a etapa que o
+vencimento dela indica:
+
+| Situação da tarefa  | Vai para a etapa marcada como |
+| ------------------- | ----------------------------- |
+| vencimento < hoje   | vencidas                      |
+| vencimento = hoje   | hoje                          |
+| vencimento = amanhã | amanhã                        |
+| vencimento ≥ D+2    | depois                        |
+| **sem vencimento**  | hoje                          |
+
+**Tarefa sem vencimento é tarefa esquecida** — mandá-la para hoje é pô-la na
+frente de quem pode decidir. Ela continua sem data: a ausência é o lembrete, e a
+automação nunca carimba data nenhuma.
+
+### O que a varredura não toca
+
+- tarefa em grupo **concluído** ou **cancelado**, por trava do motor;
+- tarefa numa etapa marcada como **sem automação** — a marcação vale para
+  **sair**, nunca para chegar;
+- qualquer tarefa cujo balde não tenha etapa marcada. As quatro marcações são
+  opcionais, ao contrário da etapa padrão.
+
+### Arrastar para reagendar
+
+Mover a tarefa **à mão** para a etapa de hoje ou de amanhã **muda o vencimento**
+para hoje ou amanhã. Os outros destinos não tocam a data: "depois" é intervalo
+aberto e "vencidas" é passado — carimbar ali seria inventar informação.
+
+É o único caminho que escreve vencimento, e ele é humano por definição. Gera
+histórico e aciona regras como qualquer edição feita na tela.
 
 ## Fora de escopo do v1
 
