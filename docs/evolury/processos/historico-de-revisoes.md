@@ -17,16 +17,50 @@ seguinte começa do lugar errado e nada denuncia o erro.
 |                                     |                                                       |
 | ----------------------------------- | ----------------------------------------------------- |
 | **Última release revisada**         | `v1.4.1` (upstream, 07/08/2026)                       |
-| **Data da última revisão**          | 17/08/2026                                            |
+| **Data da última revisão**          | 18/08/2026                                            |
 | **Releases pendentes**              | nenhuma                                               |
 | **Branches de segurança revisadas** | as cinco: `secur-236`, `-243`, `-245`, `-247`, `-248` |
 | **Exposições conhecidas em aberto** | nenhuma                                               |
 | **Pistas nomeadas, não analisadas** | nenhuma                                               |
 | **Avisos com veredito**             | 22 de 22                                              |
 | **Alertas de dependência abertos**  | 0 (16/08/2026)                                        |
-| **Alertas de código abertos**       | 0 — 119 triados em 16/08/2026                         |
+| **Alertas de código abertos**       | 0 — 119 triados em 16/08, mais 6 em 18/08/2026        |
 
 ---
+
+## 18/08/2026 — seis alertas de redirecionamento aberto, todos falsos positivos
+
+Não foi uma revisão de release: **o upstream não publicou nada desde a `v1.4.1`**,
+já revisada. Foi a triagem de seis alertas `py/url-redirection` (médio) que o
+CodeQL abriu em 17/08 nas telas de entrada e cadastro do app e do space.
+
+**Por que apareceram agora:** a limitação de tentativas de senha, publicada na
+véspera, tocou aqueles arquivos e forçou uma reanálise. Os achados já estavam
+lá — o que mudou foi o CodeQL ter voltado a olhar.
+
+**Veredito: falsos positivos, os seis.** O CodeQL vê `next_path` chegar a
+`HttpResponseRedirect` e não reconhece `validate_next_path` como sanitizador.
+São três camadas, e a terceira só apareceu ao escrever o teste:
+
+1. `next_path` vira caminho relativo — esquema e host descartados, o que não
+   começa com `/` vira vazio, `..` e padrões suspeitos são recusados;
+2. a base do redirecionamento **não vem do pedido**: é configuração fixa, salvo
+   com `TRUST_REQUEST_ORIGIN` ligada — e aí só aceita origem da lista fechada de
+   CORS. Produção não liga a variável (conferido);
+3. a URL final ainda é conferida contra os hosts configurados e, não passando,
+   cai para a base. Descoberta quando um teste montou a URL com base arbitrária
+   e o `next_path` legítimo sumiu: não era defeito, era a rede embaixo.
+
+**Medido, não deduzido:** 48 combinações contra a produção — 4 rotas
+(`sign-in`, `sign-up`, e as duas do space) x 12 cargas hostis (URL absoluta,
+`//`, barra invertida, `javascript:`, `data:`, travessia, codificação
+percentual, tabulação, arroba). Nenhum `Location` saiu do nosso host.
+
+**O que ficou no repositório**, porque dispensar alerta de segurança é uma
+afirmação sobre o futuro e não pode depender de alguém reler duas funções daqui
+a seis meses: `plane/tests/contract/app/test_redirecionamento_aberto.py`, 36
+testes, com defeito reintroduzido em **cada uma das três camadas** para provar
+que não são vazios.
 
 ## Registro de avisos de segurança
 
