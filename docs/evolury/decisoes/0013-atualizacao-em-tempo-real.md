@@ -203,6 +203,25 @@ Cada linha da matriz vira teste, e nenhuma fica como "provavelmente funciona":
 A prova visual foi feita com a aba parada: a mudança entrou pela API de fora do
 navegador, e a URL da aba continuou a mesma do início ao fim.
 
+## Achado do CodeQL: os parâmetros iam crus para o caminho da requisição
+
+`js/request-forgery`, crítico, e era real. `workspaceSlug` e `projectId` vinham
+da URL de quem conecta direto para dentro do caminho da chamada que pergunta à
+API se a pessoa participa do projeto. Com `projectId = "../../users/me"`, o
+caminho normaliza para um endpoint que responde 200 a qualquer sessão — e **a
+porta de acesso ao projeto abria sozinha**.
+
+O estrago pararia aí, porque a sala passaria a se chamar `"../../users/me"` e o
+Django só publica UUID: nenhum evento casaria. Mas isso é acidente de igualdade
+de string, não desenho — renomear a chave da sala transformaria o furo em
+vazamento.
+
+A correção valida a **forma** em vez de escapar: as duas são conhecidas (UUID e
+slug do Django, 48 caracteres), e recusar o que não se parece com elas é mais
+estreito do que confiar num escape estar certo em todo caminho. O teste afirma
+que **a requisição nunca sai** — fechar a conexão depois de perguntar já teria
+deixado o pedido forjado chegar à API.
+
 ## Limite conhecido da fase 1: duas abas da MESMA pessoa
 
 O cliente ignora o aviso cujo `ator` é ele próprio, para não rebuscar por causa

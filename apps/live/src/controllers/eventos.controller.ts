@@ -34,6 +34,22 @@ import { UserService } from "@/services/user.service";
 /** De quanto em quanto tempo o servidor cutuca a conexão, em ms. */
 const INTERVALO_DE_PING = 30_000;
 
+// Os dois parâmetros entram no CAMINHO de uma requisição à API, e vêm da URL de
+// quem conecta. Sem validar a forma, `projectId = "../../users/me"` normaliza
+// para outro endpoint — um que responde 200 para qualquer sessão —, e a porta de
+// acesso ao projeto abre sozinha.
+//
+// Hoje o estrago pararia aí, porque a sala passaria a se chamar `"../../users/me"`
+// e o Django só publica UUID: nenhum evento casaria. Mas isso é acidente de
+// igualdade de string, não desenho, e uma refatoração do nome da sala o
+// transformaria em vazamento. Encontrado pelo CodeQL (js/request-forgery).
+//
+// Validar a FORMA, e não escapar: as duas são conhecidas — UUID e slug do
+// Django (`SlugField`, 48 caracteres) —, e recusar o que não se parece com elas
+// é mais estreito do que confiar num escape estar certo em todo caminho.
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SLUG = /^[A-Za-z0-9_-]{1,48}$/;
+
 const origensPermitidas = () =>
   env.CORS_ALLOWED_ORIGINS.split(",")
     .map((origem) => origem.trim())
@@ -69,6 +85,11 @@ export class EventosController {
     }
     if (!workspaceSlug || !projectId || !cookie) {
       ws.close(1008, "Missing parameters");
+      return;
+    }
+    if (!SLUG.test(workspaceSlug) || !UUID.test(projectId)) {
+      logger.warn(`EVENTOS: parâmetro fora de forma recusado: ${workspaceSlug} / ${projectId}`);
+      ws.close(1008, "Malformed parameters");
       return;
     }
 
