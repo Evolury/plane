@@ -387,6 +387,28 @@ para uma rota inventada e devolveu **404**, então o cartão "não atualizou"
 porque nada havia acontecido. A sonda passou a **abortar** quando o estímulo
 falha, em vez de seguir medindo a resposta de um estímulo que não houve.
 
+## Medido em produção (18/08/2026, fase 4 implantada)
+
+| Verificação                                          | Resultado                             |
+| ---------------------------------------------------- | ------------------------------------- |
+| tarefa aberta por **link direto**, renomeada de fora | título trocou na tela, URL inalterada |
+| **caixa de entrada**, numa página **sem quadro**     | ponto do sino acendeu em **< 3 s**    |
+
+O teste da caixa foi feito de 0 para 1: as notificações foram marcadas como
+lidas antes, e outra pessoa mexeu numa tarefa em que o alvo estava inscrito.
+
+### Dois enganos meus, os dois pegos pela verificação e não pelo teste
+
+- **Liguei o gancho da caixa no componente errado.** `NotificationAppSidebarOption`
+  é herdado do upstream e faz a conta certa, mas a barra lateral deste fork não
+  tem item de notificações e ele **nunca é montado**. O sino de verdade é o do
+  `top-navigation-root`. Nenhum teste pegaria: o gancho estava correto, só não
+  era chamado. Quem denunciou foi o log do `live` não registrar conexão alguma
+  "projeto (nenhum)".
+- **Duas medições mediram o lugar errado**: o texto do cartão pegava menu em vez
+  do título, e o contador do sino é um **ponto vermelho**, não um número. Nos
+  dois casos a tela estava certa e a sonda é que olhava para o lado.
+
 ## Consequências
 
 - **A favor:** cobre toda a matriz; nenhuma infraestrutura nova; nenhuma segunda
