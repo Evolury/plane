@@ -13,7 +13,12 @@ import { EditIcon, StateGroupIcon } from "@plane/propel/icons";
 import type { IState, TStateOperationsCallbacks } from "@plane/types";
 // local imports
 import { useProjectState } from "@/hooks/store/use-project-state";
-import { StageBuckets, StateDelete, StateMarksAsCompletion, StateMarksAsDefault } from "./options";
+// Importes diretos, e não pelo barril: o barril arrasta o módulo inteiro para
+// o pacote de quem só queria um componente.
+import { StateDelete } from "./options/delete";
+import { StateMarksAsCompletion } from "./options/mark-as-completion";
+import { StateMarksAsDefault } from "./options/mark-as-default";
+import { StageBuckets } from "./options/stage-buckets";
 
 type TBaseStateItemTitleProps = {
   stateCount: number;
