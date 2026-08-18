@@ -23,49 +23,71 @@ WORK_STAGE_GROUP_CHOICES = [(choice.value, choice.label) for choice in StateGrou
 
 # Seed criado no primeiro acesso do usuário ao workspace. Ponto de partida
 # editável, não imposição — ver especificacao.md ("Seed inicial").
+#
+# As marcações vêm junto (ADR 0014): conta nova já nasce com a varredura diária
+# funcionando, sem ninguém precisar configurar nada. `is_default` continua sendo
+# a única obrigatória; as quatro de vencimento são opcionais e estão aqui porque
+# este é o arranjo que o produto recomenda, não porque o modelo as exija.
 DEFAULT_WORK_STAGES = [
     {
-        "name": "Recém-atribuídas",
+        "name": "Recentes",
         "color": "#3F76FF",
         "sort_order": 15000,
         "group": StateGroup.UNSTARTED.value,
         "is_default": True,
+        # Recentes é onde se toma conhecimento do que chegou. Esvaziá-la toda
+        # madrugada a impediria de cumprir esse papel — ver ADR 0014.
+        "automation_disabled": True,
     },
     {
-        "name": "Hoje",
+        "name": "Em Andamento",
         "color": "#F59E0B",
         "sort_order": 25000,
         "group": StateGroup.STARTED.value,
-        "is_default": False,
     },
     {
-        "name": "Em breve",
-        "color": "#60646C",
+        "name": "Para Hoje (fila)",
+        "color": "#F59E0B",
         "sort_order": 35000,
-        "group": StateGroup.UNSTARTED.value,
-        "is_default": False,
+        "group": StateGroup.STARTED.value,
+        "is_due_today": True,
     },
     {
-        "name": "Depois",
-        "color": "#91959E",
+        "name": "Pendências",
+        "color": "#DC2626",
         "sort_order": 45000,
         "group": StateGroup.BACKLOG.value,
-        "is_default": False,
+        "is_overdue": True,
+        # A pessoa põe aqui, à mão, coisa que quer manter à vista mesmo com
+        # vencimento futuro. Travada de saída; continua recebendo as vencidas.
+        "automation_disabled": True,
+    },
+    {
+        "name": "Para amanhã",
+        "color": "#60646C",
+        "sort_order": 55000,
+        "group": StateGroup.BACKLOG.value,
+        "is_due_tomorrow": True,
+    },
+    {
+        "name": "Para Depois",
+        "color": "#91959E",
+        "sort_order": 65000,
+        "group": StateGroup.BACKLOG.value,
+        "is_due_later": True,
     },
     {
         "name": "Concluídas",
         "color": "#46A758",
-        "sort_order": 55000,
+        "sort_order": 75000,
         "group": StateGroup.COMPLETED.value,
-        "is_default": False,
         "is_completion": True,
     },
     {
-        "name": "Canceladas",
+        "name": "Cancelado",
         "color": "#DC2626",
-        "sort_order": 65000,
+        "sort_order": 85000,
         "group": StateGroup.CANCELLED.value,
-        "is_default": False,
     },
 ]
 
@@ -85,6 +107,32 @@ class WorkStage(BaseModel):
     # projeto. Sem marcação, vale a primeira do grupo por `sort_order`.
     is_completion = models.BooleanField(default=False)
 
+    # Evolury: para onde a varredura diária manda cada balde de vencimento
+    # (ADR 0014). Mesmo molde de `is_default`/`is_completion`, com UMA
+    # diferença que importa: a etapa padrão é obrigatória — item sem associação
+    # precisa pertencer a algum lugar —, e estas quatro são OPCIONAIS. Balde
+    # sem etapa marcada simplesmente não move ninguém, e quem não quiser a
+    # separação por amanhã não marca.
+    #
+    # A constraint que sustenta as duas coisas é a mesma: ela impede DUAS
+    # etapas para o mesmo papel, e não exige uma. Uma etapa pode acumular
+    # vários papéis — "Futuro" sendo amanhã e depois é escolha legítima.
+    is_due_today = models.BooleanField(default=False)
+    is_due_tomorrow = models.BooleanField(default=False)
+    is_due_later = models.BooleanField(default=False)
+    is_overdue = models.BooleanField(default=False)
+
+    # Evolury: a varredura não TIRA tarefa desta etapa (ADR 0014).
+    #
+    # De SAÍDA, nunca de chegada — e isto é o que se implementa ao contrário com
+    # facilidade. A etapa de vencidas é o exemplo que prova: ela é destino das
+    # vencidas E a que mais se quer travar, porque a pessoa põe ali, à mão,
+    # coisa que não quer ver saindo sozinha. Se bloqueasse a chegada, nunca
+    # receberia nada e ninguém entenderia por quê.
+    #
+    # Sem constraint: quantas etapas a pessoa quiser.
+    automation_disabled = models.BooleanField(default=False)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -101,6 +149,29 @@ class WorkStage(BaseModel):
                 fields=["workspace", "owner"],
                 condition=Q(is_completion=True, deleted_at__isnull=True),
                 name="work_stage_single_completion_per_owner_when_deleted_at_null",
+            ),
+            # Evolury: no máximo uma etapa por balde de vencimento (ADR 0014).
+            # "No máximo", e não "exatamente": é a mesma constraint do padrão, e
+            # é ela que deixa a marcação ser opcional.
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(is_due_today=True, deleted_at__isnull=True),
+                name="work_stage_single_due_today_per_owner_when_deleted_at_null",
+            ),
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(is_due_tomorrow=True, deleted_at__isnull=True),
+                name="work_stage_single_due_tomorrow_per_owner_when_deleted_at_null",
+            ),
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(is_due_later=True, deleted_at__isnull=True),
+                name="work_stage_single_due_later_per_owner_when_deleted_at_null",
+            ),
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(is_overdue=True, deleted_at__isnull=True),
+                name="work_stage_single_overdue_per_owner_when_deleted_at_null",
             ),
         ]
         verbose_name = "Work Stage"
@@ -157,3 +228,39 @@ class WorkStageIssue(BaseModel):
 
     def __str__(self):
         return f"{self.issue_id} → {self.stage_id}"
+
+
+class WorkStageSweep(BaseModel):
+    """Quando a varredura diária passou por esta pessoa, neste workspace.
+
+    Evolury: ADR 0014.
+
+    **Não existe para evitar repetição.** A varredura é idempotente — ela
+    recalcula onde cada tarefa deveria estar, então rodar duas vezes no mesmo
+    dia não muda nada. Existe para ela **se recuperar sozinha**: worker fora do
+    ar às 00h05 não pode custar o dia inteiro de organização de alguém. Guardando
+    o último dia varrido, a execução seguinte percebe o atraso e cobre.
+
+    A data é a LOCAL da pessoa, e não a do servidor: meia-noite não é um
+    instante, é um instante por fuso.
+    """
+
+    workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="work_stage_sweeps")
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="work_stage_sweeps")
+    ran_on = models.DateField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workspace", "owner"],
+                condition=Q(deleted_at__isnull=True),
+                name="work_stage_sweep_unique_per_owner_when_deleted_at_null",
+            )
+        ]
+        verbose_name = "Work Stage Sweep"
+        verbose_name_plural = "Work Stage Sweeps"
+        db_table = "work_stage_sweeps"
+        ordering = ("-ran_on",)
+
+    def __str__(self):
+        return f"{self.owner.email} @ {self.ran_on}"

@@ -100,10 +100,10 @@ class TestWorkStagesSeed:
     def test_first_list_seeds_default_stages(self, session_client, workspace):
         response = session_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 6
+        assert len(response.data) == 8
         defaults = [stage for stage in response.data if stage["is_default"]]
         assert len(defaults) == 1
-        assert defaults[0]["name"] == "Recém-atribuídas"
+        assert defaults[0]["name"] == "Recentes"
         # Uma etapa de conclusão marcada, para o destino de concluir não
         # depender de ordenação (ADR 0009)
         completions = [stage for stage in response.data if stage["is_completion"]]
@@ -111,19 +111,50 @@ class TestWorkStagesSeed:
         assert completions[0]["name"] == "Concluídas"
         # Ordem do seed preservada pelo sort_order
         assert [stage["name"] for stage in response.data] == [
-            "Recém-atribuídas",
-            "Hoje",
-            "Em breve",
-            "Depois",
+            "Recentes",
+            "Em Andamento",
+            "Para Hoje (fila)",
+            "Pendências",
+            "Para amanhã",
+            "Para Depois",
             "Concluídas",
-            "Canceladas",
+            "Cancelado",
         ]
+
+    def test_seed_ja_nasce_com_a_varredura_configurada(self, session_client, workspace):
+        """Conta nova organiza sozinha desde o primeiro dia (ADR 0014).
+
+        Sem isto, o seed poderia perder as marcações numa edição futura e a
+        varredura não moveria ninguém — sem erro em lugar nenhum, porque balde
+        sem etapa marcada é caso legítimo.
+        """
+        response = session_client.get(STAGES_URL.format(slug=workspace.slug))
+        por_marcacao = {
+            marcacao: [s["name"] for s in response.data if s[marcacao]]
+            for marcacao in ("is_due_today", "is_due_tomorrow", "is_due_later", "is_overdue")
+        }
+
+        assert por_marcacao == {
+            "is_due_today": ["Para Hoje (fila)"],
+            "is_due_tomorrow": ["Para amanhã"],
+            "is_due_later": ["Para Depois"],
+            "is_overdue": ["Pendências"],
+        }
+
+    def test_recentes_e_pendencias_nascem_fora_da_varredura(self, session_client, workspace):
+        """Recentes é onde se toma conhecimento do que chegou — esvaziá-la toda
+        madrugada a impediria de cumprir esse papel. Pendências costuma receber,
+        à mão, coisa que a pessoa quer manter à vista mesmo com data futura."""
+        response = session_client.get(STAGES_URL.format(slug=workspace.slug))
+
+        travadas = sorted(s["name"] for s in response.data if s["automation_disabled"])
+        assert travadas == ["Pendências", "Recentes"]
 
     def test_seed_is_idempotent(self, session_client, workspace):
         session_client.get(STAGES_URL.format(slug=workspace.slug))
         response = session_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 6
+        assert len(response.data) == 8
 
     def test_seed_race_is_absorbed(self, db, workspace, create_user):
         """Se dois requests passam pelo exists() ao mesmo tempo, a segunda
@@ -134,14 +165,14 @@ class TestWorkStagesSeed:
         ) as mocked_filter:
             mocked_filter.return_value.exists.return_value = False
             ensure_default_work_stages(workspace, create_user)  # não levanta
-        assert WorkStage.objects.filter(workspace=workspace, owner=create_user).count() == 6
+        assert WorkStage.objects.filter(workspace=workspace, owner=create_user).count() == 8
 
     def test_seed_is_per_user(self, session_client, second_client, workspace, second_user, create_user):
         session_client.get(STAGES_URL.format(slug=workspace.slug))
         response = second_client.get(STAGES_URL.format(slug=workspace.slug))
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 6
-        assert WorkStage.objects.filter(workspace=workspace).count() == 12
+        assert len(response.data) == 8
+        assert WorkStage.objects.filter(workspace=workspace).count() == 16
         first_ids = set(WorkStage.objects.filter(owner=create_user).values_list("id", flat=True))
         second_ids = {stage["id"] for stage in response.data}
         assert first_ids.isdisjoint(second_ids)
@@ -163,7 +194,7 @@ class TestWorkStagesCrud:
         seed_stages(workspace, create_user)
         response = session_client.post(
             STAGES_URL.format(slug=workspace.slug),
-            {"name": "Hoje", "color": "#000000", "group": "started"},
+            {"name": "Para Hoje (fila)", "color": "#000000", "group": "started"},
             format="json",
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -183,7 +214,7 @@ class TestWorkStagesCrud:
     def test_patch_stage(self, session_client, workspace, create_user):
         stages = seed_stages(workspace, create_user)
         response = session_client.patch(
-            STAGE_URL.format(slug=workspace.slug, pk=stages["Hoje"].id),
+            STAGE_URL.format(slug=workspace.slug, pk=stages["Para Hoje (fila)"].id),
             {"name": "Agora", "color": "#FF0000"},
             format="json",
         )
@@ -193,7 +224,7 @@ class TestWorkStagesCrud:
     def test_patch_other_users_stage_is_not_found(self, second_client, workspace, create_user):
         stages = seed_stages(workspace, create_user)
         response = second_client.patch(
-            STAGE_URL.format(slug=workspace.slug, pk=stages["Hoje"].id),
+            STAGE_URL.format(slug=workspace.slug, pk=stages["Para Hoje (fila)"].id),
             {"name": "Invasão"},
             format="json",
         )
@@ -202,7 +233,7 @@ class TestWorkStagesCrud:
     def test_destroy_default_is_rejected(self, session_client, workspace, create_user):
         stages = seed_stages(workspace, create_user)
         response = session_client.delete(
-            STAGE_URL.format(slug=workspace.slug, pk=stages["Recém-atribuídas"].id)
+            STAGE_URL.format(slug=workspace.slug, pk=stages["Recentes"].id)
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -211,12 +242,12 @@ class TestWorkStagesCrud:
     ):
         stages = seed_stages(workspace, create_user)
         WorkStageIssue.objects.create(
-            workspace=workspace, owner=create_user, stage=stages["Hoje"], issue=assigned_issue
+            workspace=workspace, owner=create_user, stage=stages["Para Hoje (fila)"], issue=assigned_issue
         )
-        response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages["Hoje"].id))
+        response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages["Para Hoje (fila)"].id))
         assert response.status_code == status.HTTP_204_NO_CONTENT
         association = WorkStageIssue.objects.get(owner=create_user, issue=assigned_issue)
-        assert association.stage_id == stages["Recém-atribuídas"].id
+        assert association.stage_id == stages["Recentes"].id
 
     def test_mark_completion_swaps(self, session_client, workspace, create_user):
         """Evolury: destino da conclusão entre as etapas do usuário (ADR 0009)."""
@@ -237,18 +268,20 @@ class TestWorkStagesCrud:
     ):
         """Etapa de outro grupo não pode ser destino de conclusão."""
         stages = seed_stages(workspace, create_user)
-        response = session_client.post(MARK_COMPLETION_URL.format(slug=workspace.slug, pk=stages["Hoje"].id))
+        response = session_client.post(
+            MARK_COMPLETION_URL.format(slug=workspace.slug, pk=stages["Para Hoje (fila)"].id)
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        stages["Hoje"].refresh_from_db()
-        assert stages["Hoje"].is_completion is False
+        stages["Para Hoje (fila)"].refresh_from_db()
+        assert stages["Para Hoje (fila)"].is_completion is False
 
     def test_mark_default_swaps(self, session_client, workspace, create_user):
         stages = seed_stages(workspace, create_user)
-        response = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages["Hoje"].id))
+        response = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages["Para Hoje (fila)"].id))
         assert response.status_code == status.HTTP_204_NO_CONTENT
         defaults = WorkStage.objects.filter(workspace=workspace, owner=create_user, is_default=True)
         assert defaults.count() == 1
-        assert defaults.first().id == stages["Hoje"].id
+        assert defaults.first().id == stages["Para Hoje (fila)"].id
 
 
 @pytest.mark.contract
@@ -288,7 +321,7 @@ class TestMyTasksIssues:
         assert response.status_code == status.HTTP_200_OK
         stages = {stage.name: stage for stage in WorkStage.objects.filter(workspace=workspace, owner=create_user)}
         result = response.data["results"][0]
-        assert result["my_task_stage_id"] == stages["Recém-atribuídas"].id
+        assert result["my_task_stage_id"] == stages["Recentes"].id
 
     def test_completed_issue_without_association_falls_into_the_completed_stage(
         self, session_client, workspace, project, create_user, assigned_issue
@@ -314,11 +347,11 @@ class TestMyTasksIssues:
     ):
         stages = seed_stages(workspace, create_user)
         WorkStageIssue.objects.create(
-            workspace=workspace, owner=create_user, stage=stages["Hoje"], issue=assigned_issue
+            workspace=workspace, owner=create_user, stage=stages["Para Hoje (fila)"], issue=assigned_issue
         )
         response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
         result = response.data["results"][0]
-        assert result["my_task_stage_id"] == stages["Hoje"].id
+        assert result["my_task_stage_id"] == stages["Para Hoje (fila)"].id
 
     def test_payload_sort_order_is_the_personal_one(
         self, session_client, workspace, create_user, assigned_issue
@@ -331,7 +364,7 @@ class TestMyTasksIssues:
         WorkStageIssue.objects.create(
             workspace=workspace,
             owner=create_user,
-            stage=stages["Hoje"],
+            stage=stages["Para Hoje (fila)"],
             issue=assigned_issue,
             sort_order=111.0,
         )
@@ -352,13 +385,13 @@ class TestMyTasksIssues:
         first_stages = seed_stages(workspace, create_user)
         second_stages = seed_stages(workspace, second_user)
         WorkStageIssue.objects.create(
-            workspace=workspace, owner=create_user, stage=first_stages["Hoje"], issue=assigned_issue
+            workspace=workspace, owner=create_user, stage=first_stages["Para Hoje (fila)"], issue=assigned_issue
         )
 
         first = session_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"][0]
         second = second_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"][0]
-        assert first["my_task_stage_id"] == first_stages["Hoje"].id
-        assert second["my_task_stage_id"] == second_stages["Recém-atribuídas"].id
+        assert first["my_task_stage_id"] == first_stages["Para Hoje (fila)"].id
+        assert second["my_task_stage_id"] == second_stages["Recentes"].id
 
     def test_grouped_by_stage(self, session_client, workspace, create_user, assigned_issue):
         stages = seed_stages(workspace, create_user)
@@ -370,7 +403,7 @@ class TestMyTasksIssues:
         results = response.data["results"]
         # Uma chave por etapa; o item não movido cai no grupo da padrão.
         assert set(results.keys()) == {str(stage.id) for stage in stages.values()}
-        default_group = results[str(stages["Recém-atribuídas"].id)]
+        default_group = results[str(stages["Recentes"].id)]
         assert [item["id"] for item in default_group["results"]] == [assigned_issue.id]
 
     def test_grouped_response_always_carries_all_stage_keys(
@@ -407,10 +440,10 @@ class TestMyTasksIssueStage:
     def test_moved_issue_returns_its_stage(self, session_client, workspace, create_user, assigned_issue):
         stages = seed_stages(workspace, create_user)
         WorkStageIssue.objects.create(
-            workspace=workspace, owner=create_user, stage=stages["Hoje"], issue=assigned_issue
+            workspace=workspace, owner=create_user, stage=stages["Para Hoje (fila)"], issue=assigned_issue
         )
         response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
-        assert response.data["stage_id"] == str(stages["Hoje"].id)
+        assert response.data["stage_id"] == str(stages["Para Hoje (fila)"].id)
 
     def test_not_assigned_is_not_found(self, session_client, workspace, project, create_user):
         unassigned = Issue.objects.create(
@@ -425,7 +458,7 @@ class TestMyTasksIssueStage:
         assert WorkStage.objects.filter(owner=create_user).count() == 0
         response = session_client.get(STAGE_URL_ISSUE.format(slug=workspace.slug, issue_id=assigned_issue.id))
         assert response.status_code == status.HTTP_200_OK
-        assert WorkStage.objects.filter(owner=create_user).count() == 6
+        assert WorkStage.objects.filter(owner=create_user).count() == 8
         assert response.data["stage_id"] is not None
 
 
@@ -435,29 +468,29 @@ class TestMyTasksMove:
         stages = seed_stages(workspace, create_user)
         response = session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
-            {"stage_id": str(stages["Hoje"].id)},
+            {"stage_id": str(stages["Para Hoje (fila)"].id)},
             format="json",
         )
         assert response.status_code == status.HTTP_200_OK
         association = WorkStageIssue.objects.get(owner=create_user, issue=assigned_issue)
-        assert association.stage_id == stages["Hoje"].id
+        assert association.stage_id == stages["Para Hoje (fila)"].id
 
     def test_move_again_updates_same_association(
         self, session_client, workspace, create_user, assigned_issue
     ):
         stages = seed_stages(workspace, create_user)
         url = MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id)
-        session_client.post(url, {"stage_id": str(stages["Hoje"].id)}, format="json")
-        session_client.post(url, {"stage_id": str(stages["Depois"].id)}, format="json")
+        session_client.post(url, {"stage_id": str(stages["Para Hoje (fila)"].id)}, format="json")
+        session_client.post(url, {"stage_id": str(stages["Para Depois"].id)}, format="json")
         associations = WorkStageIssue.objects.filter(owner=create_user, issue=assigned_issue)
         assert associations.count() == 1
-        assert associations.first().stage_id == stages["Depois"].id
+        assert associations.first().stage_id == stages["Para Depois"].id
 
     def test_move_persists_sort_order(self, session_client, workspace, create_user, assigned_issue):
         stages = seed_stages(workspace, create_user)
         response = session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
-            {"stage_id": str(stages["Hoje"].id), "sort_order": 12345.0},
+            {"stage_id": str(stages["Para Hoje (fila)"].id), "sort_order": 12345.0},
             format="json",
         )
         assert response.status_code == status.HTTP_200_OK
@@ -476,7 +509,7 @@ class TestMyTasksMove:
         )
         response = session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=unassigned.id),
-            {"stage_id": str(seed["Hoje"].id)},
+            {"stage_id": str(seed["Para Hoje (fila)"].id)},
             format="json",
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -487,7 +520,7 @@ class TestMyTasksMove:
         other_stages = seed_stages(workspace, second_user)
         response = session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
-            {"stage_id": str(other_stages["Hoje"].id)},
+            {"stage_id": str(other_stages["Para Hoje (fila)"].id)},
             format="json",
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -530,7 +563,7 @@ class TestMyTasksMove:
         stages = seed_stages(workspace, create_user)
         session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
-            {"stage_id": str(stages["Hoje"].id)},
+            {"stage_id": str(stages["Para Hoje (fila)"].id)},
             format="json",
         )
         assert WorkStageIssue.objects.filter(issue_id=assigned_issue.id).count() == 1
@@ -545,7 +578,7 @@ class TestMyTasksMove:
         stages = seed_stages(workspace, create_user)
         session_client.post(
             MOVE_URL.format(slug=workspace.slug, issue_id=assigned_issue.id),
-            {"stage_id": str(stages["Hoje"].id)},
+            {"stage_id": str(stages["Para Hoje (fila)"].id)},
             format="json",
         )
         # desatribui
@@ -558,7 +591,7 @@ class TestMyTasksMove:
         )
         response = session_client.get(ISSUES_URL.format(slug=workspace.slug))
         result = response.data["results"][0]
-        assert result["my_task_stage_id"] == stages["Hoje"].id
+        assert result["my_task_stage_id"] == stages["Para Hoje (fila)"].id
 
     def test_move_does_not_touch_issue_state(self, session_client, workspace, create_user, assigned_issue):
         """Overlay pessoal: mover para uma etapa do grupo "concluído" não muda

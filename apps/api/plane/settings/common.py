@@ -352,6 +352,11 @@ CELERY_IMPORTS = (
     # funciona, a mensagem chega à fila — e o worker a DESCARTA com
     # "unregistered task", que na tela vira uma regra que simplesmente não roda.
     "plane.bgtasks.automation_task",
+    # Evolury: etapas pessoais pelo vencimento (ADR 0014). Mesmo motivo da linha
+    # acima — sem esta declaração o beat despacha, a fila aceita, e o worker
+    # descarta como "unregistered task": a varredura simplesmente não acontece,
+    # sem erro em lugar nenhum.
+    "plane.bgtasks.etapas_por_vencimento_task",
 )
 
 FILE_SIZE_LIMIT = int(os.environ.get("FILE_SIZE_LIMIT", 5242880))
