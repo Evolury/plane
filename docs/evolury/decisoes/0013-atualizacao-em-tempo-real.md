@@ -1,6 +1,6 @@
 # ADR 0013 — Atualização do cartão em tempo real
 
-- **Status:** Proposto (17/08/2026)
+- **Status:** Aceito (17/08/2026), implantado em três fases até 18/08/2026
 - **Contexto:** funcionalidade [automacao](../funcionalidades/automacao/especificacao.md)
 - **Relacionado:** [ADR 0012](0012-automacoes-personalizadas.md) (automações), [ADR 0011](0011-propriedades-personalizadas.md) (propriedades), [ADR 0010](0010-tarefas-recorrentes.md) (recorrência)
 
@@ -166,14 +166,35 @@ web   ─ busca a tarefa pela API normal (permissão aplicada lá)
 O evento carrega **identificadores, nunca conteúdo**. Quem não pode ver a tarefa
 recebe 404 da API e não mostra nada.
 
-## Fases
+## Fases — o que foi entregue, e o que não
 
-1. **O cano.** Publicação no funil, sala por projeto no `live` com checagem de
-   participação, receptor no cliente, apenas `alterada` de campo. Fecha o defeito
-   relatado e as 6 ações de campo.
-2. **A lista.** `criada` e `removida` com rebusca debounced; ciclo e módulo.
-3. **O resto da tela.** Propriedades personalizadas (segundo store), detalhe da
-   tarefa, caixa de entrada.
+1. **O cano** (v1.21.0). Publicação no funil, sala por projeto no `live` com
+   checagem de participação, receptor no cliente, apenas `alterada` de campo.
+   Fechou o defeito relatado e as 6 ações de campo.
+2. **A lista** (v1.22.0). `criada` e `removida`; ciclo e módulo; e o eco por
+   ABA, que resolveu as duas abas da mesma pessoa.
+3. **Propriedades personalizadas** (v1.23.0). O segundo store, e o segundo ponto
+   de publicação no servidor.
+
+### O que a fase 3 previa e NÃO entrou
+
+A fase 3 estava escrita como "o resto da tela: propriedades personalizadas,
+detalhe da tarefa, caixa de entrada". Só a primeira das três foi feita. O estado
+real das outras duas, conferido:
+
+- **Painel de detalhe aberto sobre o quadro** (`IssuePeekOverview`): funciona,
+  **de graça**. Ele lê do mesmo mapa que o receptor atualiza e é montado dentro
+  do quadro, então o gancho continua no ar. Não precisou de nada.
+- **Página de tarefa fora do quadro** (`.../issues/<id>`): **não funciona**. É
+  rota própria, sem o root de layout, então nenhum gancho é montado. Abrir uma
+  tarefa por link direto e deixá-la aberta não recebe aviso nenhum.
+- **Caixa de entrada**: **não funciona**. Não há tipo de evento para
+  notificação, e o sino só busca ao abrir.
+
+Nenhuma das duas é continuação natural do que existe: a página de tarefa precisa
+de uma sala por TAREFA, ou de assinar o projeto sem quadro montado; a caixa de
+entrada precisa de um evento que hoje não existe. Ficam como trabalho declarado,
+e não como lacuna esquecida.
 
 ## Verificação
 
