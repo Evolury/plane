@@ -1743,6 +1743,7 @@
     "updated_description": "updated the description",
     "restored_work_item": "restored the work item",
     "archived_work_item": "archived the work item",
+    "automation_notified": "notified:",
     "this_work_item_has_been_deleted": "This work item has been deleted",
     "unknown_module": "Unknown module",
     "accepted_this_work_item_from_intake": "accepted this work item from intake.",

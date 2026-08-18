@@ -1743,6 +1743,7 @@
     "updated_description": "atualizou a descrição",
     "restored_work_item": "restaurou a tarefa",
     "archived_work_item": "arquivou a tarefa",
+    "automation_notified": "avisou:",
     "this_work_item_has_been_deleted": "Esta tarefa foi excluída",
     "unknown_module": "Módulo desconhecido",
     "accepted_this_work_item_from_intake": "aceitou esta tarefa do Intake.",
