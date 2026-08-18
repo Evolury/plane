@@ -3,6 +3,40 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.24.0] — 2026-08-18
+
+**Minor**: três promessas que o produto fazia e não cumpria, todas em silêncio.
+Nenhuma aparecia na tela; todas só acumulavam.
+
+### Na tela
+
+- **A caixa "notificar por e-mail" prometia um envio que não acontecia.** Ela
+  vinha marcada por padrão, e numa instância sem servidor de e-mail configurado
+  a mensagem era enfileirada para nunca sair — sem erro, sem aviso. Agora ela
+  segue a configuração da instância: sem e-mail configurado nasce desmarcada e a
+  tela diz por quê, e **volta a nascer marcada sozinha** no dia em que o e-mail
+  for configurado.
+
+### Segurança e integridade
+
+- **A fila de e-mail crescia para sempre.** A limpeza automática apagava
+  registros pela data de envio — e o que nunca foi enviado não tem data, então
+  nunca era alcançado. Bastava o servidor de e-mail estar indisponível, ou não
+  configurado, para a tabela crescer sem fim. A limpeza passa a considerar a
+  idade do registro, tenha ele saído ou não.
+
+- **Escrita com nome de campo errado respondia "deu certo".** `assignees` no
+  lugar de `assignee_ids` — e o mesmo para etiquetas — era descartado em
+  silêncio: a resposta dizia sucesso e nada mudava. Agora a recusa é explícita e
+  diz o nome certo. Campo extra desconhecido continua sendo ignorado, como
+  antes: a recusa vale só para os pares que se confundem.
+
+### Por dentro
+
+- Triagem de seis alertas de redirecionamento aberto que o CodeQL abriu nas
+  telas de autenticação — **todos falsos positivos**, com três camadas de
+  proteção medidas contra a produção e trancadas por 36 testes.
+
 ## [1.23.0] — 2026-08-18
 
 **Minor**: fecha o [ADR 0013](docs/evolury/decisoes/0013-atualizacao-em-tempo-real.md).
