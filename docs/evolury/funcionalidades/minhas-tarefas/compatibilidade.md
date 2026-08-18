@@ -53,27 +53,48 @@ Matriz a executar como checklist antes de considerar a F8 entregue. Legenda
 igual à do resto do documento: `[T]` provado por teste, `[V]` verificado na
 tela, `[I]` inspecionado no código.
 
-| #   | Situação                                  | Esperado                                                   | Prova |
-| --- | ----------------------------------------- | ---------------------------------------------------------- | ----- |
-| 1   | Vencimento ontem                          | Vai para a etapa de vencidas                               |       |
-| 2   | Vencimento hoje                           | Vai para a etapa de hoje                                   |       |
-| 3   | Vencimento amanhã                         | Vai para a etapa de amanhã                                 |       |
-| 4   | Vencimento em D+2                         | Vai para a etapa de depois — **o limite, não D+3**         |       |
-| 5   | Sem vencimento                            | Vai para hoje **e continua sem data**                      |       |
-| 6   | Tarefa concluída e vencida                | Não se move: trava do motor                                |       |
-| 7   | Tarefa cancelada e vencida                | Não se move: trava do motor                                |       |
-| 8   | Tarefa em etapa sem automação             | Não sai, mesmo mudando de balde                            |       |
-| 9   | Etapa sem automação como destino          | **Recebe normalmente** — o opt-out é de saída              |       |
-| 10  | Balde sem etapa marcada                   | Tarefa fica onde está                                      |       |
-| 11  | Uma etapa marcada para dois baldes        | Recebe os dois                                             |       |
-| 12  | Duas etapas para o mesmo balde            | Recusado pela constraint                                   |       |
-| 13  | Varredura rodando duas vezes no mesmo dia | Nada muda na segunda                                       |       |
-| 14  | Worker fora do ar na virada               | Varredura seguinte se recupera pelo marcador               |       |
-| 15  | Duas pessoas em fusos diferentes          | Cada uma vira no seu relógio                               |       |
-| 16  | Arrasto manual para a etapa de hoje       | Vencimento vira hoje                                       |       |
-| 17  | Arrasto manual para a etapa de amanhã     | Vencimento vira amanhã                                     |       |
-| 18  | Arrasto manual para depois ou vencidas    | Data **não** é tocada                                      |       |
-| 19  | Arrasto que muda a data                   | Gera histórico e aciona regras, como edição na tela        |       |
-| 20  | Tarefa vencida repactuada para o futuro   | Sai de vencidas na varredura seguinte, salvo etapa travada |       |
-| 21  | Etapa marcada sendo excluída              | A marcação some com ela; o balde fica sem etapa            |       |
-| 22  | Conta nova                                | Nasce com as oito etapas e as marcações do seed            |       |
+| #   | Situação                                  | Esperado                                                   | Prova         |
+| --- | ----------------------------------------- | ---------------------------------------------------------- | ------------- |
+| 1   | Vencimento ontem                          | Vai para a etapa de vencidas                               | `[T]` · `[V]` |
+| 2   | Vencimento hoje                           | Vai para a etapa de hoje                                   | `[T]` · `[V]` |
+| 3   | Vencimento amanhã                         | Vai para a etapa de amanhã                                 | `[T]` · `[V]` |
+| 4   | Vencimento em D+2                         | Vai para a etapa de depois — **o limite, não D+3**         | `[T]` · `[V]` |
+| 5   | Sem vencimento                            | Vai para hoje **e continua sem data**                      | `[T]` · `[V]` |
+| 6   | Tarefa concluída e vencida                | Não se move: trava do motor                                | `[T]`         |
+| 7   | Tarefa cancelada e vencida                | Não se move: trava do motor                                | `[T]`         |
+| 8   | Tarefa em etapa sem automação             | Não sai, mesmo mudando de balde                            | `[T]` · `[V]` |
+| 9   | Etapa sem automação como destino          | **Recebe normalmente** — o opt-out é de saída              | `[T]` · `[V]` |
+| 10  | Balde sem etapa marcada                   | Tarefa fica onde está                                      | `[T]`         |
+| 11  | Uma etapa marcada para dois baldes        | Recebe os dois                                             | `[T]`         |
+| 12  | Duas etapas para o mesmo balde            | Recusado pela constraint                                   | `[T]` · `[V]` |
+| 13  | Varredura rodando duas vezes no mesmo dia | Nada muda na segunda                                       | `[T]` · `[V]` |
+| 14  | Worker fora do ar na virada               | Varredura seguinte se recupera pelo marcador               | `[T]`         |
+| 15  | Duas pessoas em fusos diferentes          | Cada uma vira no seu relógio                               | `[I]`         |
+| 16  | Arrasto manual para a etapa de hoje       | Vencimento vira hoje                                       | `[T]`         |
+| 17  | Arrasto manual para a etapa de amanhã     | Vencimento vira amanhã                                     | `[T]`         |
+| 18  | Arrasto manual para depois ou vencidas    | Data **não** é tocada                                      | `[T]`         |
+| 19  | Arrasto que muda a data                   | Gera histórico e aciona regras, como edição na tela        | `[I]`         |
+| 20  | Tarefa vencida repactuada para o futuro   | Sai de vencidas na varredura seguinte, salvo etapa travada | `[T]` · `[V]` |
+| 21  | Etapa marcada sendo excluída              | A marcação some com ela; o balde fica sem etapa            | `[I]`         |
+| 22  | Conta nova                                | Nasce com as oito etapas e as marcações do seed            | `[V]`         |
+
+### Executada em 18/08/2026
+
+Verificação da virada feita contra a produção, rodando **a tarefa do beat**, e
+não a função interna — o caminho que roda de verdade.
+
+Com o relógio um dia à frente, tudo andou um balde: a que vencia hoje virou
+vencida, a de amanhã virou de hoje, a de D+2 virou de amanhã. A sem data
+continuou em "hoje" **e sem data**.
+
+Rodar duas vezes no mesmo dia varreu **zero** pessoas e não mudou nada — o
+marcador cumprindo o papel.
+
+Uma consequência do seed que vale saber: como Recentes nasce travada, **tarefa
+nova não é ordenada pela varredura até alguém a tirar de lá**. É o desenho
+pedido — Recentes existe para se tomar conhecimento do que chegou —, e significa
+que a varredura administra o que já foi triado, não a caixa de entrada.
+
+As linhas 15, 19 e 21 ficam como `[I]`: dependem de dois fusos simultâneos, do
+histórico de uma escrita e da exclusão de etapa, e as três já têm o
+comportamento provado por teste noutro lugar da suíte.

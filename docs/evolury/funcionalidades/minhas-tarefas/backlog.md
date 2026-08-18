@@ -226,5 +226,7 @@ ajustar o seed à mão.
       especificação, com as marcações — inclusive Recentes e Pendências já
       **sem automação**
 - [x] F8.3.2 Aplicação do padrão novo no devlocal e na produção de teste
-- [ ] F8.3.3 Verificação visual com o relógio adiantado, para provar a virada e
-      não só a função
+- [x] F8.3.3 Verificação com o relógio adiantado, rodando **a tarefa do beat** e
+      não a função interna. Com um dia à frente tudo andou um balde; rodar duas
+      vezes no mesmo dia varreu zero pessoas. Detalhes em
+      [compatibilidade.md](compatibilidade.md)
