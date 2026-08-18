@@ -50,10 +50,14 @@ Decisão: [ADR 0012](../../decisoes/0012-automacoes-personalizadas.md).
 
 ## Pendências desta matriz
 
-- As linhas 12, 13 e 14 deixaram de ser `[I]` em 17/08/2026 (ver abaixo). O que
-  continua valendo daquela nota: uma confirmação **visual** da notificação
-  chegando na tela e no e-mail. O teste prende o despacho; ver a pessoa ser
-  avisada é outra pergunta, e ela está em aberto.
+- As linhas 12, 13 e 14 deixaram de ser `[I]` em 17/08/2026 (ver abaixo). A
+  confirmação **visual** que faltava foi feita em 18/08/2026, e o resultado está
+  registrado no [ADR 0013](../../decisoes/0013-atualizacao-em-tempo-real.md):
+  com a notificação marcada como lida e **outra pessoa** mexendo numa tarefa em
+  que o destinatário estava inscrito, o aviso do sino acendeu em menos de 3
+  segundos, numa página sem quadro nenhum e sem recarregar.
+- A entrega por **e-mail** não é pendência: é decisão tomada — só com produção
+  real. Ver [backlog](backlog.md#e-mail-decidido-para-quando-houver-produção-real).
 - Carga real medida em 16/08/2026: 1.000 avaliações drenadas em 10,9 s, mediana
   de 6 ms por avaliação, zero falhas. Detalhes e o achado sobre o teto por hora
   estão no [backlog](backlog.md).

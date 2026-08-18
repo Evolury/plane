@@ -130,12 +130,13 @@ os dois eram promessas que o produto não cumpria:
 - [x] `RECEITAS_DE_AUTOMACAO` ganhou consumidor na F3.7 — o item estava
       desatualizado desde que a tela de receitas foi ao ar.
 
-## Fora de escopo até haver produção real
+## E-mail: decidido para quando houver produção real
 
-**Entrega de e-mail.** Decidido em 17/08/2026 pelo dono do produto: só quando
-houver produção de verdade.
+**Isto não é pendência — é decisão tomada**, em 17/08/2026 pelo dono do produto
+e reafirmada no fechamento do ciclo em 18/08/2026. Fica registrado aqui para não
+voltar como defeito nem como item de fila.
 
-O que está medido, para não ser redescoberto:
+O que estava medido em 17/08/2026, para não ser redescoberto:
 
 |                          |                                                    |
 | ------------------------ | -------------------------------------------------- |
@@ -143,9 +144,17 @@ O que está medido, para não ser redescoberto:
 | Fila pendente            | 49                                                 |
 | Já enviados              | 0                                                  |
 
+A fila **não cresce mais sem fim**: a poda passou a considerar a idade do
+registro, e não a data de envio que nunca chega. Os 49 saem sozinhos ao passar
+da janela de retenção — não são dívida, são trânsito.
+
 O código da ação `notify` está pronto e a fila enche normalmente — falta só um
 SMTP configurado. **Não abra defeito por isto**: o e-mail não sai por decisão,
 e não por regressão.
+
+O que restará no dia em que houver produção real é só a **entrega**: provedor,
+credenciais, SPF/DKIM e a conferência de que uma mensagem chega mesmo a uma
+caixa. Nada de código.
 
 Dois efeitos colaterais **já resolvidos** em 18/08/2026, porque nenhum dependia
 de produção real:
