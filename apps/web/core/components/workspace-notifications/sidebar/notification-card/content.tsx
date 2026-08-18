@@ -96,6 +96,21 @@ export const BASE_NOTIFICATION_CONTENT_MAP: TNotificationContentMap = {
     value: null,
     showConnector: false,
   }),
+  // Evolury: o aviso da ação `notify` de uma automação (ADR 0012).
+  //
+  // `field` é "automation" — um valor que não existe no upstream, porque lá não
+  // há automação que avise. Sem entrada aqui, a leitura caía no
+  // `renderAdditionalAction`, que monta a frase concatenando `verb` com o nome
+  // do campo, os dois crus: o cartão exibia "Automação created automation em
+  // <texto>" num produto em português.
+  //
+  // O texto JÁ é a frase que a regra escreveu, então ele é o valor e não
+  // precisa de conector: "Automação avisou: <texto>."
+  automation: ({ newValue }) => ({
+    action: translate("activity_log.automation_notified"),
+    value: newValue,
+    showConnector: false,
+  }),
   None: () => ({
     action: null,
     value: translate("activity_log.the_work_item_and_assigned_it_to_you"),
@@ -164,10 +179,17 @@ export function NotificationContent({
   renderCommentBox?: boolean;
 }) {
   const { data, triggered_by_details: triggeredBy } = notification;
+  // Evolury: o `?.` precisa estar nas QUATRO leituras, e não só na primeira.
+  //
+  // A correção anterior (#150) pôs o opcional em `field` e deixou as três
+  // irmãs, o que só mudou qual linha estoura: uma notificação gravada sem
+  // `issue_activity` continuava derrubando a caixa de entrada inteira. Há uma
+  // linha assim no banco — das que foram criadas antes daquela correção —, e
+  // ela não some sozinha.
   const notificationField = data?.issue_activity?.field;
-  const newValue = data?.issue_activity.new_value;
-  const oldValue = data?.issue_activity.old_value;
-  const verb = data?.issue_activity.verb;
+  const newValue = data?.issue_activity?.new_value;
+  const oldValue = data?.issue_activity?.old_value;
+  const verb = data?.issue_activity?.verb;
 
   const fieldData: TNotificationFieldData = {
     field: notificationField,
