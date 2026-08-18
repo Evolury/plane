@@ -102,9 +102,19 @@ export const useEventosDeTarefa = (
   // do efeito: o store é observável e trocaria de identidade a cada render, o
   // que derrubaria e reabriria a conexão sem parar.
   const issuesRef = useRef(issues);
-  issuesRef.current = issues;
   const meuIdRef = useRef(currentUser?.id);
-  meuIdRef.current = currentUser?.id;
+
+  // A escrita mora num efeito, e não no corpo da renderização.
+  //
+  // Renderização precisa ser pura: o React pode repetir ou descartar o trabalho
+  // de render, e uma escrita feita ali vaza de uma tela que nunca chegou a ser
+  // confirmada. O valor inicial vem do próprio `useRef`, então o primeiro render
+  // já enxerga o certo; deste efeito para frente, cada confirmação atualiza.
+  // Este efeito é declarado ANTES do da conexão, e o React os roda nessa ordem.
+  useEffect(() => {
+    issuesRef.current = issues;
+    meuIdRef.current = currentUser?.id;
+  });
 
   useEffect(() => {
     if (!workspaceSlug || !projectId) return;
@@ -121,7 +131,10 @@ export const useEventosDeTarefa = (
     const buscarPendentes = async () => {
       const ids = [...pendentes];
       pendentes.clear();
-      if (ids.length === 0) return;
+      // As duas guardas são necessárias e não se sobrepõem: esta evita a
+      // requisição de quem já saiu do quadro, e a de baixo cobre quem saiu
+      // DURANTE a requisição.
+      if (ids.length === 0 || desmontado) return;
       try {
         const frescas = await issueService.retrieveIssues(workspaceSlug, projectId, ids);
         if (desmontado) return;
