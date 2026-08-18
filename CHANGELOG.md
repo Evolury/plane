@@ -3,6 +3,50 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.26.0] — 2026-08-18
+
+**Minor**: as etapas de **Minhas tarefas** passam a se organizar sozinhas pelo
+vencimento. Toda madrugada, cada tarefa vai para a etapa que a data dela indica —
+e arrastar entre as etapas de curto prazo passa a ser a forma de reagendar
+([ADR 0014](docs/evolury/decisoes/0014-etapas-por-vencimento.md)).
+
+### Na tela
+
+- **A faxina diária deixou de ser sua.** Puxar o que venceu, trazer o que é de
+  hoje, empurrar o que ficou para depois: a data já dizia tudo isso, e agora o
+  produto faz a conta. Na virada do dia, no seu fuso, cada tarefa vai para a
+  etapa marcada como vencidas, hoje, amanhã ou depois.
+
+- **Arrastar para "hoje" ou "amanhã" reagenda a tarefa.** É o que faz etapa e
+  data concordarem: sem isso, você moveria a tarefa e a madrugada a puxaria de
+  volta. Arrastar para as outras etapas não mexe na data — "depois" é um
+  intervalo aberto e "vencidas" é passado.
+
+- **Você escolhe quais etapas recebem cada grupo**, na própria linha da etapa,
+  como já se marca a etapa padrão. As marcações são **opcionais**: um grupo sem
+  etapa marcada simplesmente não move ninguém. Uma etapa pode receber mais de um
+  grupo.
+
+- **Você pode tirar uma etapa da organização automática.** Vale para **sair**:
+  o que está ali não é levado embora, mas continua podendo chegar. É o que
+  permite "Pendências" receber as vencidas e, ao mesmo tempo, segurar o que você
+  põe ali à mão.
+
+- **Tarefa sem data vai para "hoje" — e continua sem data.** Tarefa sem
+  vencimento é tarefa esquecida; trazê-la para hoje é pô-la na sua frente. A
+  data continua vazia de propósito: é ela que faz você notar.
+
+- **Conta nova já nasce organizada**, com as oito etapas do padrão e as
+  marcações prontas. Recentes e Pendências nascem fora da organização
+  automática: a primeira é onde se vê o que chegou, a segunda costuma guardar o
+  que você quer manter à vista.
+
+### O que a organização automática não toca
+
+Tarefa concluída ou cancelada, por regra do próprio motor — uma tarefa
+terminada ontem está tecnicamente vencida, e trazê-la de volta seria
+ressuscitar trabalho pronto.
+
 ## [1.25.0] — 2026-08-18
 
 **Minor**: a tela inteira passa a acompanhar o que muda de fora. Fecha o
