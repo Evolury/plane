@@ -230,3 +230,58 @@ class DynamicBaseSerializer(BaseSerializer):
                     response["issue_attachments"] = []
 
         return response
+
+
+#: Sufixos que denunciam um apelido confundível: quem tem `assignee_ids` recebe
+#: gente mandando `assignees`, e o DRF ignora campo desconhecido em silêncio.
+_SUFIXOS_DE_REFERENCIA = ("_ids", "_id")
+
+
+def recusar_apelidos_confundiveis(serializer, dados):
+    """Levanta 400 quando o pedido usa o nome sem sufixo de um campo de escrita.
+
+    Evolury: `PATCH {"assignees": [...]}` respondia **204 e não fazia nada**. O
+    campo escrevível é `assignee_ids`; `assignees` só existe como leitura. O DRF
+    descarta chave desconhecida sem dizer nada, então a escrita "dava certo" e o
+    responsável não mudava.
+
+    É a mesma família de defeito que a criação rápida engolindo a mensagem do
+    servidor: **falha silenciosa com cara de sucesso**. Custou duas rodadas de
+    depuração aqui dentro, e custaria o mesmo a quem integrasse com a API.
+
+    A lista de apelidos é DERIVADA das declarações, e não escrita à mão: um
+    campo `foo_ids` novo passa a recusar `foo` sozinho, sem ninguém lembrar.
+    Só recusa quando o nome sem sufixo não é, ele próprio, um campo de escrita.
+
+    Não é uma recusa geral de campo desconhecido: essa quebraria todo cliente
+    que mande campo extra, e o alcance seria a API inteira. Aqui a recusa é
+    exatamente sobre o par que se confunde.
+    """
+    if not isinstance(dados, dict):
+        return
+
+    escrevíveis = {nome for nome, campo in serializer.fields.items() if not campo.read_only}
+    apelidos = {}
+    for nome in escrevíveis:
+        for sufixo in _SUFIXOS_DE_REFERENCIA:
+            if not nome.endswith(sufixo):
+                continue
+            base = nome[: -len(sufixo)]
+            if not base:
+                break
+            # `assignee_ids` tira `_ids` e vira `assignee`, mas ninguém escreve
+            # isso: o apelido que as pessoas usam é o PLURAL, `assignees` — que
+            # é como a relação se chama no modelo. Os dois entram; sobrar um
+            # apelido que ninguém manda não custa nada, e faltar o certo custa o
+            # defeito inteiro de volta.
+            candidatos = {base, base + "s"} if sufixo == "_ids" else {base}
+            for apelido in candidatos:
+                if apelido not in escrevíveis:
+                    apelidos[apelido] = nome
+            break
+
+    encontrados = {a: c for a, c in apelidos.items() if a in dados}
+    if encontrados:
+        raise serializers.ValidationError(
+            {apelido: f"Campo não existe na escrita. Use `{campo}`." for apelido, campo in encontrados.items()}
+        )

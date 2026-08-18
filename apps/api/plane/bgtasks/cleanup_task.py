@@ -96,11 +96,24 @@ def get_api_logs_queryset():
 
 
 def get_email_logs_queryset():
-    """Get email logs older than the email retention window."""
+    """Get email logs older than the email retention window.
+
+    Evolury: a poda olhava só `sent_at`, e por isso NUNCA alcançava o que não
+    foi enviado — um registro sem envio tem `sent_at` nulo, e nulo não casa com
+    `<=`. Numa instância sem SMTP configurado, ou durante qualquer indisponibilidade
+    do servidor de e-mail, a tabela crescia para sempre: a fila é escrita a cada
+    notificação e nada a esvaziava.
+
+    O critério passa a ser a IDADE do registro, e não o desfecho dele. Um aviso
+    velho o bastante já não interessa a ninguém — tenha saído ou não —, e é
+    justamente o que não saiu que precisa de poda, porque o que saiu já tinha.
+    """
     cutoff_time = timezone.now() - timedelta(days=settings.EMAIL_LOG_RETENTION_DAYS)
     logger.info(f"Email logs cutoff time: {cutoff_time}")
     return (
-        EmailNotificationLog.all_objects.filter(sent_at__lte=cutoff_time)
+        EmailNotificationLog.all_objects.filter(
+            Q(sent_at__lte=cutoff_time) | Q(sent_at__isnull=True, created_at__lte=cutoff_time)
+        )
         .values_list("id", flat=True)
         .iterator(chunk_size=BATCH_SIZE)
     )

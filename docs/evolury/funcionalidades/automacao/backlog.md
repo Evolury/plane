@@ -147,8 +147,17 @@ O código da ação `notify` está pronto e a fila enche normalmente — falta s
 SMTP configurado. **Não abra defeito por isto**: o e-mail não sai por decisão,
 e não por regressão.
 
-Fica um efeito colateral conhecido, sem dono até lá: a caixa "notificar por
-e-mail" do editor **vem marcada por padrão**, então quem cria uma regra pede um
-e-mail que não vai sair, sem aviso. Enquanto a decisão valer, quem for mexer
-nisso deve decidir entre desmarcar por padrão, esconder a opção ou dizer na tela
-que o envio não está configurado.
+Dois efeitos colaterais **já resolvidos** em 18/08/2026, porque nenhum dependia
+de produção real:
+
+- a caixa "notificar por e-mail" vinha marcada por padrão e prometia um envio
+  que não acontecia. Passou a seguir `is_smtp_configured`, que a API já expõe:
+  sem SMTP nasce desmarcada e a tela diz por quê, e **no dia em que houver SMTP
+  ela volta a nascer marcada sozinha**, sem tocar em código;
+- a fila crescia para sempre. A poda apagava registros por `sent_at <= corte`, e
+  nulo não casa com `<=`: o que nunca saiu ficava eternamente. Passou a podar
+  pela IDADE do registro, tenha saído ou não.
+
+O que continua dependendo de produção real é só a **entrega**: provedor,
+credenciais, SPF/DKIM e a conferência de que uma mensagem chega mesmo a uma
+caixa.
