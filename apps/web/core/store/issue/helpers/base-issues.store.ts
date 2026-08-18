@@ -62,6 +62,19 @@ export interface IBaseIssuesStore {
   issuePaginationData: TIssuePaginationData; // map of groupId/subgroup and pagination Data of that particular group/subgroup
 
   //actions
+  // Evolury: `issueUpdate` é público na classe desde sempre, mas nunca foi
+  // declarado aqui — quem só tinha a interface na mão não o enxergava. Declarado
+  // porque o receptor de eventos do `live` (ADR 0013) o chama com
+  // `shouldSync: false`, para aplicar no store SEM escrever de volta na API.
+  // Alternativa seria um cast, que compilaria para sempre e deixaria a
+  // funcionalidade morrer em silêncio no dia em que o método mudasse de nome.
+  issueUpdate: (
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+    data: Partial<TIssue>,
+    shouldSync?: boolean
+  ) => Promise<void>;
   removeIssue: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
   clear(shouldClearPaginationOptions?: boolean): void;
   // helper methods

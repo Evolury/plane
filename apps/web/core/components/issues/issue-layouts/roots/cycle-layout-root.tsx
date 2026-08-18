@@ -20,6 +20,8 @@ import { ProjectLevelWorkItemFiltersHOC } from "@/components/work-item-filters/f
 import { WorkItemFiltersRow } from "@/components/work-item-filters/filters-row";
 import { useCycle } from "@/hooks/store/use-cycle";
 import { useIssues } from "@/hooks/store/use-issues";
+// Evolury: avisos de mudança vinda de fora — automação ou outra pessoa (ADR 0013)
+import { useEventosDeTarefa } from "@/hooks/use-eventos-de-tarefa";
 import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 // local imports
 import { IssuePeekOverview } from "../../peek-overview";
@@ -57,6 +59,7 @@ export const CycleLayoutRoot = observer(function CycleLayoutRoot() {
   const cycleId = routerCycleId ? routerCycleId.toString() : undefined;
   // store hooks
   const { issuesFilter } = useIssues(EIssuesStoreType.CYCLE);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.CYCLE);
   const { getCycleById } = useCycle();
   // state
   const [transferIssuesModal, setTransferIssuesModal] = useState(false);

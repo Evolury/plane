@@ -16,6 +16,8 @@ import { useTranslation } from "@plane/i18n";
 import { ProjectLevelWorkItemFiltersHOC } from "@/components/work-item-filters/filters-hoc/project-level";
 import { WorkItemFiltersRow } from "@/components/work-item-filters/filters-row";
 import { useIssues } from "@/hooks/store/use-issues";
+// Evolury: avisos de mudança vinda de fora — automação ou outra pessoa (ADR 0013)
+import { useEventosDeTarefa } from "@/hooks/use-eventos-de-tarefa";
 import { useProjectView } from "@/hooks/store/use-project-view";
 import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 // local imports
@@ -52,6 +54,7 @@ export const ProjectViewLayoutRoot = observer(function ProjectViewLayoutRoot() {
   const viewId = routerViewId ? routerViewId?.toString() : undefined;
   // hooks
   const { issuesFilter } = useIssues(EIssuesStoreType.PROJECT_VIEW);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.PROJECT_VIEW);
   const { getViewById } = useProjectView();
   // derived values
   const projectView = viewId ? getViewById(viewId) : undefined;
