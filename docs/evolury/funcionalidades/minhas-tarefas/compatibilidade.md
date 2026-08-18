@@ -46,3 +46,34 @@ corrigidos e cobertos:
    devolve `{}` com zero resultados e o front nunca sai do "carregando"; o
    endpoint garante toda etapa presente
    (`test_grouped_response_always_carries_all_stage_keys`).
+
+## Movimentação diária pelo vencimento (ADR 0014)
+
+Matriz a executar como checklist antes de considerar a F8 entregue. Legenda
+igual à do resto do documento: `[T]` provado por teste, `[V]` verificado na
+tela, `[I]` inspecionado no código.
+
+| #   | Situação                                  | Esperado                                                   | Prova |
+| --- | ----------------------------------------- | ---------------------------------------------------------- | ----- |
+| 1   | Vencimento ontem                          | Vai para a etapa de vencidas                               |       |
+| 2   | Vencimento hoje                           | Vai para a etapa de hoje                                   |       |
+| 3   | Vencimento amanhã                         | Vai para a etapa de amanhã                                 |       |
+| 4   | Vencimento em D+2                         | Vai para a etapa de depois — **o limite, não D+3**         |       |
+| 5   | Sem vencimento                            | Vai para hoje **e continua sem data**                      |       |
+| 6   | Tarefa concluída e vencida                | Não se move: trava do motor                                |       |
+| 7   | Tarefa cancelada e vencida                | Não se move: trava do motor                                |       |
+| 8   | Tarefa em etapa sem automação             | Não sai, mesmo mudando de balde                            |       |
+| 9   | Etapa sem automação como destino          | **Recebe normalmente** — o opt-out é de saída              |       |
+| 10  | Balde sem etapa marcada                   | Tarefa fica onde está                                      |       |
+| 11  | Uma etapa marcada para dois baldes        | Recebe os dois                                             |       |
+| 12  | Duas etapas para o mesmo balde            | Recusado pela constraint                                   |       |
+| 13  | Varredura rodando duas vezes no mesmo dia | Nada muda na segunda                                       |       |
+| 14  | Worker fora do ar na virada               | Varredura seguinte se recupera pelo marcador               |       |
+| 15  | Duas pessoas em fusos diferentes          | Cada uma vira no seu relógio                               |       |
+| 16  | Arrasto manual para a etapa de hoje       | Vencimento vira hoje                                       |       |
+| 17  | Arrasto manual para a etapa de amanhã     | Vencimento vira amanhã                                     |       |
+| 18  | Arrasto manual para depois ou vencidas    | Data **não** é tocada                                      |       |
+| 19  | Arrasto que muda a data                   | Gera histórico e aciona regras, como edição na tela        |       |
+| 20  | Tarefa vencida repactuada para o futuro   | Sai de vencidas na varredura seguinte, salvo etapa travada |       |
+| 21  | Etapa marcada sendo excluída              | A marcação some com ela; o balde fica sem etapa            |       |
+| 22  | Conta nova                                | Nasce com as oito etapas e as marcações do seed            |       |
