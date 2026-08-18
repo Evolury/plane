@@ -3,6 +3,57 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.21.0] — 2026-08-17
+
+**Minor**: o cartão do quadro passa a se atualizar sozinho quando a mudança vem
+de fora — de uma automação ou de outra pessoa. É a fase 1 do
+[ADR 0013](docs/evolury/decisoes/0013-atualizacao-em-tempo-real.md).
+
+### Na tela
+
+- **O cartão não mudava quando a automação mexia na tarefa.** Uma regra que
+  atribuía o responsável só aparecia depois de recarregar a página. A causa não
+  era a automação: o produto não tinha como dizer ao cliente "mudou algo que não
+  foi você" — o quadro atualiza o cartão do que **ele mesmo** mandou, e não
+  revalida nem ao voltar para a aba. Agora o servidor avisa, pelo serviço
+  `live`, e o cartão se atualiza em menos de dois segundos.
+
+  Vale para as seis ações de campo — estado, prioridade, responsável, etiquetas,
+  datas, ciclo e módulo — nos quadros de projeto, ciclo, módulo e visão. Tarefa
+  criada e arquivada mudam a **participação** da tarefa na lista e precisam de
+  tratamento próprio: ficam para a fase 2.
+
+  Um limite conhecido: duas abas da **mesma** pessoa ainda não se enxergam. O
+  filtro do próprio eco é por pessoa, não por conexão.
+
+- **O aviso da automação vinha em inglês.** O cartão da caixa de entrada exibia
+  "Automação created automation em …" num produto em português — o campo
+  `automation` não existe no upstream, então a frase caía no renderizador
+  genérico, que concatena o verbo com o nome do campo sem traduzir.
+
+### Segurança
+
+- **Notificação sem histórico derrubava a caixa de entrada inteira.** A correção
+  anterior pôs a leitura opcional num campo e deixou os três irmãos, o que só
+  mudou qual linha estourava.
+
+- **Os parâmetros do canal de eventos iam crus para o caminho da requisição.**
+  Achado pelo CodeQL (`js/request-forgery`, crítico) no próprio PR: com um id de
+  projeto em forma de travessia, a pergunta "esta pessoa participa do projeto?"
+  batia noutro endereço, que responde sim para qualquer sessão. A forma dos dois
+  parâmetros passa a ser validada antes de qualquer requisição sair.
+
+### Por dentro
+
+- O aviso carrega **identificadores, nunca conteúdo**: quem recebe busca a
+  tarefa pela API normal, que já aplica todas as permissões. Mandar o dado
+  obrigaria o servidor a manter uma segunda implementação das regras de
+  permissão, e toda divergência entre as duas seria vazamento.
+
+- A publicação entra no funil por onde passam todas as mudanças de tarefa — um
+  enxerto, não 124 —, e nenhuma infraestrutura nova foi necessária: o proxy já
+  roteia `/live/*` e a API e o `live` já compartilham o mesmo Redis.
+
 ## [1.20.0] — 2026-08-17
 
 **Minor**: duas mudanças que se veem na tela — o operador dos filtros passa a
