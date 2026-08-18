@@ -1,6 +1,6 @@
 # ADR 0013 — Atualização do cartão em tempo real
 
-- **Status:** Aceito (17/08/2026), implantado em três fases até 18/08/2026
+- **Status:** Aceito (17/08/2026), implantado em quatro fases até 18/08/2026
 - **Contexto:** funcionalidade [automacao](../funcionalidades/automacao/especificacao.md)
 - **Relacionado:** [ADR 0012](0012-automacoes-personalizadas.md) (automações), [ADR 0011](0011-propriedades-personalizadas.md) (propriedades), [ADR 0010](0010-tarefas-recorrentes.md) (recorrência)
 
@@ -176,25 +176,50 @@ recebe 404 da API e não mostra nada.
 3. **Propriedades personalizadas** (v1.23.0). O segundo store, e o segundo ponto
    de publicação no servidor.
 
-### O que a fase 3 previa e NÃO entrou
+4. **O resto da tela** (v1.25.0). A página de tarefa aberta por link direto e a
+   caixa de entrada — o que a fase 3 previa e não tinha entregue.
+
+## Fase 4 — a tela toda, e a extração que ela exigiu
 
 A fase 3 estava escrita como "o resto da tela: propriedades personalizadas,
-detalhe da tarefa, caixa de entrada". Só a primeira das três foi feita. O estado
-real das outras duas, conferido:
+detalhe da tarefa, caixa de entrada", e só a primeira das três saiu. As outras
+duas fecham aqui.
 
-- **Painel de detalhe aberto sobre o quadro** (`IssuePeekOverview`): funciona,
-  **de graça**. Ele lê do mesmo mapa que o receptor atualiza e é montado dentro
-  do quadro, então o gancho continua no ar. Não precisou de nada.
-- **Página de tarefa fora do quadro** (`.../issues/<id>`): **não funciona**. É
-  rota própria, sem o root de layout, então nenhum gancho é montado. Abrir uma
-  tarefa por link direto e deixá-la aberta não recebe aviso nenhum.
-- **Caixa de entrada**: **não funciona**. Não há tipo de evento para
-  notificação, e o sino só busca ao abrir.
+**O painel de detalhe aberto sobre o quadro nunca precisou de nada.** Ele lê do
+mesmo mapa que o receptor do quadro atualiza e é montado dentro do quadro, então
+aquele gancho continua no ar. Vale registrar como sorte de arquitetura, e não
+como mérito: se um dia o painel virar rota própria, deixa de funcionar sozinho.
 
-Nenhuma das duas é continuação natural do que existe: a página de tarefa precisa
-de uma sala por TAREFA, ou de assinar o projeto sem quadro montado; a caixa de
-entrada precisa de um evento que hoje não existe. Ficam como trabalho declarado,
-e não como lacuna esquecida.
+### A extração
+
+O quadro, a página de tarefa e a caixa precisam da MESMA fiação — endereço,
+reconexão com recuo, leitura do JSON, reconhecimento do próprio eco, limpeza ao
+sair — e diferem só na reação. `useCanalDeEventos` passou a ser essa fiação, e
+os três ganchos são só reação. Duplicá-la seria duplicar a chance de uma cópia
+envelhecer sozinha.
+
+### A caixa de entrada mudou o desenho do canal
+
+Notificação é de uma **pessoa**, não de um projeto, e o sino vive fora de
+qualquer quadro. Duas consequências:
+
+- **`projectId` virou opcional na rota.** Exigi-lo obrigaria a caixa a inventar
+  um projeto, e perguntar acesso a um projeto inventado é pergunta sem sentido.
+  Sem projeto, a identidade já basta — a sala da pessoa só entrega o que é dela.
+- **Toda conexão entra na sala da própria pessoa**, com ou sem projeto. É por
+  ela que a notificação chega.
+
+O aviso publicado leva a lista de destinatários, para não virar dezenas de
+publicações numa tarefa com muitos inscritos. Mas o que chega ao navegador é só
+`{"tipo": "notificacao"}`: **quem mais foi avisado não é assunto de quem
+recebe**.
+
+### O que continua de fora, e por quê
+
+`removida` na página de uma tarefa **não** é tratada. Tirar a tarefa da tela
+significaria navegar a pessoa para outro lugar no meio da leitura, e isso é
+decisão de produto, não de sincronismo. Fica declarado aqui em vez de acontecer
+por acidente.
 
 ## Verificação
 
@@ -361,6 +386,28 @@ Terceira armadilha de medição da série, e a mesma lição: o primeiro `POST` 
 para uma rota inventada e devolveu **404**, então o cartão "não atualizou"
 porque nada havia acontecido. A sonda passou a **abortar** quando o estímulo
 falha, em vez de seguir medindo a resposta de um estímulo que não houve.
+
+## Medido em produção (18/08/2026, fase 4 implantada)
+
+| Verificação                                          | Resultado                             |
+| ---------------------------------------------------- | ------------------------------------- |
+| tarefa aberta por **link direto**, renomeada de fora | título trocou na tela, URL inalterada |
+| **caixa de entrada**, numa página **sem quadro**     | ponto do sino acendeu em **< 3 s**    |
+
+O teste da caixa foi feito de 0 para 1: as notificações foram marcadas como
+lidas antes, e outra pessoa mexeu numa tarefa em que o alvo estava inscrito.
+
+### Dois enganos meus, os dois pegos pela verificação e não pelo teste
+
+- **Liguei o gancho da caixa no componente errado.** `NotificationAppSidebarOption`
+  é herdado do upstream e faz a conta certa, mas a barra lateral deste fork não
+  tem item de notificações e ele **nunca é montado**. O sino de verdade é o do
+  `top-navigation-root`. Nenhum teste pegaria: o gancho estava correto, só não
+  era chamado. Quem denunciou foi o log do `live` não registrar conexão alguma
+  "projeto (nenhum)".
+- **Duas medições mediram o lugar errado**: o texto do cartão pegava menu em vez
+  do título, e o contador do sino é um **ponto vermelho**, não um número. Nos
+  dois casos a tela estava certa e a sonda é que olhava para o lado.
 
 ## Consequências
 

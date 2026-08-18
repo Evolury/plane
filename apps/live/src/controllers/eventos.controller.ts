@@ -4,11 +4,21 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: o canal que avisa o quadro de que uma tarefa mudou (ADR 0013).
+// Evolury: o canal que avisa a tela de que algo mudou (ADR 0013).
 //
-// Rota: `/live/eventos/?workspaceSlug=<slug>&projectId=<uuid>`.
+// Rota: `/live/eventos/?workspaceSlug=<slug>[&projectId=<uuid>]`.
 //
-// A conexão só entra na sala depois de passar por três portas, nesta ordem, da
+// **O projeto é opcional**, e essa é a diferença entre os dois usos:
+//
+// * COM projeto — o quadro e a página de tarefa. Entra na sala do projeto e
+//   recebe os avisos de tarefa.
+// * SEM projeto — a caixa de entrada. O sino vive fora de qualquer quadro, e a
+//   notificação é de uma PESSOA, não de um projeto.
+//
+// Toda conexão entra na sala da própria pessoa, com ou sem projeto: é por ela
+// que a notificação chega.
+//
+// A conexão só entra nas salas depois de passar por três portas, nesta ordem, da
 // mais barata para a mais cara:
 //
 //   1. **Origem.** A autenticação aqui é por cookie, e cookie o navegador manda
@@ -16,7 +26,9 @@
 //      WebSocket para cá (*cross-site WebSocket hijacking*). O `cors()` do
 //      Express NÃO cobre isto: a negociação de WebSocket não faz preflight.
 //   2. **Identidade.** O cookie é de alguém que a API reconhece?
-//   3. **Acesso ao projeto.** Esse alguém participa deste projeto?
+//   3. **Acesso ao projeto.** Esse alguém participa deste projeto? Só se
+//      aplica havendo projeto — sem ele, a identidade já basta, porque a sala
+//      da pessoa entrega o que é dela e nada mais.
 //
 // A terceira porta é a que não existia no serviço: `onAuthenticate`, do caminho
 // de documentos, lê `projectId` do parâmetro da URL sem validar — o que lá é
@@ -75,7 +87,10 @@ export class EventosController {
   @WSDecorator("/")
   async handleConnection(ws: WebSocket, req: Request) {
     const workspaceSlug = String(req.query.workspaceSlug ?? "");
-    const projectId = String(req.query.projectId ?? "");
+    // Sem projeto é caso legítimo: a caixa de entrada conecta assim, porque o
+    // sino vive fora de qualquer quadro. Essa conexão entra só na sala da
+    // pessoa e recebe apenas os avisos de notificação.
+    const projectId = req.query.projectId ? String(req.query.projectId) : undefined;
     const cookie = req.headers.cookie;
 
     if (!origemConfere(req.headers.origin)) {
@@ -83,12 +98,12 @@ export class EventosController {
       ws.close(1008, "Origin not allowed");
       return;
     }
-    if (!workspaceSlug || !projectId || !cookie) {
+    if (!workspaceSlug || !cookie) {
       ws.close(1008, "Missing parameters");
       return;
     }
-    if (!SLUG.test(workspaceSlug) || !UUID.test(projectId)) {
-      logger.warn(`EVENTOS: parâmetro fora de forma recusado: ${workspaceSlug} / ${projectId}`);
+    if (!SLUG.test(workspaceSlug)) {
+      logger.warn(`EVENTOS: slug fora de forma recusado: ${workspaceSlug}`);
       ws.close(1008, "Malformed parameters");
       return;
     }
@@ -107,10 +122,26 @@ export class EventosController {
       return;
     }
 
-    if (!(await this.projectService.podeVer(cookie, workspaceSlug, projectId))) {
-      logger.warn(`EVENTOS: ${userId} sem acesso ao projeto ${projectId}`);
-      ws.close(1008, "Forbidden");
-      return;
+    // A porta do projeto só faz sentido havendo projeto. Sem ele, a identidade
+    // já basta: a sala da pessoa entrega o que é dela, e nada mais.
+    //
+    // A conferência da FORMA mora aqui dentro, coladinha no uso, e não lá em
+    // cima junto com a do slug. Separá-las manteria o mesmo comportamento e
+    // custaria duas coisas: quem lê teria de juntar dois trechos distantes para
+    // concluir que o valor chega saneado, e o CodeQL — que não consegue fazer
+    // essa junção — reabre o `js/request-forgery`. Validar ao lado de usar
+    // resolve os dois de uma vez.
+    if (projectId !== undefined) {
+      if (!UUID.test(projectId)) {
+        logger.warn(`EVENTOS: id de projeto fora de forma recusado: ${projectId}`);
+        ws.close(1008, "Malformed parameters");
+        return;
+      }
+      if (!(await this.projectService.podeVer(cookie, workspaceSlug, projectId))) {
+        logger.warn(`EVENTOS: ${userId} sem acesso ao projeto ${projectId}`);
+        ws.close(1008, "Forbidden");
+        return;
+      }
     }
 
     // A porta pode ter sido fechada enquanto as checagens corriam. Entrar na
@@ -118,8 +149,8 @@ export class EventosController {
     // porque o `close` abaixo ainda nem foi registrado. 1 === OPEN.
     if (ws.readyState !== 1) return;
 
-    await salasDeEventos.entrar(projectId, ws);
-    logger.info(`EVENTOS: ${userId} entrou na sala do projeto ${projectId}`);
+    await salasDeEventos.entrar(projectId, userId, ws);
+    logger.info(`EVENTOS: ${userId} entrou — projeto ${projectId ?? "(nenhum)"}`);
 
     // Sem isto, um proxy que corta conexão ociosa derruba o canal em silêncio: a
     // tela para de receber aviso e volta a parecer o defeito que isto corrige.
@@ -134,7 +165,7 @@ export class EventosController {
 
     const encerrar = () => {
       clearInterval(ping);
-      salasDeEventos.sair(projectId, ws);
+      salasDeEventos.sair(projectId, userId, ws);
     };
 
     ws.on("close", encerrar);

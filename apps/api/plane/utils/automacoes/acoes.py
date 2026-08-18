@@ -36,6 +36,7 @@ from django.utils.html import escape
 # Module imports
 from plane.db.models import Issue, IssueProperty, Label, State, User
 from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
+from plane.utils.tempo_real import publicar_notificacao
 from plane.utils.automacoes.variaveis import aplicar as aplicar_variaveis
 from plane.utils.issue_properties import (
     ValorInvalido,
@@ -505,6 +506,8 @@ def _notificar(tarefa, config, contexto):
         ],
         batch_size=50,
     )
+    # Evolury: mesmo aviso da tarefa geral — esta ação não passa por ela.
+    publicar_notificacao(list(existentes))
 
     if config.get("email", True):
         EmailNotificationLog.objects.bulk_create(

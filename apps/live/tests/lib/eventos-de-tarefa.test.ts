@@ -75,7 +75,7 @@ describe("salas de eventos", () => {
 
   it("entrega a quem está na sala do projeto", async () => {
     const ws = socketFalso();
-    await salasDeEventos.entrar("projeto-1", ws as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", ws as never);
 
     publicar(evento("projeto-1"));
 
@@ -87,7 +87,7 @@ describe("salas de eventos", () => {
     // A afirmação que sustenta o isolamento. Sem ela, um `Map.get` trocado por
     // um laço sobre todas as salas passaria em todo o resto desta suíte.
     const deOutroProjeto = socketFalso();
-    await salasDeEventos.entrar("projeto-2", deOutroProjeto as never);
+    await salasDeEventos.entrar("projeto-2", "pessoa-projeto-2", deOutroProjeto as never);
 
     publicar(evento("projeto-1"));
 
@@ -96,7 +96,7 @@ describe("salas de eventos", () => {
 
   it("não repassa o campo `projeto` — quem recebe já sabe em qual está", async () => {
     const ws = socketFalso();
-    await salasDeEventos.entrar("projeto-1", ws as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", ws as never);
 
     publicar(evento("projeto-1"));
 
@@ -105,8 +105,8 @@ describe("salas de eventos", () => {
 
   it("para de entregar depois que a conexão sai", async () => {
     const ws = socketFalso();
-    await salasDeEventos.entrar("projeto-1", ws as never);
-    salasDeEventos.sair("projeto-1", ws as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", ws as never);
+    salasDeEventos.sair("projeto-1", "pessoa-projeto-1", ws as never);
 
     publicar(evento("projeto-1"));
 
@@ -117,8 +117,8 @@ describe("salas de eventos", () => {
   it("pula conexão que já fechou em vez de estourar", async () => {
     const fechada = socketFalso(3); // 3 === CLOSED
     const aberta = socketFalso();
-    await salasDeEventos.entrar("projeto-1", fechada as never);
-    await salasDeEventos.entrar("projeto-1", aberta as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", fechada as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", aberta as never);
 
     publicar(evento("projeto-1"));
 
@@ -130,9 +130,9 @@ describe("salas de eventos", () => {
     // Dois assinantes entregariam cada mensagem em dobro, e o cliente rebuscaria
     // duas vezes por mudança.
     await Promise.all([
-      salasDeEventos.entrar("projeto-1", socketFalso() as never),
-      salasDeEventos.entrar("projeto-2", socketFalso() as never),
-      salasDeEventos.entrar("projeto-3", socketFalso() as never),
+      salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", socketFalso() as never),
+      salasDeEventos.entrar("projeto-2", "pessoa-projeto-2", socketFalso() as never),
+      salasDeEventos.entrar("projeto-3", "pessoa-projeto-3", socketFalso() as never),
     ]);
 
     expect(duplicatasCriadas).toBe(1);
@@ -141,7 +141,7 @@ describe("salas de eventos", () => {
 
   it("descarta mensagem que não é JSON sem derrubar o processo", async () => {
     const ws = socketFalso();
-    await salasDeEventos.entrar("projeto-1", ws as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", ws as never);
 
     expect(() => {
       for (const ouvinte of ouvintes) ouvinte(CANAL, "isto não é json");
@@ -151,10 +151,73 @@ describe("salas de eventos", () => {
 
   it("esquece a sala vazia, para o mapa não crescer para sempre", async () => {
     const ws = socketFalso();
-    await salasDeEventos.entrar("projeto-1", ws as never);
-    salasDeEventos.sair("projeto-1", ws as never);
+    await salasDeEventos.entrar("projeto-1", "pessoa-projeto-1", ws as never);
+    salasDeEventos.sair("projeto-1", "pessoa-projeto-1", ws as never);
 
     // Entregar numa sala que não existe mais não pode estourar.
     expect(() => publicar(evento("projeto-1"))).not.toThrow();
+  });
+});
+
+describe("sala da pessoa", () => {
+  beforeEach(async () => {
+    await salasDeEventos.encerrar();
+    ouvintes.length = 0;
+  });
+
+  const notificacaoPara = (usuarios: string[]) => ({ tipo: "notificacao", usuarios });
+
+  it("entrega a notificação a quem ela nomeia", async () => {
+    const meu = socketFalso();
+    await salasDeEventos.entrar("projeto-1", "pessoa-1", meu as never);
+
+    publicar(notificacaoPara(["pessoa-1"]));
+
+    expect(meu.enviadas).toHaveLength(1);
+    expect(JSON.parse(meu.enviadas[0])).toEqual({ tipo: "notificacao" });
+  });
+
+  it("NÃO entrega a quem ela não nomeia", async () => {
+    // O isolamento entre pessoas: sem isto, a caixa de entrada de alguém
+    // piscaria por notificação que é de outro.
+    const outro = socketFalso();
+    await salasDeEventos.entrar("projeto-1", "pessoa-2", outro as never);
+
+    publicar(notificacaoPara(["pessoa-1"]));
+
+    expect(outro.enviadas).toEqual([]);
+  });
+
+  it("não repassa a lista de destinatários", async () => {
+    // Saber quem MAIS foi avisado não é assunto de quem recebe.
+    const meu = socketFalso();
+    await salasDeEventos.entrar(undefined, "pessoa-1", meu as never);
+
+    publicar(notificacaoPara(["pessoa-1", "pessoa-2", "pessoa-3"]));
+
+    expect(Object.keys(JSON.parse(meu.enviadas[0]))).toEqual(["tipo"]);
+  });
+
+  it("conexão SEM projeto recebe notificação e ignora aviso de tarefa", async () => {
+    // É exatamente o caso da caixa de entrada: o sino não vive num quadro.
+    const sino = socketFalso();
+    await salasDeEventos.entrar(undefined, "pessoa-1", sino as never);
+
+    publicar({ tipo: "alterada", projeto: "projeto-1", tarefa: "t1", ator: null });
+    expect(sino.enviadas).toEqual([]);
+
+    publicar(notificacaoPara(["pessoa-1"]));
+    expect(sino.enviadas).toHaveLength(1);
+  });
+
+  it("sair tira das DUAS salas", async () => {
+    const ws = socketFalso();
+    await salasDeEventos.entrar("projeto-1", "pessoa-1", ws as never);
+    salasDeEventos.sair("projeto-1", "pessoa-1", ws as never);
+
+    expect(salasDeEventos.tamanho("projeto-1")).toBe(0);
+    expect(salasDeEventos.tamanhoPorPessoa("pessoa-1")).toBe(0);
+    publicar(notificacaoPara(["pessoa-1"]));
+    expect(ws.enviadas).toEqual([]);
   });
 });

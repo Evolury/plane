@@ -25,7 +25,7 @@ import pytest
 from plane.db.models import Issue
 
 from plane.utils import tempo_real
-from plane.utils.tempo_real import CANAL, publicar_mudanca, publicar_propriedade
+from plane.utils.tempo_real import CANAL, publicar_mudanca, publicar_notificacao, publicar_propriedade
 
 
 @pytest.fixture
@@ -342,3 +342,47 @@ class TestFalhaNaoDerrubaOHistorico:
             assert tempo_real._cliente is None
         finally:
             tempo_real._cliente = anterior
+
+
+@pytest.mark.contract
+class TestAvisoDeNotificacao:
+    """A caixa de entrada (ADR 0013).
+
+    O sino só buscava ao abrir a tela: uma notificação que chegasse com o
+    produto aberto ficava invisível até recarregar. É o mesmo defeito do cartão,
+    num lugar em que dói mais — notificação é justamente o que existe para
+    avisar.
+
+    Este aviso é o único sem projeto: notificação é de uma PESSOA, e o sino vive
+    fora de qualquer quadro. Quem separa por destinatário é o `live`.
+    """
+
+    def test_publica_a_lista_de_destinatarios(self, redis_falso):
+        publicar_notificacao(["pessoa-1", "pessoa-2"])
+
+        assert len(redis_falso) == 1
+        assert carga(redis_falso) == {"tipo": "notificacao", "usuarios": ["pessoa-1", "pessoa-2"]}
+
+    def test_vai_uma_mensagem_so(self, redis_falso):
+        """Uma tarefa com muitos inscritos não pode virar dezenas de publicações."""
+        publicar_notificacao([f"pessoa-{i}" for i in range(50)])
+
+        assert len(redis_falso) == 1
+
+    def test_nao_leva_projeto_nem_tarefa(self, redis_falso):
+        """A ausência é o desenho, não esquecimento: o roteamento é por pessoa."""
+        publicar_notificacao(["pessoa-1"])
+
+        assert set(carga(redis_falso)) == {"tipo", "usuarios"}
+
+    @pytest.mark.parametrize("entrada", [[], None, [None, ""]])
+    def test_sem_destinatario_nao_publica(self, redis_falso, entrada):
+        publicar_notificacao(entrada)
+
+        assert redis_falso == []
+
+    def test_descarta_vazios_no_meio(self, redis_falso):
+        """Sem isto, um `None` na lista viraria a string "None" como destinatário."""
+        publicar_notificacao(["pessoa-1", None, "", "pessoa-2"])
+
+        assert carga(redis_falso)["usuarios"] == ["pessoa-1", "pessoa-2"]

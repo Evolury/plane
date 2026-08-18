@@ -26,6 +26,8 @@ from plane.db.models import (
 )
 from django.db.models import Subquery
 
+from plane.utils.tempo_real import publicar_notificacao
+
 # Third Party imports
 from celery import shared_task
 from bs4 import BeautifulSoup
@@ -667,6 +669,9 @@ def notifications(
             )
             # Bulk create notifications
             Notification.objects.bulk_create(bulk_notifications, batch_size=100)
+            # Evolury: o sino não sabia que algo tinha chegado (ADR 0013). Fica
+            # aqui, e não em cada chamador, porque é onde as notificações nascem.
+            publicar_notificacao([n.receiver_id for n in bulk_notifications])
             EmailNotificationLog.objects.bulk_create(bulk_email_logs, batch_size=100, ignore_conflicts=True)
         return
     except Exception as e:

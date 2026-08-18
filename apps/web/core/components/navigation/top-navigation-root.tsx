@@ -19,6 +19,8 @@ import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 import { InboxIcon } from "@plane/propel/icons";
 import useSWR from "swr";
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
+// Evolury: o sino acompanha sem recarregar (ADR 0013)
+import { useEventosDaCaixa } from "@/hooks/use-eventos-da-caixa";
 // local imports
 
 export const TopNavigationRoot = observer(function TopNavigationRoot() {
@@ -38,6 +40,13 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
     workspaceSlug ? "WORKSPACE_UNREAD_NOTIFICATION_COUNT" : null,
     workspaceSlug ? () => getUnreadNotificationsCount(workspaceSlug.toString()) : null
   );
+
+  // Evolury: este é o sino de verdade deste fork — o do `content-wrapper`, que
+  // envolve todo o conteúdo do workspace. Há um `NotificationAppSidebarOption`
+  // herdado do upstream que faz a mesma conta, mas a barra lateral daqui não
+  // tem item de notificações e ele não é montado. Ligar o canal lá foi
+  // exatamente o engano que a verificação em produção pegou.
+  useEventosDaCaixa(workspaceSlug?.toString());
 
   // Calculate notification count
   const isMentionsEnabled = unreadNotificationsCount.mention_unread_notifications_count > 0;

@@ -25,41 +25,75 @@ export const CANAL = "evolury:tarefas";
 
 type Evento = {
   tipo: string;
-  projeto: string;
-  tarefa: string;
-  ator: string | null;
+  /** Presente nos avisos de tarefa; ausente nos de notificação. */
+  projeto?: string;
+  tarefa?: string;
+  ator?: string | null;
+  /** Presente só nos avisos de notificação: para quem eles são. */
+  usuarios?: string[];
 };
 
 class SalasDeEventos {
   private salas = new Map<string, Set<WebSocket>>();
+  /**
+   * As mesmas conexões, indexadas por PESSOA.
+   *
+   * A caixa de entrada é do workspace e o sino aparece em página sem quadro
+   * nenhum, então o aviso de notificação não tem projeto por onde rotear. Quem
+   * o recebe é quem ele nomeia — e é por isso que toda conexão entra na sala
+   * da própria pessoa, com ou sem projeto.
+   */
+  private porPessoa = new Map<string, Set<WebSocket>>();
   private assinante: Redis | null = null;
   private assinaturaEmCurso: Promise<void> | null = null;
 
-  /** Põe a conexão na sala do projeto, garantindo que o assinante esteja de pé. */
-  async entrar(projetoId: string, ws: WebSocket): Promise<void> {
-    await this.assinar();
-    const sala = this.salas.get(projetoId) ?? new Set<WebSocket>();
+  /** Acrescenta a conexão a um mapa de salas, criando a sala se preciso. */
+  private juntar(mapa: Map<string, Set<WebSocket>>, chave: string, ws: WebSocket) {
+    const sala = mapa.get(chave) ?? new Set<WebSocket>();
     sala.add(ws);
-    this.salas.set(projetoId, sala);
+    mapa.set(chave, sala);
+  }
+
+  /** Tira a conexão de um mapa, apagando a sala que ficou vazia. */
+  private largar(mapa: Map<string, Set<WebSocket>>, chave: string, ws: WebSocket) {
+    const sala = mapa.get(chave);
+    if (!sala) return;
+    sala.delete(ws);
+    if (sala.size === 0) mapa.delete(chave);
   }
 
   /**
-   * Tira a conexão da sala.
+   * Põe a conexão nas salas a que ela pertence.
+   *
+   * A da PESSOA é sempre; a do PROJETO só quando há projeto — a caixa de
+   * entrada conecta sem nenhum, porque o sino não vive dentro de um quadro.
+   */
+  async entrar(projetoId: string | undefined, pessoaId: string, ws: WebSocket): Promise<void> {
+    await this.assinar();
+    this.juntar(this.porPessoa, pessoaId, ws);
+    if (projetoId) this.juntar(this.salas, projetoId, ws);
+  }
+
+  /**
+   * Tira a conexão de todas as salas dela.
    *
    * A sala vazia é apagada, e não deixada como `Set` vazio: sem isso, um
-   * servidor de longa duração acumula uma entrada por projeto que alguém já
-   * abriu algum dia, e o mapa só cresce.
+   * servidor de longa duração acumula uma entrada por projeto — e agora também
+   * por pessoa — que alguém já abriu algum dia, e o mapa só cresce.
    */
-  sair(projetoId: string, ws: WebSocket): void {
-    const sala = this.salas.get(projetoId);
-    if (!sala) return;
-    sala.delete(ws);
-    if (sala.size === 0) this.salas.delete(projetoId);
+  sair(projetoId: string | undefined, pessoaId: string, ws: WebSocket): void {
+    this.largar(this.porPessoa, pessoaId, ws);
+    if (projetoId) this.largar(this.salas, projetoId, ws);
   }
 
   /** Quantas conexões há numa sala. Existe para o teste poder afirmar. */
   tamanho(projetoId: string): number {
     return this.salas.get(projetoId)?.size ?? 0;
+  }
+
+  /** Idem, para a sala da pessoa. */
+  tamanhoPorPessoa(pessoaId: string): number {
+    return this.porPessoa.get(pessoaId)?.size ?? 0;
   }
 
   private async assinar(): Promise<void> {
@@ -96,14 +130,28 @@ class SalasDeEventos {
       logger.error("EVENTOS: mensagem que não é JSON, descartada");
       return;
     }
-    if (!evento?.projeto || !evento?.tarefa) return;
+    // Aviso de notificação: roteado por pessoa, e a lista NÃO é repassada —
+    // saber quem mais foi avisado não é assunto de quem recebe.
+    if (evento.tipo === "notificacao") {
+      const carga = JSON.stringify({ tipo: "notificacao" });
+      for (const pessoa of evento.usuarios ?? []) {
+        this.enviar(this.porPessoa.get(pessoa), carga);
+      }
+      return;
+    }
 
-    const sala = this.salas.get(evento.projeto);
-    if (!sala || sala.size === 0) return;
+    if (!evento?.projeto || !evento?.tarefa) return;
 
     // O que sai daqui é o que entrou, sem enriquecer: identificadores, nunca
     // conteúdo. Quem recebe busca a tarefa pela API, que aplica as permissões.
-    const carga = JSON.stringify({ tipo: evento.tipo, tarefa: evento.tarefa, ator: evento.ator });
+    this.enviar(
+      this.salas.get(evento.projeto),
+      JSON.stringify({ tipo: evento.tipo, tarefa: evento.tarefa, ator: evento.ator ?? null })
+    );
+  }
+
+  private enviar(sala: Set<WebSocket> | undefined, carga: string): void {
+    if (!sala || sala.size === 0) return;
     for (const ws of sala) {
       // 1 === OPEN. Uma conexão que fechou entre o evento e este laço ainda está
       // no `Set` até o `close` disparar; mandar nela lança.
@@ -119,6 +167,7 @@ class SalasDeEventos {
   /** Solta o assinante. Chamado no encerramento do servidor. */
   async encerrar(): Promise<void> {
     this.salas.clear();
+    this.porPessoa.clear();
     if (this.assinante) {
       await this.assinante.quit().catch(() => this.assinante?.disconnect());
       this.assinante = null;

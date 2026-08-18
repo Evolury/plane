@@ -24,6 +24,8 @@ import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
+// Evolury: a tarefa aberta por link direto também acompanha (ADR 0013)
+import { useEventosDaTarefa } from "@/hooks/use-eventos-da-tarefa";
 // layouts
 import { ProjectAuthWrapper } from "@/layouts/auth-layout/project-wrapper";
 // plane web imports
@@ -62,6 +64,8 @@ export const IssueDetailsPage = observer(function IssueDetailsPage({ params }: R
   const issue = getIssueById(issueId?.toString() || "") || undefined;
   const project = (issue?.project_id && getProjectById(issue?.project_id)) || undefined;
   const issueLoader = !issue || isLoading;
+
+  useEventosDaTarefa(workspaceSlug?.toString(), projectId || undefined, issueId?.toString());
   const pageTitle = project && issue ? `${project?.identifier}-${issue?.sequence_id} ${issue?.name}` : undefined;
 
   useWorkItemProperties(
