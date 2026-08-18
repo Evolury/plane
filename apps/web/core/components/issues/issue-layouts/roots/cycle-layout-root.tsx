@@ -58,8 +58,11 @@ export const CycleLayoutRoot = observer(function CycleLayoutRoot() {
   const projectId = routerProjectId ? routerProjectId.toString() : undefined;
   const cycleId = routerCycleId ? routerCycleId.toString() : undefined;
   // store hooks
-  const { issuesFilter } = useIssues(EIssuesStoreType.CYCLE);
-  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.CYCLE);
+  const { issues, issuesFilter } = useIssues(EIssuesStoreType.CYCLE);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.CYCLE, () => {
+    if (workspaceSlug && projectId && cycleId)
+      issues?.fetchIssuesWithExistingPagination(workspaceSlug, projectId, "mutation", cycleId);
+  });
   const { getCycleById } = useCycle();
   // state
   const [transferIssuesModal, setTransferIssuesModal] = useState(false);

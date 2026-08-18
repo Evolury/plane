@@ -25,16 +25,39 @@ export type IIssueStore = {
   addIssueIdentifier(issueIdentifier: string, issueId: string): void;
   updateIssue(issueId: string, issue: Partial<TIssue>): void;
   removeIssue(issueId: string): void;
+  // Evolury: eco das escritas desta aba (ADR 0013, fase 2)
+  registrarEscritaLocal(issueId: string): void;
+  consumirEscritaLocal(issueId: string): boolean;
   // helper methods
   getIssueById(issueId: string): undefined | TIssue;
   getIssueIdByIdentifier(issueIdentifier: string): undefined | string;
   getIssuesByIds(issueIds: string[], type: "archived" | "un-archived"): TIssue[]; // Record defines issue_id as key and TIssue as value
 };
 
+/**
+ * Por quanto tempo uma escrita desta aba continua explicando um aviso, em ms.
+ *
+ * Generoso porque o custo de errar para mais é uma rebusca perdida, e o de
+ * errar para menos é o cartão não atualizar — o defeito que tudo isto corrige.
+ */
+const VALIDADE_DA_ESCRITA_LOCAL = 15_000;
+
 export class IssueStore implements IIssueStore {
   // observables
   issuesMap: { [issue_id: string]: TIssue } = {};
   issuesIdentifierMap: { [issue_identifier: string]: string } = {};
+  /**
+   * Evolury: o que ESTA aba acabou de escrever (ADR 0013, fase 2).
+   *
+   * Serve para reconhecer o próprio eco sem perguntar ao servidor quem fez a
+   * mudança. A fase 1 comparava o ator do aviso com o usuário da sessão, e isso
+   * confundia "fui eu nesta aba" com "fui eu na outra aba" — duas abas da mesma
+   * pessoa não se enxergavam.
+   *
+   * Fica FORA do `makeObservable` de propósito: nada na tela depende disto, e
+   * torná-lo observável só criaria reações a cada escrita.
+   */
+  private escritasLocais = new Map<string, number>();
   // service
   issueService;
 
@@ -51,6 +74,29 @@ export class IssueStore implements IIssueStore {
     });
     this.issueService = new IssueService();
   }
+
+  // Evolury: ADR 0013, fase 2 — ver `escritasLocais`.
+  /** Anota que esta aba mandou uma mudança para esta tarefa. */
+  registrarEscritaLocal = (issueId: string) => {
+    this.escritasLocais.set(issueId, Date.now() + VALIDADE_DA_ESCRITA_LOCAL);
+  };
+
+  /**
+   * Responde se o aviso desta tarefa se explica por uma escrita desta aba — e,
+   * respondendo que sim, **gasta** a anotação.
+   *
+   * Gastar é o que faz a mesma pessoa editando a mesma tarefa em duas abas
+   * continuar funcionando: o primeiro aviso é o eco desta aba e some, e um
+   * segundo aviso, que só pode ter vindo de outro lugar, passa.
+   */
+  consumirEscritaLocal = (issueId: string) => {
+    const validade = this.escritasLocais.get(issueId);
+    if (validade === undefined) return false;
+    this.escritasLocais.delete(issueId);
+    // Anotação vencida não explica nada: se o aviso demorou mais do que a
+    // validade, ele quase certamente não é o eco desta escrita.
+    return validade > Date.now();
+  };
 
   // actions
   /**

@@ -14,20 +14,30 @@
 // tarefa pela API normal, que aplica todas as permissões. Ver o ADR para o
 // porquê dessa escolha valer mais que a economia de uma requisição.
 //
-// Fase 1: só `alterada`. `criada` e `removida` mudam a participação da tarefa na
-// lista e precisam de tratamento próprio — em especial, `updateIssueList` NÃO
-// avalia os filtros ricos do quadro, então acrescentar às cegas uma tarefa nova
-// faria aparecer, para quem filtrou, um cartão que o filtro exclui.
+// Cada aviso tem uma resposta, e a diferença entre elas é o ponto do desenho:
+//
+// * **alterada** — rebusca SÓ aquela tarefa e remenda o cartão. É o caso comum
+//   e o mais barato.
+// * **removida** — tira do quadro. Não depende de filtro nenhum: o que saiu,
+//   saiu.
+// * **criada**   — rebusca a LISTA. Custa mais, e é o preço de estar certo: o
+//   cliente não tem como avaliar os filtros ricos do quadro, e acrescentar às
+//   cegas faria aparecer, para quem filtrou, um cartão que o filtro exclui.
 
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
 import type { EIssuesStoreType } from "@plane/types";
 import { useIssues } from "@/hooks/store/use-issues";
 import { useUser } from "@/hooks/store/user";
+import { StoreContext } from "@/lib/store-context";
 import { IssueService } from "@/services/issue";
 
 /** Espera antes de buscar, para uma edição em lote virar uma requisição só. */
 const AGRUPAMENTO_MS = 250;
+/** Idem para a rebusca da lista, que é bem mais cara e pode chegar em rajada. */
+const AGRUPAMENTO_DE_LISTA_MS = 600;
+/** O que este gancho sabe responder. O resto é ignorado sem ruído. */
+const TIPOS_CONHECIDOS = new Set(["alterada", "criada", "removida"]);
 /** Primeira espera de reconexão; dobra a cada tentativa até o teto. */
 const RECONEXAO_INICIAL_MS = 1_000;
 const RECONEXAO_MAXIMA_MS = 30_000;
@@ -93,16 +103,34 @@ type QuadroDeProjeto =
 export const useEventosDeTarefa = (
   workspaceSlug: string | undefined,
   projectId: string | undefined,
-  storeType: QuadroDeProjeto
+  storeType: QuadroDeProjeto,
+  /**
+   * Como este quadro rebusca a própria lista.
+   *
+   * Vem de fora porque `fetchIssuesWithExistingPagination` tem assinatura
+   * DIFERENTE em cada quadro — ciclo e módulo exigem o próprio id, e a visão o
+   * dela, em posições que nem sequer coincidem. Quem sabe montar a chamada é o
+   * quadro; forçar um tipo comum aqui seria um `cast` escondendo isso.
+   *
+   * Sem ela, o gancho continua tratando `alterada` e `removida`, e só deixa de
+   * reagir a tarefa nova.
+   */
+  rebuscarQuadro?: () => void
 ) => {
   const { issues } = useIssues(storeType);
   const { data: currentUser } = useUser();
+  // O store RAIZ de tarefas, e não o do quadro: a anotação de escrita local
+  // precisa valer para quem escreveu de qualquer tela — o painel da tarefa
+  // escreve pelo mesmo `issueUpdate`, mas por outra instância de quadro.
+  const raiz = useContext(StoreContext)?.issue.issues;
 
   // O store e o usuário entram por referência, e não pela lista de dependências
   // do efeito: o store é observável e trocaria de identidade a cada render, o
   // que derrubaria e reabriria a conexão sem parar.
   const issuesRef = useRef(issues);
   const meuIdRef = useRef(currentUser?.id);
+  const raizRef = useRef(raiz);
+  const rebuscarRef = useRef(rebuscarQuadro);
 
   // A escrita mora num efeito, e não no corpo da renderização.
   //
@@ -114,6 +142,8 @@ export const useEventosDeTarefa = (
   useEffect(() => {
     issuesRef.current = issues;
     meuIdRef.current = currentUser?.id;
+    raizRef.current = raiz;
+    rebuscarRef.current = rebuscarQuadro;
   });
 
   useEffect(() => {
@@ -125,6 +155,7 @@ export const useEventosDeTarefa = (
     let esperaDeReconexao = RECONEXAO_INICIAL_MS;
     let reconexao: ReturnType<typeof setTimeout> | undefined;
     let agrupamento: ReturnType<typeof setTimeout> | undefined;
+    let listaPendente: ReturnType<typeof setTimeout> | undefined;
     let desmontado = false;
     const pendentes = new Set<string>();
 
@@ -150,6 +181,17 @@ export const useEventosDeTarefa = (
       }
     };
 
+    // A rebusca da lista é agrupada com folga: criar dez tarefas de uma vez —
+    // uma automação de subtarefas faz isso — não pode virar dez rebuscas de
+    // página inteira.
+    const rebuscarLista = () => {
+      if (listaPendente) clearTimeout(listaPendente);
+      listaPendente = setTimeout(() => {
+        if (desmontado) return;
+        rebuscarRef.current?.();
+      }, AGRUPAMENTO_DE_LISTA_MS);
+    };
+
     const aoReceber = (evento: MessageEvent) => {
       let dados: { tipo?: string; tarefa?: string; ator?: string | null };
       try {
@@ -157,18 +199,34 @@ export const useEventosDeTarefa = (
       } catch {
         return;
       }
-      if (dados.tipo !== "alterada" || !dados.tarefa) return;
-      // O próprio eco: quem mudou já aplicou o efeito otimisticamente, e
-      // rebuscar por causa dele seria requisição jogada fora.
+      if (!dados.tarefa || !TIPOS_CONHECIDOS.has(dados.tipo ?? "")) return;
+      // O próprio eco: esta aba já aplicou o efeito otimisticamente, e rebuscar
+      // por causa dele seria requisição jogada fora — e, pior, poderia reverter
+      // na tela uma segunda edição que ainda estivesse a caminho.
       //
-      // LIMITE CONHECIDO DA FASE 1: o filtro é por PESSOA, e não por conexão.
-      // Duas abas da mesma pessoa não se enxergam — mudar algo na primeira não
-      // atualiza a segunda. Não afeta o defeito que motivou o ADR 0013 (o ator
-      // da automação é o robô, e o de outra pessoa é ela), e a saída é o
-      // servidor devolver um identificador de CONEXÃO para filtrar por ele.
-      if (dados.ator && dados.ator === meuIdRef.current) return;
-      // Tarefa que não está neste quadro não interessa — ver `estaNoQuadro`.
+      // As DUAS perguntas são necessárias, e é isso que a fase 1 errava ao fazer
+      // só a primeira: ela confundia "fui eu nesta aba" com "fui eu na outra
+      // aba", e duas abas da mesma pessoa não se enxergavam. Agora quem responde
+      // "nesta aba" é a anotação que o `issueUpdate` deixou ao escrever.
+      const meuAtor = !!dados.ator && dados.ator === meuIdRef.current;
+      if (meuAtor && raizRef.current?.consumirEscritaLocal(dados.tarefa)) return;
+      // Tarefa nova é o único caso em que "não está no quadro" não é motivo para
+      // desistir — é justamente o que se quer descobrir.
+      if (dados.tipo === "criada") {
+        rebuscarLista();
+        return;
+      }
+
+      // Daqui para baixo, tarefa que não está neste quadro não interessa — ver
+      // `estaNoQuadro`.
       if (!estaNoQuadro(issuesRef.current?.groupedIssueIds, dados.tarefa)) return;
+
+      if (dados.tipo === "removida") {
+        // Tirar é exato e imediato: nada a buscar, e esperar o agrupamento só
+        // deixaria na tela um cartão que já não existe.
+        issuesRef.current?.removeIssueFromList?.(dados.tarefa);
+        return;
+      }
 
       pendentes.add(dados.tarefa);
       if (agrupamento) clearTimeout(agrupamento);
@@ -202,6 +260,7 @@ export const useEventosDeTarefa = (
       desmontado = true;
       if (reconexao) clearTimeout(reconexao);
       if (agrupamento) clearTimeout(agrupamento);
+      if (listaPendente) clearTimeout(listaPendente);
       socket?.close(1000, "saiu do quadro");
     };
   }, [workspaceSlug, projectId]);

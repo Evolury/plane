@@ -578,6 +578,12 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
   ) {
     // Store Before state of the issue
     const issueBeforeUpdate = clone(this.rootIssueStore.issues.getIssueById(issueId));
+    // Evolury: só a escrita que vai ao servidor conta como "fui eu" (ADR 0013).
+    //
+    // `shouldSync: false` é exatamente o caminho por onde o receptor de eventos
+    // aplica o que veio de FORA. Anotá-lo aqui faria a aba tratar a mudança
+    // alheia como eco próprio e engolir a seguinte.
+    if (shouldSync) this.rootIssueStore.issues.registrarEscritaLocal(issueId);
     try {
       // Update the Respective Stores
       this.rootIssueStore.issues.updateIssue(issueId, data);
