@@ -3,6 +3,37 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.25.0] — 2026-08-18
+
+**Minor**: a tela inteira passa a acompanhar o que muda de fora. Fecha o
+[ADR 0013](docs/evolury/decisoes/0013-atualizacao-em-tempo-real.md), incluindo o
+que a versão 1.23.0 tinha deixado de fora sem dizer.
+
+### Na tela
+
+- **Tarefa aberta por link direto agora acompanha.** Quem abre uma tarefa pelo
+  endereço dela — de um link colado num chat, por exemplo — via uma página
+  parada no tempo: nenhuma mudança feita por outra pessoa, ou por automação,
+  chegava até recarregar. O painel que abre sobre o quadro já funcionava; a
+  página própria, não.
+
+- **A caixa de entrada avisa sozinha.** O sino só conferia ao abrir a tela: uma
+  notificação que chegasse com o produto aberto ficava invisível até alguém
+  recarregar ou navegar. É o mesmo atraso do cartão, num lugar em que incomoda
+  mais — notificação é justamente o que existe para avisar.
+
+### Por dentro
+
+- A conexão com o serviço de tempo real virou peça única, usada pelo quadro,
+  pela página de tarefa e pela caixa. Antes de existir, o quadro era o único a
+  tê-la; duplicá-la nas outras duas telas duplicaria também a chance de uma
+  cópia envelhecer sozinha.
+
+- Notificação é de uma **pessoa**, e não de um projeto — o sino aparece em
+  telas que não têm quadro nenhum. Por isso o canal passou a aceitar conexão
+  sem projeto, e toda conexão entra também na sala da própria pessoa. O aviso
+  que chega ao navegador não diz quem mais foi avisado.
+
 ## [1.24.0] — 2026-08-18
 
 **Minor**: três promessas que o produto fazia e não cumpria, todas em silêncio.
