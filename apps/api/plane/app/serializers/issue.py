@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from rest_framework import serializers
 
 # Module imports
-from .base import BaseSerializer, DynamicBaseSerializer
+from .base import BaseSerializer, DynamicBaseSerializer, recusar_apelidos_confundiveis
 from .user import UserLiteSerializer
 from .state import StateLiteSerializer
 from .project import ProjectLiteSerializer
@@ -122,6 +122,12 @@ class IssueCreateSerializer(BaseSerializer):
         return data
 
     def validate(self, attrs):
+        # Evolury: `PATCH {"assignees": [...]}` respondia 204 e não fazia nada —
+        # o campo escrevível é `assignee_ids`. Ver o helper para o porquê de a
+        # recusa ser só sobre o par confundível, e não sobre campo desconhecido
+        # em geral.
+        recusar_apelidos_confundiveis(self, self.initial_data)
+
         allow_triage = self.context.get("allow_triage_state", False)
         state_manager = State.triage_objects if allow_triage else State.objects
 

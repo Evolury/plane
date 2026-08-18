@@ -24,6 +24,7 @@ import { AUTOMATION_ACTION, AUTOMATION_TRIGGER } from "@plane/types";
 import type { TAutomationAction, TAutomationActionType, TAutomationTrigger, TIssueProperty } from "@plane/types";
 import { Button } from "@plane/propel/button";
 import { CustomSelect, Input, TextArea } from "@plane/ui";
+import { useInstance } from "@/hooks/store/use-instance";
 import { useLabel } from "@/hooks/store/use-label";
 import { useMember } from "@/hooks/store/use-member";
 import { useModule } from "@/hooks/store/use-module";
@@ -45,6 +46,21 @@ type TProps = {
  * calendário, antecedência e controle de ocorrência aberta. Esconder a opção é
  * melhor do que oferecê-la com um aviso: aviso a pessoa fecha, cardápio ela lê.
  */
+/**
+ * A caixa "notificar por e-mail" nasce marcada?
+ *
+ * Evolury: ela vinha marcada sempre, e sem SMTP configurado quem criava uma
+ * regra pedia um e-mail enfileirado para nunca sair — sem erro, sem aviso.
+ *
+ * A regra tem duas metades: escolha explícita vence, e na ausência dela o
+ * padrão segue a instância. Assim, no dia em que houver SMTP a caixa volta a
+ * nascer marcada sozinha, sem ninguém tocar em código.
+ *
+ * Exportada para o teste afirmar ESTA decisão, e não uma cópia dela.
+ */
+export const caixaDeEmailMarcada = (email: boolean | undefined, smtpConfigurado: boolean): boolean =>
+  email === true || (email !== false && smtpConfigurado);
+
 const ACOES_DE_CRIACAO = new Set<string>([AUTOMATION_ACTION.CREATE_WORK_ITEM, AUTOMATION_ACTION.CREATE_SUBTASKS]);
 
 const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]> = {
@@ -76,6 +92,8 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
   } = useMember();
   const { getUserDetails } = useMember();
   const { getProjectModuleIds, getModuleById } = useModule();
+  const { config } = useInstance();
+  const smtpConfigurado = config?.is_smtp_configured ?? false;
 
   const estados = getProjectStates(projectId) ?? [];
   const etiquetas = (getProjectLabelIds(projectId) ?? []).map((id) => getLabelById(id)).filter(Boolean);
@@ -301,14 +319,20 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
               rows={2}
             />
             <AjudaDeVariaveis />
+            {/* Evolury: a caixa não pode prometer o que a instância não entrega.
+                Sem SMTP configurado ela nasce DESMARCADA e diz por quê — antes,
+                vinha marcada por padrão e a mensagem era enfileirada para nunca
+                sair, sem aviso nenhum. Continua clicável de propósito: quem está
+                configurando o SMTP agora deve poder deixar a regra pronta. */}
             <label className="flex items-center gap-2 text-12 text-secondary">
               <input
                 type="checkbox"
-                checked={config.email !== false}
+                checked={caixaDeEmailMarcada(config.email as boolean | undefined, smtpConfigurado)}
                 onChange={(evento) => atualizarConfig(indice, { email: evento.target.checked })}
               />
               {t("automations.notify_email")}
             </label>
+            {!smtpConfigurado && <p className="text-11 text-tertiary">{t("automations.notify_email_sem_smtp")}</p>}
           </div>
         );
 

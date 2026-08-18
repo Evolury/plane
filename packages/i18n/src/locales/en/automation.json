@@ -425,6 +425,7 @@
       "hint": "A recipe opens the editor pre-filled. What depends on your project — which state, which label — is left for you."
     },
     "pick_module": "Pick a module",
-    "module_hint": "The module is chosen here and always applies — unlike the cycle, which is resolved at run time."
+    "module_hint": "The module is chosen here and always applies — unlike the cycle, which is resolved at run time.",
+    "notify_email_sem_smtp": "Email delivery is not configured on this instance — the message will not be sent."
   }
 }

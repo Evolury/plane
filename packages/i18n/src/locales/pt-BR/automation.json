@@ -425,6 +425,7 @@
       "hint": "A receita abre o editor preenchido. O que depende do seu projeto — qual estado, qual etiqueta — fica para você escolher."
     },
     "pick_module": "Escolha um módulo",
-    "module_hint": "O módulo é escolhido aqui e vale sempre — diferente do ciclo, que é escolhido na hora da execução."
+    "module_hint": "O módulo é escolhido aqui e vale sempre — diferente do ciclo, que é escolhido na hora da execução.",
+    "notify_email_sem_smtp": "O envio por e-mail não está configurado nesta instância — a mensagem não sairá."
   }
 }
