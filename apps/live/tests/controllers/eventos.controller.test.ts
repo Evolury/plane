@@ -138,3 +138,42 @@ describe("porta de acesso ao projeto", () => {
     expect(ws.fechamentos[0]?.code).toBe(1008);
   });
 });
+
+describe("conexão sem projeto — a caixa de entrada", () => {
+  beforeEach(() => {
+    podeVer.mockClear();
+    entrar.mockClear();
+  });
+
+  it("é aceita, e não pergunta acesso a projeto nenhum", async () => {
+    // O sino vive fora de qualquer quadro. Exigir projeto aqui obrigaria a
+    // inventar um, e perguntar acesso a um projeto inventado é pergunta sem
+    // sentido — a identidade já basta, porque a sala da pessoa só entrega o
+    // que é dela.
+    const ws = await conectar({ workspaceSlug: "evolury" });
+
+    expect(podeVer).not.toHaveBeenCalled();
+    expect(entrar).toHaveBeenCalledWith(undefined, expect.any(String), expect.anything());
+    expect(ws.fechamentos).toEqual([]);
+  });
+
+  it("continua recusando slug fora de forma", async () => {
+    // Sem isto, tornar o projeto opcional teria aberto um buraco no slug, que
+    // continua entrando no caminho da requisição à API.
+    const ws = await conectar({ workspaceSlug: "evolury/../.." });
+
+    expect(entrar).not.toHaveBeenCalled();
+    expect(ws.fechamentos[0]?.code).toBe(1008);
+  });
+
+  it("continua exigindo sessão", async () => {
+    const ws = socketFalso();
+    await new EventosController().handleConnection(
+      ws as never,
+      { query: { workspaceSlug: "evolury" }, headers: { origin: ORIGEM } } as never
+    );
+
+    expect(entrar).not.toHaveBeenCalled();
+    expect(ws.fechamentos[0]?.code).toBe(1008);
+  });
+});

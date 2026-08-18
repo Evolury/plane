@@ -12,6 +12,8 @@ import { getNumberCount } from "@plane/utils";
 import { CountChip } from "@/components/common/count-chip";
 // hooks
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
+// Evolury: o sino acompanha sem recarregar (ADR 0013)
+import { useEventosDaCaixa } from "@/hooks/use-eventos-da-caixa";
 
 type TNotificationAppSidebarOption = {
   workspaceSlug: string;
@@ -28,6 +30,8 @@ export const NotificationAppSidebarOption = observer(function NotificationAppSid
     workspaceSlug ? "WORKSPACE_UNREAD_NOTIFICATION_COUNT" : null,
     workspaceSlug ? () => getUnreadNotificationsCount(workspaceSlug) : null
   );
+
+  useEventosDaCaixa(workspaceSlug);
 
   // derived values
   const isMentionsEnabled = unreadNotificationsCount.mention_unread_notifications_count > 0 ? true : false;

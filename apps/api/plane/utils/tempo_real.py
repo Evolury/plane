@@ -105,6 +105,27 @@ def publicar_propriedade(issue_id, project_id, actor_id=None):
     )
 
 
+def publicar_notificacao(user_ids):
+    """Avisa que chegou notificação para estas pessoas.
+
+    Não tem projeto: a caixa de entrada é do workspace, e o sino aparece em
+    página que não tem quadro nenhum. Por isso o `live` roteia este aviso pela
+    SALA DA PESSOA, e não pela do projeto.
+
+    Vai uma mensagem só, com a lista, e não uma por destinatário: uma tarefa com
+    muitos inscritos geraria dezenas de publicações para dizer a mesma coisa.
+    Quem separa por pessoa é o `live`, que já tem as conexões na mão.
+
+    O que chega ao navegador NÃO leva a lista: o `live` entrega
+    `{"tipo": "notificacao"}` a quem é da sala, e mais nada. Saber quem mais foi
+    avisado não é assunto de quem recebe.
+    """
+    destinatarios = [str(u) for u in (user_ids or []) if u]
+    if not destinatarios:
+        return
+    _publicar({"tipo": "notificacao", "usuarios": destinatarios})
+
+
 def _evento_do_arquivamento(linhas):
     """Se alguma linha mexeu em `archived_at`, devolve o que dizer; senão, None."""
     for linha in linhas or []:
