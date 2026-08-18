@@ -129,3 +129,26 @@ os dois eram promessas que o produto não cumpria:
       Contagem responde "quantas"; a pergunta de quem lê o registro é "quais".
 - [x] `RECEITAS_DE_AUTOMACAO` ganhou consumidor na F3.7 — o item estava
       desatualizado desde que a tela de receitas foi ao ar.
+
+## Fora de escopo até haver produção real
+
+**Entrega de e-mail.** Decidido em 17/08/2026 pelo dono do produto: só quando
+houver produção de verdade.
+
+O que está medido, para não ser redescoberto:
+
+|                          |                                                    |
+| ------------------------ | -------------------------------------------------- |
+| `EMAIL_HOST` no ambiente | `localhost` — nada escuta na porta 25 do contêiner |
+| Fila pendente            | 49                                                 |
+| Já enviados              | 0                                                  |
+
+O código da ação `notify` está pronto e a fila enche normalmente — falta só um
+SMTP configurado. **Não abra defeito por isto**: o e-mail não sai por decisão,
+e não por regressão.
+
+Fica um efeito colateral conhecido, sem dono até lá: a caixa "notificar por
+e-mail" do editor **vem marcada por padrão**, então quem cria uma regra pede um
+e-mail que não vai sair, sem aviso. Enquanto a decisão valer, quem for mexer
+nisso deve decidir entre desmarcar por padrão, esconder a opção ou dizer na tela
+que o envio não está configurado.
