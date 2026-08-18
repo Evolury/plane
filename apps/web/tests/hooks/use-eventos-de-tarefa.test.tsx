@@ -21,15 +21,29 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("react", async () => {
+  const react = await vi.importActual<typeof import("react")>("react");
+  // Só o `useContext` é trocado: o gancho lê dali o store RAIZ, e montar o
+  // provedor de verdade traria a árvore de stores inteira para um teste que
+  // quer afirmar uma decisão de três linhas.
+  return { ...react, useContext: () => ({ issue: { issues: { consumirEscritaLocal } } }) };
+});
+
 const issueUpdate = vi.fn();
+const removeIssueFromList = vi.fn();
+const rebuscarQuadro = vi.fn();
 const retrieveIssues = vi.fn(async (_ws: string, _p: string, ids: string[]) => ids.map((id) => ({ id, name: id })));
 
 let groupedIssueIds: unknown = { grupo: ["tarefa-no-quadro"] };
 let meuId = "eu";
 
+const consumirEscritaLocal = vi.fn(() => false);
+
 vi.mock("@/hooks/store/use-issues", () => ({
-  useIssues: () => ({ issues: { groupedIssueIds, issueUpdate } }),
+  useIssues: () => ({ issues: { groupedIssueIds, issueUpdate, removeIssueFromList } }),
 }));
+
+vi.mock("@/lib/store-context", () => ({ StoreContext: {} }));
 
 vi.mock("@/hooks/store/user", () => ({
   useUser: () => ({ data: { id: meuId } }),
@@ -70,7 +84,7 @@ const { useEventosDeTarefa } = await import("@/hooks/use-eventos-de-tarefa");
 
 // `EIssuesStoreType.PROJECT` sem importar `@plane/types`: o valor não é lido
 // pelo gancho (o store vem do mock), e importar traria a árvore de tipos inteira.
-const montar = () => renderHook(() => useEventosDeTarefa("evolury", "projeto-1", "PROJECT" as never));
+const montar = () => renderHook(() => useEventosDeTarefa("evolury", "projeto-1", "PROJECT" as never, rebuscarQuadro));
 
 const avisoDe = (tarefa: string, ator: string | null = "outra-pessoa") => ({ tipo: "alterada", tarefa, ator });
 
@@ -80,6 +94,10 @@ describe("useEventosDeTarefa", () => {
     retrieveIssues.mockClear();
     groupedIssueIds = { grupo: ["tarefa-no-quadro"] };
     meuId = "eu";
+    consumirEscritaLocal.mockReset();
+    consumirEscritaLocal.mockReturnValue(false);
+    removeIssueFromList.mockClear();
+    rebuscarQuadro.mockClear();
     SocketFalso.ultimo = undefined;
   });
 
@@ -104,12 +122,35 @@ describe("useEventosDeTarefa", () => {
     expect(shouldSync).toBe(false);
   });
 
-  it("ignora o próprio eco", async () => {
+  it("ignora o eco da escrita feita NESTA aba", async () => {
+    // A aba escreveu: o store raiz reconhece a anotação e a gasta.
+    consumirEscritaLocal.mockReturnValue(true);
     montar();
     SocketFalso.ultimo!.receber(avisoDe("tarefa-no-quadro", meuId));
 
     await new Promise((r) => setTimeout(r, 400));
+    expect(consumirEscritaLocal).toHaveBeenCalledWith("tarefa-no-quadro");
     expect(retrieveIssues).not.toHaveBeenCalled();
+  });
+
+  it("ATUALIZA quando a mesma pessoa mudou em OUTRA aba", async () => {
+    // O defeito que a fase 1 deixou: o ator é o mesmo usuário, mas esta aba não
+    // escreveu nada, então não há anotação para gastar — e o aviso vale.
+    consumirEscritaLocal.mockReturnValue(false);
+    montar();
+    SocketFalso.ultimo!.receber(avisoDe("tarefa-no-quadro", meuId));
+
+    await waitFor(() => expect(retrieveIssues).toHaveBeenCalled());
+  });
+
+  it("não gasta anotação quando o ator é outra pessoa", async () => {
+    // Gastar aqui torraria a anotação de uma escrita minha ainda pendente, e o
+    // eco seguinte passaria a ser tratado como mudança alheia.
+    montar();
+    SocketFalso.ultimo!.receber(avisoDe("tarefa-no-quadro", "outra-pessoa"));
+
+    await waitFor(() => expect(retrieveIssues).toHaveBeenCalled());
+    expect(consumirEscritaLocal).not.toHaveBeenCalled();
   });
 
   it("ignora tarefa que não está neste quadro", async () => {
@@ -130,12 +171,13 @@ describe("useEventosDeTarefa", () => {
     await waitFor(() => expect(retrieveIssues).toHaveBeenCalled());
   });
 
-  it("ignora tipo que a Fase 1 não trata", async () => {
+  it("ignora tipo que não conhece", async () => {
     montar();
-    SocketFalso.ultimo!.receber({ tipo: "criada", tarefa: "tarefa-no-quadro", ator: "outra-pessoa" });
+    SocketFalso.ultimo!.receber({ tipo: "inventada", tarefa: "tarefa-no-quadro", ator: "outra-pessoa" });
 
     await new Promise((r) => setTimeout(r, 400));
     expect(retrieveIssues).not.toHaveBeenCalled();
+    expect(rebuscarQuadro).not.toHaveBeenCalled();
   });
 
   it("junta uma rajada numa busca só", async () => {
@@ -176,5 +218,79 @@ describe("useEventosDeTarefa", () => {
 
     await new Promise((r) => setTimeout(r, 1500));
     expect(SocketFalso.ultimo).toBe(socket);
+  });
+});
+
+describe("tarefa que sai do quadro", () => {
+  beforeEach(() => {
+    removeIssueFromList.mockClear();
+    retrieveIssues.mockClear();
+    groupedIssueIds = { grupo: ["tarefa-no-quadro"] };
+  });
+
+  it("tira o cartão sem buscar nada", async () => {
+    // Tirar é exato: não depende de filtro e não precisa do servidor. Buscar
+    // aqui seria pedir uma tarefa que o quadro está justamente descartando.
+    montar();
+    SocketFalso.ultimo!.receber({ tipo: "removida", tarefa: "tarefa-no-quadro", ator: "outra-pessoa" });
+
+    await waitFor(() => expect(removeIssueFromList).toHaveBeenCalledWith("tarefa-no-quadro"));
+    expect(retrieveIssues).not.toHaveBeenCalled();
+  });
+
+  it("não tenta tirar tarefa que não está neste quadro", async () => {
+    montar();
+    SocketFalso.ultimo!.receber({ tipo: "removida", tarefa: "tarefa-de-fora", ator: "outra-pessoa" });
+
+    await new Promise((r) => setTimeout(r, 400));
+    expect(removeIssueFromList).not.toHaveBeenCalled();
+  });
+});
+
+describe("tarefa nova", () => {
+  beforeEach(() => {
+    rebuscarQuadro.mockClear();
+    retrieveIssues.mockClear();
+    groupedIssueIds = { grupo: ["tarefa-no-quadro"] };
+  });
+
+  it("rebusca a lista, e não a tarefa", async () => {
+    // Acrescentar a tarefa direto faria aparecer, para quem filtrou, um cartão
+    // que o filtro exclui: `updateIssueList` não avalia os filtros ricos.
+    montar();
+    SocketFalso.ultimo!.receber({ tipo: "criada", tarefa: "tarefa-nova", ator: "outra-pessoa" });
+
+    await waitFor(() => expect(rebuscarQuadro).toHaveBeenCalled());
+    expect(retrieveIssues).not.toHaveBeenCalled();
+  });
+
+  it("não desiste por a tarefa ainda não estar no quadro", async () => {
+    // A guarda `estaNoQuadro` vale para os outros tipos. Aqui ela mataria o
+    // caso inteiro: tarefa nova nunca está no quadro — é o que se quer saber.
+    groupedIssueIds = { grupo: [] };
+    montar();
+    SocketFalso.ultimo!.receber({ tipo: "criada", tarefa: "tarefa-nova", ator: "outra-pessoa" });
+
+    await waitFor(() => expect(rebuscarQuadro).toHaveBeenCalled());
+  });
+
+  it("junta uma rajada numa rebusca só", async () => {
+    // Uma automação que cria subtarefas dispara várias de uma vez.
+    montar();
+    for (const t of ["a", "b", "c", "d"]) {
+      SocketFalso.ultimo!.receber({ tipo: "criada", tarefa: t, ator: "outra-pessoa" });
+    }
+
+    await waitFor(() => expect(rebuscarQuadro).toHaveBeenCalled());
+    expect(rebuscarQuadro).toHaveBeenCalledTimes(1);
+  });
+
+  it("não rebusca depois de sair do quadro", async () => {
+    const { unmount } = montar();
+    SocketFalso.ultimo!.receber({ tipo: "criada", tarefa: "tarefa-nova", ator: "outra-pessoa" });
+    unmount();
+
+    await new Promise((r) => setTimeout(r, 900));
+    expect(rebuscarQuadro).not.toHaveBeenCalled();
   });
 });

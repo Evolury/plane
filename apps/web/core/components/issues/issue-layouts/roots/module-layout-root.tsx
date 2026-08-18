@@ -51,8 +51,11 @@ export const ModuleLayoutRoot = observer(function ModuleLayoutRoot() {
   const projectId = routerProjectId ? routerProjectId.toString() : undefined;
   const moduleId = routerModuleId ? routerModuleId.toString() : undefined;
   // hooks
-  const { issuesFilter } = useIssues(EIssuesStoreType.MODULE);
-  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.MODULE);
+  const { issues, issuesFilter } = useIssues(EIssuesStoreType.MODULE);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.MODULE, () => {
+    if (workspaceSlug && projectId && moduleId)
+      issues?.fetchIssuesWithExistingPagination(workspaceSlug, projectId, "mutation", moduleId);
+  });
   // derived values
   const workItemFilters = moduleId ? issuesFilter?.getIssueFilters(moduleId) : undefined;
   const activeLayout = workItemFilters?.displayFilters?.layout || undefined;

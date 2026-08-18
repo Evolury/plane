@@ -40,22 +40,34 @@ CANAL = "evolury:tarefas"
 
 #: Tipo de atividade → o que dizer ao cliente.
 #:
-#: Só "alterada" por enquanto (Fase 1 do ADR 0013): é o que resolve as seis
-#: ações de campo, o defeito relatado entre elas. "criada" e "removida" mudam a
-#: PARTICIPAÇÃO da tarefa na lista, e o cliente precisa de tratamento próprio
-#: para elas — acrescentar aqui antes disso seria emitir evento que ninguém
-#: consome.
+#: Três palavras, e a diferença entre elas é o que o cliente faz ao ouvir:
+#:
+#: * **alterada** — remendo cirúrgico de uma tarefa que já está no quadro;
+#: * **criada**   — rebusca da LISTA, porque o cliente não tem como avaliar os
+#:   filtros ricos do quadro sozinho e acrescentar às cegas faria aparecer, para
+#:   quem filtrou, um cartão que o filtro exclui;
+#: * **removida** — tira do quadro, o que não depende de filtro nenhum.
 #:
 #: Ciclo e módulo entram como alteração porque, no quadro do projeto, são campos
-#: do cartão como qualquer outro. Que eles também mudem a participação nos
-#: quadros de ciclo e de módulo é assunto da Fase 2.
+#: do cartão como qualquer outro.
 TIPO_DE_EVENTO = {
+    "issue.activity.created": "criada",
+    "issue.activity.deleted": "removida",
     "issue.activity.updated": "alterada",
     "cycle.activity.created": "alterada",
     "cycle.activity.deleted": "alterada",
     "module.activity.created": "alterada",
     "module.activity.deleted": "alterada",
 }
+
+#: O campo que faz uma tarefa entrar ou sair do quadro sem ser criada nem
+#: excluída. Arquivar é `issue.activity.updated` como qualquer edição — só o
+#: campo denuncia —, e do ponto de vista de quem olha o quadro o cartão SOME.
+CAMPO_DE_ARQUIVAMENTO = "archived_at"
+
+#: O `new_value` que o produto grava ao desarquivar. A tarefa volta ao quadro, e
+#: voltar é entrar: mesma resposta que uma criação.
+DESARQUIVAR = "restore"
 
 _cliente = None
 
@@ -68,16 +80,32 @@ def _conexao():
     return _cliente
 
 
-def publicar_mudanca(tipo, issue_id, project_id, actor_id=None):
+def _evento_do_arquivamento(linhas):
+    """Se alguma linha mexeu em `archived_at`, devolve o que dizer; senão, None."""
+    for linha in linhas or []:
+        if getattr(linha, "field", None) != CAMPO_DE_ARQUIVAMENTO:
+            continue
+        return "criada" if getattr(linha, "new_value", None) == DESARQUIVAR else "removida"
+    return None
+
+
+def publicar_mudanca(tipo, issue_id, project_id, actor_id=None, linhas=None):
     """Publica o aviso. Silenciosa por contrato — ver o cabeçalho do módulo.
 
     `ator` vai junto para o cliente poder ignorar o próprio eco: quem fez a
     mudança já a aplicou otimisticamente, e rebuscar por causa dela seria
     desfazer a resposta imediata que ele acabou de ver.
+
+    `linhas` são as de histórico recém-gravadas. Elas entram porque o TIPO
+    sozinho não distingue arquivar de editar — as duas chegam como
+    `issue.activity.updated`, e só o campo denuncia.
     """
     evento = TIPO_DE_EVENTO.get(tipo)
     if evento is None or not issue_id or not project_id:
         return
+
+    if evento == "alterada":
+        evento = _evento_do_arquivamento(linhas) or evento
 
     try:
         _conexao().publish(

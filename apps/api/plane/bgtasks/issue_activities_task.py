@@ -1656,7 +1656,13 @@ def issue_activity(
         #
         # A função não levanta exceção: aviso é conforto de tela, e não pode
         # derrubar o histórico.
-        publicar_mudanca(tipo=type, issue_id=issue_id, project_id=project_id, actor_id=actor_id)
+        publicar_mudanca(
+            tipo=type,
+            issue_id=issue_id,
+            project_id=project_id,
+            actor_id=actor_id,
+            linhas=issue_activities_created,
+        )
 
         return
     except Exception as e:

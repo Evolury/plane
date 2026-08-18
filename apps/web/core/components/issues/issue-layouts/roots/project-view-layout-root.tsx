@@ -53,8 +53,11 @@ export const ProjectViewLayoutRoot = observer(function ProjectViewLayoutRoot() {
   const projectId = routerProjectId ? routerProjectId?.toString() : undefined;
   const viewId = routerViewId ? routerViewId?.toString() : undefined;
   // hooks
-  const { issuesFilter } = useIssues(EIssuesStoreType.PROJECT_VIEW);
-  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.PROJECT_VIEW);
+  const { issues, issuesFilter } = useIssues(EIssuesStoreType.PROJECT_VIEW);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.PROJECT_VIEW, () => {
+    if (workspaceSlug && projectId && viewId)
+      issues?.fetchIssuesWithExistingPagination(workspaceSlug, projectId, viewId, "mutation");
+  });
   const { getViewById } = useProjectView();
   // derived values
   const projectView = viewId ? getViewById(viewId) : undefined;

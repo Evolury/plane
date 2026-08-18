@@ -91,6 +91,63 @@ class TestOQueOAvisoCarrega:
         assert carga(redis_falso)["ator"] is None
 
 
+class Linha:
+    """O mínimo de uma linha de histórico que o publicador lê."""
+
+    def __init__(self, field, new_value=None):
+        self.field = field
+        self.new_value = new_value
+
+
+@pytest.mark.contract
+class TestEntrarESairDoQuadro:
+    """Fase 2: o tipo sozinho não distingue arquivar de editar.
+
+    As duas chegam como `issue.activity.updated` — só o campo denuncia. Sem
+    olhar as linhas, arquivar por automação viraria "alterada", o cliente
+    rebuscaria a tarefa e a manteria na tela, arquivada.
+    """
+
+    def test_criar_pede_a_lista(self, redis_falso):
+        publicar_mudanca("issue.activity.created", "tarefa-1", "projeto-1", "pessoa-1")
+        assert carga(redis_falso)["tipo"] == "criada"
+
+    def test_excluir_tira_do_quadro(self, redis_falso):
+        publicar_mudanca("issue.activity.deleted", "tarefa-1", "projeto-1", "pessoa-1")
+        assert carga(redis_falso)["tipo"] == "removida"
+
+    def test_arquivar_tira_do_quadro(self, redis_falso):
+        publicar_mudanca(
+            "issue.activity.updated", "tarefa-1", "projeto-1", "pessoa-1", linhas=[Linha("archived_at", "2026-08-17")]
+        )
+        assert carga(redis_falso)["tipo"] == "removida"
+
+    def test_desarquivar_traz_de_volta(self, redis_falso):
+        """Voltar ao quadro é entrar, e entrar depende do filtro: mesma resposta que criar."""
+        publicar_mudanca(
+            "issue.activity.updated", "tarefa-1", "projeto-1", "pessoa-1", linhas=[Linha("archived_at", "restore")]
+        )
+        assert carga(redis_falso)["tipo"] == "criada"
+
+    def test_edicao_comum_continua_sendo_alteracao(self, redis_falso):
+        """Sem isto, tratar toda atualização como saída passaria nos testes acima."""
+        publicar_mudanca(
+            "issue.activity.updated", "tarefa-1", "projeto-1", "pessoa-1", linhas=[Linha("priority", "urgent")]
+        )
+        assert carga(redis_falso)["tipo"] == "alterada"
+
+    def test_arquivamento_no_meio_de_outras_mudancas_ainda_e_saida(self, redis_falso):
+        """Uma edição pode gravar várias linhas; basta uma ser o arquivamento."""
+        publicar_mudanca(
+            "issue.activity.updated",
+            "tarefa-1",
+            "projeto-1",
+            "pessoa-1",
+            linhas=[Linha("priority", "urgent"), Linha("archived_at", "2026-08-17")],
+        )
+        assert carga(redis_falso)["tipo"] == "removida"
+
+
 @pytest.mark.contract
 class TestOQueNaoViraAviso:
     """Publicar o que ninguém consome é ruído que parece funcionalidade."""
@@ -98,14 +155,12 @@ class TestOQueNaoViraAviso:
     @pytest.mark.parametrize(
         "tipo",
         [
-            "issue.activity.created",  # Fase 2: muda a participação na lista
-            "issue.activity.deleted",  # Fase 2
             "issue_draft.activity.updated",  # rascunho não é cartão de ninguém
             "issue_reaction.activity.created",  # não aparece no cartão
             "attachment.activity.created",
         ],
     )
-    def test_tipo_fora_da_fase_1_nao_publica(self, redis_falso, tipo):
+    def test_tipo_que_nao_muda_o_cartao_nao_publica(self, redis_falso, tipo):
         publicar_mudanca(tipo, "tarefa-1", "projeto-1", "pessoa-1")
 
         assert redis_falso == []

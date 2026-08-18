@@ -222,20 +222,77 @@ estreito do que confiar num escape estar certo em todo caminho. O teste afirma
 que **a requisição nunca sai** — fechar a conexão depois de perguntar já teria
 deixado o pedido forjado chegar à API.
 
-## Limite conhecido da fase 1: duas abas da MESMA pessoa
+## Fase 2 — resolvido o limite das duas abas, e a lista
 
-O cliente ignora o aviso cujo `ator` é ele próprio, para não rebuscar por causa
-da mudança que ele mesmo acabou de aplicar. O filtro é por **pessoa**, e não por
-conexão — então, se a mesma pessoa está com duas abas abertas e muda algo na
-primeira, **a segunda ignora o aviso**.
+### O eco passou a ser da ABA, e não da pessoa
 
-Isso não afeta o defeito que motivou o ADR: o ator da automação é o robô, e o de
-outra pessoa é ela. Mas é o caso que a medição acima quase escondeu — o cartão
-atualizou a prioridade que _eu_ tinha mudado, e não por causa do meu aviso: foi a
-rebusca disparada pelo aviso da automação que trouxe os dois campos juntos.
+A fase 1 ignorava o aviso cujo `ator` era o próprio usuário. Isso confundia "fui
+eu nesta aba" com "fui eu na outra aba": duas abas da mesma pessoa não se
+enxergavam.
 
-A saída é identificar a **conexão**, e não a pessoa, e devolvê-la ao cliente para
-ele filtrar por ela. Fica para a fase 2, junto com o resto que mexe em lista.
+A saída **não** foi o servidor identificar a conexão. Isso exigiria arrastar um
+parâmetro novo pelas 124 chamadas do funil — o `origin` que já existe ali é o
+host da requisição, para montar URL, e não serve. O caminho barato é o oposto: a
+própria aba já sabe o que escreveu. `issueUpdate` anota a tarefa quando a escrita
+vai ao servidor, e o receptor pergunta à anotação antes de ignorar um aviso.
+
+Duas propriedades fazem isso funcionar, e as duas têm teste:
+
+- **a anotação vale uma vez.** Gastá-la é o que mantém a mesma pessoa editando a
+  mesma tarefa em duas abas: o primeiro aviso é o eco desta aba e some; um
+  segundo só pode ter vindo de outro lugar, e passa;
+- **a anotação vence** (15 s). Sem isso, uma escrita que nunca recebeu eco —
+  conexão caiu — engoliria para sempre o próximo aviso daquela tarefa.
+
+A anotação só é criada quando `shouldSync` é verdadeiro. É a distinção que
+importa: `shouldSync: false` é exatamente o caminho por onde o receptor aplica o
+que veio de fora, e anotá-lo faria a aba tratar mudança alheia como eco próprio.
+
+### Entrar e sair do quadro
+
+O tipo da atividade sozinho não distingue arquivar de editar — as duas chegam
+como `issue.activity.updated`, e só o campo denuncia. Por isso o publicador
+passou a receber as linhas de histórico recém-gravadas.
+
+| O que aconteceu      | Aviso      | O que o cliente faz                     |
+| -------------------- | ---------- | --------------------------------------- |
+| campo mudou          | `alterada` | rebusca **a tarefa** e remenda o cartão |
+| tarefa criada        | `criada`   | rebusca **a lista**                     |
+| desarquivada         | `criada`   | idem — voltar ao quadro é entrar        |
+| arquivada / excluída | `removida` | tira do quadro, sem buscar nada         |
+
+A assimetria é de propósito. Tirar é exato e não depende de filtro. Acrescentar
+depende: `updateIssueList` reposiciona pela diferença entre antes e depois e
+**não avalia os filtros ricos do quadro**, então pôr a tarefa direto faria
+aparecer, para quem filtrou, um cartão que o filtro exclui. Rebuscar a lista
+custa mais e é o preço de estar certo.
+
+A rebusca da lista vem por parâmetro, de quem monta o quadro, e não é chamada
+daqui: `fetchIssuesWithExistingPagination` tem assinatura **diferente** em cada
+quadro — ciclo e módulo exigem o próprio id, a visão o dela, em posições que nem
+coincidem. Forçar um tipo comum seria um `cast` escondendo isso.
+
+## Medido em produção (18/08/2026, fase 2 implantada)
+
+Com a aba parada no quadro e a mudança entrando pela API, de fora dela:
+
+| Verificação                                                 | Resultado                           |
+| ----------------------------------------------------------- | ----------------------------------- |
+| **mesma pessoa, outra aba** — responsável atribuído de fora | cartão ganhou o avatar em **< 2 s** |
+| tarefa criada de fora                                       | cartão novo apareceu                |
+| tarefa excluída de fora                                     | cartão sumiu                        |
+| URL da aba, do começo ao fim                                | inalterada                          |
+
+O primeiro é o caso que a fase 1 ignorava.
+
+Duas armadilhas de medição no caminho, as duas resolvidas verificando o
+estímulo antes de julgar a resposta:
+
+- `PATCH {"assignees": [...]}` responde **204 e não faz nada** — o campo é
+  `assignee_ids`. A primeira rodada concluiu "não atualizou" quando o banco
+  nunca tinha mudado;
+- medir por `innerText` não enxerga prioridade, que é ícone. A rodada anterior
+  parecia inerte porque o campo escolhido não aparece em texto.
 
 ## Consequências
 
