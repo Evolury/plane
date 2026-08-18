@@ -282,6 +282,12 @@ urlpatterns = [
         WorkStageViewSet.as_view({"post": "mark_completion"}),
         name="workspace-my-tasks-stage-mark-completion",
     ),
+    # Evolury: qual balde de vencimento a etapa recebe (ADR 0014).
+    path(
+        "workspaces/<str:slug>/my-tasks/stages/<uuid:pk>/mark-bucket/",
+        WorkStageViewSet.as_view({"post": "mark_bucket"}),
+        name="workspace-my-tasks-stage-mark-bucket",
+    ),
     path(
         "workspaces/<str:slug>/my-tasks/issues/",
         MyTasksIssuesEndpoint.as_view(),

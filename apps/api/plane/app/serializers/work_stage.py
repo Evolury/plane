@@ -19,11 +19,23 @@ class WorkStageSerializer(BaseSerializer):
         # workspace/owner vêm sempre da rota e do request.user; is_default e
         # is_completion só mudam pelos endpoints mark-default e
         # mark-completion, que garantem exatamente uma de cada.
+        #
+        # Evolury: as quatro marcações de vencimento entram na mesma lista, e
+        # pelo mesmo motivo (ADR 0014) — a constraint parcial exige soltar a
+        # antiga antes de marcar a nova, e um PATCH comum estouraria com 500.
+        # Quem as muda é `mark-bucket`.
+        #
+        # `automation_disabled` fica DE FORA da lista de propósito: ela não tem
+        # constraint nenhuma, então o PATCH comum resolve.
         read_only_fields = [
             "workspace",
             "owner",
             "is_default",
             "is_completion",
+            "is_due_today",
+            "is_due_tomorrow",
+            "is_due_later",
+            "is_overdue",
             "created_by",
             "updated_by",
             "deleted_at",

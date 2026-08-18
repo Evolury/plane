@@ -7,3 +7,5 @@
 export * from "./mark-as-default";
 export * from "./mark-as-completion";
 export * from "./delete";
+// Evolury: baldes de vencimento (ADR 0014)
+export * from "./stage-buckets";

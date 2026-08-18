@@ -152,6 +152,13 @@ export const StateItem = observer(function StateItem(props: TStateItem) {
               deleteState: stateOperationsCallbacks.deleteState,
               markStateAsCompletion: stateOperationsCallbacks.markStateAsCompletion,
               getCompletionStateInfo: stateOperationsCallbacks.getCompletionStateInfo,
+              // Evolury: baldes de vencimento (ADR 0014). O objeto é remontado
+              // chave por chave aqui, então acrescentar o callback no tipo não
+              // basta — sem estas três linhas ele nunca chega à linha da etapa,
+              // e o componente some sem erro nenhum.
+              markStageBucket: stateOperationsCallbacks.markStageBucket,
+              getStageBucketInfo: stateOperationsCallbacks.getStageBucketInfo,
+              toggleStageAutomation: stateOperationsCallbacks.toggleStageAutomation,
             }}
             shouldTrackEvents={shouldTrackEvents}
           />

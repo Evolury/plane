@@ -21,6 +21,20 @@ export type TWorkStage = {
   is_default: boolean;
   /** Destino da tarefa concluída, entre as etapas do grupo concluído */
   is_completion: boolean;
+  /**
+   * Evolury: para onde a varredura diária manda cada balde de vencimento
+   * (ADR 0014). Opcionais, ao contrário de `is_default` — balde sem etapa
+   * marcada simplesmente não move ninguém.
+   */
+  is_due_today: boolean;
+  is_due_tomorrow: boolean;
+  is_due_later: boolean;
+  is_overdue: boolean;
+  /**
+   * A varredura não TIRA tarefa desta etapa. De saída, nunca de chegada:
+   * a etapa de vencidas é destino e travada ao mesmo tempo.
+   */
+  automation_disabled: boolean;
   workspace: string;
   owner: string;
   created_at: string;
@@ -35,3 +49,6 @@ export type TWorkStageIssue = {
   workspace: string;
   owner: string;
 };
+
+/** Evolury: os quatro baldes de vencimento (ADR 0014). */
+export type TBaldeDeVencimento = "hoje" | "amanha" | "depois" | "vencidas";

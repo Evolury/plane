@@ -10,7 +10,7 @@
 
 // helpers
 import { API_BASE_URL } from "@plane/constants";
-import type { TIssuesResponse, TWorkStage, TWorkStageIssue } from "@plane/types";
+import type { TIssuesResponse, TWorkStage, TWorkStageIssue, TBaldeDeVencimento } from "@plane/types";
 // services
 import { APIService } from "@/services/api.service";
 
@@ -61,6 +61,28 @@ export class MyTasksService extends APIService {
 
   async markStageAsCompletion(workspaceSlug: string, stageId: string): Promise<void> {
     return this.post(`/api/workspaces/${workspaceSlug}/my-tasks/stages/${stageId}/mark-completion/`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err?.response?.data;
+      });
+  }
+
+  /**
+   * Evolury: qual balde de vencimento esta etapa recebe (ADR 0014).
+   *
+   * Endpoint próprio, e não um PATCH, porque a constraint parcial exige soltar
+   * a etapa anterior antes de marcar a nova — o PATCH estouraria com 500.
+   *
+   * `ativo: false` desliga e deixa o balde SEM destino, que é caso legítimo:
+   * estas marcações são opcionais, ao contrário da etapa padrão.
+   */
+  async markStageBucket(
+    workspaceSlug: string,
+    stageId: string,
+    balde: TBaldeDeVencimento,
+    ativo: boolean
+  ): Promise<void> {
+    return this.post(`/api/workspaces/${workspaceSlug}/my-tasks/stages/${stageId}/mark-bucket/`, { balde, ativo })
       .then((res) => res?.data)
       .catch((err) => {
         throw err?.response?.data;

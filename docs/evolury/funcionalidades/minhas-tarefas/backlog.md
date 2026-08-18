@@ -185,40 +185,46 @@ ajustar o seed à mão.
 
 ### F8.1 — Modelo e motor
 
-- [ ] F8.1.1 `WorkStage` ganha `is_due_today`, `is_due_tomorrow`, `is_due_later`
+- [x] F8.1.1 `WorkStage` ganha `is_due_today`, `is_due_tomorrow`, `is_due_later`
       e `is_overdue`, cada um com constraint parcial de **no máximo um** por
       pessoa/workspace — o mesmo molde de `is_default`, e é ela que dá o
       "opcional": impede dois, não exige um
-- [ ] F8.1.2 `WorkStage.automation_disabled`, sem constraint: quantas etapas a
+- [x] F8.1.2 `WorkStage.automation_disabled`, sem constraint: quantas etapas a
       pessoa quiser
-- [ ] F8.1.3 Marcador do último dia varrido, por pessoa/workspace. Não existe
+- [x] F8.1.3 Marcador do último dia varrido, por pessoa/workspace. Não existe
       para evitar repetição — a varredura é idempotente — e sim para se
       recuperar de worker fora do ar na virada
-- [ ] F8.1.4 Migração
-- [ ] F8.1.5 Varredura: balde pelo vencimento no fuso da pessoa, tarefa sem
+- [x] F8.1.4 Migração
+- [x] F8.1.5 Varredura: balde pelo vencimento no fuso da pessoa, tarefa sem
       data para hoje, **sem carimbar data nenhuma**
-- [ ] F8.1.6 Travas estruturais: concluída e cancelada fora; balde sem etapa não
+- [x] F8.1.6 Travas estruturais: concluída e cancelada fora; balde sem etapa não
       move; etapa sem automação não **solta** — chegar continua podendo
-- [ ] F8.1.7 Beat de 15 em 15 minutos, mesma cadência das recorrentes e pelo
+- [x] F8.1.7 Beat de 15 em 15 minutos, mesma cadência das recorrentes e pelo
       mesmo motivo: meia-noite é um instante por fuso
-- [ ] F8.1.8 Testes de contrato com defeito reintroduzido em cada regra,
+- [x] F8.1.8 Testes de contrato com defeito reintroduzido em cada regra,
       inclusive nas que afirmam ausência
 
 ### F8.2 — Tela
 
-- [ ] F8.2.1 As quatro marcações e o interruptor de opt-out no popup de etapa
-- [ ] F8.2.2 A extensão entra como campos **opcionais** no formulário
-      compartilhado com os estados de projeto, que não devem enxergar diferença.
-      Inviável sem sujar o compartilhado, parar e consultar antes de bifurcar
-- [ ] F8.2.3 Arrastar para a etapa de hoje ou de amanhã muda o vencimento; os
+- [x] F8.2.1 As quatro marcações e o interruptor de opt-out no popup de etapa
+- [x] F8.2.2 O risco não se confirmou: o "marcar como padrão" **não é campo do
+      formulário**, é botão na linha da etapa, e o `mark-as-completion` ao lado
+      dele já entrava por callback OPCIONAL. As marcações seguiram o mesmo
+      molde — três callbacks opcionais —, e o formulário compartilhado não foi
+      tocado. Estado de projeto não passa nenhum e não vê nada
+- [x] F8.2.5 Marcação ativa fica **sempre visível**; só a desmarcada aparece no
+      hover. Achado ao olhar a tela: marcação não é ação, é informação, e saber
+      qual etapa recebe as vencidas não pode exigir passar o mouse por oito
+      linhas
+- [x] F8.2.3 Arrastar para a etapa de hoje ou de amanhã muda o vencimento; os
       outros destinos não tocam a data
-- [ ] F8.2.4 Testes
+- [x] F8.2.4 Testes
 
 ### F8.3 — Seed e ambientes
 
-- [ ] F8.3.1 `DEFAULT_WORK_STAGES` passa a ser o conjunto de oito etapas da
+- [x] F8.3.1 `DEFAULT_WORK_STAGES` passa a ser o conjunto de oito etapas da
       especificação, com as marcações — inclusive Recentes e Pendências já
       **sem automação**
-- [ ] F8.3.2 Aplicação do padrão novo no devlocal e na produção de teste
+- [x] F8.3.2 Aplicação do padrão novo no devlocal e na produção de teste
 - [ ] F8.3.3 Verificação visual com o relógio adiantado, para provar a virada e
       não só a função

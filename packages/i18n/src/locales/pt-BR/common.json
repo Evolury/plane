@@ -1842,5 +1842,19 @@
     "yesterday": "Ontem",
     "last_7_days": "Últimos 7 dias",
     "last_30_days": "Últimos 30 dias"
+  },
+  "my_tasks": {
+    "stages": {
+      "buckets": {
+        "overdue": "Vencidas",
+        "today": "Hoje",
+        "tomorrow": "Amanhã",
+        "later": "Depois",
+        "mark": "Marcar como destino desta varredura",
+        "unmark": "Desmarcar — o balde fica sem destino e não move ninguém",
+        "locked": "Não sai daqui",
+        "locked_hint": "A varredura não TIRA tarefa desta etapa. Chegar continua podendo."
+      }
+    }
   }
 }

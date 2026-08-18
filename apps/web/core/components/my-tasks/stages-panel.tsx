@@ -19,7 +19,7 @@ import { useParams } from "next/navigation";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { MY_TASKS_STAGE_GROUP_ORDER } from "@plane/constants";
-import type { IState, TStateOperationsCallbacks, TWorkStage } from "@plane/types";
+import type { IState, TStateOperationsCallbacks, TWorkStage, TBaldeDeVencimento } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { EModalWidth, ModalCore } from "@plane/ui";
 // components
@@ -63,8 +63,16 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
   const workspaceSlug = routerWorkspaceSlug?.toString();
   const { t } = useTranslation();
   // store hooks
-  const { sortedStages, createStage, updateStage, deleteStage, markStageAsDefault, markStageAsCompletion } =
-    useMyTasks();
+  const {
+    sortedStages,
+    createStage,
+    updateStage,
+    deleteStage,
+    markStageAsDefault,
+    markStageAsCompletion,
+    markStageBucket,
+    toggleStageAutomation,
+  } = useMyTasks();
   const {
     issues: { fetchIssuesWithExistingPagination },
   } = useIssues(EIssuesStoreType.MY_TASKS);
@@ -118,6 +126,28 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
         await markStageAsCompletion(workspaceSlug, stageId);
         refetchIssues();
       },
+      // Evolury: baldes de vencimento e trava da varredura (ADR 0014). A
+      // listagem é refeita porque marcar SOLTA a etapa anterior — muda duas
+      // linhas da tela, não só a clicada.
+      markStageBucket: async (stageId: string, balde: TBaldeDeVencimento, ativo: boolean) => {
+        if (!workspaceSlug) return;
+        await markStageBucket(workspaceSlug, stageId, balde, ativo);
+        refetchIssues();
+      },
+      toggleStageAutomation: async (stageId: string, desativada: boolean) => {
+        if (!workspaceSlug) return;
+        await toggleStageAutomation(workspaceSlug, stageId, desativada);
+      },
+      getStageBucketInfo: (stageId: string) => {
+        const etapa = sortedStages.find((e) => e.id === stageId);
+        return {
+          hoje: etapa?.is_due_today ?? false,
+          amanha: etapa?.is_due_tomorrow ?? false,
+          depois: etapa?.is_due_later ?? false,
+          vencidas: etapa?.is_overdue ?? false,
+          semAutomacao: etapa?.automation_disabled ?? false,
+        };
+      },
       getCompletionStateInfo: (stageId: string) => {
         const concluidas = sortedStages.filter((etapa) => etapa.group === "completed");
         const marcada = concluidas.find((etapa) => etapa.is_completion);
@@ -128,7 +158,17 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [workspaceSlug, createStage, updateStage, deleteStage, markStageAsDefault, markStageAsCompletion, sortedStages]
+    [
+      workspaceSlug,
+      createStage,
+      updateStage,
+      deleteStage,
+      markStageAsDefault,
+      markStageAsCompletion,
+      markStageBucket,
+      toggleStageAutomation,
+      sortedStages,
+    ]
   );
 
   return (
