@@ -3,6 +3,43 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.22.0] — 2026-08-18
+
+**Minor**: o quadro passa a acompanhar tudo que muda de fora — inclusive de
+outra aba sua, inclusive tarefa que nasce ou some. É a fase 2 do
+[ADR 0013](docs/evolury/decisoes/0013-atualizacao-em-tempo-real.md), e fecha o
+que a 1.21.0 deixou pela metade.
+
+### Na tela
+
+- **Duas abas suas agora se enxergam.** Na versão anterior, o quadro ignorava
+  qualquer aviso cujo autor fosse você — o que confundia "fui eu nesta aba" com
+  "fui eu na outra aba". Mudar uma tarefa no notebook não atualizava o desktop
+  ao lado. Agora cada aba reconhece só o próprio eco.
+
+- **Tarefa criada de fora aparece, e tarefa arquivada ou excluída some.** Uma
+  regra que arquiva deixava o cartão na tela até alguém recarregar; uma
+  automação que cria subtarefas não mostrava nenhuma delas. Vale também para
+  tarefa criada por outra pessoa no mesmo quadro.
+
+  Sair do quadro é imediato. Entrar rebusca a lista, e isso é de propósito: o
+  cartão novo precisa passar pelos filtros do seu quadro, e só o servidor sabe
+  responder isso — acrescentar direto faria aparecer, para quem filtrou, um
+  cartão que o filtro exclui.
+
+### Por dentro
+
+- O reconhecimento do próprio eco **não** exigiu o servidor identificar a
+  conexão, que obrigaria a arrastar um parâmetro novo pelas 124 chamadas do
+  funil de histórico. A aba já sabe o que escreveu: ela anota, e a anotação vale
+  uma vez e vence em 15 segundos. Valer uma vez é o que mantém a mesma pessoa
+  editando a mesma tarefa em duas abas; vencer evita que uma escrita sem
+  resposta engula para sempre o próximo aviso daquela tarefa.
+
+- Arquivar e editar chegam ao servidor com o mesmo tipo de atividade — só o
+  campo os distingue —, então o aviso passou a ser decidido lendo as linhas de
+  histórico, e não só o tipo.
+
 ## [1.21.0] — 2026-08-17
 
 **Minor**: o cartão do quadro passa a se atualizar sozinho quando a mudança vem
