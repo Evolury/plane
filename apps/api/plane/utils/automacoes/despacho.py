@@ -27,6 +27,7 @@ from plane.utils.automacoes.gatilhos import (
     mudancas_das_atividades,
 )
 from plane.utils.exception_logger import log_exception
+from plane.utils.tempo_real import publicar_propriedade
 
 #: Tipo de atividade → tipo de evento, no vocabulário da regra.
 #:
@@ -173,6 +174,11 @@ def registrar_atividade_de_propriedade(
         comment=f"alterou {propriedade.name} para",
         epoch=int(timezone.now().timestamp()),
     )
+
+    # Evolury: o cartão lê o valor de uma chave própria, do projeto inteiro
+    # (ADR 0013, fase 3). Fica ANTES da guarda de automação abaixo: a tela
+    # precisa do aviso mesmo num projeto que não tem regra nenhuma.
+    publicar_propriedade(issue_id=tarefa.id, project_id=tarefa.project_id, actor_id=actor_id)
 
     try:
         if profundidade > TETO_DE_PROFUNDIDADE:

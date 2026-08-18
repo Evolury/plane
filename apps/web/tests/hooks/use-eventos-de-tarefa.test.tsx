@@ -32,6 +32,7 @@ vi.mock("react", async () => {
 const issueUpdate = vi.fn();
 const removeIssueFromList = vi.fn();
 const rebuscarQuadro = vi.fn();
+const revalidarValoresDoProjeto = vi.fn();
 const retrieveIssues = vi.fn(async (_ws: string, _p: string, ids: string[]) => ids.map((id) => ({ id, name: id })));
 
 let groupedIssueIds: unknown = { grupo: ["tarefa-no-quadro"] };
@@ -44,6 +45,8 @@ vi.mock("@/hooks/store/use-issues", () => ({
 }));
 
 vi.mock("@/lib/store-context", () => ({ StoreContext: {} }));
+
+vi.mock("@/components/issue-properties/store", () => ({ revalidarValoresDoProjeto }));
 
 vi.mock("@/hooks/store/user", () => ({
   useUser: () => ({ data: { id: meuId } }),
@@ -292,5 +295,57 @@ describe("tarefa nova", () => {
 
     await new Promise((r) => setTimeout(r, 900));
     expect(rebuscarQuadro).not.toHaveBeenCalled();
+  });
+});
+
+describe("valor de propriedade personalizada", () => {
+  beforeEach(() => {
+    revalidarValoresDoProjeto.mockClear();
+    retrieveIssues.mockClear();
+    rebuscarQuadro.mockClear();
+    consumirEscritaLocal.mockReset();
+    consumirEscritaLocal.mockReturnValue(false);
+    groupedIssueIds = { grupo: ["tarefa-no-quadro"] };
+  });
+
+  const aviso = (tarefa: string, ator = "outra-pessoa") => ({ tipo: "propriedade", tarefa, ator });
+
+  it("revalida a chave do projeto, e não a tarefa", async () => {
+    // O valor não vive no store de tarefas: o cartão o lê de uma chave própria,
+    // do projeto inteiro. Rebuscar a tarefa não o traria — foi o defeito do #144.
+    montar();
+    SocketFalso.ultimo!.receber(aviso("tarefa-no-quadro"));
+
+    await waitFor(() => expect(revalidarValoresDoProjeto).toHaveBeenCalledWith("projeto-1"));
+    expect(retrieveIssues).not.toHaveBeenCalled();
+    expect(rebuscarQuadro).not.toHaveBeenCalled();
+  });
+
+  it("revalida mesmo para tarefa que não está neste quadro", async () => {
+    // A chave é do PROJETO. Perguntar se a tarefa está no quadro faria a
+    // revalidação depender de algo que não tem relação com o que se busca.
+    groupedIssueIds = { grupo: [] };
+    montar();
+    SocketFalso.ultimo!.receber(aviso("tarefa-de-fora"));
+
+    await waitFor(() => expect(revalidarValoresDoProjeto).toHaveBeenCalled());
+  });
+
+  it("ignora o eco de quem gravou nesta aba", async () => {
+    // Quem grava já revalida na hora; sem isto, revalidaria duas vezes.
+    consumirEscritaLocal.mockReturnValue(true);
+    montar();
+    SocketFalso.ultimo!.receber(aviso("tarefa-no-quadro", meuId));
+
+    await new Promise((r) => setTimeout(r, 400));
+    expect(revalidarValoresDoProjeto).not.toHaveBeenCalled();
+  });
+
+  it("revalida quando a MESMA pessoa gravou em outra aba", async () => {
+    consumirEscritaLocal.mockReturnValue(false);
+    montar();
+    SocketFalso.ultimo!.receber(aviso("tarefa-no-quadro", meuId));
+
+    await waitFor(() => expect(revalidarValoresDoProjeto).toHaveBeenCalled());
   });
 });

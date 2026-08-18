@@ -25,6 +25,7 @@ import { IssuePropertyService } from "@/services/issue-property.service";
 // Evolury: ícone da propriedade (ADR 0011)
 import { iconeDaPropriedade } from "./icones";
 import { PropertyValueEditor } from "./value-editor";
+import { rootStore } from "@/lib/store-context";
 import { revalidarValoresDoProjeto } from "./store";
 
 const servico = new IssuePropertyService();
@@ -58,6 +59,10 @@ export const IssuePropertiesSection = observer(function IssuePropertiesSection(p
   const gravar = async (propriedadeId: string, valor: TPropertyValue) => {
     setEmVoo((atual) => ({ ...atual, [propriedadeId]: valor }));
     try {
+      // Evolury: anota antes de gravar, para o aviso que voltar do `live` ser
+      // reconhecido como eco desta aba (ADR 0013, fase 3). Sem isto, quem grava
+      // revalida duas vezes: uma pelas linhas abaixo e outra pelo próprio aviso.
+      rootStore.issue.issues.registrarEscritaLocal(issueId);
       await servico.setValue(workspaceSlug, projectId, issueId, propriedadeId, valor);
       await mutate();
       // O cartão lê de outra chave, do projeto inteiro — sem isto o valor só
