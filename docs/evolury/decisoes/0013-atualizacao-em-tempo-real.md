@@ -294,6 +294,53 @@ estímulo antes de julgar a resposta:
 - medir por `innerText` não enxerga prioridade, que é ícone. A rodada anterior
   parecia inerte porque o campo escolhido não aparece em texto.
 
+## Fase 3 — o valor de propriedade personalizada
+
+O cartão lê o valor de uma chave **própria**, do projeto inteiro, e não do store
+de tarefas. Foi o defeito do [#144](https://github.com/evolury/plane/pull/144)
+dentro de um cliente só; aqui ele reaparece entre clientes: rebuscar a tarefa
+nunca traria o valor.
+
+Duas metades, e a do servidor é a que não estava óbvia: a gravação de valor
+**não passa pelo funil** de `issue_activity` — escreve `IssueActivity` direto.
+O único enxerto da fase 1 não a alcançava, e por isso propriedade marcada para o
+cartão continuava exigindo recarga.
+
+- **Servidor:** `registrar_atividade_de_propriedade` passou a publicar. Um só
+  lugar cobre os dois caminhos que gravam valor — a tela e a ação `set_property`
+  da automação. O aviso fica **antes** da guarda de automação: a tela precisa
+  dele mesmo num projeto sem regra nenhuma.
+- **Cliente:** o aviso tem tipo próprio (`propriedade`), porque a resposta é
+  outra — revalidar a chave do projeto, e não rebuscar a tarefa. Ele também não
+  pergunta se a tarefa está neste quadro: a chave é do projeto, e a pergunta não
+  teria relação com o que se busca.
+
+A gravação na tela passou a anotar a escrita local, como o `issueUpdate` já
+fazia, para quem gravou não revalidar duas vezes — uma pelo próprio salvamento
+e outra pelo aviso que volta.
+
+### Uma lacuna que a injeção de defeito revelou
+
+Os testes do publicador provavam que a função sabe publicar, **não** que ela é
+chamada de onde precisa. Apagar a chamada em `registrar_atividade_de_propriedade`
+deixou a suíte inteira verde — o defeito da fase 3 de volta, em silêncio. Foi
+preciso um teste da **fiação**, que chama o caminho real e afirma que o aviso
+saiu, mais o par negativo (valor que não mudou não avisa).
+
+## Medido em produção (18/08/2026, fase 3 implantada)
+
+Propriedade `Local` marcada para o cartão, valor gravado pela API de fora da aba:
+
+| Verificação           | Resultado                         |
+| --------------------- | --------------------------------- |
+| valor gravado de fora | **"Galpao 7" no cartão em < 2 s** |
+| URL da aba            | inalterada                        |
+
+Terceira armadilha de medição da série, e a mesma lição: o primeiro `POST` foi
+para uma rota inventada e devolveu **404**, então o cartão "não atualizou"
+porque nada havia acontecido. A sonda passou a **abortar** quando o estímulo
+falha, em vez de seguir medindo a resposta de um estímulo que não houve.
+
 ## Consequências
 
 - **A favor:** cobre toda a matriz; nenhuma infraestrutura nova; nenhuma segunda

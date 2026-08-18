@@ -22,8 +22,10 @@ from unittest.mock import patch
 
 import pytest
 
+from plane.db.models import Issue
+
 from plane.utils import tempo_real
-from plane.utils.tempo_real import CANAL, publicar_mudanca
+from plane.utils.tempo_real import CANAL, publicar_mudanca, publicar_propriedade
 
 
 @pytest.fixture
@@ -194,6 +196,111 @@ class TestCicloEModuloContamComoAlteracao:
 
         assert len(redis_falso) == 1
         assert carga(redis_falso)["tipo"] == "alterada"
+
+
+@pytest.mark.contract
+class TestValorDePropriedadePersonalizada:
+    """Fase 3: a gravação de valor não passa pelo funil de `issue_activity`.
+
+    Ela escreve `IssueActivity` direto, e era por isso que propriedade marcada
+    para o cartão continuava exigindo recarga: nenhum aviso saía dali.
+
+    O aviso é de tipo próprio porque a resposta do cliente também é — o valor
+    não vive no store de tarefas, e sim numa chave do PROJETO inteiro. Rebuscar
+    a tarefa não o traria.
+    """
+
+    def test_publica_com_tipo_proprio(self, redis_falso):
+        publicar_propriedade("tarefa-1", "projeto-1", "pessoa-1")
+
+        assert len(redis_falso) == 1
+        assert carga(redis_falso)["tipo"] == "propriedade"
+
+    def test_leva_identificadores_e_nada_mais(self, redis_falso):
+        """Nem o id da propriedade, nem o valor: o cliente rebusca a chave inteira."""
+        publicar_propriedade("tarefa-1", "projeto-1", "pessoa-1")
+
+        assert carga(redis_falso) == {
+            "tipo": "propriedade",
+            "projeto": "projeto-1",
+            "tarefa": "tarefa-1",
+            "ator": "pessoa-1",
+        }
+
+    @pytest.mark.parametrize("issue_id,project_id", [(None, "projeto-1"), ("tarefa-1", None)])
+    def test_sem_identificador_nao_publica(self, redis_falso, issue_id, project_id):
+        publicar_propriedade(issue_id, project_id, "pessoa-1")
+
+        assert redis_falso == []
+
+    def test_redis_quebrado_nao_derruba_a_gravacao(self):
+        """Mesma política do outro publicador: aviso é conforto de tela."""
+
+        class Quebrado:
+            def publish(self, canal, mensagem):
+                raise ConnectionError("redis fora do ar")
+
+        anterior = tempo_real._cliente
+        tempo_real._cliente = Quebrado()
+        try:
+            with patch("plane.utils.tempo_real.log_exception") as registrou:
+                publicar_propriedade("tarefa-1", "projeto-1", "pessoa-1")
+            assert registrou.called
+        finally:
+            tempo_real._cliente = anterior
+
+
+@pytest.mark.contract
+class TestAFiacaoDaPropriedade:
+    """A regressão que os testes acima NÃO pegam: alguém remover a chamada.
+
+    Testar `publicar_propriedade` sozinha prova que a função sabe publicar, e
+    não que ela é chamada de onde precisa. A lacuna apareceu numa injeção de
+    defeito: apagar a chamada em `registrar_atividade_de_propriedade` deixou a
+    suíte inteira verde — exatamente o defeito que a fase 3 corrige, de volta e
+    em silêncio.
+    """
+
+    @pytest.mark.django_db
+    def test_gravar_valor_avisa_a_tela(self, db, workspace, create_user):
+        from plane.db.models import IssueProperty, Project, State
+        from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
+
+        projeto = Project.objects.create(name="Fiação", identifier="FIA", workspace=workspace)
+        estado = State.objects.create(name="A fazer", project=projeto, workspace=workspace, group="unstarted")
+        tarefa = Issue.objects.create(name="t", project=projeto, workspace=workspace, state=estado, sequence_id=1)
+        propriedade = IssueProperty.objects.create(
+            name="Local", project=projeto, workspace=workspace, property_type="TEXT"
+        )
+
+        with patch("plane.utils.automacoes.despacho.publicar_propriedade") as avisou:
+            registrar_atividade_de_propriedade(
+                tarefa=tarefa, propriedade=propriedade, de="", para="Galpão", actor_id=create_user.id
+            )
+
+        assert avisou.called, "gravar valor de propriedade tem de avisar a tela"
+        assert avisou.call_args.kwargs["issue_id"] == tarefa.id
+        assert avisou.call_args.kwargs["project_id"] == projeto.id
+
+    @pytest.mark.django_db
+    def test_valor_que_nao_mudou_nao_avisa(self, db, workspace, create_user):
+        """Sem isto, avisar sempre passaria no teste acima."""
+        from plane.db.models import IssueProperty, Project, State
+        from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
+
+        projeto = Project.objects.create(name="Fiação 2", identifier="FI2", workspace=workspace)
+        estado = State.objects.create(name="A fazer", project=projeto, workspace=workspace, group="unstarted")
+        tarefa = Issue.objects.create(name="t", project=projeto, workspace=workspace, state=estado, sequence_id=1)
+        propriedade = IssueProperty.objects.create(
+            name="Local", project=projeto, workspace=workspace, property_type="TEXT"
+        )
+
+        with patch("plane.utils.automacoes.despacho.publicar_propriedade") as avisou:
+            registrar_atividade_de_propriedade(
+                tarefa=tarefa, propriedade=propriedade, de="Galpão", para="Galpão", actor_id=create_user.id
+            )
+
+        assert not avisou.called
 
 
 @pytest.mark.contract

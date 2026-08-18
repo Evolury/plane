@@ -80,6 +80,31 @@ def _conexao():
     return _cliente
 
 
+def publicar_propriedade(issue_id, project_id, actor_id=None):
+    """Avisa que o VALOR de uma propriedade personalizada mudou.
+
+    Tem função própria, e não um tipo a mais no mapa acima, porque não vem do
+    mesmo lugar: a gravação de valor escreve `IssueActivity` direto, sem passar
+    pelo funil de `issue_activity`. Era a lacuna que fazia propriedade marcada
+    para o cartão continuar exigindo recarga.
+
+    O aviso é separado porque a resposta do cliente também é: o valor não vive
+    no store de tarefas, e sim numa chave própria, do projeto inteiro. Rebuscar
+    a tarefa não o traria — foi exatamente o defeito do #144, agora entre
+    clientes diferentes em vez de dentro do mesmo.
+    """
+    if not issue_id or not project_id:
+        return
+    _publicar(
+        {
+            "tipo": "propriedade",
+            "projeto": str(project_id),
+            "tarefa": str(issue_id),
+            "ator": str(actor_id) if actor_id else None,
+        }
+    )
+
+
 def _evento_do_arquivamento(linhas):
     """Se alguma linha mexeu em `archived_at`, devolve o que dizer; senão, None."""
     for linha in linhas or []:
@@ -107,18 +132,20 @@ def publicar_mudanca(tipo, issue_id, project_id, actor_id=None, linhas=None):
     if evento == "alterada":
         evento = _evento_do_arquivamento(linhas) or evento
 
+    _publicar(
+        {
+            "tipo": evento,
+            "projeto": str(project_id),
+            "tarefa": str(issue_id),
+            "ator": str(actor_id) if actor_id else None,
+        }
+    )
+
+
+def _publicar(carga):
+    """O envio, com a política de silêncio — ver o cabeçalho do módulo."""
     try:
-        _conexao().publish(
-            CANAL,
-            json.dumps(
-                {
-                    "tipo": evento,
-                    "projeto": str(project_id),
-                    "tarefa": str(issue_id),
-                    "ator": str(actor_id) if actor_id else None,
-                }
-            ),
-        )
+        _conexao().publish(CANAL, json.dumps(carga))
     except Exception as erro:
         # Uma conexão que morreu fica morta para sempre se ninguém a soltar: o
         # `redis-py` reconecta dentro do pool, mas se o próprio cliente ficou

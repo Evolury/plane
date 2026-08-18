@@ -27,6 +27,7 @@
 import { useContext, useEffect, useRef } from "react";
 import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
 import type { EIssuesStoreType } from "@plane/types";
+import { revalidarValoresDoProjeto } from "@/components/issue-properties/store";
 import { useIssues } from "@/hooks/store/use-issues";
 import { useUser } from "@/hooks/store/user";
 import { StoreContext } from "@/lib/store-context";
@@ -37,7 +38,7 @@ const AGRUPAMENTO_MS = 250;
 /** Idem para a rebusca da lista, que é bem mais cara e pode chegar em rajada. */
 const AGRUPAMENTO_DE_LISTA_MS = 600;
 /** O que este gancho sabe responder. O resto é ignorado sem ruído. */
-const TIPOS_CONHECIDOS = new Set(["alterada", "criada", "removida"]);
+const TIPOS_CONHECIDOS = new Set(["alterada", "criada", "removida", "propriedade"]);
 /** Primeira espera de reconexão; dobra a cada tentativa até o teto. */
 const RECONEXAO_INICIAL_MS = 1_000;
 const RECONEXAO_MAXIMA_MS = 30_000;
@@ -210,6 +211,16 @@ export const useEventosDeTarefa = (
       // "nesta aba" é a anotação que o `issueUpdate` deixou ao escrever.
       const meuAtor = !!dados.ator && dados.ator === meuIdRef.current;
       if (meuAtor && raizRef.current?.consumirEscritaLocal(dados.tarefa)) return;
+      // Valor de propriedade personalizada não vive no store de tarefas: o cartão
+      // o lê de uma chave PRÓPRIA, do projeto inteiro. Rebuscar a tarefa não o
+      // traria — foi o defeito do #144, agora entre clientes em vez de dentro
+      // do mesmo. Por isso a resposta é revalidar aquela chave, e por isso não
+      // se pergunta se a tarefa está neste quadro: a chave é do projeto.
+      if (dados.tipo === "propriedade") {
+        revalidarValoresDoProjeto(projectId);
+        return;
+      }
+
       // Tarefa nova é o único caso em que "não está no quadro" não é motivo para
       // desistir — é justamente o que se quer descobrir.
       if (dados.tipo === "criada") {
