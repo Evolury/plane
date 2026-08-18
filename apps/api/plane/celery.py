@@ -49,6 +49,13 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.automation_task.rodar_automacoes_agendadas",
         "schedule": crontab(minute="*/15"),
     },
+    # Evolury: etapas pessoais pelo vencimento (ADR 0014). Mesma cadência das
+    # duas acima, e pelo mesmo motivo — meia-noite é um instante por fuso, e um
+    # job diário atenderia bem só quem estivesse no fuso do servidor.
+    "sweep-work-stages-by-due-date-every-fifteen-minutes": {
+        "task": "plane.bgtasks.etapas_por_vencimento_task.varrer_etapas_por_vencimento",
+        "schedule": crontab(minute="*/15"),
+    },
     # Occurs once every day
     "check-every-day-to-delete-hard-delete": {
         "task": "plane.bgtasks.deletion_task.hard_delete",
