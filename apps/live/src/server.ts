@@ -21,6 +21,8 @@ import { CONTROLLERS } from "@/controllers";
 import { env } from "@/env";
 // hocuspocus server
 import { HocusPocusServerManager } from "@/hocuspocus";
+// Evolury: salas de evento de tarefa (ADR 0013)
+import { salasDeEventos } from "@/lib/eventos-de-tarefa";
 // redis
 import { redisManager } from "@/redis";
 
@@ -108,6 +110,11 @@ export class Server {
       this.hocuspocusServer.closeConnections();
       logger.info("SERVER: HocusPocus connections closed gracefully.");
     }
+
+    // Evolury: o assinante das salas de evento é uma conexão à parte (ADR 0013),
+    // e o `redisManager.disconnect()` abaixo não a alcança.
+    await salasDeEventos.encerrar();
+    logger.info("SERVER: Evolury task event rooms closed gracefully.");
 
     await redisManager.disconnect();
     logger.info("SERVER: Redis connection closed gracefully.");

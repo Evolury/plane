@@ -16,6 +16,8 @@ import { Row, ERowVariant } from "@plane/ui";
 import { ProjectLevelWorkItemFiltersHOC } from "@/components/work-item-filters/filters-hoc/project-level";
 import { WorkItemFiltersRow } from "@/components/work-item-filters/filters-row";
 import { useIssues } from "@/hooks/store/use-issues";
+// Evolury: avisos de mudança vinda de fora — automação ou outra pessoa (ADR 0013)
+import { useEventosDeTarefa } from "@/hooks/use-eventos-de-tarefa";
 import { IssuesStoreContext } from "@/hooks/use-issue-layout-store";
 // local imports
 import { IssuePeekOverview } from "../../peek-overview";
@@ -50,6 +52,7 @@ export const ModuleLayoutRoot = observer(function ModuleLayoutRoot() {
   const moduleId = routerModuleId ? routerModuleId.toString() : undefined;
   // hooks
   const { issuesFilter } = useIssues(EIssuesStoreType.MODULE);
+  useEventosDeTarefa(workspaceSlug, projectId, EIssuesStoreType.MODULE);
   // derived values
   const workItemFilters = moduleId ? issuesFilter?.getIssueFilters(moduleId) : undefined;
   const activeLayout = workItemFilters?.displayFilters?.layout || undefined;

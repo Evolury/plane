@@ -36,6 +36,7 @@ from plane.settings.redis import redis_instance
 
 # Evolury: automações personalizadas (ADR 0012)
 from plane.utils.automacoes.despacho import despachar_atividades
+from plane.utils.tempo_real import publicar_mudanca
 from plane.utils.exception_logger import log_exception
 from plane.utils.issue_relation_mapper import get_inverse_relation
 from plane.utils.personal_stage import sync_personal_stages_on_completion
@@ -1646,6 +1647,16 @@ def issue_activity(
             profundidade=automacao_profundidade,
             de_recorrencia=automacao_de_recorrencia,
         )
+
+        # Evolury: avisa quem está com o quadro aberto (ADR 0013). Mesmo funil,
+        # mesmo motivo: é aqui que passam todas as mudanças de tarefa. Fica
+        # DEPOIS do despacho das automações de propósito — o que a regra mudar
+        # volta a passar por aqui e gera o próprio aviso, então o cliente vê o
+        # efeito da automação, e não só o gatilho dela.
+        #
+        # A função não levanta exceção: aviso é conforto de tela, e não pode
+        # derrubar o histórico.
+        publicar_mudanca(tipo=type, issue_id=issue_id, project_id=project_id, actor_id=actor_id)
 
         return
     except Exception as e:
