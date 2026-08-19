@@ -24,7 +24,9 @@ import {
 } from "@plane/propel/icons";
 import { CalendarDays, LayersIcon, Paperclip } from "lucide-react";
 
-export const SpreadSheetPropertyIconMap: Record<string, FC<ISvgIcons>> = {
+// Privado de propósito: só o componente abaixo o consulta, e exportar
+// não-componente ao lado de componente quebra o Fast Refresh do módulo.
+const SpreadSheetPropertyIconMap: Record<string, FC<ISvgIcons>> = {
   MembersPropertyIcon: MembersPropertyIcon,
   CalenderDays: CalendarDays,
   DueDatePropertyIcon: DueDatePropertyIcon,
