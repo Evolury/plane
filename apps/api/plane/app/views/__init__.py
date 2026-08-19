@@ -192,6 +192,12 @@ from .page.base import (
     PageDuplicateEndpoint,
 )
 from .page.version import PageVersionEndpoint
+from .page.personal import (
+    PersonalPageViewSet,
+    PersonalPageDescriptionViewSet,
+    PersonalPageVersionEndpoint,
+    PersonalPageDuplicateEndpoint,
+)
 
 from .search.base import GlobalSearchEndpoint, SearchEndpoint
 from .search.issue import IssueSearchEndpoint

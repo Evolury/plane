@@ -60,14 +60,19 @@ class PageSerializer(BaseSerializer):
 
     def create(self, validated_data):
         labels = validated_data.pop("labels", None)
-        project_id = self.context["project_id"]
+        # Evolury: sem projeto a página é pessoal — vive só no workspace, e a
+        # ausência de linha em ProjectPage é o que a define. Ver ADR 0015.
+        project_id = self.context.get("project_id")
+        workspace_id = self.context.get("workspace_id")
         owned_by_id = self.context["owned_by_id"]
         description_json = self.context["description_json"]
         description_binary = self.context["description_binary"]
         description_html = self.context["description_html"]
 
-        # Get the workspace id from the project
-        project = Project.objects.get(pk=project_id)
+        if project_id:
+            workspace_id = Project.objects.get(pk=project_id).workspace_id
+        if not workspace_id:
+            raise serializers.ValidationError("Informe o projeto ou o workspace da página.")
 
         # Create the page
         page = Page.objects.create(
@@ -76,17 +81,18 @@ class PageSerializer(BaseSerializer):
             description_binary=description_binary,
             description_html=description_html,
             owned_by_id=owned_by_id,
-            workspace_id=project.workspace_id,
+            workspace_id=workspace_id,
         )
 
         # Create the project page
-        ProjectPage.objects.create(
-            workspace_id=page.workspace_id,
-            project_id=project_id,
-            page_id=page.id,
-            created_by_id=page.created_by_id,
-            updated_by_id=page.updated_by_id,
-        )
+        if project_id:
+            ProjectPage.objects.create(
+                workspace_id=page.workspace_id,
+                project_id=project_id,
+                page_id=page.id,
+                created_by_id=page.created_by_id,
+                updated_by_id=page.updated_by_id,
+            )
 
         # Create page labels
         if labels is not None:

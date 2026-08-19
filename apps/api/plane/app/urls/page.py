@@ -11,6 +11,10 @@ from plane.app.views import (
     PagesDescriptionViewSet,
     PageVersionEndpoint,
     PageDuplicateEndpoint,
+    PersonalPageViewSet,
+    PersonalPageDescriptionViewSet,
+    PersonalPageVersionEndpoint,
+    PersonalPageDuplicateEndpoint,
 )
 
 urlpatterns = [
@@ -72,5 +76,50 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/pages/<uuid:page_id>/duplicate/",
         PageDuplicateEndpoint.as_view(),
         name="page-duplicate",
+    ),
+
+    # Evolury: páginas pessoais de "Minhas tarefas" — sem projeto na rota
+    # porque não há projeto. Ver ADR 0015.
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/",
+        PersonalPageViewSet.as_view({"get": "list", "post": "create"}),
+        name="personal-pages",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/",
+        PersonalPageViewSet.as_view(
+            {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
+        ),
+        name="personal-page",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/lock/",
+        PersonalPageViewSet.as_view({"post": "lock", "delete": "unlock"}),
+        name="personal-page-lock",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/archive/",
+        PersonalPageViewSet.as_view({"post": "archive", "delete": "unarchive"}),
+        name="personal-page-archive",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/description/",
+        PersonalPageDescriptionViewSet.as_view({"get": "retrieve", "patch": "partial_update"}),
+        name="personal-page-description",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/versions/",
+        PersonalPageVersionEndpoint.as_view(),
+        name="personal-page-versions",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/versions/<uuid:pk>/",
+        PersonalPageVersionEndpoint.as_view(),
+        name="personal-page-versions",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/duplicate/",
+        PersonalPageDuplicateEndpoint.as_view(),
+        name="personal-page-duplicate",
     ),
 ]
