@@ -58,6 +58,10 @@ mediafiles
 logs/
 htmlcov/
 .coverage
+# Evolury: o build da API cria este diretório como root. Vazio, ele não
+# aparece no `git status` — mas o git tenta removê-lo ao trocar de branch,
+# não consegue, e o `switch` falha.
+apps/api/plane/static-assets/collected-static/
 
 node_modules/
 assets/dist/
