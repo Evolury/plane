@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch --no-clean",
-    "check:lint": "oxlint --max-warnings=38 .",
+    "check:lint": "oxlint --max-warnings=27 .",
     "check:types": "tsc --noEmit",
     "check:format": "oxfmt --check .",
     "fix:lint": "oxlint --fix .",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@plane/constants": "workspace:*",
+    "@plane/i18n": "workspace:*",
     "@plane/types": "workspace:*",
     "chroma-js": "catalog:",
     "clsx": "catalog:",

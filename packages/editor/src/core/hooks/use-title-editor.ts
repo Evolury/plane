@@ -16,6 +16,7 @@ import { TitleExtensions } from "@/extensions/title-extension";
 // helpers
 import { getEditorRefHelpers } from "@/helpers/editor-ref";
 // types
+import { useEditorTranslation } from "@/providers/translation";
 import type { IEditorPropsExtended, IEditorProps } from "@/types";
 import type { EditorTitleRefApi, ICollaborativeDocumentEditorProps } from "@/types/editor";
 
@@ -49,6 +50,8 @@ export const useTitleEditor = (props: TUseTitleEditorProps) => {
     getEditorMetaData,
   } = props;
 
+  const t = useEditorTranslation();
+
   // Force editor recreation when Y.Doc changes (provider.document.guid)
   const docKey = provider?.document?.guid ?? id;
 
@@ -64,7 +67,7 @@ export const useTitleEditor = (props: TUseTitleEditorProps) => {
         ...TitleExtensions,
         ...(extensions ?? []),
         Placeholder.configure({
-          placeholder: () => "Untitled",
+          placeholder: () => t("editor.title_placeholder", "Untitled"),
           includeChildren: true,
           showOnlyWhenEditable: false,
         }),

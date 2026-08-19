@@ -27,7 +27,6 @@ import { DeletePageModal } from "@/components/pages/modals/delete-page-modal";
 import { usePageOperations } from "@/hooks/use-page-operations";
 // plane web hooks
 import { EPageStoreType } from "@/hooks/store";
-import { usePageFlag } from "@/hooks/use-page-flag";
 // store types
 import type { TPageInstance } from "@/store/pages/base-page";
 
@@ -44,7 +43,6 @@ export type TPageActions =
   | "delete"
   | "version-history"
   | "export"
-  | "move"
   // Evolury: compartilhar e mover página pessoal (ADR 0015).
   | "share"
   | "move-to-project"
@@ -65,16 +63,12 @@ export const PageActions = observer(function PageActions(props: Props) {
   // states
   const [deletePageModal, setDeletePageModal] = useState(false);
   const { t } = useTranslation();
-  const [movePageModal, setMovePageModal] = useState(false);
   const [sharePageModal, setSharePageModal] = useState(false);
   const [moveToProjectModal, setMoveToProjectModal] = useState(false);
   // params
   const { workspaceSlug } = useParams();
   const router = useRouter();
   // page flag
-  const { isMovePageEnabled } = usePageFlag({
-    workspaceSlug: workspaceSlug?.toString() ?? "",
-  });
   // page operations
   const { pageOperations } = usePageOperations({
     page,
@@ -89,7 +83,6 @@ export const PageActions = observer(function PageActions(props: Props) {
     canCurrentUserDeletePage,
     canCurrentUserDuplicatePage,
     canCurrentUserLockPage,
-    canCurrentUserMovePage,
     isCurrentUserOwner,
   } = page;
   // Evolury: o caminho de volta do ADR 0015. Fica aqui, e não no hook
@@ -173,13 +166,6 @@ export const PageActions = observer(function PageActions(props: Props) {
           shouldRender: canCurrentUserDeletePage && !!archived_at,
         },
         {
-          key: "move",
-          action: () => setMovePageModal(true),
-          title: t("move"),
-          icon: FileOutput,
-          shouldRender: canCurrentUserMovePage && isMovePageEnabled,
-        },
-        {
           key: "share",
           action: () => setSharePageModal(true),
           title: t("my_tasks.pages.share"),
@@ -222,8 +208,6 @@ export const PageActions = observer(function PageActions(props: Props) {
       canCurrentUserDuplicatePage,
       canCurrentUserArchivePage,
       canCurrentUserDeletePage,
-      canCurrentUserMovePage,
-      isMovePageEnabled,
       isCurrentUserOwner,
       storeType,
       t,

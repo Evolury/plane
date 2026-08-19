@@ -11,6 +11,7 @@ import { forwardRef, useMemo } from "react";
 import { cn } from "@plane/utils";
 // components
 import { PageRenderer } from "@/components/editors";
+import { EditorTranslationProvider } from "@/providers/translation";
 // constants
 import { DEFAULT_DISPLAY_CONFIG } from "@/constants/config";
 // extensions
@@ -113,7 +114,13 @@ const DocumentEditorWithRef = forwardRef(function DocumentEditorWithRef(
   props: IDocumentEditorProps,
   ref: React.ForwardedRef<EditorRefApi>
 ) {
-  return <DocumentEditor {...props} forwardedRef={ref as MutableRefObject<EditorRefApi | null>} />;
+  // Acima do componente que constrói o editor — ver o comentário no
+  // collaborative-editor.tsx.
+  return (
+    <EditorTranslationProvider translate={props.translate}>
+      <DocumentEditor {...props} forwardedRef={ref as MutableRefObject<EditorRefApi | null>} />
+    </EditorTranslationProvider>
+  );
 });
 
 DocumentEditorWithRef.displayName = "DocumentEditorWithRef";

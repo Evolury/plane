@@ -1932,6 +1932,9 @@ importers:
       '@plane/constants':
         specifier: workspace:*
         version: link:../constants
+      '@plane/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@plane/types':
         specifier: workspace:*
         version: link:../types

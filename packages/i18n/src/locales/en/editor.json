@@ -145,6 +145,7 @@
     "download_image": "Download image",
     "fullscreen_image_viewer": "Fullscreen image viewer",
     "zoom_out": "Zoom out",
-    "remove_link": "Remove Link"
+    "remove_link": "Remove Link",
+    "title_placeholder": "Untitled"
   }
 }

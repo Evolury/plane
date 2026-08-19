@@ -1866,5 +1866,6 @@
   },
   "lock": "Lock",
   "unlock": "Unlock",
-  "move": "Move"
+  "move": "Move",
+  "untitled": "Untitled"
 }
