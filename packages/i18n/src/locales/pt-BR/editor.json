@@ -146,6 +146,8 @@
     "fullscreen_image_viewer": "Visualizador de imagem em tela cheia",
     "zoom_out": "Reduzir",
     "remove_link": "Remover link",
-    "title_placeholder": "Sem título"
+    "title_placeholder": "Sem título",
+    "full_width": "Largura total",
+    "sticky_toolbar": "Barra fixa"
   }
 }

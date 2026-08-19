@@ -8,6 +8,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import type { EditorRefApi } from "@plane/editor";
 // plane imports
 import { CheckIcon, ChevronDownIcon } from "@plane/propel/icons";
+import { useTranslation } from "@plane/i18n";
 import { Tooltip } from "@plane/propel/tooltip";
 import { CustomMenu } from "@plane/ui";
 import { cn } from "@plane/utils";
@@ -27,14 +28,26 @@ type ToolbarButtonProps = {
   executeCommand: EditorRefApi["executeMenuItemCommand"];
 };
 
+/**
+ * Evolury: os itens do editor já trazem `i18n_name` ao lado do `name` em
+ * inglês — o segundo é reserva. Quem renderiza é que precisa preferir a chave,
+ * e esta barra não preferia.
+ */
+const rotulo = (t: (chave: string) => string, item: { name: string; i18n_name?: string }) => {
+  if (!item.i18n_name) return item.name;
+  const traduzido = t(item.i18n_name);
+  return !traduzido || traduzido === item.i18n_name ? item.name : traduzido;
+};
+
 const ToolbarButton = React.memo(function ToolbarButton(props: ToolbarButtonProps) {
   const { item, isActive, executeCommand } = props;
+  const { t } = useTranslation();
 
   return (
     <Tooltip
       tooltipContent={
         <p className="flex flex-col gap-1 text-center text-11">
-          <span className="font-medium">{item.name}</span>
+          <span className="font-medium">{rotulo(t, item)}</span>
           {item.shortcut && <kbd className="text-placeholder">{item.shortcut.join(" + ")}</kbd>}
         </p>
       }
@@ -86,6 +99,7 @@ export function PageToolbar(props: Props) {
     return initialStates;
   });
 
+  const { t } = useTranslation();
   const [isTypographyMenuOpen, setIsTypographyMenuOpen] = useState(false);
 
   const updateActiveStates = useCallback(() => {
@@ -128,7 +142,7 @@ export function PageToolbar(props: Props) {
               }
             )}
           >
-            {activeTypography?.name || "Text"}
+            {activeTypography ? rotulo(t, activeTypography) : t("editor.text")}
             <ChevronDownIcon className="size-3 shrink-0" />
           </span>
         }
@@ -157,7 +171,7 @@ export function PageToolbar(props: Props) {
           >
             <span className="flex items-center gap-2">
               <item.icon className="size-3" />
-              {item.name}
+              {rotulo(t, item)}
             </span>
             {activeTypography?.itemKey === item.itemKey && <CheckIcon className="size-3 shrink-0 text-tertiary" />}
           </CustomMenu.MenuItem>

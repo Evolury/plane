@@ -146,6 +146,8 @@
     "fullscreen_image_viewer": "Fullscreen image viewer",
     "zoom_out": "Zoom out",
     "remove_link": "Remove Link",
-    "title_placeholder": "Untitled"
+    "title_placeholder": "Untitled",
+    "full_width": "Full width",
+    "sticky_toolbar": "Sticky toolbar"
   }
 }
