@@ -1816,7 +1816,7 @@
     "display_required": "O nome de exibição é obrigatório",
     "display_max": "O nome de exibição deve ter no máximo 50 caracteres",
     "display_special": "O nome de exibição não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",
-    "display_allowed": "O nome de exibição só pode conter letras, números, pontos, hífens e sublinhados",
+    "display_allowed": "O nome de exibição pode ter letras, números, espaços, pontos, hífens e sublinhados",
     "company_required": "O nome da empresa é obrigatório",
     "company_max": "O nome da empresa deve ter no máximo 80 caracteres",
     "company_special": "O nome da empresa não pode conter caracteres especiais como < > ' \\\" { } [ ] * ^ ! # %",

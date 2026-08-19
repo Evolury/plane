@@ -42,12 +42,28 @@ const msg = (t: TValidationTranslate | undefined, key: string, fallback: string)
 export const PERSON_NAME_REGEX = /^[\p{L}\s'-]+$/u;
 
 /**
- * Display Name Pattern (for display_name, usernames)
- * Allows: Unicode letters (\p{L}), numbers (\p{N}), underscore, period, hyphen
- * Use case: International usernames like "josé_123", "李明.dev", "müller-2024"
- * Blocks: Spaces and injection-risk characters
+ * Display Name Pattern (for display_name)
+ * Allows: Unicode letters (\p{L}), numbers (\p{N}), space, underscore, period, hyphen
+ * Use case: "Tássio Câmara", "José da Silva", "李 明", "josé_123", "müller-2024"
+ * Blocks: tabs, line breaks and injection-risk characters
+ *
+ * Evolury: o espaço entrou em 19/08/2026. O campo é **nome de exibição** — é o
+ * que aparece no responsável da tarefa e em toda parte que mostra a pessoa —, e
+ * nome de gente tem espaço. O upstream o tratava como apelido ("International
+ * usernames like josé_123"), e a proibição vinha daí, não de necessidade
+ * técnica: `display_name` não é único, não autentica, não vira URL, e a menção
+ * guarda o id da pessoa e usa o nome só como rótulo.
+ *
+ * Espaço literal, e não `\s`: tabulação e quebra de linha num nome de exibição
+ * não servem a ninguém e sujam layout e log.
+ *
+ * Quem protege de injeção aqui é **esta expressão**, que é uma lista do que
+ * pode: `<`, `>`, `"`, `{`, `}` e `%` não estão nela e por isso não passam.
+ * A checagem `hasInjectionRiskChars` que roda antes é redundante para este
+ * campo — apurado por injeção de defeito, removê-la não muda o que é aceito,
+ * só a mensagem que a pessoa lê. Fica porque a mensagem específica é melhor.
  */
-export const DISPLAY_NAME_REGEX = /^[\p{L}\p{N}_.-]+$/u;
+export const DISPLAY_NAME_REGEX = /^[\p{L}\p{N} _.-]+$/u;
 
 /**
  * Company/Organization Name Pattern (for company_name, workspace names)
@@ -125,7 +141,7 @@ export const validatePersonName = (name: string, t?: TValidationTranslate): bool
  * @example
  * validateDisplayName("john_doe") // returns true
  * validateDisplayName("john.doe-123") // returns true
- * validateDisplayName("john doe") // returns error message (spaces not allowed)
+ * validateDisplayName("Tássio Câmara") // returns true (espaço permitido: é nome de exibição, não apelido)
  * validateDisplayName("john<>doe") // returns error message
  */
 export const validateDisplayName = (displayName: string, t?: TValidationTranslate): boolean | string => {
@@ -149,7 +165,7 @@ export const validateDisplayName = (displayName: string, t?: TValidationTranslat
     return msg(
       t,
       "validation.display_allowed",
-      "Display name can only contain letters, numbers, periods, hyphens, and underscores"
+      "Display name can contain letters, numbers, spaces, periods, hyphens, and underscores"
     );
   }
 
