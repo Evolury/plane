@@ -1863,5 +1863,9 @@
         "marking": "Marcando…"
       }
     }
-  }
+  },
+  "lock": "Bloquear",
+  "unlock": "Desbloquear",
+  "move": "Mover",
+  "untitled": "Sem título"
 }

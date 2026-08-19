@@ -273,6 +273,10 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
             </div>
           </div>
           <CollaborativeDocumentEditorWithRef
+            // Sem isto o editor da página cai no texto em inglês de reserva:
+            // @plane/editor não depende de @plane/i18n de propósito, e quem
+            // sabe traduzir é o app (ADR 0008).
+            translate={t}
             editable={isContentEditable}
             id={pageId}
             fileHandler={config.fileHandler}

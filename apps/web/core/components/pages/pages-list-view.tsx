@@ -8,17 +8,18 @@ import { observer } from "mobx-react";
 import useSWR from "swr";
 import type { TPageNavigationTabs } from "@plane/types";
 // hooks
-import type { EPageStoreType } from "@/hooks/store";
+import { EPageStoreType } from "@/hooks/store";
 import { usePageStore } from "@/hooks/store";
 // local imports
 import { PagesListHeaderRoot } from "./header";
+import { PageTabNavigation } from "./list/tab-navigation";
 import { PagesListMainContent } from "./pages-list-main-content";
 
 type TPageView = {
   children: React.ReactNode;
   pageType: TPageNavigationTabs;
   projectId: string;
-  storeType: EPageStoreType;
+  storeType: EPageStoreType.PROJECT;
   workspaceSlug: string;
 };
 
@@ -38,10 +39,8 @@ export const PagesListView = observer(function PagesListView(props: TPageView) {
       {/* tab header */}
       {isAnyPageAvailable && (
         <PagesListHeaderRoot
-          pageType={pageType}
-          projectId={projectId}
           storeType={storeType}
-          workspaceSlug={workspaceSlug}
+          navigation={<PageTabNavigation workspaceSlug={workspaceSlug} projectId={projectId} pageType={pageType} />}
         />
       )}
       <PagesListMainContent pageType={pageType} storeType={storeType}>

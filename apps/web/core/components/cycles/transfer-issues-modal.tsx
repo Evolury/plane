@@ -58,7 +58,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
   };
 
   /**To update issue counts in target cycle and current cycle */
-  const getCycleDetails = async (newCycleId: string) => {
+  async function getCycleDetails(newCycleId: string) {
     const cyclesFetch = [
       fetchActiveCycleProgress(workspaceSlug.toString(), projectId.toString(), cycleId),
       fetchActiveCycleProgress(workspaceSlug.toString(), projectId.toString(), newCycleId),
@@ -70,7 +70,7 @@ export const TransferIssuesModal = observer(function TransferIssuesModal(props: 
         message: error.error || t("ui.unable_to_fetch_cycle_details"),
       });
     });
-  };
+  }
 
   const filteredOptions = currentProjectIncompleteCycleIds?.filter((optionId) => {
     const cycleDetails = getCycleById(optionId);

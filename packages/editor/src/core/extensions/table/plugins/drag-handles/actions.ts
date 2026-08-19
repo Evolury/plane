@@ -184,7 +184,7 @@ export const duplicateColumns = (table: TableNodeLocation, columnIndices: number
  * @param {TableNodeLocation} table - The table node location.
  * @returns {TableRows} The table rows.
  */
-const tableToCells = (table: TableNodeLocation): TableRows => {
+function tableToCells(table: TableNodeLocation): TableRows {
   const { map, width, height } = TableMap.get(table.node);
 
   const visitedCells = new Set<number>();
@@ -200,7 +200,7 @@ const tableToCells = (table: TableNodeLocation): TableRows => {
   }
 
   return rows;
-};
+}
 
 /**
  * @description Convert the cells to a table.
@@ -209,11 +209,11 @@ const tableToCells = (table: TableNodeLocation): TableRows => {
  * @param {TableRows} rows - The table rows.
  * @param {Transaction} tr - The transaction.
  */
-const tableFromCells = (editor: Editor, table: TableNodeLocation, rows: TableRows, tr: Transaction): void => {
+function tableFromCells(editor: Editor, table: TableNodeLocation, rows: TableRows, tr: Transaction): void {
   const schema = editor.schema.nodes;
   const newRowNodes = rows.map((row) =>
     schema.tableRow.create(null, row.filter((cell) => cell !== null) as readonly Node[])
   );
   const newTableNode = table.node.copy(Fragment.from(newRowNodes));
   tr.replaceWith(table.pos, table.pos + table.node.nodeSize, newTableNode);
-};
+}

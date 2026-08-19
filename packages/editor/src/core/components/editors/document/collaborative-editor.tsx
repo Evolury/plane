@@ -13,6 +13,7 @@ import { PageRenderer } from "@/components/editors";
 import { DEFAULT_DISPLAY_CONFIG } from "@/constants/config";
 // contexts
 import { CollaborationProvider, useCollaboration } from "@/contexts/collaboration-context";
+import { EditorTranslationProvider } from "@/providers/translation";
 // helpers
 import { getEditorClassNames } from "@/helpers/common";
 // hooks
@@ -144,14 +145,22 @@ function CollaborativeDocumentEditor(props: ICollaborativeDocumentEditorProps) {
   const token = useMemo(() => JSON.stringify(user), [user]);
 
   return (
-    <CollaborationProvider
-      docId={id}
-      serverUrl={realtimeConfig.url}
-      authToken={token}
-      onStateChange={serverHandler?.onStateChange}
-    >
-      <CollaborativeDocumentEditorInner {...props} />
-    </CollaborationProvider>
+    // O provedor precisa ficar ACIMA de quem constrói o editor: as extensões
+    // chamam `useEditorTranslation()` durante a renderização, e contexto se lê
+    // de cima. Sem isto o editor de documento cai no texto de reserva em inglês
+    // — @plane/editor não depende de @plane/i18n de propósito, e quem sabe
+    // traduzir é o app (ADR 0008). O rich-text e o lite-text já ganhavam o
+    // provedor pelo EditorWrapper; os de documento não passavam por ele.
+    <EditorTranslationProvider translate={props.translate}>
+      <CollaborationProvider
+        docId={id}
+        serverUrl={realtimeConfig.url}
+        authToken={token}
+        onStateChange={serverHandler?.onStateChange}
+      >
+        <CollaborativeDocumentEditorInner {...props} />
+      </CollaborationProvider>
+    </EditorTranslationProvider>
   );
 }
 

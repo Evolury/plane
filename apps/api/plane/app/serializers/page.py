@@ -8,6 +8,7 @@ import base64
 
 # Module imports
 from .base import BaseSerializer
+from .user import UserLiteSerializer
 from plane.utils.content_validator import (
     validate_binary_data,
     validate_html_content,
@@ -15,6 +16,7 @@ from plane.utils.content_validator import (
 from plane.db.models import (
     Page,
     PageLabel,
+    PageShare,
     Label,
     ProjectPage,
     Project,
@@ -60,14 +62,19 @@ class PageSerializer(BaseSerializer):
 
     def create(self, validated_data):
         labels = validated_data.pop("labels", None)
-        project_id = self.context["project_id"]
+        # Evolury: sem projeto a página é pessoal — vive só no workspace, e a
+        # ausência de linha em ProjectPage é o que a define. Ver ADR 0015.
+        project_id = self.context.get("project_id")
+        workspace_id = self.context.get("workspace_id")
         owned_by_id = self.context["owned_by_id"]
         description_json = self.context["description_json"]
         description_binary = self.context["description_binary"]
         description_html = self.context["description_html"]
 
-        # Get the workspace id from the project
-        project = Project.objects.get(pk=project_id)
+        if project_id:
+            workspace_id = Project.objects.get(pk=project_id).workspace_id
+        if not workspace_id:
+            raise serializers.ValidationError("Informe o projeto ou o workspace da página.")
 
         # Create the page
         page = Page.objects.create(
@@ -76,17 +83,18 @@ class PageSerializer(BaseSerializer):
             description_binary=description_binary,
             description_html=description_html,
             owned_by_id=owned_by_id,
-            workspace_id=project.workspace_id,
+            workspace_id=workspace_id,
         )
 
         # Create the project page
-        ProjectPage.objects.create(
-            workspace_id=page.workspace_id,
-            project_id=project_id,
-            page_id=page.id,
-            created_by_id=page.created_by_id,
-            updated_by_id=page.updated_by_id,
-        )
+        if project_id:
+            ProjectPage.objects.create(
+                workspace_id=page.workspace_id,
+                project_id=project_id,
+                page_id=page.id,
+                created_by_id=page.created_by_id,
+                updated_by_id=page.updated_by_id,
+            )
 
         # Create page labels
         if labels is not None:
@@ -223,3 +231,37 @@ class PageBinaryUpdateSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+
+class PageShareSerializer(BaseSerializer):
+    """Evolury: uma linha de "esta página pessoal também é vista por" (ADR 0015)."""
+
+    shared_with_detail = UserLiteSerializer(read_only=True, source="shared_with")
+
+    class Meta:
+        model = PageShare
+        fields = ["id", "page", "shared_with", "shared_with_detail", "role", "created_at"]
+        read_only_fields = ["id", "page", "created_at"]
+
+
+class PersonalPageSerializer(PageSerializer):
+    """Evolury: a página pessoal como ela chega ao web (ADR 0015).
+
+    Acrescenta `share_role`: o meu papel quando a página é de outra pessoa e foi
+    compartilhada comigo. Vem nulo quando a página é minha — é o que a tela usa
+    para saber se pode deixar escrever.
+    """
+
+    share_role = serializers.IntegerField(read_only=True, allow_null=True, required=False)
+
+    class Meta(PageSerializer.Meta):
+        fields = PageSerializer.Meta.fields + ["share_role"]
+
+
+class PersonalPageDetailSerializer(PageDetailSerializer):
+    """O detalhe da página pessoal, com o meu papel junto."""
+
+    share_role = serializers.IntegerField(read_only=True, allow_null=True, required=False)
+
+    class Meta(PageDetailSerializer.Meta):
+        fields = PageDetailSerializer.Meta.fields + ["share_role"]

@@ -53,6 +53,32 @@ const timelineViewHelpers = {
   quarter: quarterView,
 };
 
+// Evolury: não tocam em props nem em estado — só no DOM e nos argumentos.
+// Dentro do componente eram recriadas a cada renderização sem motivo.
+function updateCurrentLeftScrollPosition(width: number) {
+  const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
+  if (!scrollContainer) return;
+
+  scrollContainer.scrollLeft = width + scrollContainer?.scrollLeft;
+}
+
+function handleScrollToCurrentSelectedDate(currentState: ChartDataType, date: Date) {
+  const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
+  if (!scrollContainer) return;
+
+  const clientVisibleWidth: number = scrollContainer?.clientWidth;
+  let scrollWidth: number = 0;
+  let daysDifference: number = 0;
+  daysDifference = getNumberOfDaysBetweenTwoDates(currentState.data.startDate, date);
+
+  scrollWidth =
+    Math.abs(daysDifference) * currentState.data.dayWidth -
+    (clientVisibleWidth / 2 - currentState.data.dayWidth) +
+    SIDEBAR_WIDTH / 2;
+
+  scrollContainer.scrollLeft = scrollWidth;
+}
+
 export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRootProps) {
   const {
     border,
@@ -146,35 +172,11 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateItemsContainerWidth = (width: number) => {
+  function updateItemsContainerWidth(width: number) {
     const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
     if (!scrollContainer) return;
     setItemsContainerWidth(width + scrollContainer?.scrollLeft);
-  };
-
-  const updateCurrentLeftScrollPosition = (width: number) => {
-    const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
-    if (!scrollContainer) return;
-
-    scrollContainer.scrollLeft = width + scrollContainer?.scrollLeft;
-  };
-
-  const handleScrollToCurrentSelectedDate = (currentState: ChartDataType, date: Date) => {
-    const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
-    if (!scrollContainer) return;
-
-    const clientVisibleWidth: number = scrollContainer?.clientWidth;
-    let scrollWidth: number = 0;
-    let daysDifference: number = 0;
-    daysDifference = getNumberOfDaysBetweenTwoDates(currentState.data.startDate, date);
-
-    scrollWidth =
-      Math.abs(daysDifference) * currentState.data.dayWidth -
-      (clientVisibleWidth / 2 - currentState.data.dayWidth) +
-      SIDEBAR_WIDTH / 2;
-
-    scrollContainer.scrollLeft = scrollWidth;
-  };
+  }
 
   const portalContainer = document.getElementById("full-screen-portal") as HTMLElement;
 

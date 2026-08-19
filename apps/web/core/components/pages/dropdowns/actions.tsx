@@ -4,10 +4,10 @@
  * See the LICENSE file for details.
  */
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { observer } from "mobx-react";
-import { useParams } from "next/navigation";
-import { ArchiveRestoreIcon, FileOutput, LockKeyhole, LockKeyholeOpen } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { ArchiveRestoreIcon, FileInput, FileOutput, LockKeyhole, LockKeyholeOpen, Share2 } from "lucide-react";
 // constants
 import { EPageAccess } from "@plane/constants";
 // plane editor
@@ -18,12 +18,15 @@ import { ContextMenu, CustomMenu } from "@plane/ui";
 // components
 import { cn } from "@plane/utils";
 import { useTranslation } from "@plane/i18n";
+import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { PersonalPageService } from "@/services/page";
+import { MovePageToProjectModal } from "@/components/my-tasks/move-page-modal";
+import { SharePageModal } from "@/components/my-tasks/share-page-modal";
 import { DeletePageModal } from "@/components/pages/modals/delete-page-modal";
 // hooks
 import { usePageOperations } from "@/hooks/use-page-operations";
 // plane web hooks
-import type { EPageStoreType } from "@/hooks/store";
-import { usePageFlag } from "@/hooks/use-page-flag";
+import { EPageStoreType } from "@/hooks/store";
 // store types
 import type { TPageInstance } from "@/store/pages/base-page";
 
@@ -40,7 +43,10 @@ export type TPageActions =
   | "delete"
   | "version-history"
   | "export"
-  | "move";
+  // Evolury: compartilhar e mover página pessoal (ADR 0015).
+  | "share"
+  | "move-to-project"
+  | "move-to-personal";
 
 type Props = {
   extraOptions?: (TContextMenuItem & { key: TPageActions })[];
@@ -50,18 +56,19 @@ type Props = {
   storeType: EPageStoreType;
 };
 
+const personalPageService = new PersonalPageService();
+
 export const PageActions = observer(function PageActions(props: Props) {
   const { extraOptions, optionsOrder, page, parentRef, storeType } = props;
   // states
   const [deletePageModal, setDeletePageModal] = useState(false);
   const { t } = useTranslation();
-  const [movePageModal, setMovePageModal] = useState(false);
+  const [sharePageModal, setSharePageModal] = useState(false);
+  const [moveToProjectModal, setMoveToProjectModal] = useState(false);
   // params
   const { workspaceSlug } = useParams();
+  const router = useRouter();
   // page flag
-  const { isMovePageEnabled } = usePageFlag({
-    workspaceSlug: workspaceSlug?.toString() ?? "",
-  });
   // page operations
   const { pageOperations } = usePageOperations({
     page,
@@ -76,8 +83,22 @@ export const PageActions = observer(function PageActions(props: Props) {
     canCurrentUserDeletePage,
     canCurrentUserDuplicatePage,
     canCurrentUserLockPage,
-    canCurrentUserMovePage,
+    isCurrentUserOwner,
   } = page;
+  // Evolury: o caminho de volta do ADR 0015. Fica aqui, e não no hook
+  // compartilhado de operações, porque só existe para página de projeto do
+  // próprio dono.
+  const recolherParaOPessoal = useCallback(async () => {
+    const projectId = page.project_ids?.[0];
+    if (!workspaceSlug || !projectId || !page.id) return;
+    try {
+      await personalPageService.moveToPersonal(workspaceSlug.toString(), projectId, page.id);
+      router.push(`/${workspaceSlug}/my-tasks/pages`);
+    } catch {
+      setToast({ type: TOAST_TYPE.ERROR, title: t("toast.error"), message: t("my_tasks.pages.move_failed") });
+    }
+  }, [page.project_ids, page.id, workspaceSlug, router, t]);
+
   // menu items
   const MENU_ITEMS = useMemo(
     function MENU_ITEMS() {
@@ -87,7 +108,7 @@ export const PageActions = observer(function PageActions(props: Props) {
           action: () => {
             pageOperations.toggleLock();
           },
-          title: is_locked ? "Unlock" : "Lock",
+          title: is_locked ? t("unlock") : t("lock"),
           icon: is_locked ? LockKeyholeOpen : LockKeyhole,
           shouldRender: canCurrentUserLockPage,
         },
@@ -131,7 +152,7 @@ export const PageActions = observer(function PageActions(props: Props) {
           action: () => {
             pageOperations.toggleArchive();
           },
-          title: archived_at ? "Restore" : "Archive",
+          title: archived_at ? t("restore") : t("archive"),
           icon: archived_at ? ArchiveRestoreIcon : ArchiveIcon,
           shouldRender: canCurrentUserArchivePage,
         },
@@ -145,11 +166,31 @@ export const PageActions = observer(function PageActions(props: Props) {
           shouldRender: canCurrentUserDeletePage && !!archived_at,
         },
         {
-          key: "move",
-          action: () => setMovePageModal(true),
-          title: "Move",
+          key: "share",
+          action: () => setSharePageModal(true),
+          title: t("my_tasks.pages.share"),
+          icon: Share2,
+          // Só página pessoal, e só do dono: no projeto o acesso vem da
+          // participação, e as duas fontes juntas fariam "quem pode ler isto?"
+          // ter duas respostas.
+          shouldRender: storeType === EPageStoreType.PERSONAL && isCurrentUserOwner && !archived_at,
+        },
+        {
+          key: "move-to-project",
+          action: () => setMoveToProjectModal(true),
+          title: t("my_tasks.pages.move_to_project"),
           icon: FileOutput,
-          shouldRender: canCurrentUserMovePage && isMovePageEnabled,
+          shouldRender: storeType === EPageStoreType.PERSONAL && isCurrentUserOwner && !archived_at,
+        },
+        {
+          key: "move-to-personal",
+          action: () => {
+            void recolherParaOPessoal();
+          },
+          title: t("my_tasks.pages.move_to_personal"),
+          icon: FileInput,
+          // O caminho de volta: só do projeto para o pessoal, e só do dono.
+          shouldRender: storeType === EPageStoreType.PROJECT && isCurrentUserOwner && !archived_at,
         },
       ];
       if (extraOptions) {
@@ -167,8 +208,10 @@ export const PageActions = observer(function PageActions(props: Props) {
       canCurrentUserDuplicatePage,
       canCurrentUserArchivePage,
       canCurrentUserDeletePage,
-      canCurrentUserMovePage,
-      isMovePageEnabled,
+      isCurrentUserOwner,
+      storeType,
+      t,
+      recolherParaOPessoal,
       pageOperations,
     ]
   );
@@ -189,6 +232,17 @@ export const PageActions = observer(function PageActions(props: Props) {
         page={page}
         storeType={storeType}
       />
+      {page.id && (
+        <>
+          <SharePageModal isOpen={sharePageModal} onClose={() => setSharePageModal(false)} pageId={page.id} />
+          <MovePageToProjectModal
+            isOpen={moveToProjectModal}
+            onClose={() => setMoveToProjectModal(false)}
+            pageId={page.id}
+            onMoved={() => router.push(`/${workspaceSlug}/my-tasks/pages`)}
+          />
+        </>
+      )}
       {parentRef && <ContextMenu parentRef={parentRef} items={arrangedOptions} />}
       <CustomMenu placement="bottom-end" optionsClassName="max-h-[90vh]" ellipsis closeOnSelect>
         {arrangedOptions.map((item) => {

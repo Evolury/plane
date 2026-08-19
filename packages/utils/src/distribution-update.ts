@@ -85,12 +85,12 @@ export const getDistributionPathsPostUpdate = (
  * @param estimatePointById
  * @returns
  */
-const getDistributionDataOfIssue = (
+function getDistributionDataOfIssue(
   issue: TIssue | undefined,
   multiplier: -1 | 1,
   stateMap: Record<string, IState>,
   estimatePointById?: (estimatePointId: string) => IEstimatePoint | undefined
-): DistributionUpdates & { chartUpdates: ChartUpdates } => {
+): DistributionUpdates & { chartUpdates: ChartUpdates } {
   const pathUpdates: { path: string[]; value: number }[] = [];
 
   // If issue does not exist, send a default object
@@ -126,7 +126,7 @@ const getDistributionDataOfIssue = (
     labelUpdates,
     chartUpdates,
   };
-};
+}
 
 /**
  * This is to get distribution update array for either assignees and labels object
@@ -136,7 +136,7 @@ const getDistributionDataOfIssue = (
  * @param multiplier
  * @returns
  */
-const getObjectDistributionArray = (ids: string[], isCompleted: boolean, estimatePoint: number, multiplier: -1 | 1) => {
+function getObjectDistributionArray(ids: string[], isCompleted: boolean, estimatePoint: number, multiplier: -1 | 1) {
   const objectDistributionArray: DistributionObjectUpdate[] = [];
 
   // iterate over each id
@@ -160,7 +160,7 @@ const getObjectDistributionArray = (ids: string[], isCompleted: boolean, estimat
   }
 
   return objectDistributionArray;
-};
+}
 
 /**
  * get chart distribution based of completed or not completed states
@@ -170,12 +170,7 @@ const getObjectDistributionArray = (ids: string[], isCompleted: boolean, estimat
  * @param multiplier
  * @returns
  */
-const getChartUpdates = (
-  isCompleted: boolean,
-  completedAt: string | null,
-  estimatePoint: number,
-  multiplier: -1 | 1
-) => {
+function getChartUpdates(isCompleted: boolean, completedAt: string | null, estimatePoint: number, multiplier: -1 | 1) {
   // if completed At date does not exist use current date
   let dateToUpdate = format(new Date(), "yyyy-MM-dd");
   const completedAtDate = getDate(completedAt);
@@ -196,7 +191,7 @@ const getChartUpdates = (
     ],
     isCompleted,
   };
-};
+}
 
 /**
  * Method to update distribution of either cycle or module object

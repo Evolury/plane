@@ -40,6 +40,42 @@
     },
     "stage_label": "Etapa",
     "empty_title": "Nada atribuído a você ainda",
-    "stage_in_my_tasks": "Etapa em Minhas tarefas"
+    "stage_in_my_tasks": "Etapa em Minhas tarefas",
+    "tabs": {
+      "tasks": "Tarefas",
+      "pages": "Páginas",
+      "shared": "Compartilhado comigo"
+    },
+    "pages": {
+      "new": "Nova página",
+      "creating": "Criando…",
+      "empty_title": "Nenhuma página sua ainda",
+      "empty_description": "Páginas de Minhas tarefas são suas: nota de reunião, rascunho, checklist que ainda não pertence a projeto nenhum.",
+      "empty_archived_title": "Nenhuma página arquivada",
+      "empty_archived_description": "As páginas que você arquivar aparecem aqui.",
+      "archived": "Arquivadas",
+      "create_failed": "Não foi possível criar a página.",
+      "share": "Compartilhar",
+      "share_title": "Quem mais vê esta página",
+      "share_search": "Buscar pessoa do espaço de trabalho",
+      "share_none": "Só você, por enquanto.",
+      "share_add": "Compartilhar",
+      "share_remove": "Remover",
+      "role_read": "Pode ler",
+      "role_write": "Pode editar",
+      "share_failed": "Não foi possível compartilhar.",
+      "shared_empty_title": "Nada compartilhado com você",
+      "shared_empty_description": "Quando alguém compartilhar uma página pessoal com você, ela aparece aqui.",
+      "move_to_project": "Mover para um projeto",
+      "move_to_personal": "Mover para Minhas tarefas",
+      "move_title": "Mover esta página",
+      "move_project": "Projeto de destino",
+      "move_warning_one": "1 pessoa perde o acesso: no projeto, quem manda é o projeto.",
+      "move_warning_many": "{count} pessoas perdem o acesso: no projeto, quem manda é o projeto.",
+      "move_confirm": "Mover",
+      "move_failed": "Não foi possível mover a página.",
+      "move_to_personal_note": "A página sai do projeto e passa a ser só sua.",
+      "role_label": "Nível de acesso"
+    }
   }
 }

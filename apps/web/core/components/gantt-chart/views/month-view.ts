@@ -115,10 +115,12 @@ const generateMonthChart = (monthPayload: ChartDataType, side: null | "left" | "
  * @param endDate
  * @returns
  */
-const getMonthsViewBetweenTwoDates = (startDate: Date, endDate: Date): IMonthView => ({
-  months: getMonthsBetweenTwoDates(startDate, endDate),
-  weeks: getWeeksBetweenTwoDates(startDate, endDate, false),
-});
+function getMonthsViewBetweenTwoDates(startDate: Date, endDate: Date): IMonthView {
+  return {
+    months: getMonthsBetweenTwoDates(startDate, endDate),
+    weeks: getWeeksBetweenTwoDates(startDate, endDate, false),
+  };
+}
 
 /**
  * generate array of months between two dates
@@ -126,7 +128,7 @@ const getMonthsViewBetweenTwoDates = (startDate: Date, endDate: Date): IMonthVie
  * @param endDate
  * @returns
  */
-export const getMonthsBetweenTwoDates = (startDate: Date, endDate: Date): IMonthBlock[] => {
+export function getMonthsBetweenTwoDates(startDate: Date, endDate: Date): IMonthBlock[] {
   const monthBlocks = [];
 
   const startYear = startDate.getFullYear();
@@ -155,7 +157,7 @@ export const getMonthsBetweenTwoDates = (startDate: Date, endDate: Date): IMonth
   }
 
   return monthBlocks;
-};
+}
 
 /**
  * Merge two MonthView data payloads

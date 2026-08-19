@@ -63,7 +63,7 @@ export const handleDeleteKeyOnTable: KeyboardShortcutCommand = (props) => {
   }
 };
 
-const getTableInfo = (editor: Editor): TableInfo | null => {
+function getTableInfo(editor: Editor): TableInfo | null {
   const table = findParentNodeClosestToPos(
     editor.state.selection.ranges[0].$from,
     (node) => node.type.name === CORE_EXTENSIONS.TABLE
@@ -79,9 +79,9 @@ const getTableInfo = (editor: Editor): TableInfo | null => {
     totalColumns: tableMap.width,
     totalRows: tableMap.height,
   };
-};
+}
 
-const getSelectedCellCoords = (selection: CellSelection, tableInfo: TableInfo): CellCoord[] => {
+function getSelectedCellCoords(selection: CellSelection, tableInfo: TableInfo): CellCoord[] {
   const selectedCellCoords: CellCoord[] = [];
 
   selection.forEachCell((_node, pos) => {
@@ -94,9 +94,9 @@ const getSelectedCellCoords = (selection: CellSelection, tableInfo: TableInfo): 
   });
 
   return selectedCellCoords;
-};
+}
 
-const findCellCoordinate = (cellStart: number, tableInfo: TableInfo): CellCoord | null => {
+function findCellCoordinate(cellStart: number, tableInfo: TableInfo): CellCoord | null {
   // Primary method: use indexOf
   const cellIndex = tableInfo.map.map.indexOf(cellStart);
 
@@ -118,9 +118,9 @@ const findCellCoordinate = (cellStart: number, tableInfo: TableInfo): CellCoord 
   }
 
   return null;
-};
+}
 
-const checkCellsHaveContent = (selection: CellSelection): boolean => {
+function checkCellsHaveContent(selection: CellSelection): boolean {
   let hasContent = false;
 
   selection.forEachCell((node) => {
@@ -130,9 +130,9 @@ const checkCellsHaveContent = (selection: CellSelection): boolean => {
   });
 
   return hasContent;
-};
+}
 
-const calculateSelectionBounds = (selectedCellCoords: CellCoord[]) => {
+function calculateSelectionBounds(selectedCellCoords: CellCoord[]) {
   const minRow = Math.min(...selectedCellCoords.map((c) => c.row));
   const maxRow = Math.max(...selectedCellCoords.map((c) => c.row));
   const minCol = Math.min(...selectedCellCoords.map((c) => c.col));
@@ -146,14 +146,14 @@ const calculateSelectionBounds = (selectedCellCoords: CellCoord[]) => {
     totalColumnsInSelection: maxCol - minCol + 1,
     totalRowsInSelection: maxRow - minRow + 1,
   };
-};
+}
 
-const deleteMultipleRows = (
+function deleteMultipleRows(
   editor: Editor,
   totalRowsInSelection: number,
   minRow: number,
   initialTableInfo: TableInfo
-): boolean => {
+): boolean {
   // Position cursor at the first selected row
   setCursorAtPosition(editor, initialTableInfo, minRow, 0);
 
@@ -171,14 +171,14 @@ const deleteMultipleRows = (
   }
 
   return true;
-};
+}
 
-const deleteMultipleColumns = (
+function deleteMultipleColumns(
   editor: Editor,
   totalColumnsInSelection: number,
   minCol: number,
   initialTableInfo: TableInfo
-): boolean => {
+): boolean {
   // Position cursor at the first selected column
   setCursorAtPosition(editor, initialTableInfo, 0, minCol);
 
@@ -196,9 +196,9 @@ const deleteMultipleColumns = (
   }
 
   return true;
-};
+}
 
-const setCursorAtPosition = (editor: Editor, tableInfo: TableInfo, row: number, col: number): void => {
+function setCursorAtPosition(editor: Editor, tableInfo: TableInfo, row: number, col: number): void {
   const cellIndex = row * tableInfo.totalColumns + col;
   const cellPos = tableInfo.pos + tableInfo.map.map[cellIndex] + 1;
 
@@ -206,4 +206,4 @@ const setCursorAtPosition = (editor: Editor, tableInfo: TableInfo, row: number, 
     anchorCell: cellPos,
     headCell: cellPos,
   });
-};
+}

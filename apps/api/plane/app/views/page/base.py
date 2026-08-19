@@ -637,3 +637,38 @@ class PageDuplicateEndpoint(BaseAPIView):
         )
         serializer = PageDetailSerializer(page)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PageMoveToPersonalEndpoint(BaseAPIView):
+    """Evolury: recolhe uma página de projeto para o espaço pessoal do dono.
+
+    O caminho de volta do ADR 0015. Só o dono, e só quando a página está em um
+    projeto só — com mais de um, "tirar do projeto" não tem resposta única.
+    """
+
+    permission_classes = [ProjectPagePermission]
+
+    def post(self, request, slug, project_id, page_id):
+        page = Page.objects.filter(
+            pk=page_id,
+            workspace__slug=slug,
+            projects__id=project_id,
+            project_pages__deleted_at__isnull=True,
+        ).first()
+        if page is None:
+            return Response({"error": "Página não encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+        if page.owned_by_id != request.user.id:
+            return Response(
+                {"error": "Só o dono leva a página para o espaço pessoal"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        vinculos = ProjectPage.objects.filter(page_id=page.id)
+        if vinculos.count() > 1:
+            return Response(
+                {"error": "A página está em mais de um projeto"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        vinculos.delete()
+        UserFavorite.objects.filter(entity_type="page", entity_identifier=page.id, project_id=project_id).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

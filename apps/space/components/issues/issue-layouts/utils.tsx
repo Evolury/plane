@@ -59,7 +59,7 @@ export const getGroupByColumns = (
   }
 };
 
-const getCycleColumns = (cycleStore: ICycleStore): IGroupByColumn[] | undefined => {
+function getCycleColumns(cycleStore: ICycleStore): IGroupByColumn[] | undefined {
   const { cycles } = cycleStore;
 
   if (!cycles) return;
@@ -85,9 +85,9 @@ const getCycleColumns = (cycleStore: ICycleStore): IGroupByColumn[] | undefined 
   });
 
   return cycleGroups;
-};
+}
 
-const getModuleColumns = (moduleStore: IIssueModuleStore): IGroupByColumn[] | undefined => {
+function getModuleColumns(moduleStore: IIssueModuleStore): IGroupByColumn[] | undefined {
   const { modules } = moduleStore;
 
   if (!modules) return;
@@ -111,9 +111,9 @@ const getModuleColumns = (moduleStore: IIssueModuleStore): IGroupByColumn[] | un
   });
 
   return moduleGroups as any;
-};
+}
 
-const getStateColumns = (projectState: IStateStore): IGroupByColumn[] | undefined => {
+function getStateColumns(projectState: IStateStore): IGroupByColumn[] | undefined {
   const { sortedStates } = projectState;
   if (!sortedStates) return;
 
@@ -127,9 +127,9 @@ const getStateColumns = (projectState: IStateStore): IGroupByColumn[] | undefine
     ),
     payload: { state_id: state.id },
   })) as any;
-};
+}
 
-const getPriorityColumns = () => {
+function getPriorityColumns() {
   const priorities = ISSUE_PRIORITIES;
 
   return priorities.map((priority) => ({
@@ -138,9 +138,9 @@ const getPriorityColumns = () => {
     icon: <PriorityIcon priority={priority?.key} />,
     payload: { priority: priority.key },
   }));
-};
+}
 
-const getLabelsColumns = (label: IIssueLabelStore) => {
+function getLabelsColumns(label: IIssueLabelStore) {
   const { labels: storeLabels } = label;
 
   if (!storeLabels) return;
@@ -155,9 +155,9 @@ const getLabelsColumns = (label: IIssueLabelStore) => {
     ),
     payload: label?.id === "None" ? {} : { label_ids: [label.id] },
   }));
-};
+}
 
-const getAssigneeColumns = (member: IIssueMemberStore) => {
+function getAssigneeColumns(member: IIssueMemberStore) {
   const { members } = member;
 
   if (!members) return;
@@ -172,9 +172,9 @@ const getAssigneeColumns = (member: IIssueMemberStore) => {
   assigneeColumns.push({ id: "None", name: "None", icon: <Avatar size="md" />, payload: {} });
 
   return assigneeColumns;
-};
+}
 
-const getCreatedByColumns = (member: IIssueMemberStore) => {
+function getCreatedByColumns(member: IIssueMemberStore) {
   const { members } = member;
 
   if (!members) return;
@@ -185,7 +185,7 @@ const getCreatedByColumns = (member: IIssueMemberStore) => {
     icon: <Avatar name={member?.member__display_name} src={undefined} size="md" />,
     payload: {},
   }));
-};
+}
 
 export const getDisplayPropertiesCount = (
   displayProperties: IIssueDisplayProperties,

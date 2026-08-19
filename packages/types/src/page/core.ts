@@ -28,10 +28,16 @@ export type TPage = {
   workspace: string | undefined;
   logo_props: TLogoProps | undefined;
   deleted_at: Date | undefined;
+  /**
+   * Evolury: meu papel numa página pessoal de outra pessoa — 5 pode ler, 15
+   * pode editar, ausente quando a página é minha ou é de projeto (ADR 0015).
+   */
+  share_role?: number | null;
 } & TPageExtended;
 
 // page filters
-export type TPageNavigationTabs = "public" | "private" | "archived";
+// Evolury: "shared" é a aba "Compartilhado comigo" (ADR 0015).
+export type TPageNavigationTabs = "public" | "private" | "archived" | "shared";
 
 export type TPageFiltersSortKey = "name" | "created_at" | "updated_at" | "opened_at";
 
@@ -76,8 +82,29 @@ export type TDocumentPayload = {
 };
 
 export type TWebhookConnectionQueryParams = {
-  documentType: "project_page" | "team_page" | "workspace_page";
+  // Evolury: `personal_page` é a página de "Minhas tarefas" (ADR 0015).
+  documentType: "project_page" | "team_page" | "workspace_page" | "personal_page";
   projectId?: string;
   teamId?: string;
   workspaceSlug: string;
 };
+
+/**
+ * Evolury: uma linha de "esta página pessoal também é vista por" (ADR 0015).
+ * Os papéis são 5 (pode ler) e 15 (pode editar), na mesma escala de
+ * `EUserPermissions`.
+ */
+export type TPageShare = {
+  id: string;
+  page: string;
+  shared_with: string;
+  shared_with_detail?: {
+    id: string;
+    display_name: string;
+    avatar_url?: string | null;
+  };
+  role: number;
+  created_at?: string;
+};
+
+export const PAPEL_DA_PAGINA = { LER: 5, EDITAR: 15 } as const;

@@ -19,7 +19,8 @@ import { PageLoader } from "@/components/pages/loaders/page-loader";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
 // plane web hooks
-import { EPageStoreType, usePageStore } from "@/hooks/store";
+import type { EPageStoreType } from "@/hooks/store";
+import { usePageStore } from "@/hooks/store";
 
 type Props = {
   children: React.ReactNode;
@@ -36,7 +37,9 @@ export const PagesListMainContent = observer(function PagesListMainContent(props
   const { isAnyPageAvailable, getCurrentProjectFilteredPageIdsByTab, getCurrentProjectPageIdsByTab, loader } =
     usePageStore(storeType);
   const { allowPermissions } = useUserPermissions();
-  const { createPage } = usePageStore(EPageStoreType.PROJECT);
+  // O componente é parametrizado por `storeType` — fixar o de projeto aqui
+  // faria a criação cair no lugar errado no dia em que outra lista o usasse.
+  const { createPage } = usePageStore(storeType);
   // states
   const [isCreatingPage, setIsCreatingPage] = useState(false);
   // router

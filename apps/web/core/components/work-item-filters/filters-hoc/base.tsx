@@ -26,26 +26,6 @@ type TAdditionalWorkItemFiltersProps = {
 
 type TWorkItemFiltersHOCProps = TSharedWorkItemFiltersHOCProps & TAdditionalWorkItemFiltersProps;
 
-export const WorkItemFiltersHOC = observer(function WorkItemFiltersHOC(props: TWorkItemFiltersHOCProps) {
-  const { children, initialWorkItemFilters } = props;
-
-  // Only initialize filter instance when initial work item filters are defined
-  if (!initialWorkItemFilters)
-    return <>{typeof children === "function" ? children({ filter: undefined }) : children}</>;
-
-  return (
-    <WorkItemFilterRoot {...props} initialWorkItemFilters={initialWorkItemFilters}>
-      {children}
-    </WorkItemFilterRoot>
-  );
-});
-
-type TWorkItemFilterProps = TSharedWorkItemFiltersProps &
-  TAdditionalWorkItemFiltersProps & {
-    initialWorkItemFilters: IIssueFilters;
-    children: React.ReactNode | ((props: { filter: IWorkItemFilterInstance }) => React.ReactNode);
-  };
-
 const WorkItemFilterRoot = observer(function WorkItemFilterRoot(props: TWorkItemFilterProps) {
   const {
     children,
@@ -128,3 +108,23 @@ const WorkItemFilterRoot = observer(function WorkItemFilterRoot(props: TWorkItem
 
   return <>{typeof children === "function" ? children({ filter: workItemLayoutFilter }) : children}</>;
 });
+
+export const WorkItemFiltersHOC = observer(function WorkItemFiltersHOC(props: TWorkItemFiltersHOCProps) {
+  const { children, initialWorkItemFilters } = props;
+
+  // Only initialize filter instance when initial work item filters are defined
+  if (!initialWorkItemFilters)
+    return <>{typeof children === "function" ? children({ filter: undefined }) : children}</>;
+
+  return (
+    <WorkItemFilterRoot {...props} initialWorkItemFilters={initialWorkItemFilters}>
+      {children}
+    </WorkItemFilterRoot>
+  );
+});
+
+type TWorkItemFilterProps = TSharedWorkItemFiltersProps &
+  TAdditionalWorkItemFiltersProps & {
+    initialWorkItemFilters: IIssueFilters;
+    children: React.ReactNode | ((props: { filter: IWorkItemFilterInstance }) => React.ReactNode);
+  };

@@ -56,7 +56,7 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
           action: () => handleFullWidth(!isFullWidth),
           customContent: (
             <>
-              Full width
+              {t("editor.full_width")}
               <ToggleSwitch value={isFullWidth} onChange={() => {}} />
             </>
           ),
@@ -67,7 +67,7 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
           action: () => handleStickyToolbar(!isStickyToolbarEnabled),
           customContent: (
             <>
-              Sticky toolbar
+              {t("editor.sticky_toolbar")}
               <ToggleSwitch value={isStickyToolbarEnabled} onChange={() => {}} />
             </>
           ),
@@ -146,6 +146,9 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
           "delete",
           "toggle-access",
           "export",
+          "share",
+          "move-to-project",
+          "move-to-personal",
         ]}
         page={page}
         storeType={storeType}

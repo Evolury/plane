@@ -10,33 +10,6 @@ import type { LegendProps } from "recharts";
 import type { TChartLegend } from "@plane/types";
 import { cn } from "../../utils/classname";
 
-export const getLegendProps = (args: TChartLegend): LegendProps => {
-  const { align, layout, verticalAlign } = args;
-  return {
-    layout,
-    align,
-    verticalAlign,
-    wrapperStyle: {
-      display: "flex",
-      overflow: "hidden",
-      ...(layout === "vertical"
-        ? {
-            top: 0,
-            alignItems: "center",
-            height: "100%",
-          }
-        : {
-            left: 0,
-            bottom: 0,
-            width: "100%",
-            justifyContent: "center",
-          }),
-      ...args.wrapperStyles,
-    },
-    content: <CustomLegend {...args} />,
-  };
-};
-
 const CustomLegend = React.forwardRef(function CustomLegend(
   props: React.ComponentProps<"div"> &
     Pick<LegendProps, "payload" | "formatter" | "onClick" | "onMouseEnter" | "onMouseLeave"> &
@@ -81,4 +54,32 @@ const CustomLegend = React.forwardRef(function CustomLegend(
     </div>
   );
 });
+
+export const getLegendProps = (args: TChartLegend): LegendProps => {
+  const { align, layout, verticalAlign } = args;
+  return {
+    layout,
+    align,
+    verticalAlign,
+    wrapperStyle: {
+      display: "flex",
+      overflow: "hidden",
+      ...(layout === "vertical"
+        ? {
+            top: 0,
+            alignItems: "center",
+            height: "100%",
+          }
+        : {
+            left: 0,
+            bottom: 0,
+            width: "100%",
+            justifyContent: "center",
+          }),
+      ...args.wrapperStyles,
+    },
+    content: <CustomLegend {...args} />,
+  };
+};
+
 CustomLegend.displayName = "CustomLegend";

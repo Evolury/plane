@@ -18,6 +18,19 @@ export interface PopoverContentProps extends React.ComponentProps<typeof BasePop
   positionerClassName?: string;
 }
 
+// wrapper components
+const PopoverTrigger = memo(function PopoverTrigger(props: React.ComponentProps<typeof BasePopover.Trigger>) {
+  return <BasePopover.Trigger data-slot="popover-trigger" {...props} />;
+});
+
+const PopoverPortal = memo(function PopoverPortal(props: React.ComponentProps<typeof BasePopover.Portal>) {
+  return <BasePopover.Portal data-slot="popover-portal" {...props} />;
+});
+
+const PopoverPositioner = memo(function PopoverPositioner(props: React.ComponentProps<typeof BasePopover.Positioner>) {
+  return <BasePopover.Positioner data-slot="popover-positioner" {...props} />;
+});
+
 // PopoverContent component
 const PopoverContent = memo(function PopoverContent({
   children,
@@ -48,19 +61,6 @@ const PopoverContent = memo(function PopoverContent({
       </PopoverPositioner>
     </PopoverPortal>
   );
-});
-
-// wrapper components
-const PopoverTrigger = memo(function PopoverTrigger(props: React.ComponentProps<typeof BasePopover.Trigger>) {
-  return <BasePopover.Trigger data-slot="popover-trigger" {...props} />;
-});
-
-const PopoverPortal = memo(function PopoverPortal(props: React.ComponentProps<typeof BasePopover.Portal>) {
-  return <BasePopover.Portal data-slot="popover-portal" {...props} />;
-});
-
-const PopoverPositioner = memo(function PopoverPositioner(props: React.ComponentProps<typeof BasePopover.Positioner>) {
-  return <BasePopover.Positioner data-slot="popover-positioner" {...props} />;
 });
 
 // compound components

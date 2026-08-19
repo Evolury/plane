@@ -84,7 +84,7 @@ export const CreateWorkspace = observer(function CreateWorkspace(props: Props) {
     }
   };
 
-  const completeStep = async (workspaceId: string) => {
+  async function completeStep(workspaceId: string) {
     if (!user) return;
     const payload: Partial<TOnboardingSteps> = {
       workspace_create: true,
@@ -96,7 +96,7 @@ export const CreateWorkspace = observer(function CreateWorkspace(props: Props) {
       last_workspace_id: workspaceId,
     });
     await fetchCurrentUserSettings();
-  };
+  }
 
   const isButtonDisabled = !isValid || invalidSlug || isSubmitting;
 

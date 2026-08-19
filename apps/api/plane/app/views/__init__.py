@@ -186,12 +186,22 @@ from .module.archive import ModuleArchiveUnarchiveEndpoint
 from .api import ApiTokenEndpoint
 
 from .page.base import (
+    PageMoveToPersonalEndpoint,
     PageViewSet,
     PageFavoriteViewSet,
     PagesDescriptionViewSet,
     PageDuplicateEndpoint,
 )
 from .page.version import PageVersionEndpoint
+from .page.personal import (
+    PersonalPageViewSet,
+    PersonalPageDescriptionViewSet,
+    PersonalPageVersionEndpoint,
+    PersonalPageDuplicateEndpoint,
+    PersonalPageShareViewSet,
+    SharedWithMeEndpoint,
+    PersonalPageMoveEndpoint,
+)
 
 from .search.base import GlobalSearchEndpoint, SearchEndpoint
 from .search.issue import IssueSearchEndpoint

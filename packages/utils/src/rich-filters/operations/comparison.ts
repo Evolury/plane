@@ -93,9 +93,9 @@ export const createGroupComparable = <P extends TFilterProperty>(
  * @param expression - The expression to create a comparable representation for
  * @returns A comparable object without IDs or null if the expression is empty
  */
-export const createExpressionComparable = <P extends TFilterProperty>(
+export function createExpressionComparable<P extends TFilterProperty>(
   expression: TFilterExpression<P> | null
-): Record<string, unknown> | null => {
+): Record<string, unknown> | null {
   if (!expression) return null;
 
   // Handle condition nodes - exclude ID completely
@@ -110,7 +110,7 @@ export const createExpressionComparable = <P extends TFilterProperty>(
 
   // Should never reach here with proper typing, but return null for safety
   return null;
-};
+}
 
 /**
  * Normalizes a filter expression by removing empty conditions and groups.

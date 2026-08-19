@@ -60,7 +60,7 @@ export const createColumnInsertButton = (editor: Editor, tableInfo: TableInfo): 
     document.addEventListener("mouseup", onMouseUp);
   };
 
-  const onMouseMove = (e: MouseEvent) => {
+  function onMouseMove(e: MouseEvent) {
     const deltaX = e.clientX - mouseDownX;
     const distance = Math.abs(deltaX);
 
@@ -96,9 +96,9 @@ export const createColumnInsertButton = (editor: Editor, tableInfo: TableInfo): 
         }
       }
     }
-  };
+  }
 
-  const onMouseUp = () => {
+  function onMouseUp() {
     document.removeEventListener("mousemove", onMouseMove);
     document.removeEventListener("mouseup", onMouseUp);
 
@@ -114,105 +114,7 @@ export const createColumnInsertButton = (editor: Editor, tableInfo: TableInfo): 
 
     isDragging = false;
     dragStarted = false;
-  };
-
-  button.addEventListener("mousedown", onMouseDown);
-
-  // Prevent context menu and text selection
-  button.addEventListener("contextmenu", (e) => e.preventDefault());
-  button.addEventListener("selectstart", (e) => e.preventDefault());
-
-  return button;
-};
-
-export const createRowInsertButton = (editor: Editor, tableInfo: TableInfo): HTMLElement => {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "table-row-insert-button";
-  button.title = "Insert rows";
-  button.ariaLabel = "Insert rows";
-
-  const icon = document.createElement("span");
-  icon.innerHTML = addSvg;
-  button.appendChild(icon);
-
-  let mouseDownY = 0;
-  let isDragging = false;
-  let dragStarted = false;
-  let lastActionY = 0;
-  const DRAG_THRESHOLD = 5; // pixels to start drag
-  const ACTION_THRESHOLD = 40; // pixels total distance to trigger action
-
-  const onMouseDown = (e: MouseEvent) => {
-    if (e.button !== 0) return; // Only left mouse button
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    mouseDownY = e.clientY;
-    lastActionY = e.clientY;
-    isDragging = false;
-    dragStarted = false;
-
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-  };
-
-  const onMouseMove = (e: MouseEvent) => {
-    const deltaY = e.clientY - mouseDownY;
-    const distance = Math.abs(deltaY);
-
-    // Start dragging if moved more than threshold
-    if (!isDragging && distance > DRAG_THRESHOLD) {
-      isDragging = true;
-      dragStarted = true;
-
-      // Visual feedback
-      button.classList.add("dragging");
-      document.body.style.userSelect = "none";
-    }
-
-    if (isDragging) {
-      const totalDistance = Math.abs(e.clientY - lastActionY);
-
-      // Only trigger action when total distance reaches threshold
-      if (totalDistance >= ACTION_THRESHOLD) {
-        // Determine direction based on current movement relative to last action point
-        const directionFromLastAction = e.clientY - lastActionY;
-
-        // Down direction - add rows
-        if (directionFromLastAction > 0) {
-          insertRowAfterLast(editor, tableInfo);
-          lastActionY = e.clientY; // Reset action point
-        }
-        // Up direction - delete empty rows
-        else if (directionFromLastAction < 0) {
-          const deleted = removeLastRow(editor, tableInfo);
-          if (deleted) {
-            lastActionY = e.clientY; // Reset action point
-          }
-        }
-      }
-    }
-  };
-
-  const onMouseUp = () => {
-    document.removeEventListener("mousemove", onMouseMove);
-    document.removeEventListener("mouseup", onMouseUp);
-
-    if (isDragging) {
-      // Clean up drag state
-      button.classList.remove("dragging");
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    } else if (!dragStarted) {
-      // Handle as click if no dragging occurred
-      insertRowAfterLast(editor, tableInfo);
-    }
-
-    isDragging = false;
-    dragStarted = false;
-  };
+  }
 
   button.addEventListener("mousedown", onMouseDown);
 
@@ -274,100 +176,6 @@ const getCurrentTableInfo = (editor: Editor, tableInfo: TableInfo): TableInfo =>
   return updated || tableInfo;
 };
 
-// Column functions
-const insertColumnAfterLast = (editor: Editor, tableInfo: TableInfo) => {
-  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
-  const { tableNode, tablePos } = currentTableInfo;
-  const tableMapData = TableMap.get(tableNode);
-  const lastColumnIndex = tableMapData.width;
-
-  const tr = editor.state.tr;
-  const rect: TableRect = {
-    map: tableMapData,
-    tableStart: tablePos,
-    table: tableNode,
-    top: 0,
-    left: 0,
-    bottom: tableMapData.height - 1,
-    right: tableMapData.width - 1,
-  };
-
-  const newTr = addColumn(tr, rect, lastColumnIndex);
-  editor.view.dispatch(newTr);
-};
-
-const removeLastColumn = (editor: Editor, tableInfo: TableInfo): boolean => {
-  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
-  const { tableNode, tablePos } = currentTableInfo;
-  const tableMapData = TableMap.get(tableNode);
-
-  // Don't delete if only one column left
-  if (tableMapData.width <= 1) {
-    return false;
-  }
-
-  const lastColumnIndex = tableMapData.width - 1;
-
-  // Check if last column is empty
-  if (!isColumnEmpty(currentTableInfo, lastColumnIndex)) {
-    return false;
-  }
-
-  const tr = editor.state.tr;
-  const rect = {
-    map: tableMapData,
-    tableStart: tablePos,
-    table: tableNode,
-    top: 0,
-    left: 0,
-    bottom: tableMapData.height - 1,
-    right: tableMapData.width - 1,
-  };
-
-  removeColumn(tr, rect, lastColumnIndex);
-  editor.view.dispatch(tr);
-  return true;
-};
-
-const isColumnEmpty = (tableInfo: TableInfo, columnIndex: number): boolean => {
-  const { tableNode } = tableInfo;
-  const tableMapData = TableMap.get(tableNode);
-
-  // Check each cell in the column
-  for (let row = 0; row < tableMapData.height; row++) {
-    const cellIndex = row * tableMapData.width + columnIndex;
-    const cellPos = tableMapData.map[cellIndex];
-    const cell = tableNode.nodeAt(cellPos);
-
-    if (!isCellEmpty(cell)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-// Row functions
-const insertRowAfterLast = (editor: Editor, tableInfo: TableInfo) => {
-  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
-  const { tableNode, tablePos } = currentTableInfo;
-  const tableMapData = TableMap.get(tableNode);
-  const lastRowIndex = tableMapData.height;
-
-  const tr = editor.state.tr;
-  const rect: TableRect = {
-    map: tableMapData,
-    tableStart: tablePos,
-    table: tableNode,
-    top: 0,
-    left: 0,
-    bottom: tableMapData.height - 1,
-    right: tableMapData.width - 1,
-  };
-
-  const newTr = addRow(tr, rect, lastRowIndex);
-  editor.view.dispatch(newTr);
-};
-
 const removeLastRow = (editor: Editor, tableInfo: TableInfo): boolean => {
   const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
   const { tableNode, tablePos } = currentTableInfo;
@@ -401,7 +209,199 @@ const removeLastRow = (editor: Editor, tableInfo: TableInfo): boolean => {
   return true;
 };
 
-const isRowEmpty = (tableInfo: TableInfo, rowIndex: number): boolean => {
+export const createRowInsertButton = (editor: Editor, tableInfo: TableInfo): HTMLElement => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "table-row-insert-button";
+  button.title = "Insert rows";
+  button.ariaLabel = "Insert rows";
+
+  const icon = document.createElement("span");
+  icon.innerHTML = addSvg;
+  button.appendChild(icon);
+
+  let mouseDownY = 0;
+  let isDragging = false;
+  let dragStarted = false;
+  let lastActionY = 0;
+  const DRAG_THRESHOLD = 5; // pixels to start drag
+  const ACTION_THRESHOLD = 40; // pixels total distance to trigger action
+
+  const onMouseDown = (e: MouseEvent) => {
+    if (e.button !== 0) return; // Only left mouse button
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    mouseDownY = e.clientY;
+    lastActionY = e.clientY;
+    isDragging = false;
+    dragStarted = false;
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  };
+
+  function onMouseMove(e: MouseEvent) {
+    const deltaY = e.clientY - mouseDownY;
+    const distance = Math.abs(deltaY);
+
+    // Start dragging if moved more than threshold
+    if (!isDragging && distance > DRAG_THRESHOLD) {
+      isDragging = true;
+      dragStarted = true;
+
+      // Visual feedback
+      button.classList.add("dragging");
+      document.body.style.userSelect = "none";
+    }
+
+    if (isDragging) {
+      const totalDistance = Math.abs(e.clientY - lastActionY);
+
+      // Only trigger action when total distance reaches threshold
+      if (totalDistance >= ACTION_THRESHOLD) {
+        // Determine direction based on current movement relative to last action point
+        const directionFromLastAction = e.clientY - lastActionY;
+
+        // Down direction - add rows
+        if (directionFromLastAction > 0) {
+          insertRowAfterLast(editor, tableInfo);
+          lastActionY = e.clientY; // Reset action point
+        }
+        // Up direction - delete empty rows
+        else if (directionFromLastAction < 0) {
+          const deleted = removeLastRow(editor, tableInfo);
+          if (deleted) {
+            lastActionY = e.clientY; // Reset action point
+          }
+        }
+      }
+    }
+  }
+
+  function onMouseUp() {
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+
+    if (isDragging) {
+      // Clean up drag state
+      button.classList.remove("dragging");
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    } else if (!dragStarted) {
+      // Handle as click if no dragging occurred
+      insertRowAfterLast(editor, tableInfo);
+    }
+
+    isDragging = false;
+    dragStarted = false;
+  }
+
+  button.addEventListener("mousedown", onMouseDown);
+
+  // Prevent context menu and text selection
+  button.addEventListener("contextmenu", (e) => e.preventDefault());
+  button.addEventListener("selectstart", (e) => e.preventDefault());
+
+  return button;
+};
+
+// Column functions
+function insertColumnAfterLast(editor: Editor, tableInfo: TableInfo) {
+  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
+  const { tableNode, tablePos } = currentTableInfo;
+  const tableMapData = TableMap.get(tableNode);
+  const lastColumnIndex = tableMapData.width;
+
+  const tr = editor.state.tr;
+  const rect: TableRect = {
+    map: tableMapData,
+    tableStart: tablePos,
+    table: tableNode,
+    top: 0,
+    left: 0,
+    bottom: tableMapData.height - 1,
+    right: tableMapData.width - 1,
+  };
+
+  const newTr = addColumn(tr, rect, lastColumnIndex);
+  editor.view.dispatch(newTr);
+}
+
+function removeLastColumn(editor: Editor, tableInfo: TableInfo): boolean {
+  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
+  const { tableNode, tablePos } = currentTableInfo;
+  const tableMapData = TableMap.get(tableNode);
+
+  // Don't delete if only one column left
+  if (tableMapData.width <= 1) {
+    return false;
+  }
+
+  const lastColumnIndex = tableMapData.width - 1;
+
+  // Check if last column is empty
+  if (!isColumnEmpty(currentTableInfo, lastColumnIndex)) {
+    return false;
+  }
+
+  const tr = editor.state.tr;
+  const rect = {
+    map: tableMapData,
+    tableStart: tablePos,
+    table: tableNode,
+    top: 0,
+    left: 0,
+    bottom: tableMapData.height - 1,
+    right: tableMapData.width - 1,
+  };
+
+  removeColumn(tr, rect, lastColumnIndex);
+  editor.view.dispatch(tr);
+  return true;
+}
+
+function isColumnEmpty(tableInfo: TableInfo, columnIndex: number): boolean {
+  const { tableNode } = tableInfo;
+  const tableMapData = TableMap.get(tableNode);
+
+  // Check each cell in the column
+  for (let row = 0; row < tableMapData.height; row++) {
+    const cellIndex = row * tableMapData.width + columnIndex;
+    const cellPos = tableMapData.map[cellIndex];
+    const cell = tableNode.nodeAt(cellPos);
+
+    if (!isCellEmpty(cell)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Row functions
+function insertRowAfterLast(editor: Editor, tableInfo: TableInfo) {
+  const currentTableInfo = getCurrentTableInfo(editor, tableInfo);
+  const { tableNode, tablePos } = currentTableInfo;
+  const tableMapData = TableMap.get(tableNode);
+  const lastRowIndex = tableMapData.height;
+
+  const tr = editor.state.tr;
+  const rect: TableRect = {
+    map: tableMapData,
+    tableStart: tablePos,
+    table: tableNode,
+    top: 0,
+    left: 0,
+    bottom: tableMapData.height - 1,
+    right: tableMapData.width - 1,
+  };
+
+  const newTr = addRow(tr, rect, lastRowIndex);
+  editor.view.dispatch(newTr);
+}
+
+function isRowEmpty(tableInfo: TableInfo, rowIndex: number): boolean {
   const { tableNode } = tableInfo;
   const tableMapData = TableMap.get(tableNode);
 
@@ -416,4 +416,4 @@ const isRowEmpty = (tableInfo: TableInfo, rowIndex: number): boolean => {
     }
   }
   return true;
-};
+}

@@ -143,6 +143,79 @@ const nodePosAtDOMForBlockQuotes = (node: Element, view: EditorView) => {
   })?.inside;
 };
 
+const handleNodeSelection = (
+  event: MouseEvent | DragEvent,
+  view: EditorView,
+  isDragStart: boolean,
+  options: SideMenuPluginProps
+) => {
+  let listType = "";
+  view.focus();
+
+  const node = nodeDOMAtCoords({
+    x: event.clientX + 50 + options.dragHandleWidth,
+    y: event.clientY,
+  });
+
+  if (!(node instanceof Element)) return;
+
+  let draggedNodePos = nodePosAtDOM(node, view, options);
+  if (draggedNodePos == null || draggedNodePos < 0) return;
+
+  if (node.matches("table")) {
+    draggedNodePos = draggedNodePos - 2;
+  } else if (node.matches("blockquote")) {
+    draggedNodePos = nodePosAtDOMForBlockQuotes(node, view);
+    if (draggedNodePos === null || draggedNodePos === undefined) return;
+  } else {
+    // Resolve the position to get the parent node
+    const $pos = view.state.doc.resolve(draggedNodePos);
+
+    // If it's a nested list item or task item, move up to the item level
+    if (
+      [CORE_EXTENSIONS.LIST_ITEM, CORE_EXTENSIONS.TASK_ITEM].includes($pos.parent.type.name as CORE_EXTENSIONS) &&
+      $pos.depth > 1
+    ) {
+      draggedNodePos = $pos.before($pos.depth);
+    }
+  }
+
+  const docSize = view.state.doc.content.size;
+  draggedNodePos = Math.max(0, Math.min(draggedNodePos, docSize));
+
+  // Use NodeSelection to select the node at the calculated position
+  const nodeSelection = NodeSelection.create(view.state.doc, draggedNodePos);
+
+  // Dispatch the transaction to update the selection
+  view.dispatch(view.state.tr.setSelection(nodeSelection));
+
+  if (isDragStart) {
+    // Additional logic for drag start
+    if (event instanceof DragEvent && !event.dataTransfer) return;
+
+    if (
+      [CORE_EXTENSIONS.LIST_ITEM, CORE_EXTENSIONS.TASK_ITEM].includes(nodeSelection.node.type.name as CORE_EXTENSIONS)
+    ) {
+      listType = node.closest("ol, ul")?.tagName || "";
+    }
+
+    const slice = view.state.selection.content();
+    const { dom, text } = view.serializeForClipboard(slice);
+
+    if (event instanceof DragEvent && event.dataTransfer) {
+      event.dataTransfer.clearData();
+      event.dataTransfer.setData("text/html", dom.innerHTML);
+      event.dataTransfer.setData("text/plain", text);
+      event.dataTransfer.effectAllowed = "copyMove";
+      event.dataTransfer.setDragImage(node, 0, 0);
+    }
+
+    view.dragging = { slice, move: event.ctrlKey };
+  }
+
+  return { listType };
+};
+
 export const DragHandlePlugin = (options: SideMenuPluginProps): SideMenuHandleOptions => {
   let listType = "";
   let isDragging = false;
@@ -373,76 +446,3 @@ function flattenListStructure(fragment: Fragment, schema: Schema): Fragment {
   });
   return Fragment.from(result);
 }
-
-const handleNodeSelection = (
-  event: MouseEvent | DragEvent,
-  view: EditorView,
-  isDragStart: boolean,
-  options: SideMenuPluginProps
-) => {
-  let listType = "";
-  view.focus();
-
-  const node = nodeDOMAtCoords({
-    x: event.clientX + 50 + options.dragHandleWidth,
-    y: event.clientY,
-  });
-
-  if (!(node instanceof Element)) return;
-
-  let draggedNodePos = nodePosAtDOM(node, view, options);
-  if (draggedNodePos == null || draggedNodePos < 0) return;
-
-  if (node.matches("table")) {
-    draggedNodePos = draggedNodePos - 2;
-  } else if (node.matches("blockquote")) {
-    draggedNodePos = nodePosAtDOMForBlockQuotes(node, view);
-    if (draggedNodePos === null || draggedNodePos === undefined) return;
-  } else {
-    // Resolve the position to get the parent node
-    const $pos = view.state.doc.resolve(draggedNodePos);
-
-    // If it's a nested list item or task item, move up to the item level
-    if (
-      [CORE_EXTENSIONS.LIST_ITEM, CORE_EXTENSIONS.TASK_ITEM].includes($pos.parent.type.name as CORE_EXTENSIONS) &&
-      $pos.depth > 1
-    ) {
-      draggedNodePos = $pos.before($pos.depth);
-    }
-  }
-
-  const docSize = view.state.doc.content.size;
-  draggedNodePos = Math.max(0, Math.min(draggedNodePos, docSize));
-
-  // Use NodeSelection to select the node at the calculated position
-  const nodeSelection = NodeSelection.create(view.state.doc, draggedNodePos);
-
-  // Dispatch the transaction to update the selection
-  view.dispatch(view.state.tr.setSelection(nodeSelection));
-
-  if (isDragStart) {
-    // Additional logic for drag start
-    if (event instanceof DragEvent && !event.dataTransfer) return;
-
-    if (
-      [CORE_EXTENSIONS.LIST_ITEM, CORE_EXTENSIONS.TASK_ITEM].includes(nodeSelection.node.type.name as CORE_EXTENSIONS)
-    ) {
-      listType = node.closest("ol, ul")?.tagName || "";
-    }
-
-    const slice = view.state.selection.content();
-    const { dom, text } = view.serializeForClipboard(slice);
-
-    if (event instanceof DragEvent && event.dataTransfer) {
-      event.dataTransfer.clearData();
-      event.dataTransfer.setData("text/html", dom.innerHTML);
-      event.dataTransfer.setData("text/plain", text);
-      event.dataTransfer.effectAllowed = "copyMove";
-      event.dataTransfer.setDragImage(node, 0, 0);
-    }
-
-    view.dragging = { slice, move: event.ctrlKey };
-  }
-
-  return { listType };
-};

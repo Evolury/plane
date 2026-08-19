@@ -80,9 +80,9 @@ export const CycleOptions = observer(function CycleOptions(props: CycleOptionsPr
     return cycleDetails?.status ? (cycleDetails?.status.toLowerCase() != "completed" ? true : false) : true;
   });
 
-  const onOpen = () => {
+  function onOpen() {
     if (workspaceSlug && !cycleIds) fetchAllCycles(workspaceSlug.toString(), projectId);
-  };
+  }
 
   const searchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (query !== "" && e.key === "Escape") {

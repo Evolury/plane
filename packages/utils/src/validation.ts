@@ -76,6 +76,19 @@ export const SLUG_REGEX = /^[\p{L}\p{N}_-]+$/u;
 // =============================================================================
 
 /**
+ * @description Checks if a string contains any injection-risk characters
+ * @param {string} input - String to check
+ * @returns {boolean} true if injection-risk characters found
+ * @example
+ * hasInjectionRiskChars("Hello World") // returns false
+ * hasInjectionRiskChars("Hello<script>") // returns true
+ */
+export const hasInjectionRiskChars = (input: string): boolean => {
+  const injectionRiskPattern = /[<>'"{}[\]*^!#%]/;
+  return injectionRiskPattern.test(input);
+};
+
+/**
  * @description Validates person names (first name, last name)
  * @param {string} name - Name to validate
  * @returns {boolean | string} true if valid, error message if invalid
@@ -262,17 +275,4 @@ export const validateSlug = (slug: string, t?: TValidationTranslate): boolean | 
   }
 
   return true;
-};
-
-/**
- * @description Checks if a string contains any injection-risk characters
- * @param {string} input - String to check
- * @returns {boolean} true if injection-risk characters found
- * @example
- * hasInjectionRiskChars("Hello World") // returns false
- * hasInjectionRiskChars("Hello<script>") // returns true
- */
-export const hasInjectionRiskChars = (input: string): boolean => {
-  const injectionRiskPattern = /[<>'"{}[\]*^!#%]/;
-  return injectionRiskPattern.test(input);
 };

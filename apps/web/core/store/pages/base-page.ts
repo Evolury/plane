@@ -271,7 +271,10 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
    * @param {Partial<TPage>} pageData
    */
   update = async (pageData: Partial<TPage>) => {
-    const currentPage = this.asJSON;
+    // `Partial<TPage>` porque `asJSON` devolve um subconjunto: quem estende a
+    // página acrescenta campo próprio (a pessoal tem `share_role`) e este
+    // rollback percorre as chaves de `TPage`, não as de `asJSON`.
+    const currentPage: Partial<TPage> = this.asJSON;
     try {
       runInAction(() => {
         Object.keys(pageData).forEach((key) => {

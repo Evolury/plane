@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
-from plane.db.models import ProjectMember, Page
+from django.db.models import Exists, OuterRef
+
+from plane.db.models import ProjectMember, ProjectPage, Page, PageShare, WorkspaceMember
 from plane.app.permissions import ROLE
 
 
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
@@ -136,3 +139,72 @@ class ProjectPagePermission(BasePermission):
         if not project_member_exists:
             return False
         return True
+
+
+class PersonalPagePermission(BasePermission):
+    """
+    Evolury — página pessoal: mora no workspace e não pertence a projeto nenhum.
+
+    O acesso tem duas fontes e só duas: ser o dono, ou ter uma linha em
+    `PageShare`. Papel de projeto não existe (não há projeto) e papel de
+    workspace não vale — administrador de workspace não lê o caderno pessoal de
+    ninguém. Quem não tem nenhuma das duas recebe 404 e não 403: 403 confirmaria
+    que a página existe.
+
+    O método diz o que a pessoa está tentando fazer, e é por ele que o papel
+    decide:
+
+    | método      | dono | pode editar | pode ler |
+    | ----------- | ---- | ----------- | -------- |
+    | GET         | sim  | sim         | sim      |
+    | PATCH       | sim  | sim         | não      |
+    | POST/DELETE | sim  | não         | não      |
+
+    POST e DELETE nesta API são bloquear, arquivar, duplicar e excluir — todos
+    privilégio do dono, mesmo para quem pode editar. Ver ADR 0015.
+    """
+
+    def has_permission(self, request, view):
+        if request.user.is_anonymous:
+            return False
+
+        slug = view.kwargs.get("slug")
+        if not WorkspaceMember.objects.filter(
+            workspace__slug=slug, member=request.user, is_active=True
+        ).exists():
+            return False
+
+        page_id = view.kwargs.get("page_id")
+        if not page_id:
+            # Listar e criar não têm alvo: o queryset da view já se restringe
+            # ao dono.
+            return True
+
+        page = (
+            Page.objects.filter(id=page_id, workspace__slug=slug)
+            .annotate(em_projeto=Exists(ProjectPage.objects.filter(page_id=OuterRef("pk"))))
+            .filter(em_projeto=False)
+            .first()
+        )
+        # 404 e não 403 de propósito: negar com 403 responde "existe, mas não é
+        # sua", que é informação sobre a página de outra pessoa.
+        if page is None:
+            raise NotFound()
+
+        # Guardado para a view não repetir a consulta.
+        request.pagina_pessoal = page
+
+        if page.owned_by_id == request.user.id:
+            request.papel_na_pagina = "dono"
+            return True
+
+        compartilhamento = PageShare.objects.filter(page_id=page.id, shared_with=request.user).first()
+        if compartilhamento is None:
+            raise NotFound()
+
+        request.papel_na_pagina = compartilhamento.role
+        if request.method in SAFE_METHODS:
+            return True
+        if request.method in ("PUT", "PATCH"):
+            return compartilhamento.role >= PageShare.WRITE
+        return False

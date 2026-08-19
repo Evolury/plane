@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { translate } from "@plane/i18n";
 import { sortBy } from "lodash-es";
 // plane imports
 import type {
@@ -48,15 +49,15 @@ export const orderPages = (
 
   if (sortByKey === "name") {
     orderedPages = sortBy(pages, [(m) => m.name?.toLowerCase()]);
-    if (sortByOrder === "desc") orderedPages = orderedPages.reverse();
+    if (sortByOrder === "desc") orderedPages = orderedPages.toReversed();
   }
   if (sortByKey === "created_at") {
     orderedPages = sortBy(pages, [(m) => m.created_at]);
-    if (sortByOrder === "desc") orderedPages = orderedPages.reverse();
+    if (sortByOrder === "desc") orderedPages = orderedPages.toReversed();
   }
   if (sortByKey === "updated_at") {
     orderedPages = sortBy(pages, [(m) => m.updated_at]);
-    if (sortByOrder === "desc") orderedPages = orderedPages.reverse();
+    if (sortByOrder === "desc") orderedPages = orderedPages.toReversed();
   }
 
   return orderedPages;
@@ -93,6 +94,6 @@ export const shouldFilterPage = (page: TPage, filters: TPageFilterProps | undefi
  */
 export const getPageName = (name: string | undefined) => {
   if (name === undefined) return "";
-  if (!name || name.trim() === "") return "Untitled";
+  if (!name || name.trim() === "") return translate("untitled");
   return name;
 };

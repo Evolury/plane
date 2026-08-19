@@ -7,6 +7,7 @@
 import { AppError } from "@/lib/errors";
 import type { HocusPocusServerContext, TDocumentTypes } from "@/types";
 // services
+import { PersonalPageService } from "./personal-page.service";
 import { ProjectPageService } from "./project-page.service";
 
 export const getPageService = (documentType: TDocumentTypes, context: HocusPocusServerContext) => {
@@ -14,6 +15,13 @@ export const getPageService = (documentType: TDocumentTypes, context: HocusPocus
     return new ProjectPageService({
       workspaceSlug: context.workspaceSlug,
       projectId: context.projectId,
+      cookie: context.cookie,
+    });
+  }
+
+  if (documentType === "personal_page") {
+    return new PersonalPageService({
+      workspaceSlug: context.workspaceSlug,
       cookie: context.cookie,
     });
   }

@@ -9,7 +9,7 @@ import { observer } from "mobx-react";
 import { ListFilter } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import type { TPageFilterProps, TPageNavigationTabs } from "@plane/types";
+import type { TPageFilterProps } from "@plane/types";
 import { Header, EHeaderVariant } from "@plane/ui";
 import { calculateTotalFilters } from "@plane/utils";
 // components
@@ -23,17 +23,20 @@ import { PageAppliedFiltersList } from "../list/applied-filters";
 import { PageFiltersSelection } from "../list/filters";
 import { PageOrderByDropdown } from "../list/order-by";
 import { PageSearchInput } from "../list/search-input";
-import { PageTabNavigation } from "../list/tab-navigation";
 
 type Props = {
-  pageType: TPageNavigationTabs;
-  projectId: string;
   storeType: EPageStoreType;
-  workspaceSlug: string;
+  /**
+   * Evolury: o lado esquerdo é de quem chama. Páginas de projeto passam as abas
+   * público/privado/arquivadas; "Minhas tarefas" passa as suas (ADR 0015).
+   */
+  navigation: React.ReactNode;
+  /** Evolury: controles extras à direita, antes da busca. */
+  actions?: React.ReactNode;
 };
 
 export const PagesListHeaderRoot = observer(function PagesListHeaderRoot(props: Props) {
-  const { pageType, projectId, storeType, workspaceSlug } = props;
+  const { storeType, navigation, actions } = props;
   const { t } = useTranslation();
   // store hooks
   const { filters, updateFilters, clearAllFilters } = usePageStore(storeType);
@@ -61,10 +64,9 @@ export const PagesListHeaderRoot = observer(function PagesListHeaderRoot(props: 
   return (
     <>
       <Header variant={EHeaderVariant.SECONDARY}>
-        <Header.LeftItem>
-          <PageTabNavigation workspaceSlug={workspaceSlug} projectId={projectId} pageType={pageType} />
-        </Header.LeftItem>
+        <Header.LeftItem>{navigation}</Header.LeftItem>
         <Header.RightItem className="items-center">
+          {actions}
           <PageSearchInput
             searchQuery={filters.searchQuery}
             updateSearchQuery={(val) => updateFilters("searchQuery", val)}

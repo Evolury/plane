@@ -49,6 +49,14 @@
         "destructuredArrayIgnorePattern": "^_",
         "ignoreRestSiblings": true
       }
+    ],
+    "no-use-before-define": [
+      "warn",
+      {
+        "functions": false,
+        "classes": false,
+        "variables": true
+      }
     ]
   }
 }

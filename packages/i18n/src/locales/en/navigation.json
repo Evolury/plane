@@ -40,6 +40,42 @@
     },
     "stage_label": "Stage",
     "empty_title": "Nothing assigned to you yet",
-    "stage_in_my_tasks": "Stage in My tasks"
+    "stage_in_my_tasks": "Stage in My tasks",
+    "tabs": {
+      "tasks": "Tasks",
+      "pages": "Pages",
+      "shared": "Shared with me"
+    },
+    "pages": {
+      "new": "New page",
+      "creating": "Creating…",
+      "empty_title": "No pages of your own yet",
+      "empty_description": "Pages in My tasks are yours: meeting notes, drafts, a checklist that does not belong to any project yet.",
+      "empty_archived_title": "No archived pages",
+      "empty_archived_description": "Pages you archive show up here.",
+      "archived": "Archived",
+      "create_failed": "Could not create the page.",
+      "share": "Share",
+      "share_title": "Who else sees this page",
+      "share_search": "Search someone in the workspace",
+      "share_none": "Only you, for now.",
+      "share_add": "Share",
+      "share_remove": "Remove",
+      "role_read": "Can read",
+      "role_write": "Can edit",
+      "share_failed": "Could not share the page.",
+      "shared_empty_title": "Nothing shared with you",
+      "shared_empty_description": "When someone shares a personal page with you, it shows up here.",
+      "move_to_project": "Move to a project",
+      "move_to_personal": "Move to My tasks",
+      "move_title": "Move this page",
+      "move_project": "Target project",
+      "move_warning_one": "1 person loses access: inside a project, the project decides.",
+      "move_warning_many": "{count} people lose access: inside a project, the project decides.",
+      "move_confirm": "Move",
+      "move_failed": "Could not move the page.",
+      "move_to_personal_note": "The page leaves the project and becomes yours only.",
+      "role_label": "Access level"
+    }
   }
 }

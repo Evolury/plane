@@ -168,7 +168,7 @@ type TMultipleFileArgs = {
 };
 
 // Upload the first file and insert the remaining ones for uploading multiple files
-export const uploadFirstFileAndInsertRemaining = async (args: TMultipleFileArgs) => {
+export async function uploadFirstFileAndInsertRemaining(args: TMultipleFileArgs) {
   const { editor, filesList, pos, type, uploader } = args;
   const filesArray = Array.from(filesList);
   if (filesArray.length === 0) {
@@ -192,4 +192,4 @@ export const uploadFirstFileAndInsertRemaining = async (args: TMultipleFileArgs)
       type,
     });
   }
-};
+}

@@ -9,27 +9,12 @@ import type { CSSProperties } from "react";
 import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
 import { clone, isNil, pull, uniq, concat } from "lodash-es";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
-import type { FC } from "react";
-import { CalendarDays, LayersIcon, Paperclip } from "lucide-react";
+
 // plane types
 import { EIconSize, ISSUE_PRIORITIES, STATE_GROUPS } from "@plane/constants";
 import { Logo } from "@plane/propel/emoji-icon-picker";
-import type { ISvgIcons } from "@plane/propel/icons";
-import {
-  CycleGroupIcon,
-  CycleIcon,
-  ModuleIcon,
-  PriorityIcon,
-  StateGroupIcon,
-  LinkIcon,
-  StatePropertyIcon,
-  MembersPropertyIcon,
-  DueDatePropertyIcon,
-  EstimatePropertyIcon,
-  LabelPropertyIcon,
-  PriorityPropertyIcon,
-  StartDatePropertyIcon,
-} from "@plane/propel/icons";
+
+import { CycleGroupIcon, CycleIcon, ModuleIcon, PriorityIcon, StateGroupIcon } from "@plane/propel/icons";
 import type {
   GroupByColumnTypes,
   IGroupByColumn,
@@ -182,7 +167,7 @@ export const getGroupByColumns = ({
  * A coluna vazia não é enfeite: sem ela, agrupar esconderia as tarefas sem
  * valor — e esconder trabalho é o pior que um quadro pode fazer.
  */
-const getIssuePropertyColumns = (propertyId: string, projectId: string | undefined) => {
+function getIssuePropertyColumns(propertyId: string, projectId: string | undefined) {
   const propriedade = encontrarPropriedade(propertyId, projectId);
   if (!propriedade) return undefined;
   const colunas: IGroupByColumn[] = propriedade.options.map((opcao) => ({
@@ -204,12 +189,12 @@ const getIssuePropertyColumns = (propertyId: string, projectId: string | undefin
     payload: {},
   });
   return colunas;
-};
+}
 
 // Evolury: colunas = etapas pessoais do usuário no workspace (minhas tarefas).
 // payload carrega my_task_stage_id: o drop monta { my_task_stage_id: <destino> }
 // e o updateIssue do store MY_TASKS roteia para o POST .../move/ (ADR 0002).
-const getMyTaskStageColumns = (): IGroupByColumn[] | undefined => {
+function getMyTaskStageColumns(): IGroupByColumn[] | undefined {
   const stages = store.myTasksStore?.sortedStages;
   if (!stages || stages.length === 0) return;
   return stages.map((stage) => ({
@@ -223,9 +208,9 @@ const getMyTaskStageColumns = (): IGroupByColumn[] | undefined => {
     // resto do produto — esmaecida com um tom de vermelho.
     headerClassName: stage.group === "cancelled" ? "bg-danger-subtle/50" : undefined,
   }));
-};
+}
 
-const getProjectColumns = (): IGroupByColumn[] | undefined => {
+function getProjectColumns(): IGroupByColumn[] | undefined {
   const { joinedProjectIds: projectIds, projectMap } = store.projectRoot.project;
   // Return undefined if no project ids
   if (!projectIds) return;
@@ -246,9 +231,9 @@ const getProjectColumns = (): IGroupByColumn[] | undefined => {
       };
     })
     .filter((column) => column !== undefined) as IGroupByColumn[];
-};
+}
 
-const getCycleColumns = (): IGroupByColumn[] | undefined => {
+function getCycleColumns(): IGroupByColumn[] | undefined {
   const { currentProjectDetails } = store.projectRoot.project;
   // Check for the current project details
   if (!currentProjectDetails || !currentProjectDetails?.id) return;
@@ -276,9 +261,9 @@ const getCycleColumns = (): IGroupByColumn[] | undefined => {
     payload: {},
   });
   return cycles;
-};
+}
 
-const getModuleColumns = (): IGroupByColumn[] | undefined => {
+function getModuleColumns(): IGroupByColumn[] | undefined {
   // get current project details
   const { currentProjectDetails } = store.projectRoot.project;
   if (!currentProjectDetails || !currentProjectDetails?.id) return;
@@ -303,9 +288,9 @@ const getModuleColumns = (): IGroupByColumn[] | undefined => {
     payload: {},
   });
   return modules;
-};
+}
 
-const getStateColumns = ({ projectId }: TGetColumns): IGroupByColumn[] | undefined => {
+function getStateColumns({ projectId }: TGetColumns): IGroupByColumn[] | undefined {
   const { getProjectStates, projectStates } = store.state;
   const _states = projectId ? getProjectStates(projectId) : projectStates;
   if (!_states) return;
@@ -320,9 +305,9 @@ const getStateColumns = ({ projectId }: TGetColumns): IGroupByColumn[] | undefin
     ),
     payload: { state_id: state.id },
   }));
-};
+}
 
-const getStateGroupColumns = (): IGroupByColumn[] => {
+function getStateGroupColumns(): IGroupByColumn[] {
   const stateGroups = STATE_GROUPS;
   // map state groups to group by columns
   return Object.values(stateGroups).map((stateGroup) => ({
@@ -335,9 +320,9 @@ const getStateGroupColumns = (): IGroupByColumn[] => {
     ),
     payload: {},
   }));
-};
+}
 
-const getPriorityColumns = (): IGroupByColumn[] => {
+function getPriorityColumns(): IGroupByColumn[] {
   const priorities = ISSUE_PRIORITIES;
   // map priorities to group by columns
   return priorities.map((priority) => ({
@@ -346,9 +331,9 @@ const getPriorityColumns = (): IGroupByColumn[] => {
     icon: <PriorityIcon priority={priority?.key} />,
     payload: { priority: priority.key },
   }));
-};
+}
 
-const getLabelsColumns = ({ isWorkspaceLevel }: TGetColumns): IGroupByColumn[] => {
+function getLabelsColumns({ isWorkspaceLevel }: TGetColumns): IGroupByColumn[] {
   const { workspaceLabels, projectLabels } = store.label;
   // map labels to group by columns
   const labels = [
@@ -364,9 +349,9 @@ const getLabelsColumns = ({ isWorkspaceLevel }: TGetColumns): IGroupByColumn[] =
     ),
     payload: label?.id === "None" ? {} : { label_ids: [label.id] },
   }));
-};
+}
 
-const getAssigneeColumns = ({ isWorkspaceLevel, projectId }: TGetColumns): IGroupByColumn[] | undefined => {
+function getAssigneeColumns({ isWorkspaceLevel, projectId }: TGetColumns): IGroupByColumn[] | undefined {
   // store values
   const { getUserDetails } = store.memberRoot;
   // derived values
@@ -390,9 +375,9 @@ const getAssigneeColumns = ({ isWorkspaceLevel, projectId }: TGetColumns): IGrou
   }
 
   return assigneeColumns;
-};
+}
 
-const getCreatedByColumns = (): IGroupByColumn[] | undefined => {
+function getCreatedByColumns(): IGroupByColumn[] | undefined {
   const {
     project: { projectMemberIds },
     getUserDetails,
@@ -408,7 +393,7 @@ const getCreatedByColumns = (): IGroupByColumn[] | undefined => {
       payload: {},
     };
   });
-};
+}
 
 export const getDisplayPropertiesCount = (
   displayProperties: IIssueDisplayProperties,
@@ -815,12 +800,6 @@ export const getBlockViewDetails = (
  * This method returns the icon for Spreadsheet column headers
  * @param iconKey
  */
-export function SpreadSheetPropertyIcon(props: ISvgIcons & { iconKey: string }) {
-  const { iconKey } = props;
-  const Icon = SpreadSheetPropertyIconMap[iconKey];
-  if (!Icon) return null;
-  return <Icon {...props} />;
-}
 
 /**
  * This method returns if the filters are applied
@@ -876,7 +855,7 @@ export type TGetScopeMemberIdsResult = {
   includeNone: boolean;
 };
 
-export const getScopeMemberIds = ({ isWorkspaceLevel, projectId }: TGetColumns): TGetScopeMemberIdsResult => {
+export function getScopeMemberIds({ isWorkspaceLevel, projectId }: TGetColumns): TGetScopeMemberIdsResult {
   // store values
   const { workspaceMemberIds } = store.memberRoot.workspace;
   const { projectMemberIds } = store.memberRoot.project;
@@ -897,25 +876,11 @@ export const getScopeMemberIds = ({ isWorkspaceLevel, projectId }: TGetColumns):
   }
 
   return { memberIds: [], includeNone: true };
-};
+}
 
-export const getTeamProjectColumns = (): IGroupByColumn[] | undefined => undefined;
-
-export const SpreadSheetPropertyIconMap: Record<string, FC<ISvgIcons>> = {
-  MembersPropertyIcon: MembersPropertyIcon,
-  CalenderDays: CalendarDays,
-  DueDatePropertyIcon: DueDatePropertyIcon,
-  EstimatePropertyIcon: EstimatePropertyIcon,
-  LabelPropertyIcon: LabelPropertyIcon,
-  ModuleIcon: ModuleIcon,
-  ContrastIcon: CycleIcon,
-  PriorityPropertyIcon: PriorityPropertyIcon,
-  StartDatePropertyIcon: StartDatePropertyIcon,
-  StatePropertyIcon: StatePropertyIcon,
-  Link2: LinkIcon,
-  Paperclip: Paperclip,
-  LayersIcon: LayersIcon,
-};
+export function getTeamProjectColumns(): IGroupByColumn[] | undefined {
+  return undefined;
+}
 
 export const SPREADSHEET_COLUMNS: { [key in keyof IIssueDisplayProperties]: TSpreadsheetColumn } = {
   assignee: SpreadsheetAssigneeColumn,
