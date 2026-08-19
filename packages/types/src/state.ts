@@ -4,9 +4,19 @@
  * See the LICENSE file for details.
  */
 
-import type { TBaldeDeVencimento } from "./my-tasks";
-
 export type TStateGroups = "backlog" | "unstarted" | "started" | "completed" | "cancelled";
+
+/**
+ * Evolury: os quatro baldes de vencimento (ADR 0014).
+ *
+ * Mora AQUI, e não em `my-tasks.ts`, por uma razão que custou caro: `my-tasks`
+ * já importa `TStateGroups` daqui, então declará-lo lá fechava um ciclo entre os
+ * dois arquivos. `import type` deveria ser apagado na compilação e não gerar
+ * ciclo em execução — mas gerou, e o sintoma não apareceu em teste nenhum: a
+ * página de projeto quebrava com "Cannot access 'o' before initialization",
+ * dentro de um chunk sem relação aparente com etapas.
+ */
+export type TBaldeDeVencimento = "hoje" | "amanha" | "depois" | "vencidas";
 
 export interface IState {
   readonly id: string;

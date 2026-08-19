@@ -10,6 +10,10 @@
 
 import type { TStateGroups } from "./state";
 
+// Evolury: o tipo mora em `state.ts` — declará-lo aqui fechava um ciclo entre
+// os dois arquivos (ADR 0014). Reexportado para quem já o importava daqui.
+export type { TBaldeDeVencimento } from "./state";
+
 export type TWorkStage = {
   id: string;
   name: string;
@@ -49,6 +53,3 @@ export type TWorkStageIssue = {
   workspace: string;
   owner: string;
 };
-
-/** Evolury: os quatro baldes de vencimento (ADR 0014). */
-export type TBaldeDeVencimento = "hoje" | "amanha" | "depois" | "vencidas";
