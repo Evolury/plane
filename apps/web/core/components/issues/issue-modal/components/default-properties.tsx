@@ -135,7 +135,7 @@ export const IssueDefaultProperties = observer(function IssueDefaultProperties(p
               }}
               buttonVariant={value?.length > 0 ? "transparent-without-text" : "border-with-text"}
               buttonClassName={value?.length > 0 ? "hover:bg-transparent" : ""}
-              placeholder={t("assignees")}
+              placeholder={t("assignee")}
               tabIndex={getIndex("assignee_ids")}
             />
           </div>

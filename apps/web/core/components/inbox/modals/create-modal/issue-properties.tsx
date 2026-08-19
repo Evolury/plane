@@ -87,7 +87,7 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
           onChange={(assigneeIds) => handleData("assignee_ids", assigneeIds)}
           buttonVariant={(data?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "border-with-text"}
           buttonClassName={(data?.assignee_ids || [])?.length > 0 ? "hover:bg-transparent" : ""}
-          placeholder={t("assignees")}
+          placeholder={t("assignee")}
           tabIndex={getIndex("assignee_ids")}
         />
       </div>

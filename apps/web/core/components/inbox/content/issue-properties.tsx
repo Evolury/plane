@@ -93,7 +93,7 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
             <div className="flex h-8 items-center gap-2">
               <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
                 <MembersPropertyIcon className="h-4 w-4 flex-shrink-0" />
-                <span>{t("assignees")}</span>
+                <span>{t("assignee")}</span>
               </div>
               <AssigneeDropdown
                 value={issue?.assignee_ids ?? []}

@@ -15,7 +15,7 @@
         "success": "{count, plural, one {Tarefa} other {Tarefas}} adicionada(s) ao ciclo com sucesso.",
         "loading": "Adicionando {count, plural, one {tarefa} other {tarefas}} ao ciclo"
       },
-      "assignee": "Adicionar responsáveis",
+      "assignee": "Definir responsável",
       "start_date": "Adicionar data de início",
       "due_date": "Adicionar data de vencimento",
       "parent": "Adicionar tarefa pai",
@@ -495,7 +495,7 @@
       "label": "O que será criado",
       "priority": "Prioridade",
       "state": "Estado inicial",
-      "assignees": "Responsáveis",
+      "assignees": "Responsável",
       "labels": "Etiquetas",
       "description": "Descrição"
     },

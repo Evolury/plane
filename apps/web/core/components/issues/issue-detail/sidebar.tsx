@@ -101,7 +101,7 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
               />
             </SidebarPropertyListItem>
 
-            <SidebarPropertyListItem icon={MembersPropertyIcon} label={t("common.assignees")}>
+            <SidebarPropertyListItem icon={MembersPropertyIcon} label={t("common.assignee")}>
               <AssigneeDropdown
                 value={issue?.assignee_ids ?? undefined}
                 onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { assignee_ids: val })}

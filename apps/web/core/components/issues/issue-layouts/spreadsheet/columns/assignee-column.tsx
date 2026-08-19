@@ -42,7 +42,7 @@ export const SpreadsheetAssigneeColumn = observer(function SpreadsheetAssigneeCo
         }}
         projectId={issue?.project_id ?? undefined}
         disabled={disabled}
-        placeholder={t("assignees")}
+        placeholder={t("assignee")}
         buttonVariant={
           issue?.assignee_ids && issue.assignee_ids.length > 1 ? "transparent-without-text" : "transparent-with-text"
         }

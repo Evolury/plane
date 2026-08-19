@@ -291,7 +291,7 @@
     "action_option": {
       "set_state": "Change the state",
       "set_priority": "Change the priority",
-      "set_assignees": "Change assignees",
+      "set_assignees": "Set assignee",
       "set_labels": "Change labels",
       "set_date": "Set a date",
       "set_property": "Fill in a property",
@@ -307,7 +307,7 @@
     "field": {
       "state": "State",
       "priority": "Priority",
-      "assignee": "Assignees",
+      "assignee": "Assignee",
       "label": "Labels",
       "start_date": "Start date",
       "target_date": "Due date",
@@ -386,7 +386,7 @@
     "archive_hint": "Archives the work item. Only for completed or cancelled ones.",
     "cycle_hint": "Adds the work item to the project's active cycle at run time.",
     "notify_target": {
-      "assignees": "the assignees"
+      "assignees": "the assignee"
     },
     "schedule": {
       "frequency": "Frequency",
@@ -409,7 +409,7 @@
     "create_name_placeholder": "Name of the work item to create",
     "subtask_placeholder": "Sub-work item name",
     "add_subtask": "Add sub-work item",
-    "inherit_assignees": "Inherit assignees from the work item",
+    "inherit_assignees": "Inherit the assignee from the work item",
     "due_in_days": "Due in (days)",
     "create_idempotency_hint": "This rule creates the checklist once per work item. Firing again does not duplicate it.",
     "include_recurring": "Also apply to recurring work items",

@@ -330,7 +330,7 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
             buttonVariant={issue.assignee_ids?.length > 0 ? "transparent-without-text" : "border-without-text"}
             buttonClassName={issue.assignee_ids?.length > 0 ? "hover:bg-transparent px-0" : ""}
             showTooltip={issue?.assignee_ids?.length === 0}
-            placeholder={t("common.assignees")}
+            placeholder={t("common.assignee")}
             optionsClassName="z-10"
             tooltipContent=""
             renderByDefault={isMobile}
