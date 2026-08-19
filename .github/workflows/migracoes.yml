@@ -1,0 +1,79 @@
+# Evolury: a única coisa que executa uma migração era o deploy.
+#
+# A suíte roda com `--nomigrations` — o banco de teste vem dos modelos —, e
+# nenhum outro workflow sobe banco. Vinte e quatro migrações próprias entraram
+# assim: dependência errada, `RunPython` que quebra ou trava que conflita com
+# dado existente só apareceriam em produção.
+#
+# Descoberto de um jeito específico: uma injeção de defeito dentro de uma
+# migração não derrubou teste nenhum.
+
+name: Migrações
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "main"
+    types: ["opened", "synchronize", "ready_for_review", "reopened"]
+    paths:
+      - "apps/api/plane/db/**"
+      - "apps/api/requirements.txt"
+      - ".github/workflows/migracoes.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migrar:
+    name: Aplicar migrações num banco de verdade
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event.pull_request.draft == false
+
+    services:
+      postgres:
+        image: postgres:15.7-alpine
+        env:
+          POSTGRES_USER: plane
+          POSTGRES_PASSWORD: plane
+          POSTGRES_DB: plane
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U plane -d plane"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DJANGO_SETTINGS_MODULE: plane.settings.test
+      DATABASE_URL: postgresql://plane:plane@localhost:5432/plane
+      REDIS_URL: redis://localhost:6379/
+      SECRET_KEY: chave-so-para-a-ci-nao-vai-a-lugar-nenhum
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Preparar o Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.x"
+          cache: "pip"
+          cache-dependency-path: "apps/api/requirements.txt"
+
+      - name: Instalar dependências
+        run: cd apps/api && pip install -r requirements.txt
+
+      # O passo que faltava: as migrações rodam do zero, na ordem, contra
+      # Postgres. Falha aqui é dependência quebrada, RunPython com defeito ou
+      # constraint que o banco recusa.
+      - name: Migrar do zero
+        run: cd apps/api && python manage.py migrate --noinput
+
+      # E o inverso: modelo alterado sem migração correspondente. Sem isto, a
+      # divergência só aparece quando outra pessoa gera a migração e leva junto
+      # uma mudança que não é dela.
+      - name: Nenhuma migração pendente para os modelos
+        run: cd apps/api && python manage.py makemigrations --check --dry-run

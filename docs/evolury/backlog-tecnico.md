@@ -12,6 +12,31 @@ Nada.
 
 ## Resolvido
 
+### Migração nenhuma era executada por CI — 19/08/2026
+
+O `pytest.ini` roda com `--nomigrations`: o banco de teste vem dos modelos, e as
+migrações **nunca** eram executadas. Nenhum dos nove workflows subia banco ou
+chamava `manage.py migrate`. **Vinte e quatro** migrações próprias entraram
+assim — dependência errada, `RunPython` que quebra ou trava que conflita com
+dado existente só apareceriam no deploy, em produção.
+
+Apareceu de um jeito específico: uma injeção de defeito **dentro** de uma
+migração não derrubou teste nenhum.
+
+O workflow `Migrações` passou a subir Postgres e rodar dois passos:
+`migrate --noinput` do zero, e `makemigrations --check --dry-run` para o inverso
+— modelo alterado sem migração correspondente. Provado com defeito injetado, um
+de cada vez: dependência apontando para migração inexistente e campo novo num
+modelo derrubam a CI, cada um no seu passo.
+
+### Diretório root do docker travava a troca de branch — 19/08/2026
+
+`apps/api/plane/static-assets/collected-static` nasce do build da API,
+pertence ao root e não estava em `.gitignore` nenhum. Vazio, não aparecia no
+`git status` — mas o git tentava removê-lo ao trocar de branch, não conseguia, e
+o `switch` falhava. Uma linha resolveu; conferido com o diretório presente, a
+troca vai e volta.
+
 ### Rótulos do menu do editor - 19/08/2026
 
 A contagem que eu tinha anotado ("38 literais") estava errada: os itens do editor
