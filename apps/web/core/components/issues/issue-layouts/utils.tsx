@@ -9,27 +9,12 @@ import type { CSSProperties } from "react";
 import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item";
 import { clone, isNil, pull, uniq, concat } from "lodash-es";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
-import type { FC } from "react";
-import { CalendarDays, LayersIcon, Paperclip } from "lucide-react";
+
 // plane types
 import { EIconSize, ISSUE_PRIORITIES, STATE_GROUPS } from "@plane/constants";
 import { Logo } from "@plane/propel/emoji-icon-picker";
-import type { ISvgIcons } from "@plane/propel/icons";
-import {
-  CycleGroupIcon,
-  CycleIcon,
-  ModuleIcon,
-  PriorityIcon,
-  StateGroupIcon,
-  LinkIcon,
-  StatePropertyIcon,
-  MembersPropertyIcon,
-  DueDatePropertyIcon,
-  EstimatePropertyIcon,
-  LabelPropertyIcon,
-  PriorityPropertyIcon,
-  StartDatePropertyIcon,
-} from "@plane/propel/icons";
+
+import { CycleGroupIcon, CycleIcon, ModuleIcon, PriorityIcon, StateGroupIcon } from "@plane/propel/icons";
 import type {
   GroupByColumnTypes,
   IGroupByColumn,
@@ -811,32 +796,10 @@ export const getBlockViewDetails = (
   };
 };
 
-export const SpreadSheetPropertyIconMap: Record<string, FC<ISvgIcons>> = {
-  MembersPropertyIcon: MembersPropertyIcon,
-  CalenderDays: CalendarDays,
-  DueDatePropertyIcon: DueDatePropertyIcon,
-  EstimatePropertyIcon: EstimatePropertyIcon,
-  LabelPropertyIcon: LabelPropertyIcon,
-  ModuleIcon: ModuleIcon,
-  ContrastIcon: CycleIcon,
-  PriorityPropertyIcon: PriorityPropertyIcon,
-  StartDatePropertyIcon: StartDatePropertyIcon,
-  StatePropertyIcon: StatePropertyIcon,
-  Link2: LinkIcon,
-  Paperclip: Paperclip,
-  LayersIcon: LayersIcon,
-};
-
 /**
  * This method returns the icon for Spreadsheet column headers
  * @param iconKey
  */
-export function SpreadSheetPropertyIcon(props: ISvgIcons & { iconKey: string }) {
-  const { iconKey } = props;
-  const Icon = SpreadSheetPropertyIconMap[iconKey];
-  if (!Icon) return null;
-  return <Icon {...props} />;
-}
 
 /**
  * This method returns if the filters are applied

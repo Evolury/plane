@@ -14,7 +14,7 @@ import { useTranslation } from "@plane/i18n";
 import type { IIssueDisplayFilterOptions, IIssueDisplayProperties, TIssueOrderByOptions } from "@plane/types";
 import { CustomMenu, Row } from "@plane/ui";
 import useLocalStorage from "@/hooks/use-local-storage";
-import { SpreadSheetPropertyIcon } from "../../utils";
+import { SpreadSheetPropertyIcon } from "../../spreadsheet-property-icon";
 
 interface Props {
   property: keyof IIssueDisplayProperties;
