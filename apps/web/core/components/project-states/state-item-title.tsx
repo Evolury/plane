@@ -84,7 +84,16 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
           INFORMAÇÃO — saber qual etapa recebe as vencidas não pode exigir
           passar o mouse por oito linhas. Quem some no hover é só o que está
           desmarcado; ver `StageBuckets`. */}
+      {/* Evolury: nada disso faz sentido num grupo de encerramento — e não é só
+          questão de lógica. A varredura filtra pelo grupo do ESTADO DA TAREFA,
+          não do da etapa: marcar "Concluídas" como destino de hoje jogaria uma
+          tarefa ABERTA na coluna das concluídas. A entrada, idem — o que chega
+          não chega pronto. O servidor recusa os dois; aqui os controles nem
+          aparecem. O marcador de conclusão continua, que é o que pertence a
+          este grupo. */}
       {!disabled &&
+        state.group !== "completed" &&
+        state.group !== "cancelled" &&
         props.stateOperationsCallbacks.markStageBucket &&
         props.stateOperationsCallbacks.getStageBucketInfo &&
         props.stateOperationsCallbacks.toggleStageAutomation && (

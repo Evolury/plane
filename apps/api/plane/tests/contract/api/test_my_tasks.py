@@ -835,3 +835,54 @@ class TestGrupoDeEncerramentoPrecisaDeDestino:
         response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages["Para Depois"].id))
 
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.data
+
+
+@pytest.mark.contract
+class TestEncerramentoNaoRecebeMarcacao:
+    """Etapa de conclusão ou cancelamento não recebe balde nem vira entrada.
+
+    Não é só falta de sentido — é dano. A varredura filtra pelo grupo do
+    **estado da tarefa**, e não do da etapa: marcando "Concluídas" como destino
+    de hoje, uma tarefa ABERTA que vencesse hoje seria jogada na coluna das
+    concluídas, aberta, no meio do que já terminou.
+
+    A entrada tem o problema simétrico: o que chega não chega pronto.
+    """
+
+    @pytest.mark.parametrize("etapa", ["Concluídas", "Cancelado"])
+    @pytest.mark.parametrize("balde", ["hoje", "vencidas"])
+    def test_nao_recebe_balde(self, session_client, workspace, create_user, etapa, balde):
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages[etapa].id), {"balde": balde}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        stages[etapa].refresh_from_db()
+        assert stages[etapa].is_due_today is False
+        assert stages[etapa].is_overdue is False
+
+    @pytest.mark.parametrize("etapa", ["Concluídas", "Cancelado"])
+    def test_nao_vira_entrada(self, session_client, workspace, create_user, etapa):
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages[etapa].id))
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        stages[etapa].refresh_from_db()
+        assert stages[etapa].is_default is False
+
+    def test_etapa_comum_continua_aceitando(self, session_client, workspace, create_user):
+        """Sem isto, recusar tudo passaria nos testes acima."""
+        stages = seed_stages(workspace, create_user)
+
+        balde = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id),
+            {"balde": "hoje"},
+            format="json",
+        )
+        entrada = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id))
+
+        assert balde.status_code == status.HTTP_204_NO_CONTENT, balde.data
+        assert entrada.status_code == status.HTTP_204_NO_CONTENT, entrada.data

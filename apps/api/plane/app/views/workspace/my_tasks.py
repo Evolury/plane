@@ -190,6 +190,14 @@ class WorkStageViewSet(BaseViewSet):
         stage = self.get_queryset().filter(pk=pk).first()
         if stage is None:
             return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        # A entrada recebe o que chega, e o que chega não chega pronto: uma
+        # etapa de conclusão ou cancelamento como entrada faria toda tarefa nova
+        # nascer como se estivesse encerrada.
+        if stage.group in GRUPOS_QUE_PRECISAM_DE_DESTINO:
+            return Response(
+                {"error": "Etapa de conclusão ou cancelamento não pode ser a entrada."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         with transaction.atomic():
             # A constraint parcial exige desmarcar a antiga antes de marcar a
             # nova — a ordem das duas instruções não é opcional.
@@ -239,6 +247,17 @@ class WorkStageViewSet(BaseViewSet):
         stage = self.get_queryset().filter(pk=pk).first()
         if stage is None:
             return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Etapa de encerramento não recebe balde, e não é só falta de sentido:
+        # a varredura filtra pelo grupo do ESTADO DA TAREFA, não do da etapa.
+        # Marcando "Concluídas" como destino de hoje, uma tarefa ABERTA que
+        # vencesse hoje seria jogada na coluna das concluídas — aberta, no meio
+        # do que já terminou.
+        if stage.group in GRUPOS_QUE_PRECISAM_DE_DESTINO:
+            return Response(
+                {"error": "Etapa de conclusão ou cancelamento não recebe tarefa por vencimento."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         campo = MARCACAO_DO_BALDE.get(request.data.get("balde"))
         if campo is None:
