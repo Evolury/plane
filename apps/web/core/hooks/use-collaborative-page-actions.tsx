@@ -33,6 +33,7 @@ export const useCollaborativePageActions = (props: Props) => {
   // local action is basically the action performed by the current user to avoid double operations
   const [currentActionBeingProcessed, setCurrentActionBeingProcessed] = useState<TDocumentEventsClient | null>(null);
 
+  const { t } = useTranslation();
   // @ts-expect-error - TODO: fix this
   const actionHandlerMap: Record<TDocumentEventsClient, CollaborativeAction> = useMemo(
     () => ({
@@ -61,9 +62,8 @@ export const useCollaborativePageActions = (props: Props) => {
         errorMessage: t("ui.page_could_not_be_made_private_please_try_again"),
       },
     }),
-    [page]
+    [page, t]
   );
-  const { t } = useTranslation();
 
   const executeCollaborativeAction = useCallback(
     async (event: CollaborativeActionEvent) => {
@@ -88,7 +88,7 @@ export const useCollaborativePageActions = (props: Props) => {
         }
       }
     },
-    [actionHandlerMap, editorRef]
+    [actionHandlerMap, editorRef, t]
   );
 
   useEffect(() => {

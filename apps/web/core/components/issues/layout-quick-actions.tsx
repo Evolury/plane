@@ -23,6 +23,8 @@ type Props = {
 export const LayoutQuickActions = observer(function LayoutQuickActions(props: Props) {
   const { workspaceSlug, projectId, storeType } = props;
 
+  const { t } = useTranslation();
+
   const layoutLink = `${workspaceSlug}/projects/${projectId}/${storeType === "EPIC" ? "epics" : "issues"}`;
 
   const handleCopyLink = () =>
@@ -43,7 +45,6 @@ export const LayoutQuickActions = observer(function LayoutQuickActions(props: Pr
     handleCopyLink,
     handleOpenInNewTab,
   });
-  const { t } = useTranslation();
 
   const MENU_ITEMS: TContextMenuItem[] = Array.isArray(menuResult) ? menuResult : menuResult.items;
   const additionalModals = Array.isArray(menuResult) ? null : menuResult.modals;
