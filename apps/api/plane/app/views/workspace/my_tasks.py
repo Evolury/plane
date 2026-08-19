@@ -34,6 +34,7 @@ from plane.app.serializers import WorkStageIssueSerializer, WorkStageSerializer
 from plane.app.views.base import BaseAPIView, BaseViewSet
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.utils.etapas_por_vencimento import MARCACAO_DO_BALDE, dia_local
+from plane.utils.personal_stage import GRUPOS_ENCERRADOS as GRUPOS_QUE_PRECISAM_DE_DESTINO
 from plane.db.models import (
     DEFAULT_WORK_STAGES,
     CycleIssue,
@@ -143,6 +144,28 @@ class WorkStageViewSet(BaseViewSet):
                 {"error": "A etapa padrão não pode ser excluída."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        # Evolury: os grupos de encerramento precisam sobrar com pelo menos uma
+        # etapa.
+        #
+        # Concluir e cancelar uma tarefa procuram o destino DENTRO do grupo
+        # correspondente. Esvaziando o grupo, a tarefa concluída cai fora dele —
+        # na prática, vai parar junto das que acabaram de chegar. O prejuízo não
+        # aparece na hora da exclusão, e sim na próxima vez que alguém concluir
+        # alguma coisa.
+        #
+        # A regra é sobre a ÚLTIMA do grupo, e não sobre o grupo: quem criar uma
+        # segunda etapa de conclusão pode excluir qualquer uma das duas.
+        if stage.group in GRUPOS_QUE_PRECISAM_DE_DESTINO:
+            irmas = (
+                WorkStage.objects.filter(workspace=stage.workspace, owner=request.user, group=stage.group)
+                .exclude(pk=stage.pk)
+                .exists()
+            )
+            if not irmas:
+                return Response(
+                    {"error": "Este grupo precisa de ao menos uma etapa: é para onde a tarefa vai ao ser encerrada."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         default_stage = (
             WorkStage.objects.filter(workspace=stage.workspace, owner=request.user, is_default=True)
             .exclude(pk=stage.pk)
@@ -167,6 +190,14 @@ class WorkStageViewSet(BaseViewSet):
         stage = self.get_queryset().filter(pk=pk).first()
         if stage is None:
             return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        # A entrada recebe o que chega, e o que chega não chega pronto: uma
+        # etapa de conclusão ou cancelamento como entrada faria toda tarefa nova
+        # nascer como se estivesse encerrada.
+        if stage.group in GRUPOS_QUE_PRECISAM_DE_DESTINO:
+            return Response(
+                {"error": "Etapa de conclusão ou cancelamento não pode ser a entrada."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         with transaction.atomic():
             # A constraint parcial exige desmarcar a antiga antes de marcar a
             # nova — a ordem das duas instruções não é opcional.
@@ -216,6 +247,17 @@ class WorkStageViewSet(BaseViewSet):
         stage = self.get_queryset().filter(pk=pk).first()
         if stage is None:
             return Response({"error": "Etapa não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Etapa de encerramento não recebe balde, e não é só falta de sentido:
+        # a varredura filtra pelo grupo do ESTADO DA TAREFA, não do da etapa.
+        # Marcando "Concluídas" como destino de hoje, uma tarefa ABERTA que
+        # vencesse hoje seria jogada na coluna das concluídas — aberta, no meio
+        # do que já terminou.
+        if stage.group in GRUPOS_QUE_PRECISAM_DE_DESTINO:
+            return Response(
+                {"error": "Etapa de conclusão ou cancelamento não recebe tarefa por vencimento."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         campo = MARCACAO_DO_BALDE.get(request.data.get("balde"))
         if campo is None:

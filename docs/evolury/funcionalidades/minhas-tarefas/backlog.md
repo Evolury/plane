@@ -230,3 +230,22 @@ ajustar o seed à mão.
       não a função interna. Com um dia à frente tudo andou um balde; rodar duas
       vezes no mesmo dia varreu zero pessoas. Detalhes em
       [compatibilidade.md](compatibilidade.md)
+
+### F8.4 — O que a tela mostrou depois de pronta
+
+Cinco correções vindas de olhar a F8 funcionando, não de item planejado.
+
+- [x] F8.4.1 O modal de exclusão de etapa estava em inglês. Havia **duas cópias
+      do mesmo texto** no repositório e a primeira que corrigi não era a que
+      renderiza — a que aparece é `options/delete.tsx`, não
+      `state-delete-modal.tsx`
+- [x] F8.4.2 Ícone de excluir sai de Recentes, Concluído e Cancelado. Cinza não
+      resolve: botão desabilitado ainda promete uma ação
+- [x] F8.4.3 Regra no servidor por trás do ícone escondido: recusa excluir a
+      **última** etapa de um grupo de encerramento. Fui verificar se já era
+      proibido e **não era** — o prejuízo não apareceria na exclusão, e sim na
+      próxima vez que alguém concluísse alguma coisa
+- [x] F8.4.4 "Marcar padrão" vira **"marcar entrada"**, com o mesmo visual das
+      outras marcações e sempre visível — antes só aparecia no hover
+- [x] F8.4.5 Marcações de vencimento e interruptor de automação somem dos grupos
+      concluído e cancelado, que a varredura já ignorava estruturalmente

@@ -159,6 +159,8 @@ export const StateItem = observer(function StateItem(props: TStateItem) {
               markStageBucket: stateOperationsCallbacks.markStageBucket,
               getStageBucketInfo: stateOperationsCallbacks.getStageBucketInfo,
               toggleStageAutomation: stateOperationsCallbacks.toggleStageAutomation,
+              canDeleteStage: stateOperationsCallbacks.canDeleteStage,
+              rotulosDaEntrada: stateOperationsCallbacks.rotulosDaEntrada,
             }}
             shouldTrackEvents={shouldTrackEvents}
           />

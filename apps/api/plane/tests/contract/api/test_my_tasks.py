@@ -12,7 +12,8 @@ from unittest import mock
 from datetime import timedelta
 
 import pytest
-from django.utils import timezone
+
+from plane.utils.etapas_por_vencimento import dia_local
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -747,7 +748,11 @@ class TestArrastarReagenda:
 
         assert response.status_code == status.HTTP_200_OK, response.data
         assigned_issue.refresh_from_db()
-        assert assigned_issue.target_date == timezone.now().date()
+        # A data da PESSOA, e não a do servidor. Comparar com `timezone.now()`
+        # passava o dia inteiro e quebrava entre a meia-noite de São Paulo e a
+        # de Londres — três horas por dia em que a suíte acusaria um defeito que
+        # não existe, e no resto do dia esconderia um que existisse.
+        assert assigned_issue.target_date == dia_local(create_user.user_timezone)
 
     def test_arrastar_para_amanha_marca_o_vencimento_de_amanha(
         self, session_client, workspace, create_user, assigned_issue
@@ -757,7 +762,7 @@ class TestArrastarReagenda:
         self._mover(session_client, workspace, assigned_issue, stages["Para amanhã"])
 
         assigned_issue.refresh_from_db()
-        assert assigned_issue.target_date == timezone.now().date() + timedelta(days=1)
+        assert assigned_issue.target_date == dia_local(create_user.user_timezone) + timedelta(days=1)
 
     @pytest.mark.parametrize("etapa", ["Para Depois", "Pendências", "Em Andamento"])
     def test_arrastar_para_as_outras_NAO_toca_na_data(
@@ -765,20 +770,20 @@ class TestArrastarReagenda:
     ):
         """Sem isto, carimbar em toda etapa passaria nos dois testes acima."""
         stages = seed_stages(workspace, create_user)
-        assigned_issue.target_date = timezone.now().date() + timedelta(days=30)
+        assigned_issue.target_date = dia_local(create_user.user_timezone) + timedelta(days=30)
         assigned_issue.save()
 
         self._mover(session_client, workspace, assigned_issue, stages[etapa])
 
         assigned_issue.refresh_from_db()
-        assert assigned_issue.target_date == timezone.now().date() + timedelta(days=30)
+        assert assigned_issue.target_date == dia_local(create_user.user_timezone) + timedelta(days=30)
 
     def test_arrastar_para_hoje_uma_tarefa_que_ja_vence_hoje_nao_gera_ruido(
         self, session_client, workspace, create_user, assigned_issue
     ):
         """Regravar a mesma data encheria o histórico sem dizer nada."""
         stages = seed_stages(workspace, create_user)
-        assigned_issue.target_date = timezone.now().date()
+        assigned_issue.target_date = dia_local(create_user.user_timezone)
         assigned_issue.save()
         antes = assigned_issue.updated_at
 
@@ -786,3 +791,98 @@ class TestArrastarReagenda:
 
         assigned_issue.refresh_from_db()
         assert assigned_issue.updated_at == antes
+
+
+@pytest.mark.contract
+class TestGrupoDeEncerramentoPrecisaDeDestino:
+    """Concluir e cancelar procuram o destino DENTRO do grupo correspondente.
+
+    Esvaziando o grupo, a tarefa concluída cai fora dele — na prática, vai
+    parar junto das que acabaram de chegar. O prejuízo não aparece na hora da
+    exclusão, e sim na próxima vez que alguém concluir alguma coisa: é o tipo
+    de estrago que ninguém liga à causa.
+    """
+
+    @pytest.mark.parametrize("etapa", ["Concluídas", "Cancelado"])
+    def test_a_ultima_do_grupo_nao_pode_ser_excluida(self, session_client, workspace, create_user, etapa):
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages[etapa].id))
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert WorkStage.objects.filter(pk=stages[etapa].id).exists()
+
+    @pytest.mark.parametrize("grupo,nome", [("completed", "Concluídas"), ("cancelled", "Cancelado")])
+    def test_com_duas_no_grupo_as_duas_podem(self, session_client, workspace, create_user, grupo, nome):
+        """A regra é sobre a ÚLTIMA do grupo, e não sobre o grupo.
+
+        Sem isto, proibir o grupo inteiro passaria no teste acima e travaria
+        quem organiza a conclusão em mais de uma etapa.
+        """
+        stages = seed_stages(workspace, create_user)
+        WorkStage.objects.create(
+            workspace=workspace, owner=create_user, name=f"Outra {nome}", color="#000", group=grupo
+        )
+
+        response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages[nome].id))
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT, response.data
+
+    def test_etapa_comum_continua_excluivel(self, session_client, workspace, create_user):
+        """Sem isto, proibir tudo passaria nos testes acima."""
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.delete(STAGE_URL.format(slug=workspace.slug, pk=stages["Para Depois"].id))
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT, response.data
+
+
+@pytest.mark.contract
+class TestEncerramentoNaoRecebeMarcacao:
+    """Etapa de conclusão ou cancelamento não recebe balde nem vira entrada.
+
+    Não é só falta de sentido — é dano. A varredura filtra pelo grupo do
+    **estado da tarefa**, e não do da etapa: marcando "Concluídas" como destino
+    de hoje, uma tarefa ABERTA que vencesse hoje seria jogada na coluna das
+    concluídas, aberta, no meio do que já terminou.
+
+    A entrada tem o problema simétrico: o que chega não chega pronto.
+    """
+
+    @pytest.mark.parametrize("etapa", ["Concluídas", "Cancelado"])
+    @pytest.mark.parametrize("balde", ["hoje", "vencidas"])
+    def test_nao_recebe_balde(self, session_client, workspace, create_user, etapa, balde):
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages[etapa].id), {"balde": balde}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        stages[etapa].refresh_from_db()
+        assert stages[etapa].is_due_today is False
+        assert stages[etapa].is_overdue is False
+
+    @pytest.mark.parametrize("etapa", ["Concluídas", "Cancelado"])
+    def test_nao_vira_entrada(self, session_client, workspace, create_user, etapa):
+        stages = seed_stages(workspace, create_user)
+
+        response = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages[etapa].id))
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        stages[etapa].refresh_from_db()
+        assert stages[etapa].is_default is False
+
+    def test_etapa_comum_continua_aceitando(self, session_client, workspace, create_user):
+        """Sem isto, recusar tudo passaria nos testes acima."""
+        stages = seed_stages(workspace, create_user)
+
+        balde = session_client.post(
+            MARK_BUCKET_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id),
+            {"balde": "hoje"},
+            format="json",
+        )
+        entrada = session_client.post(MARK_DEFAULT_URL.format(slug=workspace.slug, pk=stages["Em Andamento"].id))
+
+        assert balde.status_code == status.HTTP_204_NO_CONTENT, balde.data
+        assert entrada.status_code == status.HTTP_204_NO_CONTENT, entrada.data

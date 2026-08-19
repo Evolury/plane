@@ -36,7 +36,7 @@
     "empty_state": "Nenhuma tarefa atribuída a você neste espaço de trabalho ainda.",
     "stages": {
       "title": "Etapas",
-      "description": "Crie, edite e reordene suas etapas pessoais. Excluir uma etapa move os itens dela para a etapa padrão."
+      "description": "Crie, edite e reordene suas etapas pessoais. Excluir uma etapa move os itens dela para a entrada."
     },
     "stage_label": "Etapa",
     "empty_title": "Nada atribuído a você ainda",

@@ -4,9 +4,19 @@
  * See the LICENSE file for details.
  */
 
-import type { TBaldeDeVencimento } from "./my-tasks";
-
 export type TStateGroups = "backlog" | "unstarted" | "started" | "completed" | "cancelled";
+
+/**
+ * Evolury: os quatro baldes de vencimento (ADR 0014).
+ *
+ * Mora AQUI, e não em `my-tasks.ts`, por uma razão que custou caro: `my-tasks`
+ * já importa `TStateGroups` daqui, então declará-lo lá fechava um ciclo entre os
+ * dois arquivos. `import type` deveria ser apagado na compilação e não gerar
+ * ciclo em execução — mas gerou, e o sintoma não apareceu em teste nenhum: a
+ * página de projeto quebrava com "Cannot access 'o' before initialization",
+ * dentro de um chunk sem relação aparente com etapas.
+ */
+export type TBaldeDeVencimento = "hoje" | "amanha" | "depois" | "vencidas";
 
 export interface IState {
   readonly id: string;
@@ -51,6 +61,29 @@ export type TStateOperationsCallbacks = {
   markStageBucket?: (stageId: string, balde: TBaldeDeVencimento, ativo: boolean) => Promise<void>;
   getStageBucketInfo?: (stageId: string) => TMarcacoesDaEtapa;
   toggleStageAutomation?: (stageId: string, desativada: boolean) => Promise<void>;
+  /**
+   * Evolury: esta etapa pode ser excluída?
+   *
+   * Opcional pelo mesmo motivo dos outros: só "Minhas tarefas" sabe responder.
+   * Sem ele, vale a regra herdada — desabilitar a padrão e a última que sobrar.
+   *
+   * Quando responde `false`, o controle de excluir **não é desenhado**, e não
+   * apenas desabilitado: botão cinza que não faz nada é convite a tentar.
+   */
+  canDeleteStage?: (stageId: string) => boolean;
+  /**
+   * Evolury: como esta tela chama a etapa que recebe o que chega.
+   *
+   * Em Configurações → Estados isso é o "padrão"; em "Minhas tarefas" é a
+   * **entrada** — o lugar por onde a tarefa entra. Mesma mecânica, nomes
+   * diferentes, e o componente compartilhado não deve escolher por ninguém.
+   *
+   * Viaja neste objeto, e não como propriedade própria, porque a alternativa
+   * seria atravessar quatro componentes com uma prop só para trocar um
+   * substantivo. O objeto já carrega getters além de ações — `getStageBucketInfo`
+   * e `getCompletionStateInfo` estão aqui pelo mesmo motivo.
+   */
+  rotulosDaEntrada?: { atual: string; acao: string; salvando: string };
 };
 
 /** Evolury: o que a linha da etapa mostra sobre a varredura (ADR 0014). */

@@ -15,10 +15,12 @@ type TStateMarksAsDefault = {
   stateId: string;
   isDefault: boolean;
   markStateAsDefaultCallback: TStateOperationsCallbacks["markStateAsDefault"];
+  /** Evolury: "padrão" no projeto, "entrada" em Minhas tarefas. */
+  rotulos?: TStateOperationsCallbacks["rotulosDaEntrada"];
 };
 
 export const StateMarksAsDefault = observer(function StateMarksAsDefault(props: TStateMarksAsDefault) {
-  const { stateId, isDefault, markStateAsDefaultCallback } = props;
+  const { stateId, isDefault, markStateAsDefaultCallback, rotulos } = props;
   // Evolury: os três rótulos estavam cravados em inglês
   const { t } = useTranslation();
   // states
@@ -47,10 +49,10 @@ export const StateMarksAsDefault = observer(function StateMarksAsDefault(props: 
       onClick={handleMarkAsDefault}
     >
       {isLoading
-        ? t("project_settings.states.default.marking")
+        ? (rotulos?.salvando ?? t("project_settings.states.default.marking"))
         : isDefault
-          ? t("project_settings.states.default.label")
-          : t("project_settings.states.default.mark")}
+          ? (rotulos?.atual ?? t("project_settings.states.default.label"))
+          : (rotulos?.acao ?? t("project_settings.states.default.mark"))}
     </button>
   );
 });

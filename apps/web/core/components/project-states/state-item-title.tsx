@@ -40,6 +40,8 @@ type TEnabledStateItemTitleProps = TBaseStateItemTitleProps & {
     | "markStageBucket"
     | "getStageBucketInfo"
     | "toggleStageAutomation"
+    | "canDeleteStage"
+    | "rotulosDaEntrada"
   >;
   shouldTrackEvents: boolean;
 };
@@ -82,13 +84,25 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
           INFORMAÇÃO — saber qual etapa recebe as vencidas não pode exigir
           passar o mouse por oito linhas. Quem some no hover é só o que está
           desmarcado; ver `StageBuckets`. */}
+      {/* Evolury: nada disso faz sentido num grupo de encerramento — e não é só
+          questão de lógica. A varredura filtra pelo grupo do ESTADO DA TAREFA,
+          não do da etapa: marcar "Concluídas" como destino de hoje jogaria uma
+          tarefa ABERTA na coluna das concluídas. A entrada, idem — o que chega
+          não chega pronto. O servidor recusa os dois; aqui os controles nem
+          aparecem. O marcador de conclusão continua, que é o que pertence a
+          este grupo. */}
       {!disabled &&
+        state.group !== "completed" &&
+        state.group !== "cancelled" &&
         props.stateOperationsCallbacks.markStageBucket &&
         props.stateOperationsCallbacks.getStageBucketInfo &&
         props.stateOperationsCallbacks.toggleStageAutomation && (
           <StageBuckets
             stageId={state.id}
             marcacoes={props.stateOperationsCallbacks.getStageBucketInfo(state.id)}
+            ehEntrada={!!state.default}
+            onMarcarEntrada={() => props.stateOperationsCallbacks.markStateAsDefault(state.id)}
+            rotulosDaEntrada={props.stateOperationsCallbacks.rotulosDaEntrada}
             onMarcar={(balde, ativo) => props.stateOperationsCallbacks.markStageBucket!(state.id, balde, ativo)}
             onAlternarAutomacao={(desativada) =>
               props.stateOperationsCallbacks.toggleStageAutomation!(state.id, desativada)
@@ -109,14 +123,21 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
                 />
               </div>
             )}
-          {/* state mark as default option */}
-          <div className="flex-shrink-0 text-11 transition-all">
-            <StateMarksAsDefault
-              stateId={state.id}
-              isDefault={state.default ? true : false}
-              markStateAsDefaultCallback={props.stateOperationsCallbacks.markStateAsDefault}
-            />
-          </div>
+          {/* state mark as default option — Evolury: só onde NÃO há a fila de
+              marcadores (Configurações → Estados). Em "Minhas tarefas" a
+              entrada é uma marcação como as outras e mora junto delas, com o
+              mesmo visual; manter as duas mostraria a mesma informação duas
+              vezes, uma delas escondida no hover. */}
+          {!props.stateOperationsCallbacks.getStageBucketInfo && (
+            <div className="flex-shrink-0 text-11 transition-all">
+              <StateMarksAsDefault
+                stateId={state.id}
+                isDefault={state.default ? true : false}
+                markStateAsDefaultCallback={props.stateOperationsCallbacks.markStateAsDefault}
+                rotulos={props.stateOperationsCallbacks.rotulosDaEntrada}
+              />
+            </div>
+          )}
           {/* state edit options */}
           <div className="flex items-center gap-1 transition-all">
             <button
@@ -126,12 +147,18 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
             >
               <EditIcon className="h-3 w-3" />
             </button>
-            <StateDelete
-              totalStates={stateCount}
-              state={state}
-              deleteStateCallback={props.stateOperationsCallbacks.deleteState}
-              shouldTrackEvents={props.shouldTrackEvents}
-            />
+            {/* Evolury: quem não pode ser excluída não mostra o controle.
+                Antes ele aparecia cinza, e cinza-que-não-faz-nada é convite a
+                tentar — a pessoa clica, nada acontece, e ela não descobre por
+                quê. Sem o callback, vale a regra herdada. */}
+            {(props.stateOperationsCallbacks.canDeleteStage?.(state.id) ?? true) && (
+              <StateDelete
+                totalStates={stateCount}
+                state={state}
+                deleteStateCallback={props.stateOperationsCallbacks.deleteState}
+                shouldTrackEvents={props.shouldTrackEvents}
+              />
+            )}
           </div>
         </div>
       )}
