@@ -8,6 +8,7 @@ import base64
 
 # Module imports
 from .base import BaseSerializer
+from .user import UserLiteSerializer
 from plane.utils.content_validator import (
     validate_binary_data,
     validate_html_content,
@@ -15,6 +16,7 @@ from plane.utils.content_validator import (
 from plane.db.models import (
     Page,
     PageLabel,
+    PageShare,
     Label,
     ProjectPage,
     Project,
@@ -229,3 +231,14 @@ class PageBinaryUpdateSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+
+class PageShareSerializer(BaseSerializer):
+    """Evolury: uma linha de "esta página pessoal também é vista por" (ADR 0015)."""
+
+    shared_with_detail = UserLiteSerializer(read_only=True, source="shared_with")
+
+    class Meta:
+        model = PageShare
+        fields = ["id", "page", "shared_with", "shared_with_detail", "role", "created_at"]
+        read_only_fields = ["id", "page", "created_at"]

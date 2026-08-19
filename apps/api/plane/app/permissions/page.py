@@ -4,7 +4,7 @@
 
 from django.db.models import Exists, OuterRef
 
-from plane.db.models import ProjectMember, ProjectPage, Page, WorkspaceMember
+from plane.db.models import ProjectMember, ProjectPage, Page, PageShare, WorkspaceMember
 from plane.app.permissions import ROLE
 
 
@@ -145,11 +145,23 @@ class PersonalPagePermission(BasePermission):
     """
     Evolury — página pessoal: mora no workspace e não pertence a projeto nenhum.
 
-    A regra é o dono, e não papel de projeto (não há projeto) nem papel de
-    workspace (admin de workspace não lê o caderno pessoal de ninguém). Quem não
-    é dono recebe 404 e não 403: 403 confirmaria que a página existe.
+    O acesso tem duas fontes e só duas: ser o dono, ou ter uma linha em
+    `PageShare`. Papel de projeto não existe (não há projeto) e papel de
+    workspace não vale — administrador de workspace não lê o caderno pessoal de
+    ninguém. Quem não tem nenhuma das duas recebe 404 e não 403: 403 confirmaria
+    que a página existe.
 
-    Ver ADR 0015.
+    O método diz o que a pessoa está tentando fazer, e é por ele que o papel
+    decide:
+
+    | método      | dono | pode editar | pode ler |
+    | ----------- | ---- | ----------- | -------- |
+    | GET         | sim  | sim         | sim      |
+    | PATCH       | sim  | sim         | não      |
+    | POST/DELETE | sim  | não         | não      |
+
+    POST e DELETE nesta API são bloquear, arquivar, duplicar e excluir — todos
+    privilégio do dono, mesmo para quem pode editar. Ver ADR 0015.
     """
 
     def has_permission(self, request, view):
@@ -176,9 +188,23 @@ class PersonalPagePermission(BasePermission):
         )
         # 404 e não 403 de propósito: negar com 403 responde "existe, mas não é
         # sua", que é informação sobre a página de outra pessoa.
-        if page is None or page.owned_by_id != request.user.id:
+        if page is None:
             raise NotFound()
 
         # Guardado para a view não repetir a consulta.
         request.pagina_pessoal = page
-        return True
+
+        if page.owned_by_id == request.user.id:
+            request.papel_na_pagina = "dono"
+            return True
+
+        compartilhamento = PageShare.objects.filter(page_id=page.id, shared_with=request.user).first()
+        if compartilhamento is None:
+            raise NotFound()
+
+        request.papel_na_pagina = compartilhamento.role
+        if request.method in SAFE_METHODS:
+            return True
+        if request.method in ("PUT", "PATCH"):
+            return compartilhamento.role >= PageShare.WRITE
+        return False

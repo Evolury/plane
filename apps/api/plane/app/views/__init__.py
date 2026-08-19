@@ -197,6 +197,8 @@ from .page.personal import (
     PersonalPageDescriptionViewSet,
     PersonalPageVersionEndpoint,
     PersonalPageDuplicateEndpoint,
+    PersonalPageShareViewSet,
+    SharedWithMeEndpoint,
 )
 
 from .search.base import GlobalSearchEndpoint, SearchEndpoint

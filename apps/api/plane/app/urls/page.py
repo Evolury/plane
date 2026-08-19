@@ -15,6 +15,8 @@ from plane.app.views import (
     PersonalPageDescriptionViewSet,
     PersonalPageVersionEndpoint,
     PersonalPageDuplicateEndpoint,
+    PersonalPageShareViewSet,
+    SharedWithMeEndpoint,
 )
 
 urlpatterns = [
@@ -121,5 +123,20 @@ urlpatterns = [
         "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/duplicate/",
         PersonalPageDuplicateEndpoint.as_view(),
         name="personal-page-duplicate",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/shares/",
+        PersonalPageShareViewSet.as_view({"get": "list", "post": "create"}),
+        name="personal-page-shares",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/shares/<uuid:pk>/",
+        PersonalPageShareViewSet.as_view({"delete": "destroy"}),
+        name="personal-page-share",
+    ),
+    path(
+        "workspaces/<str:slug>/my-tasks/shared-pages/",
+        SharedWithMeEndpoint.as_view(),
+        name="personal-pages-shared-with-me",
     ),
 ]

@@ -36,6 +36,7 @@ from plane.app.serializers import (
     PageBinaryUpdateSerializer,
     PageDetailSerializer,
     PageSerializer,
+    PageShareSerializer,
     PageVersionDetailSerializer,
     PageVersionSerializer,
 )
@@ -46,11 +47,13 @@ from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.db.models import (
     Page,
     PageLog,
+    PageShare,
     PageVersion,
     ProjectPage,
     UserFavorite,
     UserRecentVisit,
     Workspace,
+    WorkspaceMember,
 )
 from plane.utils.error_codes import ERROR_CODES
 
@@ -73,6 +76,17 @@ def paginas_pessoais(slug, user):
     )
 
 
+def paginas_compartilhadas_comigo(slug, user):
+    """Páginas pessoais **de outras pessoas** compartilhadas com `user`."""
+    return (
+        Page.objects.filter(workspace__slug=slug, shares__shared_with=user, shares__deleted_at__isnull=True)
+        .annotate(em_projeto=Exists(ProjectPage.objects.filter(page_id=OuterRef("pk"))))
+        .filter(em_projeto=False)
+        .exclude(owned_by=user)
+        .distinct()
+    )
+
+
 class PersonalPageViewSet(BaseViewSet):
     serializer_class = PageSerializer
     model = Page
@@ -86,9 +100,13 @@ class PersonalPageViewSet(BaseViewSet):
             entity_identifier=OuterRef("pk"),
             workspace__slug=self.kwargs.get("slug"),
         )
+        slug = self.kwargs.get("slug")
+        alcance = Page.objects.filter(
+            Q(pk__in=paginas_pessoais(slug, self.request.user).values("pk"))
+            | Q(pk__in=paginas_compartilhadas_comigo(slug, self.request.user).values("pk"))
+        )
         return self.filter_queryset(
-            paginas_pessoais(self.kwargs.get("slug"), self.request.user)
-            .filter(parent__isnull=True)
+            alcance.filter(parent__isnull=True)
             .select_related("workspace", "owned_by")
             .prefetch_related("labels")
             .annotate(is_favorite=Exists(favorita))
@@ -108,7 +126,8 @@ class PersonalPageViewSet(BaseViewSet):
         )
 
     def list(self, request, slug):
-        return Response(PageSerializer(self.get_queryset(), many=True).data, status=status.HTTP_200_OK)
+        minhas = self.get_queryset().filter(owned_by=request.user)
+        return Response(PageSerializer(minhas, many=True).data, status=status.HTTP_200_OK)
 
     def create(self, request, slug):
         workspace = Workspace.objects.filter(slug=slug).first()
@@ -321,3 +340,89 @@ class PersonalPageDuplicateEndpoint(BaseAPIView):
             .first()
         )
         return Response(PageDetailSerializer(copia).data, status=status.HTTP_201_CREATED)
+
+
+class PersonalPageShareViewSet(BaseViewSet):
+    """Com quem esta página pessoal é dividida (ADR 0015).
+
+    Compartilhar é privilégio do dono, mesmo para quem recebeu "pode editar" —
+    sem isso, "compartilhei com uma pessoa" viraria "compartilhei com quem ela
+    quiser". A `PersonalPagePermission` já barra POST e DELETE de quem não é
+    dono; a checagem aqui é a mesma coisa dita para o GET, que ela deixa passar.
+    """
+
+    permission_classes = [PersonalPagePermission]
+
+    def _so_o_dono(self, request):
+        return request.pagina_pessoal.owned_by_id == request.user.id
+
+    def list(self, request, slug, page_id):
+        if not self._so_o_dono(request):
+            return Response(
+                {"error": "Só o dono vê com quem a página está compartilhada"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        compartilhamentos = PageShare.objects.filter(page_id=page_id).select_related("shared_with")
+        return Response(PageShareSerializer(compartilhamentos, many=True).data, status=status.HTTP_200_OK)
+
+    def create(self, request, slug, page_id):
+        page = request.pagina_pessoal
+        com_quem = request.data.get("shared_with")
+        papel = int(request.data.get("role", PageShare.READ))
+
+        if papel not in (PageShare.READ, PageShare.WRITE):
+            return Response({"error": "Papel inválido"}, status=status.HTTP_400_BAD_REQUEST)
+        if not com_quem:
+            return Response({"error": "Informe com quem compartilhar"}, status=status.HTTP_400_BAD_REQUEST)
+        if str(com_quem) == str(request.user.id):
+            return Response({"error": "A página já é sua"}, status=status.HTTP_400_BAD_REQUEST)
+        if not WorkspaceMember.objects.filter(
+            workspace__slug=slug, member_id=com_quem, is_active=True
+        ).exists():
+            return Response(
+                {"error": "Só dá para compartilhar com quem está no espaço de trabalho"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        compartilhamento, criado = PageShare.objects.get_or_create(
+            page_id=page.id,
+            shared_with_id=com_quem,
+            defaults={"workspace_id": page.workspace_id, "role": papel},
+        )
+        if not criado and compartilhamento.role != papel:
+            compartilhamento.role = papel
+            compartilhamento.save(update_fields=["role"])
+
+        return Response(
+            PageShareSerializer(compartilhamento).data,
+            status=status.HTTP_201_CREATED if criado else status.HTTP_200_OK,
+        )
+
+    def destroy(self, request, slug, page_id, pk):
+        compartilhamento = PageShare.objects.filter(page_id=page_id, pk=pk).first()
+        if compartilhamento is None:
+            return Response({"error": "Compartilhamento não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        compartilhamento.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SharedWithMeEndpoint(BaseAPIView):
+    """A aba "Compartilhado comigo": páginas pessoais de outras pessoas."""
+
+    def get(self, request, slug):
+        if not WorkspaceMember.objects.filter(
+            workspace__slug=slug, member=request.user, is_active=True
+        ).exists():
+            return Response({"error": "Fora do espaço de trabalho"}, status=status.HTTP_403_FORBIDDEN)
+
+        paginas = (
+            paginas_compartilhadas_comigo(slug, request.user)
+            .filter(parent__isnull=True)
+            .select_related("workspace", "owned_by")
+            .annotate(
+                label_ids=Value([], output_field=ArrayField(UUIDField())),
+                project_ids=Value([], output_field=ArrayField(UUIDField())),
+            )
+            .order_by("-updated_at")
+        )
+        return Response(PageSerializer(paginas, many=True).data, status=status.HTTP_200_OK)

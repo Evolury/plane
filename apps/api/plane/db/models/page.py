@@ -155,6 +155,43 @@ class ProjectPage(BaseModel):
         return f"{self.project.name} {self.page.name}"
 
 
+class PageShare(BaseModel):
+    """Evolury: quem, além do dono, enxerga uma página pessoal (ADR 0015).
+
+    Só vale para página **sem** projeto: página de projeto tira acesso da
+    participação no projeto, e deixar as duas fontes conviverem faria a pergunta
+    "quem pode ler isto?" ter duas respostas que podem divergir. A trava mora na
+    view, porque depende de consultar `ProjectPage`.
+    """
+
+    READ = 5
+    WRITE = 15
+    ROLE_CHOICES = ((READ, "Pode ler"), (WRITE, "Pode editar"))
+
+    workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="page_shares")
+    page = models.ForeignKey("db.Page", on_delete=models.CASCADE, related_name="shares")
+    shared_with = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shared_pages"
+    )
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=READ)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["page", "shared_with"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="page_share_unique_page_person_when_deleted_at_null",
+            )
+        ]
+        verbose_name = "Page Share"
+        verbose_name_plural = "Page Shares"
+        db_table = "page_shares"
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.page.name} -> {self.shared_with.email}"
+
+
 class PageVersion(BaseModel):
     workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="page_versions")
     page = models.ForeignKey("db.Page", on_delete=models.CASCADE, related_name="page_versions")
