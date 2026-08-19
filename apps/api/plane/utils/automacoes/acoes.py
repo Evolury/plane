@@ -34,6 +34,7 @@ from django.utils import timezone
 from django.utils.html import escape
 
 # Module imports
+from plane.utils.responsavel import apenas_um
 from plane.db.models import Issue, IssueProperty, Label, State, User
 from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
 from plane.utils.tempo_real import publicar_notificacao
@@ -236,9 +237,11 @@ def _mudar_responsaveis(tarefa, config, contexto):
     atuais = list(
         tarefa.issue_assignee.filter(deleted_at__isnull=True).values_list("assignee_id", flat=True)
     )
-    nova = _nova_lista(atuais, pedidos, modo)
-    if nova is None:
-        return _resultado("set_assignees", SEM_EFEITO, "os responsáveis já eram estes")
+    # Evolury: uma tarefa tem um responsável (ADR 0016). O modo "add" deixou de
+    # acumular — soma e fica o último, que é a mesma regra das outras portas.
+    nova = apenas_um(_nova_lista(atuais, pedidos, modo))
+    if nova is None or nova == list(atuais):
+        return _resultado("set_assignees", SEM_EFEITO, "o responsável já era este")
     return _gravar(
         tarefa,
         {"assignee_ids": nova},
@@ -793,7 +796,9 @@ def _copiar_responsaveis(origem, nova, config, contexto):
         return
     from plane.db.models import IssueAssignee
 
-    pessoas = list(origem.issue_assignee.filter(deleted_at__isnull=True).values_list("assignee_id", flat=True))
+    pessoas = apenas_um(
+        list(origem.issue_assignee.filter(deleted_at__isnull=True).values_list("assignee_id", flat=True))
+    )
     if not pessoas:
         return
     IssueAssignee.objects.bulk_create(

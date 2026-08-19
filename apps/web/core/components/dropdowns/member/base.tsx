@@ -33,6 +33,12 @@ type TMemberDropdownBaseProps = {
   renderByDefault?: boolean;
 } & MemberDropdownProps;
 
+/** Quantas pessoas o valor representa — vetor ou um só. */
+const contagemDeGente = (valor: string | string[] | null | undefined, t: (chave: string) => string) => {
+  const quantas = Array.isArray(valor) ? valor.length : valor ? 1 : 0;
+  return `${quantas} ${quantas === 1 ? t("assignee") : t("assignees")}`;
+};
+
 export const MemberDropdownBase = observer(function MemberDropdownBase(props: TMemberDropdownBaseProps) {
   const { t } = useTranslation();
   const {
@@ -60,7 +66,6 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
     showUserDetails = false,
     tabIndex,
     tooltipContent,
-    workItemId,
     value,
   } = props;
   // refs
@@ -101,11 +106,11 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
         return placeholder;
       }
     } else {
-      if (showUserDetails && value) {
-        return getUserDetails(value)?.display_name || placeholder;
-      } else {
-        return placeholder;
-      }
+      // Evolury: valor único mostra o nome sempre. `showUserDetails` decide se
+      // um conjunto vira "N membros" — não tem nada a ver com esconder o nome
+      // de uma pessoa só, e usá-lo aqui fazia o botão pedir "Definir
+      // responsável" com o responsável já definido (ADR 0016).
+      return value ? getUserDetails(value)?.display_name || placeholder : placeholder;
     }
   };
 
@@ -143,7 +148,9 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
             isActive={isOpen}
             tooltipHeading={placeholder}
             tooltipContent={
-              tooltipContent ?? `${value?.length ?? 0} ${value?.length !== 1 ? t("assignees") : t("assignee")}`
+              // `value.length` numa string dá o tamanho do UUID: 36. A contagem
+              // tem de olhar o formato antes de contar.
+              tooltipContent ?? contagemDeGente(value, t)
             }
             showTooltip={showTooltip}
             variant={buttonVariant}
@@ -185,7 +192,6 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
           placement={placement}
           referenceElement={referenceElement}
           value={value}
-          workItemId={workItemId}
         />
       )}
     </ComboDropDown>

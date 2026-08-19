@@ -31,7 +31,7 @@
       "progress": "Progress",
       "chart": "Burndown chart",
       "priority_issue": "Priority work items",
-      "assignees": "Assignees",
+      "assignees": "Assignee",
       "issue_burndown": "Work item burndown",
       "ideal": "Ideal",
       "current": "Current",

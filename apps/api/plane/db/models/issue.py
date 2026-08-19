@@ -357,7 +357,14 @@ class IssueAssignee(ProjectBaseModel):
                 fields=["issue", "assignee"],
                 condition=Q(deleted_at__isnull=True),
                 name="issue_assignee_unique_issue_assignee_when_deleted_at_null",
-            )
+            ),
+            # Evolury: uma tarefa tem UM responsável (ADR 0016). A garantia mora
+            # aqui, e não na tela: vale para API, importação e SQL direto.
+            models.UniqueConstraint(
+                fields=["issue"],
+                condition=Q(deleted_at__isnull=True),
+                name="issue_assignee_um_responsavel_por_tarefa",
+            ),
         ]
         verbose_name = "Issue Assignee"
         verbose_name_plural = "Issue Assignees"

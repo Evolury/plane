@@ -151,7 +151,13 @@ class DraftIssueAssignee(WorkspaceBaseModel):
                 fields=["draft_issue", "assignee"],
                 condition=models.Q(deleted_at__isnull=True),
                 name="draft_issue_assignee_unique_issue_assignee_when_deleted_at_null",
-            )
+            ),
+            # Evolury: mesma regra da tarefa — um responsável (ADR 0016).
+            models.UniqueConstraint(
+                fields=["draft_issue"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="draft_issue_assignee_um_responsavel_por_rascunho",
+            ),
         ]
         verbose_name = "Draft Issue Assignee"
         verbose_name_plural = "Draft Issue Assignees"

@@ -291,7 +291,7 @@
     "action_option": {
       "set_state": "Mudar o estado",
       "set_priority": "Mudar a prioridade",
-      "set_assignees": "Mudar responsáveis",
+      "set_assignees": "Definir responsável",
       "set_labels": "Mudar etiquetas",
       "set_date": "Definir data",
       "set_property": "Preencher propriedade",
@@ -307,7 +307,7 @@
     "field": {
       "state": "Estado",
       "priority": "Prioridade",
-      "assignee": "Responsáveis",
+      "assignee": "Responsável",
       "label": "Etiquetas",
       "start_date": "Data de início",
       "target_date": "Data de vencimento",
@@ -386,7 +386,7 @@
     "archive_hint": "Arquiva a tarefa. Só vale para tarefa concluída ou cancelada.",
     "cycle_hint": "Inclui a tarefa no ciclo ativo do projeto no momento da execução.",
     "notify_target": {
-      "assignees": "os responsáveis"
+      "assignees": "o responsável"
     },
     "schedule": {
       "frequency": "Frequência",
@@ -409,7 +409,7 @@
     "create_name_placeholder": "Nome da tarefa que será criada",
     "subtask_placeholder": "Nome da subtarefa",
     "add_subtask": "Acrescentar subtarefa",
-    "inherit_assignees": "Herdar responsáveis da tarefa",
+    "inherit_assignees": "Herdar o responsável da tarefa",
     "due_in_days": "Vencer em (dias)",
     "create_idempotency_hint": "Esta regra cria o checklist uma vez por tarefa. Disparar de novo não duplica.",
     "include_recurring": "Valer também para tarefas de recorrência",

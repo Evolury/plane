@@ -13,7 +13,7 @@ import { useMember } from "@/hooks/store/use-member";
 import { MemberDropdownBase } from "./base";
 import type { MemberDropdownProps } from "./types";
 
-type TMemberDropdownProps = {
+export type TMemberDropdownProps = {
   icon?: LucideIcon;
   memberIds?: string[];
   onClose?: () => void;

@@ -4,6 +4,11 @@
 - **Contexto:** funcionalidade [automacao](../funcionalidades/automacao/especificacao.md)
 - **Relacionado:** [ADR 0006](0006-fusos-do-brasil.md) (fuso), [ADR 0009](0009-botao-concluir-tarefa.md) (conclusão), [ADR 0010](0010-tarefas-recorrentes.md) (recorrência), [ADR 0011](0011-propriedades-personalizadas.md) (propriedades)
 
+> **Atualização (19/08/2026, [ADR 0016](0016-um-responsavel-por-tarefa.md)):** a
+> ação de responsável passou a oferecer **uma** pessoa e perdeu o modo "somar" —
+> com um responsável por tarefa, somar e definir são a mesma coisa. A variável
+> `{{responsável}}` deixou de juntar nomes.
+
 ## Contexto
 
 O menu **Configurações → Execução → Automações** entrega duas caixas de seleção

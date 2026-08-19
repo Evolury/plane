@@ -302,8 +302,9 @@ class TestGeracao:
         saiu = User.objects.create(email="saiu@evolury.com.br", username="saiu")
         vinculo = ProjectMember.objects.create(project=projeto, member=saiu, role=15, is_active=True)
         origem = _origem(projeto, create_user)
-        for pessoa in (create_user, saiu):
-            IssueAssignee.objects.create(issue=origem, assignee=pessoa, project=projeto, workspace=projeto.workspace)
+        # Uma tarefa tem um responsável (ADR 0016): a origem fica com quem vai
+        # sair, e a cópia tem de nascer sem ele.
+        IssueAssignee.objects.create(issue=origem, assignee=saiu, project=projeto, workspace=projeto.workspace)
         _concluir(origem)
         regra = _regra(projeto, create_user, origem=origem)
         agendar_proxima_data(regra, a_partir_de=_em_sp(2026, 8, 13))
@@ -312,9 +313,9 @@ class TestGeracao:
         vinculo.save(update_fields=["is_active"])
         tarefa = processar_regra(regra, agora=_em_sp(2026, 8, 17, 8, 5))
 
-        assert list(tarefa.assignees.all()) == [create_user]
+        assert saiu not in tarefa.assignees.all()
         # E a origem continua como está: consertar a raiz é decisão de gente.
-        assert IssueAssignee.objects.filter(issue=origem).count() == 2
+        assert list(IssueAssignee.objects.filter(issue=origem).values_list("assignee_id", flat=True)) == [saiu.id]
 
     @pytest.mark.django_db
     @mock.patch("plane.bgtasks.recurring_work_item_task.issue_activity.delay")

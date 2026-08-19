@@ -17,7 +17,7 @@ import { CycleDropdown } from "@/components/dropdowns/cycle";
 import { DateDropdown } from "@/components/dropdowns/date";
 import { EstimateDropdown } from "@/components/dropdowns/estimate";
 import { IntakeStateDropdown } from "@/components/dropdowns/intake-state/dropdown";
-import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
+import { AssigneeDropdown } from "@/components/dropdowns/member/assignee";
 import { ModuleDropdown } from "@/components/dropdowns/module/dropdown";
 import { PriorityDropdown } from "@/components/dropdowns/priority";
 import { ParentIssuesListModal } from "@/components/issues/parent-issues-list-modal";
@@ -81,14 +81,13 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
 
       {/* Assignees */}
       <div className="h-7">
-        <MemberDropdown
+        <AssigneeDropdown
           projectId={projectId}
           value={data?.assignee_ids || []}
           onChange={(assigneeIds) => handleData("assignee_ids", assigneeIds)}
           buttonVariant={(data?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "border-with-text"}
           buttonClassName={(data?.assignee_ids || [])?.length > 0 ? "hover:bg-transparent" : ""}
-          placeholder={t("assignees")}
-          multiple
+          placeholder={t("assignee")}
           tabIndex={getIndex("assignee_ids")}
         />
       </div>

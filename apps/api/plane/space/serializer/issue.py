@@ -16,6 +16,7 @@ from .project import ProjectLiteSerializer
 from .cycle import CycleBaseSerializer
 from .module import ModuleBaseSerializer
 from .workspace import WorkspaceLiteSerializer
+from plane.utils.responsavel import apenas_um
 from plane.db.models import (
     User,
     Issue,
@@ -301,7 +302,8 @@ class IssueCreateSerializer(BaseSerializer):
         return data
 
     def create(self, validated_data):
-        assignees = validated_data.pop("assignees", None)
+        # Evolury: um responsável por tarefa (ADR 0016).
+        assignees = apenas_um(validated_data.pop("assignees", None))
         labels = validated_data.pop("labels", None)
 
         project_id = self.context["project_id"]
@@ -360,7 +362,8 @@ class IssueCreateSerializer(BaseSerializer):
         return issue
 
     def update(self, instance, validated_data):
-        assignees = validated_data.pop("assignees", None)
+        # Evolury: um responsável por tarefa (ADR 0016).
+        assignees = apenas_um(validated_data.pop("assignees", None))
         labels = validated_data.pop("labels", None)
 
         # Related models

@@ -379,24 +379,41 @@ class TestMyTasksIssues:
         assigned_issue.refresh_from_db()
         assert assigned_issue.sort_order == issue_sort_order_before
 
-    def test_annotation_is_per_user(
+    def test_a_etapa_anotada_e_a_de_quem_pergunta(
         self, session_client, second_client, workspace, project, create_user, second_user, assigned_issue
     ):
-        """O mesmo item aparece em etapas diferentes para usuários diferentes."""
-        IssueAssignee.objects.create(
-            issue=assigned_issue, assignee=second_user, project=project, workspace=workspace
-        )
+        """Cada pessoa vê a sua tarefa na sua etapa — e não vê a da outra.
+
+        Este teste já provou outra coisa: que **o mesmo item** aparecia em
+        etapas diferentes para pessoas diferentes. Deixou de ser possível quando
+        a tarefa passou a ter um responsável só (ADR 0016) — o overlay pessoal
+        continua por pessoa, mas cada tarefa só alcança uma. O que restou para
+        prender é que a anotação segue quem pergunta, e não a primeira linha que
+        o banco devolver.
+        """
         ProjectMember.objects.create(project=project, member=second_user, role=15, is_active=True)
+        da_outra = Issue.objects.create(
+            name="Da outra", project=project, workspace=workspace, created_by=second_user
+        )
+        IssueAssignee.objects.create(
+            issue=da_outra, assignee=second_user, project=project, workspace=workspace
+        )
         first_stages = seed_stages(workspace, create_user)
         second_stages = seed_stages(workspace, second_user)
         WorkStageIssue.objects.create(
             workspace=workspace, owner=create_user, stage=first_stages["Para Hoje (fila)"], issue=assigned_issue
         )
+        WorkStageIssue.objects.create(
+            workspace=workspace, owner=second_user, stage=second_stages["Para Depois"], issue=da_outra
+        )
 
-        first = session_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"][0]
-        second = second_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"][0]
-        assert first["my_task_stage_id"] == first_stages["Para Hoje (fila)"].id
-        assert second["my_task_stage_id"] == second_stages["Recentes"].id
+        primeiro = session_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"]
+        segundo = second_client.get(ISSUES_URL.format(slug=workspace.slug)).data["results"]
+
+        assert [item["id"] for item in primeiro] == [assigned_issue.id]
+        assert [item["id"] for item in segundo] == [da_outra.id]
+        assert primeiro[0]["my_task_stage_id"] == first_stages["Para Hoje (fila)"].id
+        assert segundo[0]["my_task_stage_id"] == second_stages["Para Depois"].id
 
     def test_grouped_by_stage(self, session_client, workspace, create_user, assigned_issue):
         stages = seed_stages(workspace, create_user)
