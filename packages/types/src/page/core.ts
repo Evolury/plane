@@ -76,7 +76,8 @@ export type TDocumentPayload = {
 };
 
 export type TWebhookConnectionQueryParams = {
-  documentType: "project_page" | "team_page" | "workspace_page";
+  // Evolury: `personal_page` é a página de "Minhas tarefas" (ADR 0015).
+  documentType: "project_page" | "team_page" | "workspace_page" | "personal_page";
   projectId?: string;
   teamId?: string;
   workspaceSlug: string;

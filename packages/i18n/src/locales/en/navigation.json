@@ -40,6 +40,20 @@
     },
     "stage_label": "Stage",
     "empty_title": "Nothing assigned to you yet",
-    "stage_in_my_tasks": "Stage in My tasks"
+    "stage_in_my_tasks": "Stage in My tasks",
+    "tabs": {
+      "tasks": "Tasks",
+      "pages": "Pages"
+    },
+    "pages": {
+      "new": "New page",
+      "creating": "Creating…",
+      "empty_title": "No pages of your own yet",
+      "empty_description": "Pages in My tasks are yours: meeting notes, drafts, a checklist that does not belong to any project yet.",
+      "empty_archived_title": "No archived pages",
+      "empty_archived_description": "Pages you archive show up here.",
+      "archived": "Archived",
+      "create_failed": "Could not create the page."
+    }
   }
 }

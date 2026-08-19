@@ -107,6 +107,15 @@ export const coreRoutes: RouteConfigEntry[] = [
         // Evolury: minhas tarefas
         layout("./(all)/[workspaceSlug]/(projects)/my-tasks/layout.tsx", [
           route(":workspaceSlug/my-tasks", "./(all)/[workspaceSlug]/(projects)/my-tasks/page.tsx"),
+          route(":workspaceSlug/my-tasks/pages", "./(all)/[workspaceSlug]/(projects)/my-tasks/pages/page.tsx"),
+        ]),
+        // Evolury: o editor de página pessoal fica fora do layout acima —
+        // cabeçalho próprio, sem as abas nem os controles de tarefa.
+        layout("./(all)/[workspaceSlug]/(projects)/my-tasks/pages/(detail)/layout.tsx", [
+          route(
+            ":workspaceSlug/my-tasks/pages/:pageId",
+            "./(all)/[workspaceSlug]/(projects)/my-tasks/pages/(detail)/[pageId]/page.tsx"
+          ),
         ]),
 
         // Workspace Views
