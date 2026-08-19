@@ -50,6 +50,7 @@ from plane.db.models import (
 )
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.utils.exception_logger import log_exception
+from plane.utils.responsavel import apenas_um
 from plane.utils.recurrence import data_apos_conclusao, proxima_data
 from plane.utils.subtask_tree import ids_da_arvore
 
@@ -167,9 +168,15 @@ def _copiar_relacionados(origem, copia, regra, ativos=None, usar_padrao=False):
     """Responsáveis e etiquetas — descrevem o trabalho, então acompanham."""
     if ativos is None:
         ativos = _responsaveis_ativos(regra)
-    responsaveis = [
-        vinculo.assignee_id for vinculo in IssueAssignee.objects.filter(issue=origem) if vinculo.assignee_id in ativos
-    ]
+    # Evolury: um responsável por tarefa (ADR 0016) — a origem já só tem um,
+    # mas normalizar aqui evita que a cópia viole a trava se a origem for antiga.
+    responsaveis = apenas_um(
+        [
+            vinculo.assignee_id
+            for vinculo in IssueAssignee.objects.filter(issue=origem)
+            if vinculo.assignee_id in ativos
+        ]
+    )
     # Só a tarefa principal cai no padrão do projeto: subtarefa sem responsável
     # é normal, e carimbar todas elas com a mesma pessoa seria ruído.
     if not responsaveis and usar_padrao:

@@ -11,6 +11,7 @@ from django.db import IntegrityError
 from rest_framework import serializers
 
 # Module imports
+from plane.utils.responsavel import apenas_um
 from plane.db.models import (
     Issue,
     IssueType,
@@ -121,6 +122,12 @@ class IssueSerializer(BaseSerializer):
             is_valid, error_msg = validate_binary_data(data["description_binary"])
             if not is_valid:
                 raise serializers.ValidationError({"description_binary": "Invalid binary data"})
+
+        # Evolury: normaliza ANTES da consulta abaixo, que reordena pelo que o
+        # banco devolve — "fica o último" vale sobre o que a integração mandou
+        # (ADR 0016).
+        if "assignees" in data:
+            data["assignees"] = apenas_um(data["assignees"])
 
         # Validate assignees are from project
         if data.get("assignees", []):

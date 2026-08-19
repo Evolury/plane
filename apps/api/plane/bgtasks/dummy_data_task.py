@@ -397,9 +397,11 @@ def create_issue_assignees(workspace, project, user_id, issue_count):
     )
 
     # Bulk issue
+    # Evolury: um responsável por tarefa (ADR 0016). Sorteava vários e passaria
+    # a violar a trava do banco.
     bulk_issue_assignees = []
     for issue in issues:
-        for assignee in random.sample(list(assignees), random.randint(0, len(assignees) - 1)):
+        for assignee in random.sample(list(assignees), min(1, len(assignees))):
             bulk_issue_assignees.append(
                 IssueAssignee(
                     issue_id=issue,

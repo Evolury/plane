@@ -17,6 +17,7 @@ from .user import UserLiteSerializer
 from .state import StateLiteSerializer
 from .project import ProjectLiteSerializer
 from .workspace import WorkspaceLiteSerializer
+from plane.utils.responsavel import apenas_um
 from plane.db.models import (
     User,
     Issue,
@@ -151,6 +152,12 @@ class IssueCreateSerializer(BaseSerializer):
             is_valid, error_msg = validate_binary_data(attrs["description_binary"])
             if not is_valid:
                 raise serializers.ValidationError({"description_binary": "Invalid binary data"})
+
+        # Evolury: normaliza ANTES da consulta que segue — ela reordena pelo
+        # que o banco devolve, e "fica o último" tem de valer sobre o que a
+        # pessoa mandou, não sobre a ordem da tabela (ADR 0016).
+        if "assignee_ids" in attrs:
+            attrs["assignee_ids"] = apenas_um(attrs["assignee_ids"])
 
         # Validate assignees are from project
         if attrs.get("assignee_ids", []):
