@@ -22,6 +22,7 @@ from plane.db.models import (
     Cycle,
     Issue,
     IssueActivity,
+    IssueAssignee,
     IssueComment,
     IssueReaction,
     IssueSubscriber,
@@ -369,8 +370,17 @@ def track_assignees(
     issue_activities,
     epoch,
 ):
-    # Assignees
-    requested_assignees = extract_ids(requested_data, "assignee_ids", "assignees")
+    # Evolury: o histórico descreve o que aconteceu, e o que aconteceu está no
+    # banco — não no pedido. Lendo do pedido, mandar duas pessoas fazia a linha
+    # do tempo anunciar as duas, quando a normalização guardou uma (ADR 0016).
+    # Esta função só roda quando o pedido tocou em responsável, e roda depois da
+    # escrita: consultar aqui é ler o resultado, não adivinhar.
+    requested_assignees = {
+        str(pessoa)
+        for pessoa in IssueAssignee.objects.filter(
+            issue_id=issue_id, deleted_at__isnull=True
+        ).values_list("assignee_id", flat=True)
+    }
     current_assignees = extract_ids(current_instance, "assignee_ids", "assignees")
 
     added_assignees = requested_assignees - current_assignees

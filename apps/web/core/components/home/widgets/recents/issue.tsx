@@ -15,7 +15,7 @@ import { EIssueServiceType } from "@plane/types";
 import { calculateTimeAgo, generateWorkItemLink } from "@plane/utils";
 // components
 import { ListItem } from "@/components/core/list";
-import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
+import { AssigneeDropdown } from "@/components/dropdowns/member/assignee";
 import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifier";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
@@ -120,12 +120,11 @@ export const RecentIssue = observer(function RecentIssue(props: BlockProps) {
           </Tooltip>
           {issueDetails?.assignees?.length > 0 && (
             <div className="h-5">
-              <MemberDropdown
+              <AssigneeDropdown
                 projectId={issueDetails?.project_id}
                 value={issueDetails?.assignees}
                 onChange={() => {}}
                 disabled
-                multiple
                 buttonVariant={issueDetails?.assignees?.length > 0 ? "transparent-without-text" : "border-without-text"}
                 buttonClassName={issueDetails?.assignees?.length > 0 ? "hover:bg-transparent px-0" : ""}
                 showTooltip={issueDetails?.assignees?.length === 0}

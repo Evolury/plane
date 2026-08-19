@@ -18,7 +18,15 @@ facilidade — trocar `[-1:]` por `[:1]` não quebra nada que não seja um teste
 import pytest
 from django.db import IntegrityError, transaction
 
-from plane.db.models import Issue, IssueAssignee, Project, ProjectMember, User, WorkspaceMember
+from plane.db.models import (
+    Issue,
+    IssueAssignee,
+    Project,
+    ProjectMember,
+    User,
+    WorkspaceMember,
+)
+from plane.bgtasks.issue_activities_task import track_assignees
 from plane.utils.responsavel import apenas_um, excedentes
 
 
@@ -203,3 +211,36 @@ class TestOColapsoDaMigracao:
 
     def test_quem_ja_tem_um_so_nao_perde_ninguem(self):
         assert excedentes([("v1", "tarefa-a", 1), ("v2", "tarefa-b", 1)]) == []
+
+
+@pytest.mark.django_db
+class TestOHistoricoDizAVerdade:
+    def test_mandar_dois_registra_um_so_no_historico(
+        self, session_client, workspace, projeto, create_user, outra_pessoa
+    ):
+        """A linha do tempo anunciava as duas pessoas quando só uma foi gravada.
+
+        O rastreador lia o **pedido**; passou a ler o banco, que é onde está o
+        que aconteceu. Sem isto, o histórico mente com a cara de quem não mente.
+        """
+        criada = session_client.post(
+            url_tarefas(workspace.slug, projeto.id),
+            {"name": "Histórico", "assignee_ids": [str(create_user.id), str(outra_pessoa.id)]},
+            format="json",
+        )
+
+        # A fila não roda na suíte, então o rastreador é chamado direto — com o
+        # mesmo pedido cru que a view manda, que é justamente o que enganava.
+        linhas = []
+        track_assignees(
+            requested_data={"assignee_ids": [str(create_user.id), str(outra_pessoa.id)]},
+            current_instance=None,
+            issue_id=criada.data["id"],
+            project_id=str(projeto.id),
+            workspace_id=str(workspace.id),
+            actor_id=str(create_user.id),
+            issue_activities=linhas,
+            epoch=0,
+        )
+
+        assert [linha.new_identifier for linha in linhas] == [outra_pessoa.id]

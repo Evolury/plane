@@ -39,18 +39,21 @@ def valores(tarefa, contexto):
     quem_disparou = (contexto.get("evento") or {}).get("actor_id")
     disparador = User.objects.filter(pk=quem_disparou).first() if quem_disparou else None
 
-    responsaveis = [
-        _nome(atribuicao.assignee)
-        for atribuicao in tarefa.issue_assignee.filter(deleted_at__isnull=True).select_related("assignee")
-    ]
+    # Evolury: a tarefa tem um responsável (ADR 0016) — a variável deixou de
+    # juntar nomes. O `first()` não é chute: o índice único do banco garante que
+    # não há um segundo.
+    atribuicao = (
+        tarefa.issue_assignee.filter(deleted_at__isnull=True).select_related("assignee").first()
+    )
+    responsavel = _nome(atribuicao.assignee) if atribuicao else VAZIO
 
     return {
         "tarefa": tarefa.name,
-        "responsável": ", ".join(responsaveis) if responsaveis else VAZIO,
+        "responsável": responsavel,
         # Sem acento também, porque quem digita a variável na caixa nem sempre
         # acentua — e uma variável que "não funciona" por causa de um acento é
         # um defeito que a pessoa não tem como diagnosticar.
-        "responsavel": ", ".join(responsaveis) if responsaveis else VAZIO,
+        "responsavel": responsavel,
         "quem_disparou": _nome(disparador),
         "estado": tarefa.state.name if tarefa.state_id else VAZIO,
         "vencimento": tarefa.target_date.isoformat() if tarefa.target_date else VAZIO,

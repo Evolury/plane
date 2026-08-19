@@ -66,7 +66,7 @@ const ACOES_DE_CRIACAO = new Set<string>([AUTOMATION_ACTION.CREATE_WORK_ITEM, AU
 const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]> = {
   set_state: { state_id: "" },
   set_priority: { priority: "medium" },
-  set_assignees: { mode: "add", assignees: [], especiais: [] },
+  set_assignees: { mode: "replace", assignees: [], especiais: [] },
   set_labels: { mode: "add", labels: [] },
   set_date: { field: "target_date", date_mode: "relative", offset_days: 0 },
   set_property: { property_id: "", value: "" },
@@ -256,14 +256,21 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
 
   type TChaveDeLista = "assignees" | "labels" | "especiais" | "users";
 
-  const alternarNaLista = (indice: number, chave: TChaveDeLista, valor: string) => {
+  const alternarNaLista = (indice: number, chave: TChaveDeLista, valor: string, unica = false) => {
     const atual = new Set((acoes[indice].config[chave] as string[] | undefined) ?? []);
-    if (atual.has(valor)) atual.delete(valor);
+    const jaEstava = atual.has(valor);
+    if (unica) {
+      // Evolury: a tarefa tem um responsável (ADR 0016). Escolher alguém
+      // substitui; escolher de novo a mesma pessoa esvazia.
+      atualizarConfig(indice, { [chave]: jaEstava ? [] : [valor] });
+      return;
+    }
+    if (jaEstava) atual.delete(valor);
     else atual.add(valor);
     atualizarConfig(indice, { [chave]: Array.from(atual) });
   };
 
-  const fichas = (indice: number, chave: TChaveDeLista, itens: { valor: string; rotulo: string }[]) => {
+  const fichas = (indice: number, chave: TChaveDeLista, itens: { valor: string; rotulo: string }[], unica = false) => {
     const escolhidos = new Set((acoes[indice].config[chave] as string[] | undefined) ?? []);
     return (
       <div className="flex flex-wrap gap-1.5">
@@ -271,7 +278,7 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
           <button
             key={item.valor}
             type="button"
-            onClick={() => alternarNaLista(indice, chave, item.valor)}
+            onClick={() => alternarNaLista(indice, chave, item.valor, unica)}
             className={
               escolhidos.has(item.valor)
                 ? "border-accent-primary rounded-sm border bg-accent-primary/10 px-2 py-1 text-12 text-accent-primary"
@@ -336,15 +343,23 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
       case AUTOMATION_ACTION.SET_ASSIGNEES:
         return (
           <div className="flex flex-col gap-2">
-            {seletorDeModo(indice)}
-            {fichas(indice, "especiais", [
-              { valor: "creator", rotulo: t("automations.special.creator") },
-              { valor: "trigger_actor", rotulo: t("automations.special.trigger_actor") },
-            ])}
+            {/* Sem o modo "somar": com um responsável só, somar e definir são a
+                mesma coisa. Sobra definir (escolher alguém) e tirar (escolher
+                ninguém), e as duas se dizem pela própria escolha. */}
+            {fichas(
+              indice,
+              "especiais",
+              [
+                { valor: "creator", rotulo: t("automations.special.creator") },
+                { valor: "trigger_actor", rotulo: t("automations.special.trigger_actor") },
+              ],
+              true
+            )}
             {fichas(
               indice,
               "assignees",
-              membros.map((membro) => ({ valor: membro!.id, rotulo: membro!.display_name }))
+              membros.map((membro) => ({ valor: membro!.id, rotulo: membro!.display_name })),
+              true
             )}
           </div>
         );
