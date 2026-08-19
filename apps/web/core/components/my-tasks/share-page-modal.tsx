@@ -67,14 +67,16 @@ export const SharePageModal = observer(function SharePageModal(props: Props) {
     onClose();
   };
 
+  // Uma passada só: quem já tem acesso sai, quem não tem nome sai, e o resto
+  // vira opção. Encadear filter().map().filter() percorreria a lista três vezes.
   const jaTem = new Set(compartilhamentos.map((c) => c.shared_with));
-  const opcoes = (workspaceMemberIds ?? [])
-    .filter((id) => !jaTem.has(id))
-    .map((id) => {
-      const membro = getWorkspaceMemberDetails(id);
-      return { value: id, query: membro?.member?.display_name ?? "", content: membro?.member?.display_name ?? "" };
-    })
-    .filter((opcao) => !!opcao.query);
+  const opcoes: { value: string; query: string; content: string }[] = [];
+  for (const id of workspaceMemberIds ?? []) {
+    if (jaTem.has(id)) continue;
+    const nome = getWorkspaceMemberDetails(id)?.member?.display_name;
+    if (!nome) continue;
+    opcoes.push({ value: id, query: nome, content: nome });
+  }
 
   const compartilhar = async () => {
     if (!pessoa) return;
@@ -115,6 +117,9 @@ export const SharePageModal = observer(function SharePageModal(props: Props) {
             />
           </div>
           <select
+            // Sem rótulo, um leitor de tela anuncia só "Pode ler" e não diz do
+            // que se trata a escolha.
+            aria-label={t("my_tasks.pages.role_label")}
             value={papel}
             onChange={(e) => setPapel(Number(e.target.value))}
             className="rounded-sm border border-subtle bg-surface-1 px-2 py-1.5 text-13 text-primary"

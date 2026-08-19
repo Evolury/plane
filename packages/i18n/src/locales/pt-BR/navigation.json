@@ -74,7 +74,8 @@
       "move_warning_many": "{count} pessoas perdem o acesso: no projeto, quem manda é o projeto.",
       "move_confirm": "Mover",
       "move_failed": "Não foi possível mover a página.",
-      "move_to_personal_note": "A página sai do projeto e passa a ser só sua."
+      "move_to_personal_note": "A página sai do projeto e passa a ser só sua.",
+      "role_label": "Nível de acesso"
     }
   }
 }

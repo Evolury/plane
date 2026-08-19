@@ -74,7 +74,8 @@
       "move_warning_many": "{count} people lose access: inside a project, the project decides.",
       "move_confirm": "Move",
       "move_failed": "Could not move the page.",
-      "move_to_personal_note": "The page leaves the project and becomes yours only."
+      "move_to_personal_note": "The page leaves the project and becomes yours only.",
+      "role_label": "Access level"
     }
   }
 }
