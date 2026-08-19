@@ -1123,7 +1123,7 @@
     "create_your_profile": "Create your profile.",
     "delete_estimate_system": "Delete Estimate System",
     "delete_label": "Delete Label",
-    "delete_state": "Delete State",
+    "delete_state": "Delete",
     "delete_cycle": "Delete cycle",
     "delete_page": "Delete page",
     "delete_webhook": "Delete webhook",
@@ -1707,7 +1707,9 @@
     "allow_reactions": "Allow reactions",
     "allow_voting": "Allow voting",
     "welcome_tour_description": "We're glad that you decided to try out Evotask. You can now manage your projects with ease. Get started by creating a project.",
-    "welcome_to_product": "Welcome to {product}"
+    "welcome_to_product": "Welcome to {product}",
+    "delete_state_confirm_before": "Are you sure you want to delete ",
+    "delete_state_confirm_after": "? Everything associated with it will be permanently removed, and this action cannot be undone."
   },
   "activity_log": {
     "prep_in": " for ",
@@ -1854,6 +1856,11 @@
         "unmark": "Unset — the bucket gets no destination and moves nobody",
         "locked": "Stays here",
         "locked_hint": "The sweep never takes tasks OUT of this stage. Arriving still works."
+      },
+      "entry": {
+        "label": "Inbox",
+        "mark": "Set as inbox",
+        "marking": "Setting…"
       }
     }
   }

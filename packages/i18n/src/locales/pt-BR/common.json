@@ -1123,7 +1123,7 @@
     "create_your_profile": "Crie seu perfil.",
     "delete_estimate_system": "Excluir sistema de estimativas",
     "delete_label": "Excluir etiqueta",
-    "delete_state": "Excluir estado",
+    "delete_state": "Excluir",
     "delete_cycle": "Excluir ciclo",
     "delete_page": "Excluir página",
     "delete_webhook": "Excluir webhook",
@@ -1707,7 +1707,9 @@
     "allow_reactions": "Permitir reações",
     "allow_voting": "Permitir votos",
     "welcome_tour_description": "Que bom ter você aqui. Agora você pode gerenciar seus projetos com facilidade — comece criando um projeto.",
-    "welcome_to_product": "Boas-vindas ao {product}"
+    "welcome_to_product": "Boas-vindas ao {product}",
+    "delete_state_confirm_before": "Tem certeza de que quer excluir ",
+    "delete_state_confirm_after": "? Tudo o que estiver associado será removido permanentemente, e esta ação não pode ser desfeita."
   },
   "activity_log": {
     "prep_in": " em ",
@@ -1854,6 +1856,11 @@
         "unmark": "Desmarcar — o balde fica sem destino e não move ninguém",
         "locked": "Não sai daqui",
         "locked_hint": "A varredura não TIRA tarefa desta etapa. Chegar continua podendo."
+      },
+      "entry": {
+        "label": "Entrada",
+        "mark": "Marcar como entrada",
+        "marking": "Marcando…"
       }
     }
   }

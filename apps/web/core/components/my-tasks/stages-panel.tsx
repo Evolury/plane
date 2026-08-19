@@ -138,6 +138,24 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
         if (!workspaceSlug) return;
         await toggleStageAutomation(workspaceSlug, stageId, desativada);
       },
+      // Evolury: a padrão nunca, e os grupos de encerramento precisam sobrar
+      // com pelo menos uma — é para onde a tarefa vai ao ser concluída ou
+      // cancelada. A regra é sobre a ÚLTIMA do grupo: com duas, as duas podem.
+      // O servidor recusa igual; isto aqui existe para o botão não aparecer.
+      // Evolury: em "Minhas tarefas" a etapa que recebe o que chega é a
+      // ENTRADA, e não o "padrão" — é por ela que a tarefa entra. Mesma
+      // mecânica do estado de projeto, nome diferente.
+      rotulosDaEntrada: {
+        atual: t("my_tasks.stages.entry.label"),
+        acao: t("my_tasks.stages.entry.mark"),
+        salvando: t("my_tasks.stages.entry.marking"),
+      },
+      canDeleteStage: (stageId: string) => {
+        const etapa = sortedStages.find((e) => e.id === stageId);
+        if (!etapa || etapa.is_default) return false;
+        if (etapa.group !== "completed" && etapa.group !== "cancelled") return true;
+        return sortedStages.some((e) => e.group === etapa.group && e.id !== etapa.id);
+      },
       getStageBucketInfo: (stageId: string) => {
         const etapa = sortedStages.find((e) => e.id === stageId);
         return {
@@ -168,6 +186,7 @@ export const MyTasksStagesPanel = observer(function MyTasksStagesPanel(props: TM
       markStageBucket,
       toggleStageAutomation,
       sortedStages,
+      t,
     ]
   );
 

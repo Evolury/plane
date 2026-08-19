@@ -72,9 +72,16 @@ export const StateDeleteModal = observer(function StateDeleteModal(props: TState
       isOpen={isOpen}
       title={t("ui.delete_state")}
       content={
+        // Evolury: o texto estava cravado em inglês num produto em português.
+        //
+        // A redação nova não diz "estado" nem "etapa": o mesmo modal serve às
+        // duas telas, e o nome do item já aparece na frase. Repetir a categoria
+        // não acrescenta nada e obrigaria a arrastar um rótulo por seis
+        // componentes só para trocar um substantivo.
         <>
-          Are you sure you want to delete state- <span className="font-medium text-primary">{data?.name}</span>? All of
-          the data related to the state will be permanently removed. This action cannot be undone.
+          {t("ui.delete_state_confirm_before")}
+          <span className="font-medium text-primary">{data?.name}</span>
+          {t("ui.delete_state_confirm_after")}
         </>
       }
     />

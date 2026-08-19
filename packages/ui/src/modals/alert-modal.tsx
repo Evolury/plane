@@ -5,6 +5,7 @@
  */
 
 import type { LucideIcon } from "lucide-react";
+import { translate } from "@plane/i18n";
 import { AlertTriangle, Info } from "lucide-react";
 import React from "react";
 // components
@@ -61,11 +62,20 @@ export function AlertModalCore(props: Props) {
     isSubmitting,
     isOpen,
     position = EModalPosition.CENTER,
+    // Evolury: o padrão sai traduzido (ADR 0008).
+    //
+    // Estava em inglês, e a prop sozinha não resolvia: dos 20 modais de alerta
+    // do produto, 14 usavam o padrão — cada um deles mostrando "Delete" e
+    // "Cancel" a quem lê em português. É o mesmo desfecho que o próprio ADR
+    // registra sobre o `contrastNote`: prop opcional em pacote presentational
+    // não traduz nada sozinha.
+    //
+    // A prop continua existindo para quem quiser sobrescrever.
     primaryButtonText = {
-      loading: "Deleting",
-      default: "Delete",
+      loading: translate("deleting"),
+      default: translate("delete"),
     },
-    secondaryButtonText = "Cancel",
+    secondaryButtonText = translate("cancel"),
     title,
     variant = "danger",
     width = EModalWidth.XL,

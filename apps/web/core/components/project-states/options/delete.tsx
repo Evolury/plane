@@ -72,9 +72,19 @@ export const StateDelete = observer(function StateDelete(props: TStateDelete) {
         isOpen={isDeleteModal}
         title={t("ui.delete_state")}
         content={
+          // Evolury: o texto estava cravado em inglês num produto em português.
+          //
+          // Havia DUAS cópias da mesma frase — esta e a de
+          // `state-delete-modal.tsx` —, e só esta é a que aparece: o botão de
+          // excluir abre a sua própria. Traduzir a outra não mudava nada na
+          // tela, e foi assim que o defeito sobreviveu.
+          //
+          // A redação não diz "estado" nem "etapa": o mesmo modal serve às duas
+          // telas e o nome do item já está na frase.
           <>
-            Are you sure you want to delete state- <span className="font-medium text-primary">{state?.name}</span>? All
-            of the data related to the state will be permanently removed. This action cannot be undone.
+            {t("ui.delete_state_confirm_before")}
+            <span className="font-medium text-primary">{state?.name}</span>
+            {t("ui.delete_state_confirm_after")}
           </>
         }
       />

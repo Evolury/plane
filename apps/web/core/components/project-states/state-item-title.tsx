@@ -40,6 +40,8 @@ type TEnabledStateItemTitleProps = TBaseStateItemTitleProps & {
     | "markStageBucket"
     | "getStageBucketInfo"
     | "toggleStageAutomation"
+    | "canDeleteStage"
+    | "rotulosDaEntrada"
   >;
   shouldTrackEvents: boolean;
 };
@@ -115,6 +117,7 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
               stateId={state.id}
               isDefault={state.default ? true : false}
               markStateAsDefaultCallback={props.stateOperationsCallbacks.markStateAsDefault}
+              rotulos={props.stateOperationsCallbacks.rotulosDaEntrada}
             />
           </div>
           {/* state edit options */}
@@ -126,12 +129,18 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
             >
               <EditIcon className="h-3 w-3" />
             </button>
-            <StateDelete
-              totalStates={stateCount}
-              state={state}
-              deleteStateCallback={props.stateOperationsCallbacks.deleteState}
-              shouldTrackEvents={props.shouldTrackEvents}
-            />
+            {/* Evolury: quem não pode ser excluída não mostra o controle.
+                Antes ele aparecia cinza, e cinza-que-não-faz-nada é convite a
+                tentar — a pessoa clica, nada acontece, e ela não descobre por
+                quê. Sem o callback, vale a regra herdada. */}
+            {(props.stateOperationsCallbacks.canDeleteStage?.(state.id) ?? true) && (
+              <StateDelete
+                totalStates={stateCount}
+                state={state}
+                deleteStateCallback={props.stateOperationsCallbacks.deleteState}
+                shouldTrackEvents={props.shouldTrackEvents}
+              />
+            )}
           </div>
         </div>
       )}
