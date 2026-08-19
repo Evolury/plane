@@ -130,12 +130,12 @@ const generateWeekChart = (
  * @param shouldPopulateDaysForWeek
  * @returns
  */
-export const getWeeksBetweenTwoDates = (
+export function getWeeksBetweenTwoDates(
   startDate: Date,
   endDate: Date,
   shouldPopulateDaysForWeek: boolean = true,
   startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY
-): IWeekBlock[] => {
+): IWeekBlock[] {
   const weeks: IWeekBlock[] = [];
 
   const currentDate = new Date(startDate.getTime());
@@ -182,14 +182,14 @@ export const getWeeksBetweenTwoDates = (
   }
 
   return weeks;
-};
+}
 
 /**
  * return back array of 7 days from the date provided
  * @param startDate
  * @returns
  */
-const populateDaysForWeek = (startDate: Date, startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY): IDayBlock[] => {
+function populateDaysForWeek(startDate: Date, startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY): IDayBlock[] {
   const currentDate = new Date(startDate);
   const days: IDayBlock[] = [];
   const today = new Date();
@@ -206,7 +206,7 @@ const populateDaysForWeek = (startDate: Date, startOfWeek: EStartOfTheWeek = ESt
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return days;
-};
+}
 
 /**
  * Merge two Week data payloads

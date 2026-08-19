@@ -103,7 +103,7 @@ export const getDefaultTabUrl = (workspaceSlug: string, projectId: string, avail
  * @param availableTabKeys - Array of available tab keys
  * @returns The default tab key if valid, otherwise DEFAULT_TAB_KEY
  */
-export const getValidatedDefaultTab = (projectId: string, availableTabKeys: string[]): string => {
+export function getValidatedDefaultTab(projectId: string, availableTabKeys: string[]): string {
   const preferences = getTabPreferences(projectId);
   const defaultTab = preferences.defaultTab;
 
@@ -114,4 +114,4 @@ export const getValidatedDefaultTab = (projectId: string, availableTabKeys: stri
 
   // Fall back to work_items
   return DEFAULT_TAB_KEY;
-};
+}

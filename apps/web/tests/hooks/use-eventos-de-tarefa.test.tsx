@@ -21,6 +21,8 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const consumirEscritaLocal = vi.fn(() => false);
+
 vi.mock("react", async () => {
   const react = await vi.importActual<typeof import("react")>("react");
   // Só o `useContext` é trocado: o gancho lê dali o store RAIZ, e montar o
@@ -37,8 +39,6 @@ const retrieveIssues = vi.fn(async (_ws: string, _p: string, ids: string[]) => i
 
 let groupedIssueIds: unknown = { grupo: ["tarefa-no-quadro"] };
 let meuId = "eu";
-
-const consumirEscritaLocal = vi.fn(() => false);
 
 vi.mock("@/hooks/store/use-issues", () => ({
   useIssues: () => ({ issues: { groupedIssueIds, issueUpdate, removeIssueFromList } }),

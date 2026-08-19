@@ -8,47 +8,48 @@ arquivo é para o que sobra.
 
 ## Em aberto
 
-### 1. Rótulos do menu do editor ainda em inglês
-
-**38 literais** — 17 em `packages/editor/src/core/components/menus/menu-items.ts`
-e 21 em `packages/editor/src/core/constants/common.ts`: "Text", "Color", "Bold",
-"Bulleted list", e assim por diante. Aparecem na barra de ferramentas de toda
-página. Mais um: `Heading ${level}`, em
-`packages/editor/src/core/extensions/placeholder.ts`.
-
-Não é o mesmo problema do provedor de tradução, que já foi resolvido — estes são
-**dados**, não JSX: viram `name: "Text"` dentro de listas de itens de menu.
-Traduzir exige trocar o literal por chave e traduzir no ponto de renderização,
-onde o `useEditorTranslation()` alcança.
-
-Relacionado: [ADR 0004](decisoes/0004-idioma-unico-pt-br.md) (idioma único),
-[ADR 0008](decisoes/0008-i18n-nos-pacotes-compartilhados.md) (como pacote
-compartilhado traduz).
-
-### 2. `no-use-before-define` continua desligada
-
-**Medido em 19/08/2026:** 209 ocorrências com a regra crua; **181** com
-`{"functions": false, "classes": false, "variables": true}` no `.oxlintrc.json`
-— que é a forma que **funciona** (o `--rule-config` na linha de comando desliga
-a regra em silêncio, sem avisar). As 181 são `const` recebendo função de seta e
-usadas antes da declaração, espalhadas por ~60 arquivos, quase todos herdados do
-upstream.
-
-Foi exatamente essa classe de defeito que derrubou a criação de página por oito
-dias (ver o `docs/evolury/funcionalidades/minhas-tarefas/backlog.md`, F8.4, e o
-commit que a corrigiu).
-
-**Por que não foi ligada:** reordenar declarações em ~60 arquivos do upstream
-cria conflito em toda sincronização — ver [UPSTREAM.md](../../UPSTREAM.md). O
-custo recorrente é maior do que o do defeito, **e o defeito já tem outra
-guarda**: aquele caso emitia um aviso de `exhaustive-deps`, e o teto de avisos
-apertado (abaixo) agora derruba a CI quando um aviso novo aparece.
-
-Se um dia o fork divergir bastante do upstream a ponto de o conflito deixar de
-importar, ligar é uma linha no `.oxlintrc.json` — e há prova de que a regra pega
-o caso: reintroduzido o defeito, ela acusa os 6 usos.
+Nada.
 
 ## Resolvido
+
+### Rótulos do menu do editor - 19/08/2026
+
+A contagem que eu tinha anotado ("38 literais") estava errada: os itens do editor
+**já trazem** `i18n_name` ao lado do `name`, e o `name` é reserva. As 24 chaves
+existiam e estavam traduzidas. O buraco era só nos pontos de render - a barra da
+página lia o `name` direto. Corrigido, mais três literais de verdade ("Color",
+"Full width", "Sticky toolbar").
+
+### `no-use-before-define` - ligada em 19/08/2026
+
+**A regra está ligada**, restrita a variáveis
+(`{"functions": false, "classes": false, "variables": true}`) no `.oxlintrc.json`
+— a forma que funciona; o `--rule-config` da linha de comando desliga a regra em
+silêncio.
+
+Das **180** ocorrências, **152 foram corrigidas de verdade**, em 53 arquivos, de
+dois jeitos:
+
+- **Arrow de escopo de módulo virou declaração de função.** Declaração é içada,
+  então o uso antes da declaracao deixa de ser zona morta: o defeito some, não só
+  o aviso. E o diff é de uma linha por símbolo, o que importa num fork que
+  sincroniza com o upstream.
+- **Declaração movida para antes do primeiro uso**, quando converter não cabia
+  (componente em `observer`/`memo`, constante, genérico com anotação).
+
+**As 28 restantes ficam congeladas pelo teto de avisos**, e é isso que impede a
+volta do problema: uma ocorrência **nova** empurra a contagem acima do teto e
+derruba a CI. Provado com defeito injetado.
+
+Por que essas 28 não foram mexidas: são componentes referenciados no JSX de um
+irmão (referência de renderização, nunca zona morta) e fechamentos locais cujo
+uso está num `removeEventListener` de limpeza. Mover exigiria blocos grandes de
+código herdado, e **três tentativas dessas eu tive de reverter**: o TypeScript
+perde o estreitamento de tipo quando a função é içada para fora do `if` que a
+protegia, e o movedor automático cortou errado em arquivos com genérico. O ganho
+não paga o risco enquanto o teto segura a recorrência.
+
+Quem reduzir esse número deve **baixar o teto junto**.
 
 ### Teto de avisos do lint que não segurava nada — 19/08/2026
 

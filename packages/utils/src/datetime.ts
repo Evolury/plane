@@ -300,7 +300,7 @@ export const checkIfDatesAreEqual = (
  * @param date
  * @returns date or undefined
  */
-export const getDate = (date: string | Date | undefined | null): Date | undefined => {
+export function getDate(date: string | Date | undefined | null): Date | undefined {
   try {
     if (!date || date === "") return;
 
@@ -316,7 +316,7 @@ export const getDate = (date: string | Date | undefined | null): Date | undefine
   } catch (_e) {
     return undefined;
   }
-};
+}
 
 export const isInDateFormat = (date: string) => {
   const datePattern = /^\d{4}-\d{2}-\d{2}$/;

@@ -58,126 +58,6 @@ interface Props {
   isEpic?: boolean;
 }
 
-export const SpreadsheetIssueRow = observer(function SpreadsheetIssueRow(props: Props) {
-  const {
-    displayProperties,
-    issueId,
-    isEstimateEnabled,
-    nestingLevel,
-    portalElement,
-    updateIssue,
-    quickActions,
-    canEditProperties,
-    isScrolled,
-    containerRef,
-    spreadsheetColumnsList,
-    spacingLeft = 6,
-    selectionHelpers,
-    shouldRenderByDefault,
-    isEpic = false,
-  } = props;
-  // states
-  const [isExpanded, setExpanded] = useState<boolean>(false);
-  // store hooks
-  const { subIssues: subIssuesStore } = useIssueDetail(isEpic ? EIssueServiceType.EPICS : EIssueServiceType.ISSUES);
-  const { issueMap } = useIssues();
-
-  // derived values
-  const issue = issueMap[issueId];
-  const subIssues = subIssuesStore.subIssuesByIssueId(issueId);
-  const isIssueSelected = selectionHelpers.getIsEntitySelected(issueId);
-  const isIssueActive = selectionHelpers.getIsEntityActive(issueId);
-  // Evolury: tarefa encerrada muda de aparência (ADR 0009). Vai na linha
-  // inteira, e não só na célula do título, para a planilha não ficar meio
-  // esmaecida.
-  const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
-
-  if (!issue) return null;
-
-  return (
-    <>
-      {/* first column/ issue name and key column */}
-      <RenderIfVisible
-        as="tr"
-        root={containerRef}
-        placeholderChildren={
-          <td
-            colSpan={100}
-            className="border-[0.5px] border-transparent border-b-subtle-1"
-            style={{ height: "calc(2.75rem - 1px)" }}
-          />
-        }
-        classNames={cn("bg-surface-1 transition-[background-color]", {
-          ...estiloEncerrada,
-          "group selected-issue-row": isIssueSelected,
-          "border-[0.5px] border-strong-1": isIssueActive,
-        })}
-        verticalOffset={100}
-        shouldRecordHeights={false}
-        defaultValue={shouldRenderByDefault || isIssueNew(issue)}
-      >
-        <IssueRowDetails
-          issueId={issueId}
-          displayProperties={displayProperties}
-          quickActions={quickActions}
-          canEditProperties={canEditProperties}
-          nestingLevel={nestingLevel}
-          spacingLeft={spacingLeft}
-          isEstimateEnabled={isEstimateEnabled}
-          updateIssue={updateIssue}
-          portalElement={portalElement}
-          isScrolled={isScrolled}
-          isExpanded={isExpanded}
-          setExpanded={setExpanded}
-          spreadsheetColumnsList={spreadsheetColumnsList}
-          selectionHelpers={selectionHelpers}
-          isEpic={isEpic}
-        />
-      </RenderIfVisible>
-
-      {isExpanded &&
-        !isEpic &&
-        subIssues?.map((subIssueId: string) => (
-          <SpreadsheetIssueRow
-            key={subIssueId}
-            issueId={subIssueId}
-            displayProperties={displayProperties}
-            quickActions={quickActions}
-            canEditProperties={canEditProperties}
-            nestingLevel={nestingLevel + 1}
-            spacingLeft={spacingLeft + 12}
-            isEstimateEnabled={isEstimateEnabled}
-            updateIssue={updateIssue}
-            portalElement={portalElement}
-            isScrolled={isScrolled}
-            containerRef={containerRef}
-            spreadsheetColumnsList={spreadsheetColumnsList}
-            selectionHelpers={selectionHelpers}
-            shouldRenderByDefault={isExpanded}
-          />
-        ))}
-    </>
-  );
-});
-
-interface IssueRowDetailsProps {
-  displayProperties: IIssueDisplayProperties;
-  isEstimateEnabled: boolean;
-  quickActions: TRenderQuickActions;
-  canEditProperties: (projectId: string | undefined) => boolean;
-  updateIssue: ((projectId: string | null, issueId: string, data: Partial<TIssue>) => Promise<void>) | undefined;
-  portalElement: React.MutableRefObject<HTMLDivElement | null>;
-  nestingLevel: number;
-  issueId: string;
-  isScrolled: MutableRefObject<boolean>;
-  isExpanded: boolean;
-  setExpanded: Dispatch<SetStateAction<boolean>>;
-  spreadsheetColumnsList: (keyof IIssueDisplayProperties)[];
-  spacingLeft?: number;
-  selectionHelpers: TSelectionHelper;
-  isEpic?: boolean;
-}
-
 const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetailsProps) {
   const {
     displayProperties,
@@ -419,3 +299,123 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
     </>
   );
 });
+
+export const SpreadsheetIssueRow = observer(function SpreadsheetIssueRow(props: Props) {
+  const {
+    displayProperties,
+    issueId,
+    isEstimateEnabled,
+    nestingLevel,
+    portalElement,
+    updateIssue,
+    quickActions,
+    canEditProperties,
+    isScrolled,
+    containerRef,
+    spreadsheetColumnsList,
+    spacingLeft = 6,
+    selectionHelpers,
+    shouldRenderByDefault,
+    isEpic = false,
+  } = props;
+  // states
+  const [isExpanded, setExpanded] = useState<boolean>(false);
+  // store hooks
+  const { subIssues: subIssuesStore } = useIssueDetail(isEpic ? EIssueServiceType.EPICS : EIssueServiceType.ISSUES);
+  const { issueMap } = useIssues();
+
+  // derived values
+  const issue = issueMap[issueId];
+  const subIssues = subIssuesStore.subIssuesByIssueId(issueId);
+  const isIssueSelected = selectionHelpers.getIsEntitySelected(issueId);
+  const isIssueActive = selectionHelpers.getIsEntityActive(issueId);
+  // Evolury: tarefa encerrada muda de aparência (ADR 0009). Vai na linha
+  // inteira, e não só na célula do título, para a planilha não ficar meio
+  // esmaecida.
+  const estiloEncerrada = useClosedIssueStyles(issue?.state_id);
+
+  if (!issue) return null;
+
+  return (
+    <>
+      {/* first column/ issue name and key column */}
+      <RenderIfVisible
+        as="tr"
+        root={containerRef}
+        placeholderChildren={
+          <td
+            colSpan={100}
+            className="border-[0.5px] border-transparent border-b-subtle-1"
+            style={{ height: "calc(2.75rem - 1px)" }}
+          />
+        }
+        classNames={cn("bg-surface-1 transition-[background-color]", {
+          ...estiloEncerrada,
+          "group selected-issue-row": isIssueSelected,
+          "border-[0.5px] border-strong-1": isIssueActive,
+        })}
+        verticalOffset={100}
+        shouldRecordHeights={false}
+        defaultValue={shouldRenderByDefault || isIssueNew(issue)}
+      >
+        <IssueRowDetails
+          issueId={issueId}
+          displayProperties={displayProperties}
+          quickActions={quickActions}
+          canEditProperties={canEditProperties}
+          nestingLevel={nestingLevel}
+          spacingLeft={spacingLeft}
+          isEstimateEnabled={isEstimateEnabled}
+          updateIssue={updateIssue}
+          portalElement={portalElement}
+          isScrolled={isScrolled}
+          isExpanded={isExpanded}
+          setExpanded={setExpanded}
+          spreadsheetColumnsList={spreadsheetColumnsList}
+          selectionHelpers={selectionHelpers}
+          isEpic={isEpic}
+        />
+      </RenderIfVisible>
+
+      {isExpanded &&
+        !isEpic &&
+        subIssues?.map((subIssueId: string) => (
+          <SpreadsheetIssueRow
+            key={subIssueId}
+            issueId={subIssueId}
+            displayProperties={displayProperties}
+            quickActions={quickActions}
+            canEditProperties={canEditProperties}
+            nestingLevel={nestingLevel + 1}
+            spacingLeft={spacingLeft + 12}
+            isEstimateEnabled={isEstimateEnabled}
+            updateIssue={updateIssue}
+            portalElement={portalElement}
+            isScrolled={isScrolled}
+            containerRef={containerRef}
+            spreadsheetColumnsList={spreadsheetColumnsList}
+            selectionHelpers={selectionHelpers}
+            shouldRenderByDefault={isExpanded}
+          />
+        ))}
+    </>
+  );
+});
+
+interface IssueRowDetailsProps {
+  displayProperties: IIssueDisplayProperties;
+  isEstimateEnabled: boolean;
+  quickActions: TRenderQuickActions;
+  canEditProperties: (projectId: string | undefined) => boolean;
+  updateIssue: ((projectId: string | null, issueId: string, data: Partial<TIssue>) => Promise<void>) | undefined;
+  portalElement: React.MutableRefObject<HTMLDivElement | null>;
+  nestingLevel: number;
+  issueId: string;
+  isScrolled: MutableRefObject<boolean>;
+  isExpanded: boolean;
+  setExpanded: Dispatch<SetStateAction<boolean>>;
+  spreadsheetColumnsList: (keyof IIssueDisplayProperties)[];
+  spacingLeft?: number;
+  selectionHelpers: TSelectionHelper;
+  isEpic?: boolean;
+}

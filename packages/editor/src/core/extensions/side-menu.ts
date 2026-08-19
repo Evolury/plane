@@ -37,26 +37,6 @@ export type SideMenuHandleOptions = {
   };
 };
 
-export const SideMenuExtension = (props: Props) => {
-  const { aiEnabled, dragDropEnabled } = props;
-
-  return Extension.create({
-    name: CORE_EXTENSIONS.SIDE_MENU,
-    addProseMirrorPlugins() {
-      return [
-        SideMenu({
-          dragHandleWidth: 24,
-          handlesConfig: {
-            ai: aiEnabled,
-            dragDrop: dragDropEnabled,
-          },
-          scrollThreshold: { up: 200, down: 150 },
-        }),
-      ];
-    },
-  });
-};
-
 const absoluteRect = (node: Element) => {
   const data = node.getBoundingClientRect();
 
@@ -174,6 +154,26 @@ const SideMenu = (options: SideMenuPluginProps) => {
           }
         },
       },
+    },
+  });
+};
+
+export const SideMenuExtension = (props: Props) => {
+  const { aiEnabled, dragDropEnabled } = props;
+
+  return Extension.create({
+    name: CORE_EXTENSIONS.SIDE_MENU,
+    addProseMirrorPlugins() {
+      return [
+        SideMenu({
+          dragHandleWidth: 24,
+          handlesConfig: {
+            ai: aiEnabled,
+            dragDrop: dragDropEnabled,
+          },
+          scrollThreshold: { up: 200, down: 150 },
+        }),
+      ];
     },
   });
 };

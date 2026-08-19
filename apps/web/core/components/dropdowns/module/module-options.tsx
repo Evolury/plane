@@ -71,9 +71,9 @@ export const ModuleOptions = observer(function ModuleOptions(props: Props) {
     ],
   });
 
-  const onOpen = () => {
+  function onOpen() {
     onDropdownOpen?.();
-  };
+  }
 
   const searchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (query !== "" && e.key === "Escape") {

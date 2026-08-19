@@ -153,7 +153,7 @@ export const checkEmailValidity = (email: string): boolean => {
   if (!email) return false;
 
   const isEmailValid =
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
       email
     );
 
@@ -373,13 +373,13 @@ const fallbackCopyTextToClipboard = (text: string) => {
  * @example
  * await copyTextToClipboard("Hello, World!") // copies "Hello, World!" to clipboard
  */
-export const copyTextToClipboard = async (text: string): Promise<void> => {
+export async function copyTextToClipboard(text: string): Promise<void> {
   if (!navigator.clipboard) {
     fallbackCopyTextToClipboard(text);
     return;
   }
   await navigator.clipboard.writeText(text);
-};
+}
 
 /**
  * @description Joins URL path segments properly, removing duplicate slashes using URL encoding

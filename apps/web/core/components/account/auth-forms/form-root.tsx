@@ -90,7 +90,7 @@ export const AuthFormRoot = observer(function AuthFormRoot(props: TAuthFormRoot)
   };
 
   // generating the unique code
-  const generateEmailUniqueCode = async (email: string): Promise<{ code: string } | undefined> => {
+  async function generateEmailUniqueCode(email: string): Promise<{ code: string } | undefined> {
     if (!isSMTPConfigured) return;
     const payload = { email: email };
     return await authService
@@ -101,7 +101,7 @@ export const AuthFormRoot = observer(function AuthFormRoot(props: TAuthFormRoot)
         if (errorhandler?.type) setErrorInfo(errorhandler);
         throw error;
       });
-  };
+  }
 
   if (authStep === EAuthSteps.EMAIL) {
     return <AuthEmailForm defaultEmail={email} onSubmit={handleEmailVerification} />;

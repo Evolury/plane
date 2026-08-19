@@ -146,20 +146,20 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateItemsContainerWidth = (width: number) => {
+  function updateItemsContainerWidth(width: number) {
     const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
     if (!scrollContainer) return;
     setItemsContainerWidth(width + scrollContainer?.scrollLeft);
-  };
+  }
 
-  const updateCurrentLeftScrollPosition = (width: number) => {
+  function updateCurrentLeftScrollPosition(width: number) {
     const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
     if (!scrollContainer) return;
 
     scrollContainer.scrollLeft = width + scrollContainer?.scrollLeft;
-  };
+  }
 
-  const handleScrollToCurrentSelectedDate = (currentState: ChartDataType, date: Date) => {
+  function handleScrollToCurrentSelectedDate(currentState: ChartDataType, date: Date) {
     const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
     if (!scrollContainer) return;
 
@@ -174,7 +174,7 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
       SIDEBAR_WIDTH / 2;
 
     scrollContainer.scrollLeft = scrollWidth;
-  };
+  }
 
   const portalContainer = document.getElementById("full-screen-portal") as HTMLElement;
 

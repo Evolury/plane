@@ -41,9 +41,9 @@ export const StickySearch = observer(function StickySearch() {
     }
   };
 
-  const fetchStickies = async () => {
+  async function fetchStickies() {
     await fetchWorkspaceStickies(workspaceSlug.toString());
-  };
+  }
 
   const debouncedSearch = useCallback(
     debounce(async () => {

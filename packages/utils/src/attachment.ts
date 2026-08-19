@@ -15,15 +15,17 @@ export const generateFileName = (fileName: string) => {
   return `${nameWithoutExtension}-${timestamp}.${extension}`;
 };
 
-export const getFileExtension = (filename: string) => filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+export function getFileExtension(filename: string) {
+  return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+}
 
-export const getFileName = (fileName: string) => {
+export function getFileName(fileName: string) {
   const dotIndex = fileName.lastIndexOf(".");
 
   const nameWithoutExtension = fileName.substring(0, dotIndex);
 
   return nameWithoutExtension;
-};
+}
 
 export const convertBytesToSize = (bytes: number) => {
   let size;

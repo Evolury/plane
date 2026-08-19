@@ -34,6 +34,14 @@ type TProps = {
   className?: string;
 };
 
+/** O gatilho da receita, dito no mesmo vocabulário do seletor. */
+const RESUMO_DO_GATILHO: Record<string, string> = {
+  work_item_created: "created",
+  field_changed: "field_changed",
+  comment_added: "commented",
+  scheduled: "scheduled",
+};
+
 export const ReceitasDeAutomacao = observer(function ReceitasDeAutomacao(props: TProps) {
   const { onEscolher, className } = props;
   const { t } = useTranslation();
@@ -65,11 +73,3 @@ export const ReceitasDeAutomacao = observer(function ReceitasDeAutomacao(props: 
     </div>
   );
 });
-
-/** O gatilho da receita, dito no mesmo vocabulário do seletor. */
-const RESUMO_DO_GATILHO: Record<string, string> = {
-  work_item_created: "created",
-  field_changed: "field_changed",
-  comment_added: "commented",
-  scheduled: "scheduled",
-};

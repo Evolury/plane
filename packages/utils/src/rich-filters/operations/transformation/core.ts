@@ -95,10 +95,10 @@ export const transformGroupWithChildren = <P extends TFilterProperty>(
  * @param transformFn - Function that defines the transformation logic for each node
  * @returns The transformation result with expression and metadata
  */
-export const transformExpressionTree = <P extends TFilterProperty>(
+export function transformExpressionTree<P extends TFilterProperty>(
   expression: TFilterExpression<P> | null,
   transformFn: TTreeTransformFn<P>
-): TTreeTransformResult<P> => {
+): TTreeTransformResult<P> {
   // Handle null expressions early
   if (!expression) {
     return { expression: null, shouldNotify: false };
@@ -123,7 +123,7 @@ export const transformExpressionTree = <P extends TFilterProperty>(
   }
 
   throw new Error("Unknown expression type in transformExpressionTree");
-};
+}
 
 /**
  * Removes a node from the filter expression.

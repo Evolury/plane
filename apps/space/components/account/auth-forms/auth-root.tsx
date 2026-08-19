@@ -136,7 +136,7 @@ export const AuthRoot = observer(function AuthRoot() {
   };
 
   // generating the unique code
-  const generateEmailUniqueCode = async (email: string): Promise<{ code: string } | undefined> => {
+  async function generateEmailUniqueCode(email: string): Promise<{ code: string } | undefined> {
     const payload = { email: email };
     return await authService
       .generateUniqueCode(payload)
@@ -146,7 +146,7 @@ export const AuthRoot = observer(function AuthRoot() {
         if (errorhandler?.type) setErrorInfo(errorhandler);
         throw error;
       });
-  };
+  }
 
   return (
     <div className="mt-10 flex w-full flex-grow flex-col items-center justify-center py-6">

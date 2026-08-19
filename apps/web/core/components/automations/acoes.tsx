@@ -82,6 +82,147 @@ const PADRAO_POR_TIPO: Record<TAutomationActionType, TAutomationAction["config"]
   create_subtasks: { names: [""], herdar_responsaveis: true },
 };
 
+/**
+ * O campo de valor muda com o tipo da propriedade — é a mesma regra do
+ * formulário de propriedades: oferecer caixa de texto para uma seleção
+ * produziria valor que o backend recusa.
+ */
+const ValorDaPropriedade = observer(function ValorDaPropriedade(props: {
+  propriedade: TIssueProperty | undefined;
+  valor: unknown;
+  onChange: (valor: unknown) => void;
+}) {
+  const { propriedade, valor, onChange } = props;
+  const { t } = useTranslation();
+
+  if (!propriedade) return null;
+
+  if (propriedade.property_type === "select" || propriedade.property_type === "multi_select") {
+    const opcoes = propriedade.options ?? [];
+    const atual = typeof valor === "string" ? valor : "";
+    return (
+      <CustomSelect
+        value={atual}
+        label={opcoes.find((opcao) => opcao.id === atual)?.name ?? t("automations.pick_value")}
+        onChange={(escolha: string) => onChange(escolha)}
+        input
+        maxHeight="lg"
+      >
+        {opcoes.map((opcao) => (
+          <CustomSelect.Option key={opcao.id} value={opcao.id}>
+            {opcao.name}
+          </CustomSelect.Option>
+        ))}
+      </CustomSelect>
+    );
+  }
+
+  const tipoDoCampo = propriedade.property_type === "date" ? "date" : "text";
+  return (
+    <Input
+      type={tipoDoCampo}
+      value={typeof valor === "string" || typeof valor === "number" ? String(valor) : ""}
+      onChange={(evento) => onChange(evento.target.value)}
+      placeholder={t("automations.pick_value")}
+      className="w-48"
+    />
+  );
+});
+
+/**
+ * As variáveis disponíveis, ditas na tela.
+ *
+ * Escondê-las obrigaria a pessoa a saber de cor o que existe — e o custo de não
+ * saber é um comentário automático com `{{orçamento}}` literal no meio.
+ */
+const AjudaDeVariaveis = observer(function AjudaDeVariaveis() {
+  const { t } = useTranslation();
+  return (
+    <p className="text-11 text-tertiary">
+      {t("automations.variables_hint")} {VARIAVEIS_DA_AUTOMACAO.map((nome) => `{{${nome}}}`).join(" · ")}
+    </p>
+  );
+});
+
+/** As duas opções que valem para qualquer criação. */
+const OpcoesDaCriacao = observer(function OpcoesDaCriacao(props: {
+  indice: number;
+  config: TAutomationAction["config"];
+  atualizarConfig: (indice: number, mudanca: Record<string, unknown>) => void;
+}) {
+  const { indice, config, atualizarConfig } = props;
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <label className="flex items-center gap-2 text-12 text-secondary">
+        <input
+          type="checkbox"
+          checked={Boolean(config.herdar_responsaveis)}
+          onChange={(evento) => atualizarConfig(indice, { herdar_responsaveis: evento.target.checked })}
+        />
+        {t("automations.inherit_assignees")}
+      </label>
+      <label className="flex items-center gap-2 text-12 text-secondary">
+        {t("automations.due_in_days")}
+        <Input
+          type="number"
+          value={config.due_in_days === undefined ? "" : String(config.due_in_days)}
+          onChange={(evento) =>
+            atualizarConfig(indice, {
+              due_in_days: evento.target.value === "" ? undefined : Number(evento.target.value),
+            })
+          }
+          className="w-20"
+          placeholder="—"
+        />
+      </label>
+    </div>
+  );
+});
+
+/** A lista de subtarefas — um campo por linha, como um checklist se escreve. */
+const ListaDeSubtarefas = observer(function ListaDeSubtarefas(props: {
+  nomes: string[];
+  onChange: (nomes: string[]) => void;
+}) {
+  const { nomes, onChange } = props;
+  const { t } = useTranslation();
+
+  const trocar = (indice: number, valor: string) => onChange(nomes.map((n, i) => (i === indice ? valor : n)));
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {nomes.map((nome, indice) => (
+        // A posição é a identidade aqui: o campo é controlado pelo pai e não
+        // guarda estado próprio, então reordenar não embaralha nada.
+        // eslint-disable-next-line react/no-array-index-key
+        <div key={indice} className="flex items-center gap-1.5">
+          <span className="text-11 text-tertiary">{indice + 1}.</span>
+          <Input
+            value={nome}
+            onChange={(evento) => trocar(indice, evento.target.value)}
+            placeholder={t("automations.subtask_placeholder")}
+            className="flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => onChange(nomes.filter((_, i) => i !== indice))}
+            className="hover:text-danger text-tertiary"
+            aria-label={t("common.remove")}
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      ))}
+      <Button variant="secondary" size="sm" className="w-fit" onClick={() => onChange([...nomes, ""])}>
+        <Plus className="size-3.5" />
+        {t("automations.add_subtask")}
+      </Button>
+    </div>
+  );
+});
+
 export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps) {
   const { projectId, acoes, propriedades, trigger, onChange } = props;
   const { t } = useTranslation();
@@ -436,146 +577,5 @@ export const AcoesDaAutomacao = observer(function AcoesDaAutomacao(props: TProps
           ))}
       </CustomSelect>
     </div>
-  );
-});
-
-/**
- * As variáveis disponíveis, ditas na tela.
- *
- * Escondê-las obrigaria a pessoa a saber de cor o que existe — e o custo de não
- * saber é um comentário automático com `{{orçamento}}` literal no meio.
- */
-const AjudaDeVariaveis = observer(function AjudaDeVariaveis() {
-  const { t } = useTranslation();
-  return (
-    <p className="text-11 text-tertiary">
-      {t("automations.variables_hint")} {VARIAVEIS_DA_AUTOMACAO.map((nome) => `{{${nome}}}`).join(" · ")}
-    </p>
-  );
-});
-
-/** A lista de subtarefas — um campo por linha, como um checklist se escreve. */
-const ListaDeSubtarefas = observer(function ListaDeSubtarefas(props: {
-  nomes: string[];
-  onChange: (nomes: string[]) => void;
-}) {
-  const { nomes, onChange } = props;
-  const { t } = useTranslation();
-
-  const trocar = (indice: number, valor: string) => onChange(nomes.map((n, i) => (i === indice ? valor : n)));
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      {nomes.map((nome, indice) => (
-        // A posição é a identidade aqui: o campo é controlado pelo pai e não
-        // guarda estado próprio, então reordenar não embaralha nada.
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={indice} className="flex items-center gap-1.5">
-          <span className="text-11 text-tertiary">{indice + 1}.</span>
-          <Input
-            value={nome}
-            onChange={(evento) => trocar(indice, evento.target.value)}
-            placeholder={t("automations.subtask_placeholder")}
-            className="flex-1"
-          />
-          <button
-            type="button"
-            onClick={() => onChange(nomes.filter((_, i) => i !== indice))}
-            className="hover:text-danger text-tertiary"
-            aria-label={t("common.remove")}
-          >
-            <Trash2 className="size-3.5" />
-          </button>
-        </div>
-      ))}
-      <Button variant="secondary" size="sm" className="w-fit" onClick={() => onChange([...nomes, ""])}>
-        <Plus className="size-3.5" />
-        {t("automations.add_subtask")}
-      </Button>
-    </div>
-  );
-});
-
-/** As duas opções que valem para qualquer criação. */
-const OpcoesDaCriacao = observer(function OpcoesDaCriacao(props: {
-  indice: number;
-  config: TAutomationAction["config"];
-  atualizarConfig: (indice: number, mudanca: Record<string, unknown>) => void;
-}) {
-  const { indice, config, atualizarConfig } = props;
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-wrap items-center gap-4">
-      <label className="flex items-center gap-2 text-12 text-secondary">
-        <input
-          type="checkbox"
-          checked={Boolean(config.herdar_responsaveis)}
-          onChange={(evento) => atualizarConfig(indice, { herdar_responsaveis: evento.target.checked })}
-        />
-        {t("automations.inherit_assignees")}
-      </label>
-      <label className="flex items-center gap-2 text-12 text-secondary">
-        {t("automations.due_in_days")}
-        <Input
-          type="number"
-          value={config.due_in_days === undefined ? "" : String(config.due_in_days)}
-          onChange={(evento) =>
-            atualizarConfig(indice, {
-              due_in_days: evento.target.value === "" ? undefined : Number(evento.target.value),
-            })
-          }
-          className="w-20"
-          placeholder="—"
-        />
-      </label>
-    </div>
-  );
-});
-
-/**
- * O campo de valor muda com o tipo da propriedade — é a mesma regra do
- * formulário de propriedades: oferecer caixa de texto para uma seleção
- * produziria valor que o backend recusa.
- */
-const ValorDaPropriedade = observer(function ValorDaPropriedade(props: {
-  propriedade: TIssueProperty | undefined;
-  valor: unknown;
-  onChange: (valor: unknown) => void;
-}) {
-  const { propriedade, valor, onChange } = props;
-  const { t } = useTranslation();
-
-  if (!propriedade) return null;
-
-  if (propriedade.property_type === "select" || propriedade.property_type === "multi_select") {
-    const opcoes = propriedade.options ?? [];
-    const atual = typeof valor === "string" ? valor : "";
-    return (
-      <CustomSelect
-        value={atual}
-        label={opcoes.find((opcao) => opcao.id === atual)?.name ?? t("automations.pick_value")}
-        onChange={(escolha: string) => onChange(escolha)}
-        input
-        maxHeight="lg"
-      >
-        {opcoes.map((opcao) => (
-          <CustomSelect.Option key={opcao.id} value={opcao.id}>
-            {opcao.name}
-          </CustomSelect.Option>
-        ))}
-      </CustomSelect>
-    );
-  }
-
-  const tipoDoCampo = propriedade.property_type === "date" ? "date" : "text";
-  return (
-    <Input
-      type={tipoDoCampo}
-      value={typeof valor === "string" || typeof valor === "number" ? String(valor) : ""}
-      onChange={(evento) => onChange(evento.target.value)}
-      placeholder={t("automations.pick_value")}
-      className="w-48"
-    />
   );
 });

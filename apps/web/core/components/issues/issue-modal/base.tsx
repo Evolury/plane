@@ -158,10 +158,10 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
     handleDuplicateIssueModal(false);
   };
 
-  const handleCreateIssue = async (
+  async function handleCreateIssue(
     payload: Partial<TIssue>,
     is_draft_issue: boolean = false
-  ): Promise<TIssue | undefined> => {
+  ): Promise<TIssue | undefined> {
     if (!workspaceSlug || !payload.project_id) return;
 
     try {
@@ -259,7 +259,7 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
       });
       throw error;
     }
-  };
+  }
 
   const handleCycleChange = async (data: Partial<TIssue> | undefined, payload: Partial<TIssue>) => {
     if (!workspaceSlug || !data?.project_id || !data?.id) return;
@@ -385,7 +385,9 @@ export const CreateUpdateIssueModalBase = observer(function CreateUpdateIssueMod
 
   const handleUpdateUploadedAssetIds = (assetId: string) => setUploadedAssetIds((prev) => [...prev, assetId]);
 
-  const handleDuplicateIssueModal = (value: boolean) => setIsDuplicateModalOpen(value);
+  function handleDuplicateIssueModal(value: boolean) {
+    return setIsDuplicateModalOpen(value);
+  }
 
   // don't open the modal if there are no projects
   if (!allowedProjectIds || allowedProjectIds.length === 0 || !activeProjectId) return null;

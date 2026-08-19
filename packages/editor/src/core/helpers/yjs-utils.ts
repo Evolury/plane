@@ -245,10 +245,10 @@ export const convertHTMLDocumentToAllFormats = (args: TConvertHTMLDocumentToAllF
   return allFormats;
 };
 
-export const extractTextFromHTML = (html: string): string => {
+export function extractTextFromHTML(html: string): string {
   // Use DOMPurify to safely extract text and remove all HTML tags
   // This is more secure than regex as it handles edge cases and prevents injection
   // Note: sanitizeHTML trims whitespace, which is acceptable for title extraction
   const sanitizedText = sanitizeHTML(html); // sanitize the string to remove all HTML tags
   return sanitizedText.trim() || ""; // trim the string to remove leading and trailing whitespaces
-};
+}

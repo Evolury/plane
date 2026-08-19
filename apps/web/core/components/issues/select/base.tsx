@@ -133,7 +133,7 @@ export const WorkItemLabelSelectBase = observer(function WorkItemLabelSelectBase
     }
   }, [isDropdownOpen, isMobile]);
 
-  const handleAddLabel = async (labelName: string) => {
+  async function handleAddLabel(labelName: string) {
     if (!createLabel || submitting) return;
     const name = labelName.trim();
     if (!name) return;
@@ -148,7 +148,7 @@ export const WorkItemLabelSelectBase = observer(function WorkItemLabelSelectBase
     } finally {
       setSubmitting(false);
     }
-  };
+  }
 
   return (
     <Combobox

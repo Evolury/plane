@@ -127,7 +127,7 @@ export const SidebarFavoritesMenu = observer(function SidebarFavoritesMenu() {
       });
   };
 
-  const handleRemoveFromFavoritesFolder = (favoriteId: string) => {
+  function handleRemoveFromFavoritesFolder(favoriteId: string) {
     removeFromFavoriteFolder(workspaceSlug.toString(), favoriteId).catch(() => {
       setToast({
         type: TOAST_TYPE.ERROR,
@@ -135,7 +135,7 @@ export const SidebarFavoritesMenu = observer(function SidebarFavoritesMenu() {
         message: t("failed_to_move_favorite"),
       });
     });
-  };
+  }
 
   const handleReorder = useCallback(
     (favoriteId: string, droppedFavId: string, edge: string | undefined) => {

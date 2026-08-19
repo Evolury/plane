@@ -72,7 +72,7 @@ export const onAuthenticate = async ({
   });
 };
 
-export const handleAuthentication = async ({ cookie, userId }: { cookie: string; userId: string }) => {
+export async function handleAuthentication({ cookie, userId }: { cookie: string; userId: string }) {
   // fetch current user info
   try {
     const userService = new UserService();
@@ -94,4 +94,4 @@ export const handleAuthentication = async ({ cookie, userId }: { cookie: string;
     logger.error("Authentication failed", appError);
     throw new AppError("Authentication unsuccessful", { code: appError.code });
   }
-};
+}

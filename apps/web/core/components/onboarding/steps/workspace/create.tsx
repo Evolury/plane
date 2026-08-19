@@ -104,13 +104,13 @@ export const WorkspaceCreateStep = observer(function WorkspaceCreateStep({
     }
   };
 
-  const completeStep = async (workspaceId: string) => {
+  async function completeStep(workspaceId: string) {
     if (!user) return;
     await updateUserProfile({
       last_workspace_id: workspaceId,
     });
     await fetchCurrentUserSettings();
-  };
+  }
 
   const isButtonDisabled = !isValid || invalidSlug || isSubmitting;
 

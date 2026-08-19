@@ -53,7 +53,7 @@ const nextListIsDeeper = (typeOrName: string, state: EditorState) => {
   return false;
 };
 
-const getNextListDepth = (typeOrName: string, state: EditorState) => {
+function getNextListDepth(typeOrName: string, state: EditorState) {
   const listItemPos = findListItemPos(typeOrName, state);
 
   if (!listItemPos) {
@@ -63,7 +63,7 @@ const getNextListDepth = (typeOrName: string, state: EditorState) => {
   const [, depth] = getNodeAtPosition(state, typeOrName, listItemPos.$pos.pos + 4);
 
   return depth;
-};
+}
 
 const getPrevListDepth = (typeOrName: string, state: EditorState) => {
   const listItemPos = findListItemPos(typeOrName, state);
@@ -238,7 +238,7 @@ export const handleDelete = (editor: Editor, name: string) => {
   return editor.commands.joinItemForward();
 };
 
-const hasListBefore = (editorState: EditorState, name: string, parentListTypes: string[]) => {
+function hasListBefore(editorState: EditorState, name: string, parentListTypes: string[]) {
   const { $anchor } = editorState.selection;
 
   const previousNodePos = Math.max(0, $anchor.pos - 2);
@@ -250,9 +250,9 @@ const hasListBefore = (editorState: EditorState, name: string, parentListTypes: 
   }
 
   return true;
-};
+}
 
-const prevListIsHigher = (typeOrName: string, state: EditorState) => {
+function prevListIsHigher(typeOrName: string, state: EditorState) {
   const listDepth = getPrevListDepth(typeOrName, state);
   const listItemPos = findListItemPos(typeOrName, state);
 
@@ -265,9 +265,9 @@ const prevListIsHigher = (typeOrName: string, state: EditorState) => {
   }
 
   return false;
-};
+}
 
-const nextListIsSibling = (typeOrName: string, state: EditorState) => {
+function nextListIsSibling(typeOrName: string, state: EditorState) {
   const listDepth = getNextListDepth(typeOrName, state);
   const listItemPos = findListItemPos(typeOrName, state);
 
@@ -280,9 +280,9 @@ const nextListIsSibling = (typeOrName: string, state: EditorState) => {
   }
 
   return false;
-};
+}
 
-export const nextListIsHigher = (typeOrName: string, state: EditorState) => {
+export function nextListIsHigher(typeOrName: string, state: EditorState) {
   const listDepth = getNextListDepth(typeOrName, state);
   const listItemPos = findListItemPos(typeOrName, state);
 
@@ -295,9 +295,9 @@ export const nextListIsHigher = (typeOrName: string, state: EditorState) => {
   }
 
   return false;
-};
+}
 
-const listItemHasSubList = (typeOrName: string, state: EditorState, node?: Node) => {
+function listItemHasSubList(typeOrName: string, state: EditorState, node?: Node) {
   if (!node) {
     return false;
   }
@@ -313,9 +313,9 @@ const listItemHasSubList = (typeOrName: string, state: EditorState, node?: Node)
   });
 
   return hasSubList;
-};
+}
 
-const isCurrentParagraphASibling = (state: EditorState): boolean => {
+function isCurrentParagraphASibling(state: EditorState): boolean {
   const { $from } = state.selection;
   const listItemNode = $from.node(-1); // Get the parent node of the current selection, assuming it's a list item.
   const currentParagraphNode = $from.parent; // Get the current node where the selection is.
@@ -337,7 +337,7 @@ const isCurrentParagraphASibling = (state: EditorState): boolean => {
   }
 
   return false;
-};
+}
 
 export function isCursorInSubList(editor: Editor) {
   const { selection } = editor.state;
@@ -367,7 +367,7 @@ export function isCursorInSubList(editor: Editor) {
   return false;
 }
 
-const hasListItemBefore = (typeOrName: string, state: EditorState): boolean => {
+function hasListItemBefore(typeOrName: string, state: EditorState): boolean {
   const { $anchor } = state.selection;
 
   const $targetPos = state.doc.resolve($anchor.pos - 2);
@@ -381,4 +381,4 @@ const hasListItemBefore = (typeOrName: string, state: EditorState): boolean => {
   }
 
   return true;
-};
+}

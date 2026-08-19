@@ -80,6 +80,25 @@ export const getDateFromPositionOnGantt = (position: number, chartData: ChartDat
   return newDate;
 };
 
+export const getPositionFromDate = (chartData: ChartDataType, date: string | Date, offsetWidth: number) => {
+  const currDate = getDate(date);
+
+  const { startDate: chartStartDate } = chartData.data;
+
+  if (!currDate || !chartStartDate) return 0;
+
+  chartStartDate.setHours(0, 0, 0, 0);
+  currDate.setHours(0, 0, 0, 0);
+
+  // get number of days from chart start date to block's start date
+  const positionDaysDifference = Math.round(findTotalDaysInRange(chartStartDate, currDate, false) ?? 0);
+
+  if (!positionDaysDifference) return 0;
+
+  // get scroll position from the number of days and width of each day
+  return positionDaysDifference * chartData.data.dayWidth + offsetWidth;
+};
+
 /**
  * returns the  position and width of the block on the timeline chart from startDate and EndDate
  * @param chartData
@@ -115,23 +134,4 @@ export const getItemPositionWidth = (chartData: ChartDataType, itemData: IGanttB
   }
 
   return { marginLeft: scrollPosition, width: scrollWidth };
-};
-
-export const getPositionFromDate = (chartData: ChartDataType, date: string | Date, offsetWidth: number) => {
-  const currDate = getDate(date);
-
-  const { startDate: chartStartDate } = chartData.data;
-
-  if (!currDate || !chartStartDate) return 0;
-
-  chartStartDate.setHours(0, 0, 0, 0);
-  currDate.setHours(0, 0, 0, 0);
-
-  // get number of days from chart start date to block's start date
-  const positionDaysDifference = Math.round(findTotalDaysInRange(chartStartDate, currDate, false) ?? 0);
-
-  if (!positionDaysDifference) return 0;
-
-  // get scroll position from the number of days and width of each day
-  return positionDaysDifference * chartData.data.dayWidth + offsetWidth;
 };

@@ -84,7 +84,7 @@ export const useIssuesActions = (storeType: EIssuesStoreType): IssueActions => {
   }
 };
 
-const useProjectIssueActions = () => {
+function useProjectIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -164,9 +164,9 @@ const useProjectIssueActions = () => {
     }),
     [fetchIssues, fetchNextIssues, createIssue, quickAddIssue, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
-};
+}
 
-const useProjectEpicsActions = () => {
+function useProjectEpicsActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -246,9 +246,9 @@ const useProjectEpicsActions = () => {
     }),
     [fetchIssues, fetchNextIssues, createIssue, quickAddIssue, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
-};
+}
 
-const useCycleIssueActions = () => {
+function useCycleIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId, cycleId: routerCycleId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -353,9 +353,9 @@ const useCycleIssueActions = () => {
       updateFilters,
     ]
   );
-};
+}
 
-const useModuleIssueActions = () => {
+function useModuleIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId, moduleId: routerModuleId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -450,9 +450,9 @@ const useModuleIssueActions = () => {
     }),
     [fetchIssues, createIssue, updateIssue, removeIssue, removeIssueFromView, archiveIssue, updateFilters]
   );
-};
+}
 
-const useProfileIssueActions = () => {
+function useProfileIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, userId: routerUserId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -530,11 +530,11 @@ const useProfileIssueActions = () => {
     }),
     [fetchIssues, createIssue, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
-};
+}
 
 // Evolury: ações de "Minhas tarefas" — espelho das de perfil, sem userId/viewId
 // (a página é sempre do usuário corrente). ADR 0002.
-const useMyTasksIssueActions = () => {
+function useMyTasksIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -597,9 +597,9 @@ const useMyTasksIssueActions = () => {
     }),
     [fetchIssues, fetchNextIssues, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
-};
+}
 
-const useProjectViewIssueActions = () => {
+function useProjectViewIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId, viewId: routerViewId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -680,9 +680,9 @@ const useProjectViewIssueActions = () => {
     }),
     [fetchIssues, fetchNextIssues, createIssue, quickAddIssue, updateIssue, removeIssue, archiveIssue, updateFilters]
   );
-};
+}
 
-const useArchivedIssueActions = () => {
+function useArchivedIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -738,9 +738,9 @@ const useArchivedIssueActions = () => {
     }),
     [fetchIssues, fetchNextIssues, removeIssue, restoreIssue, updateFilters]
   );
-};
+}
 
-const useGlobalIssueActions = () => {
+function useGlobalIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, globalViewId: routerGlobalViewId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -804,9 +804,9 @@ const useGlobalIssueActions = () => {
     }),
     [createIssue, updateIssue, removeIssue, updateFilters]
   );
-};
+}
 
-const useWorkspaceDraftIssueActions = () => {
+function useWorkspaceDraftIssueActions() {
   // router
   const { workspaceSlug: routerWorkspaceSlug, globalViewId: routerGlobalViewId } = useParams();
   const workspaceSlug = routerWorkspaceSlug?.toString();
@@ -876,4 +876,4 @@ const useWorkspaceDraftIssueActions = () => {
     }),
     [fetchIssues, fetchNextIssues, createIssue, updateIssue, removeIssue, updateFilters]
   );
-};
+}

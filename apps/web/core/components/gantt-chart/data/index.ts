@@ -9,14 +9,6 @@ import type { WeekMonthDataType, ChartDataType, TGanttViews } from "@plane/types
 import { EStartOfTheWeek } from "@plane/types";
 import { getMonthName, getWeekDayName } from "@plane/utils";
 
-// constants
-export const generateWeeks = (startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY): WeekMonthDataType[] => [
-  ...weeks.slice(startOfWeek),
-  ...weeks.slice(0, startOfWeek),
-];
-
-export const charCapitalize = (word: string) => `${word.charAt(0).toUpperCase()}${word.substring(1)}`;
-
 // Evolury: os nomes de dia, mês e trimestre vinham cravados em inglês no
 // cronograma. Passam a sair do locale ativo, pelos mesmos ajudantes que o
 // calendário usa — assim não existe uma segunda lista de meses para manter.
@@ -26,12 +18,20 @@ export const charCapitalize = (word: string) => `${word.charAt(0).toUpperCase()}
 // não texto de tela — a mesma distinção que vale no resto do produto.
 const CHAVES_DE_DIA = ["sun", "mon", "tue", "wed", "thurs", "fri", "sat"];
 
+export const charCapitalize = (word: string) => `${word.charAt(0).toUpperCase()}${word.substring(1)}`;
+
 export const weeks: WeekMonthDataType[] = CHAVES_DE_DIA.map((chave, dia) => ({
   key: dia,
   shortTitle: chave,
   title: getWeekDayName(dia),
   abbreviation: charCapitalize(getWeekDayName(dia, true)),
 }));
+
+// constants
+export const generateWeeks = (startOfWeek: EStartOfTheWeek = EStartOfTheWeek.SUNDAY): WeekMonthDataType[] => [
+  ...weeks.slice(startOfWeek),
+  ...weeks.slice(0, startOfWeek),
+];
 
 export const months: WeekMonthDataType[] = Array.from({ length: 12 }, (_, mes) => ({
   key: mes,
