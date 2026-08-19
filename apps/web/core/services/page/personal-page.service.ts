@@ -149,6 +149,28 @@ export class PersonalPageService extends APIService {
       });
   }
 
+  /** Leva a página pessoal para dentro de um projeto (ADR 0015). */
+  async moveToProject(
+    workspaceSlug: string,
+    pageId: string,
+    projectId: string
+  ): Promise<{ project_id: string; shares_removed: number }> {
+    return this.post(`${this.base(workspaceSlug)}/${pageId}/move/`, { project_id: projectId })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Recolhe uma página de projeto para o espaço pessoal do dono. */
+  async moveToPersonal(workspaceSlug: string, projectId: string, pageId: string): Promise<void> {
+    return this.post(`/api/workspaces/${workspaceSlug}/projects/${projectId}/pages/${pageId}/move-to-personal/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async duplicate(workspaceSlug: string, pageId: string): Promise<TPage> {
     return this.post(`${this.base(workspaceSlug)}/${pageId}/duplicate/`)
       .then((response) => response?.data)

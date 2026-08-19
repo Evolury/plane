@@ -48,6 +48,7 @@ from plane.bgtasks.page_version_task import track_page_version
 from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.db.models import (
     Page,
+    ProjectMember,
     PageLog,
     PageShare,
     PageVersion,
@@ -438,3 +439,44 @@ class SharedWithMeEndpoint(BaseAPIView):
             .order_by("-updated_at")
         )
         return Response(PersonalPageSerializer(paginas, many=True).data, status=status.HTTP_200_OK)
+
+
+class PersonalPageMoveEndpoint(BaseAPIView):
+    """Leva uma página pessoal para dentro de um projeto (ADR 0015).
+
+    Mover é criar a linha em `ProjectPage`. Junto, os compartilhamentos caem: no
+    projeto quem manda é o projeto, e manter as duas fontes de acesso faria a
+    pergunta "quem pode ler isto?" ter duas respostas que podem divergir.
+    """
+
+    permission_classes = [PersonalPagePermission]
+
+    def post(self, request, slug, page_id):
+        page = request.pagina_pessoal
+        if page.owned_by_id != request.user.id:
+            return Response({"error": "Só o dono move a página"}, status=status.HTTP_403_FORBIDDEN)
+
+        project_id = request.data.get("project_id")
+        if not project_id:
+            return Response({"error": "Informe o projeto de destino"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Precisa poder criar página no destino — convidado não pode.
+        if not ProjectMember.objects.filter(
+            workspace__slug=slug, project_id=project_id, member=request.user, is_active=True, role__gte=15
+        ).exists():
+            return Response(
+                {"error": "Você não pode criar página nesse projeto"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        compartilhamentos = PageShare.objects.filter(page_id=page.id)
+        quantos = compartilhamentos.count()
+        compartilhamentos.delete()
+
+        ProjectPage.objects.create(
+            workspace_id=page.workspace_id,
+            project_id=project_id,
+            page_id=page.id,
+            created_by_id=request.user.id,
+            updated_by_id=request.user.id,
+        )
+        return Response({"project_id": str(project_id), "shares_removed": quantos}, status=status.HTTP_200_OK)

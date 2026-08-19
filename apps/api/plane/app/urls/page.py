@@ -17,6 +17,8 @@ from plane.app.views import (
     PersonalPageDuplicateEndpoint,
     PersonalPageShareViewSet,
     SharedWithMeEndpoint,
+    PersonalPageMoveEndpoint,
+    PageMoveToPersonalEndpoint,
 )
 
 urlpatterns = [
@@ -138,5 +140,16 @@ urlpatterns = [
         "workspaces/<str:slug>/my-tasks/shared-pages/",
         SharedWithMeEndpoint.as_view(),
         name="personal-pages-shared-with-me",
+    ),
+    # Evolury: mover entre pessoal e projeto, nos dois sentidos (ADR 0015)
+    path(
+        "workspaces/<str:slug>/my-tasks/pages/<uuid:page_id>/move/",
+        PersonalPageMoveEndpoint.as_view(),
+        name="personal-page-move-to-project",
+    ),
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/pages/<uuid:page_id>/move-to-personal/",
+        PageMoveToPersonalEndpoint.as_view(),
+        name="page-move-to-personal",
     ),
 ]

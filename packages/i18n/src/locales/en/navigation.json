@@ -65,7 +65,16 @@
       "role_write": "Can edit",
       "share_failed": "Could not share the page.",
       "shared_empty_title": "Nothing shared with you",
-      "shared_empty_description": "When someone shares a personal page with you, it shows up here."
+      "shared_empty_description": "When someone shares a personal page with you, it shows up here.",
+      "move_to_project": "Move to a project",
+      "move_to_personal": "Move to My tasks",
+      "move_title": "Move this page",
+      "move_project": "Target project",
+      "move_warning_one": "1 person loses access: inside a project, the project decides.",
+      "move_warning_many": "{count} people lose access: inside a project, the project decides.",
+      "move_confirm": "Move",
+      "move_failed": "Could not move the page.",
+      "move_to_personal_note": "The page leaves the project and becomes yours only."
     }
   }
 }

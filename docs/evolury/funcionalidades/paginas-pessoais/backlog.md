@@ -58,10 +58,16 @@ Saíram junto três rótulos que ainda estavam em inglês no menu da página —
 
 ## F3 — Mover
 
-- [ ] F3.1 Mover pessoal → projeto e projeto → pessoal, só pelo dono
-- [ ] F3.2 Aviso antes de mover, dizendo quantas pessoas perdem acesso
-- [ ] F3.3 Item "Mover" ligado no menu de ações
-- [ ] F3.4 Testes
+- [x] F3.1 Mover pessoal → projeto e projeto → pessoal, só pelo dono. No sentido
+      de ida também é preciso poder criar página no destino — convidado não pode
+- [x] F3.2 Aviso antes de mover, com a **contagem vinda do servidor**: "1 pessoa
+      perde o acesso: no projeto, quem manda é o projeto"
+- [x] F3.3 "Mover para um projeto" na página pessoal e "Mover para Minhas
+      tarefas" na de projeto, os dois só para o dono
+- [x] F3.4 Testes (23 no total), com defeito reintroduzido um de cada vez
+
+**Restrição da volta:** só recolhe página que esteja em **um** projeto. Com mais
+de um, "tirar do projeto" não tem resposta única.
 
 ## Fora de escopo, e por quê
 

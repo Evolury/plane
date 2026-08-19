@@ -131,9 +131,8 @@ export class PersonalPage extends BasePage implements TPersonalPage {
     return this.isCurrentUserOwner;
   }
 
-  /** Mover entre pessoal e projeto é a F3. */
   get canCurrentUserMovePage() {
-    return false;
+    return this.isCurrentUserOwner;
   }
 
   get isContentEditable() {

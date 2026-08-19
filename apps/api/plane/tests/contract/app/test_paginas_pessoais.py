@@ -14,7 +14,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from plane.db.models import Page, PageShare, Project, ProjectPage, User, WorkspaceMember
+from plane.db.models import Page, PageShare, Project, ProjectMember, ProjectPage, User, WorkspaceMember
 
 
 def url_lista(slug):
@@ -299,3 +299,84 @@ class TestTravasDoCompartilhamento:
         # É por este campo que a tela sabe se pode deixar escrever.
         assert minha.data["share_role"] is None
         assert dela.data["share_role"] == PageShare.WRITE
+
+
+def url_mover(slug, page_id):
+    return f"/api/workspaces/{slug}/my-tasks/pages/{page_id}/move/"
+
+
+def url_recolher(slug, project_id, page_id):
+    return f"/api/workspaces/{slug}/projects/{project_id}/pages/{page_id}/move-to-personal/"
+
+
+@pytest.mark.django_db
+class TestMover:
+    def test_pessoal_vira_de_projeto_e_some_da_lista_pessoal(self, session_client, workspace, create_user):
+        projeto = Project.objects.create(name="Projeto", identifier="PRJ", workspace=workspace)
+        ProjectMember.objects.create(workspace=workspace, project=projeto, member=create_user, role=20)
+        criada = session_client.post(url_lista(workspace.slug), {"name": "Rascunho"}, format="json")
+
+        resposta = session_client.post(
+            url_mover(workspace.slug, criada.data["id"]), {"project_id": str(projeto.id)}, format="json"
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        assert ProjectPage.objects.filter(page_id=criada.data["id"], project=projeto).count() == 1
+        assert session_client.get(url_lista(workspace.slug)).data == []
+
+    def test_mover_para_projeto_apaga_os_compartilhamentos(
+        self, session_client, workspace, create_user, outra_pessoa
+    ):
+        projeto = Project.objects.create(name="Projeto", identifier="PRJ", workspace=workspace)
+        ProjectMember.objects.create(workspace=workspace, project=projeto, member=create_user, role=20)
+        criada = session_client.post(url_lista(workspace.slug), {"name": "Rascunho"}, format="json")
+        session_client.post(
+            url_shares(workspace.slug, criada.data["id"]),
+            {"shared_with": str(outra_pessoa.id), "role": PageShare.READ},
+            format="json",
+        )
+        assert PageShare.objects.filter(page_id=criada.data["id"]).count() == 1
+
+        resposta = session_client.post(
+            url_mover(workspace.slug, criada.data["id"]), {"project_id": str(projeto.id)}, format="json"
+        )
+
+        # No projeto quem manda é o projeto: as duas fontes de acesso juntas
+        # fariam "quem pode ler isto?" ter duas respostas.
+        assert resposta.data["shares_removed"] == 1
+        assert PageShare.objects.filter(page_id=criada.data["id"]).count() == 0
+
+    def test_nao_move_para_projeto_onde_nao_posso_criar(self, session_client, workspace, create_user):
+        projeto = Project.objects.create(name="Alheio", identifier="ALH", workspace=workspace)
+        criada = session_client.post(url_lista(workspace.slug), {"name": "Rascunho"}, format="json")
+
+        resposta = session_client.post(
+            url_mover(workspace.slug, criada.data["id"]), {"project_id": str(projeto.id)}, format="json"
+        )
+
+        assert resposta.status_code == status.HTTP_403_FORBIDDEN
+        assert ProjectPage.objects.filter(page_id=criada.data["id"]).count() == 0
+
+    def test_de_projeto_volta_para_o_pessoal(self, session_client, workspace, create_user):
+        projeto = Project.objects.create(name="Projeto", identifier="PRJ", workspace=workspace)
+        ProjectMember.objects.create(workspace=workspace, project=projeto, member=create_user, role=20)
+        pagina = Page.objects.create(name="Do projeto", workspace=workspace, owned_by=create_user)
+        ProjectPage.objects.create(workspace=workspace, project=projeto, page=pagina)
+
+        resposta = session_client.post(url_recolher(workspace.slug, projeto.id, pagina.id))
+
+        assert resposta.status_code == status.HTTP_204_NO_CONTENT
+        assert ProjectPage.objects.filter(page_id=pagina.id).count() == 0
+        assert [str(p["id"]) for p in session_client.get(url_lista(workspace.slug)).data] == [str(pagina.id)]
+
+    def test_so_o_dono_recolhe(self, session_client, cliente_da_outra, workspace, create_user, outra_pessoa):
+        projeto = Project.objects.create(name="Projeto", identifier="PRJ", workspace=workspace)
+        ProjectMember.objects.create(workspace=workspace, project=projeto, member=create_user, role=20)
+        ProjectMember.objects.create(workspace=workspace, project=projeto, member=outra_pessoa, role=20)
+        pagina = Page.objects.create(name="Do projeto", workspace=workspace, owned_by=create_user)
+        ProjectPage.objects.create(workspace=workspace, project=projeto, page=pagina)
+
+        resposta = cliente_da_outra.post(url_recolher(workspace.slug, projeto.id, pagina.id))
+
+        assert resposta.status_code == status.HTTP_403_FORBIDDEN
+        assert ProjectPage.objects.filter(page_id=pagina.id).count() == 1
