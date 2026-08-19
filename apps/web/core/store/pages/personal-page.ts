@@ -11,9 +11,10 @@
 // de onde vem a permissão. Não há projeto, então não há papel de projeto a
 // consultar: a resposta é sempre "sou o dono?".
 
-import { computed, makeObservable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import type { TPage } from "@plane/types";
+import { PAPEL_DA_PAGINA } from "@plane/types";
 import { PersonalPageService } from "@/services/page";
 import type { RootStore } from "@/store/root.store";
 import { BasePage } from "./base-page";
@@ -24,6 +25,12 @@ const personalPageService = new PersonalPageService();
 export type TPersonalPage = TPageInstance;
 
 export class PersonalPage extends BasePage implements TPersonalPage {
+  /**
+   * Meu papel quando a página é de outra pessoa: 5 pode ler, 15 pode editar.
+   * Nulo quando a página é minha. Vem do servidor — a tela não deduz.
+   */
+  share_role: number | null | undefined;
+
   constructor(store: RootStore, page: TPage) {
     const { workspaceSlug } = store.router;
     const exigir = () => {
@@ -69,7 +76,10 @@ export class PersonalPage extends BasePage implements TPersonalPage {
       },
     });
 
+    this.share_role = page?.share_role ?? null;
+
     makeObservable(this, {
+      share_role: observable.ref,
       canCurrentUserAccessPage: computed,
       canCurrentUserEditPage: computed,
       canCurrentUserDuplicatePage: computed,
@@ -83,12 +93,17 @@ export class PersonalPage extends BasePage implements TPersonalPage {
     });
   }
 
+  /** Meu papel quando a página é de outra pessoa; nulo quando é minha. */
+  private get papel() {
+    return this.share_role ?? null;
+  }
+
   get canCurrentUserAccessPage() {
-    return this.isCurrentUserOwner;
+    return this.isCurrentUserOwner || this.papel !== null;
   }
 
   get canCurrentUserEditPage() {
-    return this.isCurrentUserOwner;
+    return this.isCurrentUserOwner || this.papel === PAPEL_DA_PAGINA.EDITAR;
   }
 
   get canCurrentUserDuplicatePage() {
@@ -122,7 +137,7 @@ export class PersonalPage extends BasePage implements TPersonalPage {
   }
 
   get isContentEditable() {
-    return this.isCurrentUserOwner && !this.archived_at && !this.is_locked;
+    return this.canCurrentUserEditPage && !this.archived_at && !this.is_locked;
   }
 
   getRedirectionLink = computedFn(() => {

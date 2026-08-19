@@ -39,6 +39,7 @@ export interface IPersonalPageStore {
   updateFilters: <T extends keyof TPageFilters>(filterKey: T, filterValue: TPageFilters[T]) => void;
   clearAllFilters: () => void;
   fetchPagesList: (workspaceSlug: string) => Promise<TPage[] | undefined>;
+  fetchSharedPages: (workspaceSlug: string) => Promise<TPage[] | undefined>;
   fetchPageDetails: (
     workspaceSlug: string,
     pageId: string,
@@ -71,6 +72,7 @@ export class PersonalPageStore implements IPersonalPageStore {
       updateFilters: action,
       clearAllFilters: action,
       fetchPagesList: action,
+      fetchSharedPages: action,
       fetchPageDetails: action,
       createPage: action,
       removePage: action,
@@ -90,12 +92,18 @@ export class PersonalPageStore implements IPersonalPageStore {
   }
 
   /**
-   * Página pessoal não tem público/privado: ela é de quem a criou. A única
-   * divisão é ativa x arquivada — por isso não dá para usar o
-   * `filterPagesByPageType` compartilhado, que decide pelo campo `access`.
+   * Página pessoal não tem público/privado: ela é de quem a criou. As divisões
+   * são outras — minhas x compartilhadas comigo, ativas x arquivadas. Por isso
+   * não dá para usar o `filterPagesByPageType` compartilhado, que decide pelo
+   * campo `access`.
    */
-  private porAba = (pageType: TPageNavigationTabs) =>
-    Object.values(this.data || {}).filter((p) => (pageType === "archived" ? !!p.archived_at : !p.archived_at));
+  private porAba = (pageType: TPageNavigationTabs) => {
+    const euId = this.store.user.data?.id;
+    const todas = Object.values(this.data || {});
+    if (pageType === "shared") return todas.filter((p) => p.owned_by !== euId && !p.archived_at);
+    const minhas = todas.filter((p) => p.owned_by === euId);
+    return minhas.filter((p) => (pageType === "archived" ? !!p.archived_at : !p.archived_at));
+  };
 
   getCurrentProjectPageIdsByTab = computedFn((pageType: TPageNavigationTabs) =>
     this.porAba(pageType).map((page) => page.id as string)
@@ -145,6 +153,35 @@ export class PersonalPageStore implements IPersonalPageStore {
       });
 
       const pages = await this.service.fetchAll(workspaceSlug);
+      runInAction(() => {
+        for (const page of pages) this.guardar(page);
+        this.loader = undefined;
+      });
+
+      return pages;
+    } catch (error) {
+      runInAction(() => {
+        this.loader = undefined;
+        this.error = {
+          title: translate("toast.failed"),
+          description: translate("toast.pages_fetch_failed"),
+        };
+      });
+      throw error;
+    }
+  };
+
+  /** A aba "Compartilhado comigo" — páginas pessoais de outras pessoas. */
+  fetchSharedPages = async (workspaceSlug: string) => {
+    try {
+      if (!workspaceSlug) return undefined;
+
+      runInAction(() => {
+        this.loader = Object.keys(this.data).length > 0 ? "mutation-loader" : "init-loader";
+        this.error = undefined;
+      });
+
+      const pages = await this.service.fetchSharedWithMe(workspaceSlug);
       runInAction(() => {
         for (const page of pages) this.guardar(page);
         this.loader = undefined;

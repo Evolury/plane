@@ -22,7 +22,7 @@ from datetime import datetime
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Exists, OuterRef, Q, UUIDField, Value
+from django.db.models import Exists, OuterRef, Q, Subquery, UUIDField, Value
 from django.db.models.functions import Coalesce
 from django.http import StreamingHttpResponse
 
@@ -37,6 +37,8 @@ from plane.app.serializers import (
     PageDetailSerializer,
     PageSerializer,
     PageShareSerializer,
+    PersonalPageSerializer,
+    PersonalPageDetailSerializer,
     PageVersionDetailSerializer,
     PageVersionSerializer,
 )
@@ -76,6 +78,15 @@ def paginas_pessoais(slug, user):
     )
 
 
+def com_o_meu_papel(queryset, user):
+    """Anota `share_role`: o meu papel nesta página, nulo quando ela é minha."""
+    return queryset.annotate(
+        share_role=Subquery(
+            PageShare.objects.filter(page_id=OuterRef("pk"), shared_with=user).values("role")[:1]
+        )
+    )
+
+
 def paginas_compartilhadas_comigo(slug, user):
     """Páginas pessoais **de outras pessoas** compartilhadas com `user`."""
     return (
@@ -106,7 +117,8 @@ class PersonalPageViewSet(BaseViewSet):
             | Q(pk__in=paginas_compartilhadas_comigo(slug, self.request.user).values("pk"))
         )
         return self.filter_queryset(
-            alcance.filter(parent__isnull=True)
+            com_o_meu_papel(alcance, self.request.user)
+            .filter(parent__isnull=True)
             .select_related("workspace", "owned_by")
             .prefetch_related("labels")
             .annotate(is_favorite=Exists(favorita))
@@ -127,7 +139,7 @@ class PersonalPageViewSet(BaseViewSet):
 
     def list(self, request, slug):
         minhas = self.get_queryset().filter(owned_by=request.user)
-        return Response(PageSerializer(minhas, many=True).data, status=status.HTTP_200_OK)
+        return Response(PersonalPageSerializer(minhas, many=True).data, status=status.HTTP_200_OK)
 
     def create(self, request, slug):
         workspace = Workspace.objects.filter(slug=slug).first()
@@ -161,7 +173,7 @@ class PersonalPageViewSet(BaseViewSet):
         if page is None:
             return Response({"error": "Página não encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
-        data = PageDetailSerializer(page).data
+        data = PersonalPageDetailSerializer(page).data
         data["issue_ids"] = PageLog.objects.filter(page_id=page_id, entity_name="issue").values_list(
             "entity_identifier", flat=True
         )
@@ -416,7 +428,7 @@ class SharedWithMeEndpoint(BaseAPIView):
             return Response({"error": "Fora do espaço de trabalho"}, status=status.HTTP_403_FORBIDDEN)
 
         paginas = (
-            paginas_compartilhadas_comigo(slug, request.user)
+            com_o_meu_papel(paginas_compartilhadas_comigo(slug, request.user), request.user)
             .filter(parent__isnull=True)
             .select_related("workspace", "owned_by")
             .annotate(
@@ -425,4 +437,4 @@ class SharedWithMeEndpoint(BaseAPIView):
             )
             .order_by("-updated_at")
         )
-        return Response(PageSerializer(paginas, many=True).data, status=status.HTTP_200_OK)
+        return Response(PersonalPageSerializer(paginas, many=True).data, status=status.HTTP_200_OK)

@@ -37,6 +37,9 @@ export const MyTasksHeader = observer(function MyTasksHeader() {
   const { createPage } = usePageStore(EPageStoreType.PERSONAL);
   // derived
   const naAbaDePaginas = !!pathname?.includes("/my-tasks/pages");
+  // "Compartilhado comigo" é só leitura do que é dos outros: nem controles de
+  // tarefa, nem criar página.
+  const naAbaCompartilhada = !!pathname?.includes("/my-tasks/shared");
 
   const criarPagina = async () => {
     setCriandoPagina(true);
@@ -66,7 +69,7 @@ export const MyTasksHeader = observer(function MyTasksHeader() {
         </Breadcrumbs>
       </Header.LeftItem>
       <Header.RightItem>
-        {naAbaDePaginas ? (
+        {naAbaCompartilhada ? null : naAbaDePaginas ? (
           <Button variant="primary" size="lg" onClick={criarPagina} loading={criandoPagina}>
             {criandoPagina ? t("my_tasks.pages.creating") : t("my_tasks.pages.new")}
           </Button>

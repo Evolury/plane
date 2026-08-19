@@ -1863,5 +1863,8 @@
         "marking": "Setting…"
       }
     }
-  }
+  },
+  "lock": "Lock",
+  "unlock": "Unlock",
+  "move": "Move"
 }

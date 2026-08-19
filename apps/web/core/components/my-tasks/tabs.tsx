@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 
-export type TAbaDeMinhasTarefas = "tarefas" | "paginas";
+export type TAbaDeMinhasTarefas = "tarefas" | "paginas" | "compartilhado";
 
 type Props = {
   workspaceSlug: string;
@@ -36,9 +36,18 @@ export function MyTasksTabs(props: Props) {
       rotulo: t("my_tasks.tabs.pages"),
       href: `/${workspaceSlug}/my-tasks/pages`,
     },
+    {
+      chave: "compartilhado",
+      rotulo: t("my_tasks.tabs.shared"),
+      href: `/${workspaceSlug}/my-tasks/shared`,
+    },
   ];
 
-  const ativa: TAbaDeMinhasTarefas = pathname?.includes("/my-tasks/pages") ? "paginas" : "tarefas";
+  const ativa: TAbaDeMinhasTarefas = pathname?.includes("/my-tasks/shared")
+    ? "compartilhado"
+    : pathname?.includes("/my-tasks/pages")
+      ? "paginas"
+      : "tarefas";
 
   return (
     <div className="relative flex h-full items-center">

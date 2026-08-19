@@ -242,3 +242,26 @@ class PageShareSerializer(BaseSerializer):
         model = PageShare
         fields = ["id", "page", "shared_with", "shared_with_detail", "role", "created_at"]
         read_only_fields = ["id", "page", "created_at"]
+
+
+class PersonalPageSerializer(PageSerializer):
+    """Evolury: a página pessoal como ela chega ao web (ADR 0015).
+
+    Acrescenta `share_role`: o meu papel quando a página é de outra pessoa e foi
+    compartilhada comigo. Vem nulo quando a página é minha — é o que a tela usa
+    para saber se pode deixar escrever.
+    """
+
+    share_role = serializers.IntegerField(read_only=True, allow_null=True, required=False)
+
+    class Meta(PageSerializer.Meta):
+        fields = PageSerializer.Meta.fields + ["share_role"]
+
+
+class PersonalPageDetailSerializer(PageDetailSerializer):
+    """O detalhe da página pessoal, com o meu papel junto."""
+
+    share_role = serializers.IntegerField(read_only=True, allow_null=True, required=False)
+
+    class Meta(PageDetailSerializer.Meta):
+        fields = PageDetailSerializer.Meta.fields + ["share_role"]

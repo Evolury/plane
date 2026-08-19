@@ -43,7 +43,8 @@
     "stage_in_my_tasks": "Stage in My tasks",
     "tabs": {
       "tasks": "Tasks",
-      "pages": "Pages"
+      "pages": "Pages",
+      "shared": "Shared with me"
     },
     "pages": {
       "new": "New page",
@@ -53,7 +54,18 @@
       "empty_archived_title": "No archived pages",
       "empty_archived_description": "Pages you archive show up here.",
       "archived": "Archived",
-      "create_failed": "Could not create the page."
+      "create_failed": "Could not create the page.",
+      "share": "Share",
+      "share_title": "Who else sees this page",
+      "share_search": "Search someone in the workspace",
+      "share_none": "Only you, for now.",
+      "share_add": "Share",
+      "share_remove": "Remove",
+      "role_read": "Can read",
+      "role_write": "Can edit",
+      "share_failed": "Could not share the page.",
+      "shared_empty_title": "Nothing shared with you",
+      "shared_empty_description": "When someone shares a personal page with you, it shows up here."
     }
   }
 }

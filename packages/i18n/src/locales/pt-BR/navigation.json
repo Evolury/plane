@@ -43,7 +43,8 @@
     "stage_in_my_tasks": "Etapa em Minhas tarefas",
     "tabs": {
       "tasks": "Tarefas",
-      "pages": "Páginas"
+      "pages": "Páginas",
+      "shared": "Compartilhado comigo"
     },
     "pages": {
       "new": "Nova página",
@@ -53,7 +54,18 @@
       "empty_archived_title": "Nenhuma página arquivada",
       "empty_archived_description": "As páginas que você arquivar aparecem aqui.",
       "archived": "Arquivadas",
-      "create_failed": "Não foi possível criar a página."
+      "create_failed": "Não foi possível criar a página.",
+      "share": "Compartilhar",
+      "share_title": "Quem mais vê esta página",
+      "share_search": "Buscar pessoa do espaço de trabalho",
+      "share_none": "Só você, por enquanto.",
+      "share_add": "Compartilhar",
+      "share_remove": "Remover",
+      "role_read": "Pode ler",
+      "role_write": "Pode editar",
+      "share_failed": "Não foi possível compartilhar.",
+      "shared_empty_title": "Nada compartilhado com você",
+      "shared_empty_description": "Quando alguém compartilhar uma página pessoal com você, ela aparece aqui."
     }
   }
 }

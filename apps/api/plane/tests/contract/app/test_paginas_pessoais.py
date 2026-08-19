@@ -284,3 +284,18 @@ class TestTravasDoCompartilhamento:
 
         assert resposta.status_code == status.HTTP_400_BAD_REQUEST
         assert PageShare.objects.count() == 0
+
+    def test_o_papel_vem_junto_na_resposta(self, session_client, cliente_da_outra, outra_pessoa, workspace):
+        criada = session_client.post(url_lista(workspace.slug), {"name": "Ata"}, format="json")
+        session_client.post(
+            url_shares(workspace.slug, criada.data["id"]),
+            {"shared_with": str(outra_pessoa.id), "role": PageShare.WRITE},
+            format="json",
+        )
+
+        minha = session_client.get(url_pagina(workspace.slug, criada.data["id"]))
+        dela = cliente_da_outra.get(url_pagina(workspace.slug, criada.data["id"]))
+
+        # É por este campo que a tela sabe se pode deixar escrever.
+        assert minha.data["share_role"] is None
+        assert dela.data["share_role"] == PageShare.WRITE

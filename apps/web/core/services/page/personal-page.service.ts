@@ -9,7 +9,7 @@
 // serviço de páginas de projeto, sem o projeto na rota — porque não há projeto.
 
 import { API_BASE_URL } from "@plane/constants";
-import type { TDocumentPayload, TPage } from "@plane/types";
+import type { TDocumentPayload, TPage, TPageShare } from "@plane/types";
 import { APIService } from "@/services/api.service";
 
 export class PersonalPageService extends APIService {
@@ -109,6 +109,43 @@ export class PersonalPageService extends APIService {
       .then((response) => response?.data)
       .catch((error) => {
         throw error;
+      });
+  }
+
+  /** A aba "Compartilhado comigo": páginas pessoais de outras pessoas. */
+  async fetchSharedWithMe(workspaceSlug: string): Promise<TPage[]> {
+    return this.get(`/api/workspaces/${workspaceSlug}/my-tasks/shared-pages/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async fetchShares(workspaceSlug: string, pageId: string): Promise<TPageShare[]> {
+    return this.get(`${this.base(workspaceSlug)}/${pageId}/shares/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createShare(
+    workspaceSlug: string,
+    pageId: string,
+    data: { shared_with: string; role: number }
+  ): Promise<TPageShare> {
+    return this.post(`${this.base(workspaceSlug)}/${pageId}/shares/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeShare(workspaceSlug: string, pageId: string, shareId: string): Promise<void> {
+    return this.delete(`${this.base(workspaceSlug)}/${pageId}/shares/${shareId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
       });
   }
 

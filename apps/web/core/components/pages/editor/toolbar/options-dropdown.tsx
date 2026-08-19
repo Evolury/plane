@@ -146,6 +146,7 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
           "delete",
           "toggle-access",
           "export",
+          "share",
         ]}
         page={page}
         storeType={storeType}

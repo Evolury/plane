@@ -35,15 +35,26 @@ ter o próprio filtro, ativa x arquivada.
 
 ## F2 — Compartilhar
 
-- [ ] F2.1 Modelo `PageShare` (workspace, página, com quem, papel) e migração,
-      com constraint parcial única em (página, pessoa)
-- [ ] F2.2 Endpoints de compartilhamento e a aba **Compartilhado comigo**
-- [ ] F2.3 Permissão por papel: `pode ler` lê, `pode editar` escreve, e nenhum
-      dos dois exclui, arquiva, compartilha ou move
-- [ ] F2.4 As duas travas estruturais, no servidor: página de projeto não se
-      compartilha, e mover para projeto apaga os compartilhamentos
-- [ ] F2.5 Modal de compartilhamento no menu de ações da página
-- [ ] F2.6 Testes, com defeito reintroduzido um de cada vez
+- [x] F2.1 Modelo `PageShare` (workspace, página, com quem, papel) e migração
+      0146, com constraint parcial única em (página, pessoa)
+- [x] F2.2 Endpoints de compartilhamento e a aba **Compartilhado comigo**
+- [x] F2.3 Permissão por papel, decidida **pelo método HTTP**: GET para os três,
+      PATCH para dono e "pode editar", POST/DELETE só para o dono — que nesta
+      API são bloquear, arquivar, duplicar, excluir e compartilhar
+- [x] F2.4 A trava de página de projeto saiu **estrutural**: a rota pessoal
+      resolve com `~Exists(ProjectPage...)`, então compartilhar página de
+      projeto não é recusado — ela não existe por ali, e a resposta é 404
+- [x] F2.5 Modal de compartilhamento no menu de ações da página
+- [x] F2.6 Testes (18), com defeito reintroduzido um de cada vez
+
+**O que a tela ensinou:** o `<select>` de pessoa precisa nascer com string
+vazia, não `undefined` — o Combobox de baixo mantém um input escondido, e sair
+de "sem valor" para um valor faz o React acusar troca de não-controlado para
+controlado. E "Compartilhado comigo" não pode mostrar os controles de tarefa nem
+o botão de criar página: é leitura do que é dos outros.
+
+Saíram junto três rótulos que ainda estavam em inglês no menu da página —
+"Lock", "Archive" e "Move".
 
 ## F3 — Mover
 

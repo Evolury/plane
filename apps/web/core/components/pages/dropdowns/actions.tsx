@@ -7,7 +7,7 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-import { ArchiveRestoreIcon, FileOutput, LockKeyhole, LockKeyholeOpen } from "lucide-react";
+import { ArchiveRestoreIcon, FileOutput, LockKeyhole, LockKeyholeOpen, Share2 } from "lucide-react";
 // constants
 import { EPageAccess } from "@plane/constants";
 // plane editor
@@ -18,11 +18,12 @@ import { ContextMenu, CustomMenu } from "@plane/ui";
 // components
 import { cn } from "@plane/utils";
 import { useTranslation } from "@plane/i18n";
+import { SharePageModal } from "@/components/my-tasks/share-page-modal";
 import { DeletePageModal } from "@/components/pages/modals/delete-page-modal";
 // hooks
 import { usePageOperations } from "@/hooks/use-page-operations";
 // plane web hooks
-import type { EPageStoreType } from "@/hooks/store";
+import { EPageStoreType } from "@/hooks/store";
 import { usePageFlag } from "@/hooks/use-page-flag";
 // store types
 import type { TPageInstance } from "@/store/pages/base-page";
@@ -40,7 +41,9 @@ export type TPageActions =
   | "delete"
   | "version-history"
   | "export"
-  | "move";
+  | "move"
+  // Evolury: compartilhar página pessoal (ADR 0015).
+  | "share";
 
 type Props = {
   extraOptions?: (TContextMenuItem & { key: TPageActions })[];
@@ -56,6 +59,7 @@ export const PageActions = observer(function PageActions(props: Props) {
   const [deletePageModal, setDeletePageModal] = useState(false);
   const { t } = useTranslation();
   const [movePageModal, setMovePageModal] = useState(false);
+  const [sharePageModal, setSharePageModal] = useState(false);
   // params
   const { workspaceSlug } = useParams();
   // page flag
@@ -77,6 +81,7 @@ export const PageActions = observer(function PageActions(props: Props) {
     canCurrentUserDuplicatePage,
     canCurrentUserLockPage,
     canCurrentUserMovePage,
+    isCurrentUserOwner,
   } = page;
   // menu items
   const MENU_ITEMS = useMemo(
@@ -87,7 +92,7 @@ export const PageActions = observer(function PageActions(props: Props) {
           action: () => {
             pageOperations.toggleLock();
           },
-          title: is_locked ? "Unlock" : "Lock",
+          title: is_locked ? t("unlock") : t("lock"),
           icon: is_locked ? LockKeyholeOpen : LockKeyhole,
           shouldRender: canCurrentUserLockPage,
         },
@@ -131,7 +136,7 @@ export const PageActions = observer(function PageActions(props: Props) {
           action: () => {
             pageOperations.toggleArchive();
           },
-          title: archived_at ? "Restore" : "Archive",
+          title: archived_at ? t("restore") : t("archive"),
           icon: archived_at ? ArchiveRestoreIcon : ArchiveIcon,
           shouldRender: canCurrentUserArchivePage,
         },
@@ -147,9 +152,19 @@ export const PageActions = observer(function PageActions(props: Props) {
         {
           key: "move",
           action: () => setMovePageModal(true),
-          title: "Move",
+          title: t("move"),
           icon: FileOutput,
           shouldRender: canCurrentUserMovePage && isMovePageEnabled,
+        },
+        {
+          key: "share",
+          action: () => setSharePageModal(true),
+          title: t("my_tasks.pages.share"),
+          icon: Share2,
+          // Só página pessoal, e só do dono: no projeto o acesso vem da
+          // participação, e as duas fontes juntas fariam "quem pode ler isto?"
+          // ter duas respostas.
+          shouldRender: storeType === EPageStoreType.PERSONAL && isCurrentUserOwner && !archived_at,
         },
       ];
       if (extraOptions) {
@@ -169,6 +184,9 @@ export const PageActions = observer(function PageActions(props: Props) {
       canCurrentUserDeletePage,
       canCurrentUserMovePage,
       isMovePageEnabled,
+      isCurrentUserOwner,
+      storeType,
+      t,
       pageOperations,
     ]
   );
@@ -189,6 +207,7 @@ export const PageActions = observer(function PageActions(props: Props) {
         page={page}
         storeType={storeType}
       />
+      {page.id && <SharePageModal isOpen={sharePageModal} onClose={() => setSharePageModal(false)} pageId={page.id} />}
       {parentRef && <ContextMenu parentRef={parentRef} items={arrangedOptions} />}
       <CustomMenu placement="bottom-end" optionsClassName="max-h-[90vh]" ellipsis closeOnSelect>
         {arrangedOptions.map((item) => {

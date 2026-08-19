@@ -84,6 +84,7 @@ export const BlockItemAction = observer(function BlockItemAction(props: Props) {
           "toggle-access",
           "archive-restore",
           "delete",
+          "share",
         ]}
         page={page}
         parentRef={parentRef}
