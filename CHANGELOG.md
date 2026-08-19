@@ -3,6 +3,64 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.27.0] — 2026-08-19
+
+**Minor**: **Minhas tarefas** ganha páginas. Criadas fora de qualquer projeto,
+com abas no topo para alternar, compartilháveis com pessoas escolhidas e
+movíveis para dentro e para fora de projeto
+([ADR 0015](docs/evolury/decisoes/0015-paginas-pessoais.md)).
+
+### Na tela
+
+- **Escrever sem escolher projeto.** Nota de reunião, rascunho, checklist que
+  ainda não pertence a lugar nenhum: a página nasce sua, em Minhas tarefas.
+  Escolher um projeto só para ter onde escrever era uma decisão tomada no pior
+  momento — e que depois ninguém desfazia.
+
+- **Abas no topo: Tarefas, Páginas e Compartilhado comigo**, no mesmo desenho
+  das abas dos projetos.
+
+- **Compartilhar com quem você escolher**, e com o papel que você escolher:
+  **pode ler** ou **pode editar**, pessoa por pessoa. Quem recebe encontra a
+  página numa aba própria — a aba Páginas continua sendo só o que é seu.
+
+- **Só o dono compartilha**, mesmo quem recebeu "pode editar". Sem isso,
+  "compartilhei com uma pessoa" viraria "compartilhei com quem ela quiser".
+
+- **Mover entre o pessoal e um projeto, nos dois sentidos.** Rascunhar aqui e
+  publicar lá, ou recolher de volta. Ao mover para um projeto os
+  compartilhamentos caem, porque lá quem manda é o projeto — a tela avisa antes,
+  dizendo quantas pessoas perdem acesso.
+
+- **O editor da página passou a falar português.** Ele nunca tinha estado
+  traduzido: o editor de documento não montava o provedor de tradução, e todo
+  texto dentro dele caía no inglês de reserva. "Sem título", "Digite '/' para ver
+  os comandos...", a barra de ferramentas inteira.
+
+### Correções
+
+- **Criar página em um projeto caía no erro genérico.** A tela estava quebrada
+  havia oito dias. Era uma variável usada antes de declarada — o `t()` da
+  tradução lido dentro de um `useMemo` que roda antes da linha que o cria.
+
+- **Etapas de Minhas tarefas**: o modal de exclusão estava em inglês; o ícone de
+  excluir sumiu de Recentes, Concluído e Cancelado, onde não funcionaria; não se
+  exclui mais a **última** etapa de um grupo de encerramento, porque concluir
+  procura o destino dentro do grupo e um grupo vazio faria a tarefa concluída
+  cair junto das recém-chegadas; "marcar padrão" virou **"marcar entrada"**, com
+  o mesmo visual das outras marcações e sempre visível.
+
+### Por dentro
+
+- **O teto de avisos do lint não segurava nada**: o `apps/web` declarava 11957
+  com 814 avisos reais. É por isso que o aviso que denunciava o defeito da
+  criação de página nunca derrubou a CI. Todos os tetos passaram a ser o número
+  real, e um aviso novo agora derruba a build.
+
+- **`no-use-before-define` ligada**, com 152 das 180 ocorrências corrigidas de
+  verdade: arrow de escopo de módulo virou declaração de função — que é içada, e
+  aí a zona morta deixa de existir, não só o aviso.
+
 ## [1.26.0] — 2026-08-18
 
 **Minor**: as etapas de **Minhas tarefas** passam a se organizar sozinhas pelo
