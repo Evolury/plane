@@ -3,6 +3,43 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.28.0] — 2026-08-19
+
+**Minor**: uma tarefa passa a ter **um** responsável, e nunca mais de um
+([ADR 0016](docs/evolury/decisoes/0016-um-responsavel-por-tarefa.md)).
+
+### Na tela
+
+- **Um responsável, e a garantia é do banco.** Escolher alguém substitui quem
+  estava — é o que um seletor de valor único faz, e o que arrastar entre colunas
+  do quadro já fazia. Dois responsáveis deixam de ser possíveis: um índice no
+  Postgres recusa, valha o pedido pela tela, pela API ou por importação.
+
+- **A etapa de "Minhas tarefas" saiu de dentro da janela de escolha de pessoas**
+  e foi para o lado do nome, na própria tarefa. Ela morava na linha "Você" da
+  lista de responsáveis — lugar onde ninguém procura mudar etapa, e que só
+  existia porque a lista podia ter várias pessoas.
+
+- **Nome de exibição aceita espaço.** "Tássio Câmara" era recusado com uma
+  mensagem que nunca mencionava espaço, e por isso parecia que o problema era o
+  acento. Não era: o acento sempre passou. A mensagem passou a dizer o que a
+  regra exige.
+
+- Os rótulos de responsável ficaram no singular, e o botão de criar estado
+  falava inglês.
+
+### Por dentro
+
+- **Nenhuma migração era executada por CI.** A suíte roda com `--nomigrations`,
+  e nenhum workflow subia banco: 24 migrações próprias entraram sem que uma
+  única fosse executada fora do deploy. Agora um workflow sobe Postgres, aplica
+  a cadeia do zero e recusa modelo alterado sem migração correspondente.
+
+- Ao receber mais de um responsável, fica o último — e a resposta devolve o
+  valor efetivo, para que quem integra veja a diferença. O histórico da tarefa
+  passou a ler o banco em vez do pedido: antes anunciava duas pessoas quando só
+  uma era gravada.
+
 ## [1.27.0] — 2026-08-19
 
 **Minor**: **Minhas tarefas** ganha páginas. Criadas fora de qualquer projeto,
