@@ -91,6 +91,9 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
           <StageBuckets
             stageId={state.id}
             marcacoes={props.stateOperationsCallbacks.getStageBucketInfo(state.id)}
+            ehEntrada={!!state.default}
+            onMarcarEntrada={() => props.stateOperationsCallbacks.markStateAsDefault(state.id)}
+            rotulosDaEntrada={props.stateOperationsCallbacks.rotulosDaEntrada}
             onMarcar={(balde, ativo) => props.stateOperationsCallbacks.markStageBucket!(state.id, balde, ativo)}
             onAlternarAutomacao={(desativada) =>
               props.stateOperationsCallbacks.toggleStageAutomation!(state.id, desativada)
@@ -111,15 +114,21 @@ export const StateItemTitle = observer(function StateItemTitle(props: TStateItem
                 />
               </div>
             )}
-          {/* state mark as default option */}
-          <div className="flex-shrink-0 text-11 transition-all">
-            <StateMarksAsDefault
-              stateId={state.id}
-              isDefault={state.default ? true : false}
-              markStateAsDefaultCallback={props.stateOperationsCallbacks.markStateAsDefault}
-              rotulos={props.stateOperationsCallbacks.rotulosDaEntrada}
-            />
-          </div>
+          {/* state mark as default option — Evolury: só onde NÃO há a fila de
+              marcadores (Configurações → Estados). Em "Minhas tarefas" a
+              entrada é uma marcação como as outras e mora junto delas, com o
+              mesmo visual; manter as duas mostraria a mesma informação duas
+              vezes, uma delas escondida no hover. */}
+          {!props.stateOperationsCallbacks.getStageBucketInfo && (
+            <div className="flex-shrink-0 text-11 transition-all">
+              <StateMarksAsDefault
+                stateId={state.id}
+                isDefault={state.default ? true : false}
+                markStateAsDefaultCallback={props.stateOperationsCallbacks.markStateAsDefault}
+                rotulos={props.stateOperationsCallbacks.rotulosDaEntrada}
+              />
+            </div>
+          )}
           {/* state edit options */}
           <div className="flex items-center gap-1 transition-all">
             <button

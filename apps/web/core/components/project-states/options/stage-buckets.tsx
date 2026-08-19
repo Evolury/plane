@@ -25,6 +25,10 @@ type TProps = {
   marcacoes: TMarcacoesDaEtapa;
   onMarcar: (balde: TBaldeDeVencimento, ativo: boolean) => Promise<void>;
   onAlternarAutomacao: (desativada: boolean) => Promise<void>;
+  /** A etapa por onde a tarefa entra. Marcação como as outras — ver abaixo. */
+  ehEntrada: boolean;
+  onMarcarEntrada: () => Promise<void>;
+  rotulosDaEntrada?: { atual: string; acao: string; salvando: string };
 };
 
 /** Balde → chave da marcação e chave de tradução do rótulo. */
@@ -36,7 +40,7 @@ const BALDES: { balde: TBaldeDeVencimento; campo: keyof TMarcacoesDaEtapa; rotul
 ];
 
 export const StageBuckets = observer(function StageBuckets(props: TProps) {
-  const { marcacoes, onMarcar, onAlternarAutomacao } = props;
+  const { marcacoes, onMarcar, onAlternarAutomacao, ehEntrada, onMarcarEntrada, rotulosDaEntrada } = props;
   const { t } = useTranslation();
   const [emVoo, setEmVoo] = useState<string | null>(null);
 
@@ -52,6 +56,30 @@ export const StageBuckets = observer(function StageBuckets(props: TProps) {
 
   return (
     <div className="flex flex-shrink-0 items-center gap-1.5 text-11">
+      {/* A entrada é marcação como as outras, e por isso mora na mesma fila e
+          usa o mesmo visual. Ela estava como texto solto, visível só no hover —
+          o que a fazia parecer outra categoria de coisa.
+
+          Uma diferença permanece, e é do modelo, não do visual: a entrada é
+          OBRIGATÓRIA e única, então marcá-la move a marcação de outra etapa e
+          não há como desmarcar. Por isso a ativa não é clicável. */}
+      <button
+        type="button"
+        disabled={ehEntrada || emVoo !== null}
+        onClick={() => alternar("entrada", onMarcarEntrada)}
+        className={cn(
+          "rounded-sm px-1.5 py-0.5 whitespace-nowrap transition-colors",
+          ehEntrada
+            ? "text-accent-strong bg-accent-primary/10"
+            : "hidden text-secondary group-hover:inline-block hover:text-primary"
+        )}
+      >
+        {emVoo === "entrada"
+          ? (rotulosDaEntrada?.salvando ?? "…")
+          : ehEntrada
+            ? (rotulosDaEntrada?.atual ?? "")
+            : (rotulosDaEntrada?.acao ?? "")}
+      </button>
       {BALDES.map(({ balde, campo, rotulo }) => {
         const ativo = marcacoes[campo];
         return (
