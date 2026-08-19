@@ -30,16 +30,30 @@ Espelham a mecânica dos estados de projeto:
   backlog, não iniciado, iniciado, concluído, cancelado — triage não é
   elegível).
 - A tela de gestão agrupa as etapas por grupo, como em Configurações → Estados
-  do projeto: criar, editar, excluir, reordenar por arrasto e **definir como
-  padrão**.
-- Existe exatamente **uma etapa padrão** por usuário/workspace: é a "primeira
-  etapa", onde todo item atribuído aparece até ser movido.
-- Além do padrão, a etapa pode receber **marcações de vencimento** — hoje,
+  do projeto: criar, editar, excluir, reordenar por arrasto e marcar a **etapa
+  de entrada**.
+- Existe exatamente **uma etapa de entrada** por usuário/workspace: é a "primeira
+  etapa", onde todo item atribuído aparece até ser movido. O controle se chama
+  **"marcar entrada"** na tela — "padrão" não dizia o que a etapa faz, e a linha
+  passou a ter várias marcações disputando esse nome.
+- Além da entrada, a etapa pode receber **marcações de vencimento** — hoje,
   amanhã, depois, vencidas — e um interruptor de **sem automação**. As duas
   coisas governam a varredura diária descrita abaixo. Ver
   [ADR 0014](../../decisoes/0014-etapas-por-vencimento.md).
-- Excluir uma etapa migra os itens associados a ela para a etapa padrão. A
-  etapa padrão não pode ser excluída (mesma regra do estado padrão de projeto).
+- **Todas as marcações da linha têm o mesmo visual**, entrada inclusive, e a
+  marcação ativa fica sempre visível: só a desmarcada aparece no hover. Marcação
+  é informação, não ação — saber qual etapa recebe as vencidas não pode exigir
+  passar o mouse por oito linhas.
+- **Os grupos concluído e cancelado não recebem marcação de vencimento nem
+  interruptor de automação.** Tarefa concluída ontem está tecnicamente vencida, e
+  deixar o controle à mostra ali só oferece uma escolha que a varredura ignora.
+- Excluir uma etapa migra os itens associados a ela para a etapa de entrada. Não
+  se exclui a etapa de entrada (mesma regra do estado padrão de projeto), nem a
+  **última** etapa de um grupo de encerramento — concluir e cancelar procuram o
+  destino **dentro do grupo**, e um grupo vazio faria a tarefa concluída cair
+  junto das recém-chegadas. Com duas etapas no grupo, as duas podem ser
+  excluídas. A regra é do servidor; a tela apenas esconde o ícone onde ele não
+  funcionaria.
 - A gestão vive na própria página (painel/aba "Etapas"), sem rota de
   configurações separada.
 
@@ -50,7 +64,7 @@ usuário naquele workspace:
 
 | Ordem | Nome             | Grupo        | Marcações                    |
 | ----- | ---------------- | ------------ | ---------------------------- |
-| 1     | Recentes         | não iniciado | padrão · **sem automação**   |
+| 1     | Recentes         | não iniciado | entrada · **sem automação**  |
 | 2     | Em Andamento     | iniciado     | —                            |
 | 3     | Para Hoje (fila) | iniciado     | hoje                         |
 | 4     | Pendências       | em espera    | vencidas · **sem automação** |
