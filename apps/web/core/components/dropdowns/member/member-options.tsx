@@ -19,7 +19,6 @@ import type { IUserLite } from "@plane/types";
 import { Avatar } from "@plane/ui";
 import { cn, getFileURL, sortByCurrentUserThenSelected } from "@plane/utils";
 // hooks
-import { MyTasksStageSelect } from "@/components/my-tasks/stage-select";
 import { useMember } from "@/hooks/store/use-member";
 import { useUser } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -33,7 +32,6 @@ interface Props {
   optionsClassName?: string;
   // Evolury: work item cujos responsáveis o dropdown lista — habilita o
   // seletor de etapa de minhas tarefas na linha do usuário logado (F7)
-  workItemId?: string;
   placement: Placement | undefined;
   referenceElement: HTMLButtonElement | null;
   value?: string[] | string | null;
@@ -49,7 +47,6 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
     placement,
     referenceElement,
     value,
-    workItemId,
   } = props;
   // router
   const { workspaceSlug } = useParams();
@@ -136,7 +133,7 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
         className={cn(
           "z-30 my-1 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 py-2.5 text-11 shadow-raised-200 focus:outline-none",
           // Evolury: mais largo quando a linha "Você" carrega o seletor de etapa (F7)
-          workItemId ? "w-64" : "w-48",
+          "w-48",
           optionsClassName
         )}
         ref={setPopperElement}
@@ -181,15 +178,10 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
                     >
                       {({ selected }) => (
                         <>
-                          {/* Evolury: seletor de etapa imediatamente após o fim
-                              do nome (F7); com nomes longos, nome e chip truncam
-                              proporcionalmente no popover alargado */}
-                          <span className="flex min-w-0 flex-grow items-center gap-1.5">
-                            <span className="min-w-0 flex-shrink truncate">{option.content}</span>
-                            {workItemId && selected && currentUser?.id === option.value && (
-                              <MyTasksStageSelect workItemId={workItemId} />
-                            )}
-                          </span>
+                          {/* Evolury: o seletor de etapa saiu daqui — com um
+                              responsável só, ele vive ao lado do nome, na
+                              própria tarefa (ADR 0016). */}
+                          <span className="min-w-0 flex-grow truncate">{option.content}</span>
                           {selected && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" />}
                           {isUserSuspended(option.value, workspaceSlug?.toString()) && (
                             <Pill variant={EPillVariant.DEFAULT} size={EPillSize.XS} className="border-none">

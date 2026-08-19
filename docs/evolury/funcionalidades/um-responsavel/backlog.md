@@ -28,6 +28,16 @@ Plano aprovado em 19/08/2026. Especificação em
 
 - [x] F3.1 Campos de uma tarefa no singular; filtros seguem no plural, porque
       filtrar por responsável pode selecionar várias pessoas
+- [x] F3.2 **O botão pedia "Definir responsável" com o responsável definido.** O
+      ramo de valor único só mostrava o nome com `showUserDetails`, que ninguém
+      passa — a bandeira decide se um conjunto vira "N membros", e nada tem a ver
+      com esconder o nome de uma pessoa só. Junto, o tooltip contava
+      `value.length` de uma string: 36, o tamanho do UUID
+- [x] F3.3 **A etapa de "Minhas tarefas" saiu de dentro da janela de escolha** e
+      foi para o lado do nome, na tarefa. Ficou num lugar só, o
+      `AssigneeDropdown`, e por isso vale nas seis superfícies que mostram
+      responsável — barra lateral, espiada, lista, planilha, caixa de entrada e
+      relações
 
 ## Descobertas do ciclo
 

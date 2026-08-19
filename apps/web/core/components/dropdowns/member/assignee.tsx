@@ -13,6 +13,8 @@
 // mudar tem um lugar para ser mudada.
 
 import { observer } from "mobx-react";
+import { MyTasksStageSelect } from "@/components/my-tasks/stage-select";
+import { useUser } from "@/hooks/store/user";
 import { MemberDropdown } from "./dropdown";
 import type { TMemberDropdownProps } from "./dropdown";
 
@@ -25,9 +27,17 @@ type Props = Omit<Extract<TMemberDropdownProps, { multiple: false }>, "multiple"
 };
 
 export const AssigneeDropdown = observer(function AssigneeDropdown(props: Props) {
-  const { value, onChange, ...resto } = props;
+  const { value, onChange, workItemId, ...resto } = props;
+  const { data: currentUser } = useUser();
 
-  return (
+  // Evolury: a etapa de "Minhas tarefas" é pessoal, então o seletor só faz
+  // sentido quando o responsável sou eu. Antes ele morava dentro da janela de
+  // escolha de pessoas, na linha "Você" — lugar onde ninguém procura mudar
+  // etapa, e que só existia porque a lista podia ter várias pessoas. Com uma
+  // só, ele vem para o lado do nome, na própria tarefa (ADR 0016).
+  const souOResponsavel = !!workItemId && !!currentUser?.id && value?.[0] === currentUser.id;
+
+  const seletor = (
     <MemberDropdown
       {...resto}
       multiple={false}
@@ -37,5 +47,14 @@ export const AssigneeDropdown = observer(function AssigneeDropdown(props: Props)
       // arrastar entre colunas do quadro já fazia.
       onChange={(escolhido) => onChange(escolhido ? [escolhido] : [])}
     />
+  );
+
+  if (!souOResponsavel) return seletor;
+
+  return (
+    <span className="flex h-full min-w-0 items-center gap-1.5">
+      <span className="min-w-0 flex-shrink">{seletor}</span>
+      <MyTasksStageSelect workItemId={workItemId} />
+    </span>
   );
 });

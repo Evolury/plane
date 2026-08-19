@@ -8,8 +8,9 @@ export type MemberDropdownProps = TDropdownProps & {
   tooltipContent?: string;
   onClose?: () => void;
   showUserDetails?: boolean;
-  // Evolury: quando o dropdown lista responsáveis de um work item, a linha do
-  // usuário logado ganha o seletor de etapa de minhas tarefas (F7)
+  // Evolury: o `AssigneeDropdown` usa isto para pôr o seletor de etapa de
+  // "Minhas tarefas" ao lado do nome quando o responsável sou eu (ADR 0016).
+  // O dropdown genérico não conhece o conceito.
   workItemId?: string;
 } & (
     | {

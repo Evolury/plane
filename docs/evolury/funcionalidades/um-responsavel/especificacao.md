@@ -23,6 +23,11 @@ Responsável continua **opcional**: tarefa nasce sem dono e ganha um depois.
 - Os rótulos de campo de uma tarefa estão no singular ("Responsável", "Definir
   responsável"). Os de **filtro** seguem no plural: filtrar por responsável pode
   selecionar várias pessoas.
+- **A etapa de "Minhas tarefas" fica ao lado do nome**, na própria tarefa, e não
+  mais dentro da janela de escolha de pessoas. Ela só aparece quando o
+  responsável sou eu — a etapa é pessoal. Estava escondida na linha "Você" do
+  seletor porque a lista podia ter várias pessoas; com uma só, o esconderijo
+  perdeu a razão de existir.
 
 ## Na automação
 
