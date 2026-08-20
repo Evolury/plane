@@ -3,6 +3,27 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.29.2] — 2026-08-20
+
+**Patch**: o histórico de propriedade personalizada volta a aparecer.
+
+### Na tela
+
+- **Mudança de propriedade agora aparece no histórico da tarefa e em "Minhas
+  atividades".** Ela sempre foi gravada — desde a v1.13.0, e igual pelo painel
+  da tarefa, pela automação e pelo arrasto no quadro —, mas nenhuma das telas
+  sabia desenhá-la, e a linha era escrita no banco e engolida. Valia para toda
+  mudança de propriedade, não só para o arrasto.
+
+- Três frases, conforme o caso: "definiu **Canal** como **Indicação**", "alterou
+  **Canal** de **Indicação** para **Anúncio**" e "limpou **Canal**".
+
+- **O histórico já gravado também aparece.** Uma migração alcança as mudanças
+  antigas, em vez de corrigir só o futuro e deixar meses invisíveis para sempre.
+  Propriedade que foi renomeada desde então não é alcançada: a linha antiga
+  guarda o nome de quando a mudança aconteceu, e casar por semelhança seria
+  adivinhar.
+
 ## [1.29.1] — 2026-08-19
 
 **Patch**: o alvo de exclusão do arrasto deixa de parecer mensagem de erro.
