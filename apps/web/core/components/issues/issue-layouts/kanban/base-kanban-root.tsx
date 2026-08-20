@@ -9,10 +9,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element";
+import { Trash2 } from "lucide-react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { EIssueFilterType, EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { EIssuesStoreType, EIssueServiceType, EIssueLayoutTypes } from "@plane/types";
+import { cn } from "@plane/utils";
 //hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useIssues } from "@/hooks/store/use-issues";
@@ -258,13 +260,28 @@ export const BaseKanBanRoot = observer(function BaseKanBanRoot(props: IBaseKanBa
           } top-3 mx-3 flex w-72 items-center justify-center`}
           ref={deleteAreaRef}
         >
+          {/* Evolury: em repouso o alvo é NEUTRO, e só fica vermelho quando o
+              cartão está sobre ele.
+
+              Antes ele nascia vermelho, em itálico, no instante em que
+              qualquer arrasto começava — mover um cartão de coluna fazia
+              aparecer no topo da tela o que parecia uma mensagem de erro. Cor
+              de perigo é aviso, e aviso que aparece sempre deixa de ser aviso:
+              vale no momento em que a ação está prestes a acontecer, que é
+              quando o cartão está em cima.
+
+              O ícone de lixeira é o que diz "excluir" sem precisar da cor, e é
+              por isso que o rótulo pôde ficar curto. */}
           <div
-            className={`${
-              isDragging ? `opacity-100` : `opacity-0`
-            } flex w-full items-center justify-center rounded-sm border-2 border-danger-strong/20 bg-surface-1 px-3 py-5 text-11 font-medium text-danger-primary italic ${
-              isDragOverDelete ? "bg-danger-primary blur-2xl" : ""
-            } transition duration-300`}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-sm border-2 border-dashed px-3 py-4 text-11 font-medium transition duration-300",
+              isDragging ? "opacity-100" : "opacity-0",
+              isDragOverDelete
+                ? "border-solid border-danger-strong bg-danger-subtle text-danger-primary"
+                : "border-subtle bg-surface-1 text-tertiary"
+            )}
           >
+            <Trash2 className="size-3.5 shrink-0" aria-hidden="true" />
             {t("ui.drop_here_to_delete_the_work_item")}
           </div>
         </div>
