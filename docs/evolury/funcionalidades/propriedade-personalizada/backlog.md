@@ -263,6 +263,18 @@ era escrita e engolida, em toda parte.
       `--nomigrations`, então regra escrita dentro da migração não é executada
       por teste nenhum (a lição da 0147)
 
+**O deploy revelou um efeito não planejado, e ele é o desejado.** Em produção a
+migração marcou também o histórico de **propriedades apagadas** — "Botão",
+"Dinhe" e "Loca". O motivo é que `apps.get_model` devolve o modelo histórico
+sem o gerente de exclusão lógica, então `.all()` enxerga as apagadas.
+
+Fica como está: história de propriedade apagada continua sendo história, e
+escondê-la seria apagar o que de fato aconteceu. A imprecisão teórica é um nome
+repetido entre uma propriedade viva e uma apagada no mesmo projeto — a restrição
+de unicidade só vale para as vivas, então o par é possível, e o índice ficaria
+com uma das duas. O rótulo exibido seria idêntico nos dois casos, e nada
+dereferencia o `new_identifier` hoje. **Medido na produção: 0 ocorrências.**
+
 **Uma injeção passou, e o teste foi refeito.** Remover a guarda do
 `new_identifier` não derrubou nada: o que protegia a atividade de etiqueta era o
 casamento por nome, não a guarda. O teste passou a criar uma propriedade
