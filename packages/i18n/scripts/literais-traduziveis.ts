@@ -50,13 +50,6 @@ const IGNORAR = [
   "/tests/",
   ".test.",
   "/dist/",
-  // Evolury (20/08/2026): a comparação de planos herdada vende os planos pagos
-  // da NUVEM do Plane, que não existem neste fork. As 69 strings dela vivem em
-  // `comparison/plans.tsx`, o arquivo que será substituído quando a página de
-  // planos da Evolury for construída — traduzi-las agora é trabalho jogado
-  // fora. O chassi (tabela, coluna, alternador) fica e será reaproveitado.
-  // Esta exclusão sai junto com o conteúdo novo.
-  "/workspace/billing/",
   // Catálogo de ilustrações do Storybook: o `title` de cada entrada é a
   // legenda da vitrine, e o único consumidor é `assets-showcase.stories.tsx`.
   // Não chega a nenhuma tela de usuário.
