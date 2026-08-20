@@ -20,6 +20,7 @@ import { Loader } from "@plane/ui";
 import { cn, renderFormattedDate, getFileURL } from "@plane/utils";
 // components
 import { CoverImage } from "@/components/common/cover-image";
+import { capaDe } from "@/helpers/cover-image.helper";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useCommandPalette } from "@/hooks/store/use-command-palette";
@@ -110,7 +111,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
               </div>
             )}
             <CoverImage
-              src={userData?.cover_image_url ?? undefined}
+              src={capaDe(userData)}
               alt={userData?.display_name}
               className="h-[110px] w-full"
               showDefaultWhenEmpty

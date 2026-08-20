@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { NANO_BLUE } from "@plane/constants";
+import { NANO_BLUE, ehCorDeCapa } from "@plane/constants";
 import { cn } from "@plane/utils";
 // helpers
 import { getCoverImageDisplayURL, DEFAULT_COVER_IMAGE_URL } from "@/helpers/cover-image.helper";
@@ -61,6 +61,14 @@ export function CoverImage(props: TCoverImageProps) {
   // mesma cara; pôr imagem vira escolha de quem usa (brandbook 1.02, NanoBlue).
   if (!src) {
     return <div className={cn(className)} style={{ backgroundColor: NANO_BLUE }} aria-label={alt} role="img" />;
+  }
+
+  // Evolury: capa escolhida como cor. Vem no mesmo `src` da imagem — é um
+  // seletor só —, e é aqui que ela deixa de ser texto e vira tinta. A forma
+  // exata (`#RRGGBB`) é conferida antes de ir para o `style`; o servidor recusa
+  // qualquer outra coisa, e esta é a segunda tranca.
+  if (ehCorDeCapa(src)) {
+    return <div className={cn(className)} style={{ backgroundColor: src }} aria-label={alt} role="img" />;
   }
 
   const displayUrl = getCoverImageDisplayURL(src, fallbackUrl);

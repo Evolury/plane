@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { ehCorDeCapa } from "@plane/constants";
 import type { EFileAssetType } from "@plane/types";
 import { getFileURL } from "@plane/utils";
 
@@ -84,7 +85,13 @@ export const DEFAULT_COVER_IMAGE_URL = STATIC_COVER_IMAGES.IMAGE_1;
  */
 const STATIC_COVER_IMAGES_SET = new Set<string>(Object.values(STATIC_COVER_IMAGES));
 
-export type TCoverImageType = "local_static" | "uploaded_asset" | "unsplash";
+/**
+ * Evolury: "color" é o tipo novo. Cor e imagem viajam no MESMO campo do
+ * formulário — é um seletor só, e o que ele devolve é uma string —, e a
+ * separação acontece aqui, na borda: no payload, cada uma vai para o campo
+ * dela; na tela, quem desenha decide entre pintar e carregar.
+ */
+export type TCoverImageType = "local_static" | "uploaded_asset" | "unsplash" | "color";
 
 export type TCoverImageResult = {
   needsUpload: boolean;
@@ -96,6 +103,8 @@ export type TCoverImagePayload = {
   cover_image?: string | null;
   cover_image_url?: string | null;
   cover_image_asset?: string | null;
+  /** Evolury: `#RRGGBB` quando a capa é cor; `null` quando volta a ser imagem. */
+  cover_color?: string | null;
 };
 
 /**
@@ -111,6 +120,10 @@ export const isStaticCoverImage = (imageUrl: string | null | undefined): boolean
  * Uses explicit validation against known static images for better accuracy
  */
 export const getCoverImageType = (imageUrl: string): TCoverImageType => {
+  // Evolury: cor antes de tudo — `#0C91EB` não é endereço de coisa nenhuma, e
+  // qualquer teste de URL abaixo daria a resposta errada com cara de certa.
+  if (ehCorDeCapa(imageUrl)) return "color";
+
   // Check against the explicit set of static images
   if (isStaticCoverImage(imageUrl)) return "local_static";
 
@@ -187,6 +200,7 @@ export const analyzeCoverImageChange = (
   const imageType = getCoverImageType(newImage);
 
   return {
+    // Cor não é arquivo: não há o que subir.
     needsUpload: imageType === "local_static" || imageType === "unsplash",
     imageType,
     shouldUpdate: hasChanged,
@@ -268,17 +282,24 @@ export const handleCoverImageChange = async (
   if (!analysis.shouldUpdate) return;
 
   if (!newImage) {
-    return { cover_image: null, cover_image_url: null, cover_image_asset: null };
+    return { cover_image: null, cover_image_url: null, cover_image_asset: null, cover_color: null };
+  }
+
+  // Evolury: cor não sobe para lugar nenhum — nem para o S3, nem para o
+  // Unsplash. Vai direto, e apaga a imagem: capa é uma coisa só, e guardar as
+  // duas deixaria "qual delas vale?" para quem desenha adivinhar depois.
+  if (analysis.imageType === "color") {
+    return { cover_color: newImage.toUpperCase(), cover_image: null, cover_image_url: null, cover_image_asset: null };
   }
 
   if (analysis.needsUpload) {
     const assetUrl = await uploadCoverImage(newImage, uploadConfig);
     // cover_image requires an absolute URL; cover_image_url is relative (matches GET /api/users/me/ format)
-    return { cover_image: getFileURL(assetUrl) || assetUrl, cover_image_url: assetUrl };
+    return { cover_image: getFileURL(assetUrl) || assetUrl, cover_image_url: assetUrl, cover_color: null };
   }
 
   // cover_image requires an absolute URL; getFileURL converts relative paths from the Upload tab
-  return { cover_image: getFileURL(newImage) || newImage, cover_image_url: newImage };
+  return { cover_image: getFileURL(newImage) || newImage, cover_image_url: newImage, cover_color: null };
 };
 
 /**
@@ -287,3 +308,15 @@ export const handleCoverImageChange = async (
  */
 export const getRandomCoverImage = (): string =>
   Object.values(STATIC_COVER_IMAGES)[Math.floor(Math.random() * Object.keys(STATIC_COVER_IMAGES).length)];
+
+/**
+ * Evolury: a capa de uma entidade, seja ela cor ou imagem.
+ *
+ * A precedência mora aqui, e num lugar só: cor preenchida manda. Ela e a imagem
+ * nunca coexistem — quem escolhe uma limpa a outra no payload —, mas dado
+ * antigo, sincronização ou uma escrita pela API v1 podem trazer as duas, e
+ * "qual vale?" não pode ser respondido de um jeito em cada tela.
+ */
+export const capaDe = (
+  entidade: { cover_color?: string | null; cover_image_url?: string | null } | null | undefined
+): string | undefined => entidade?.cover_color || entidade?.cover_image_url || undefined;

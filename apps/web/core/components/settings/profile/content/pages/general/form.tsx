@@ -24,7 +24,7 @@ import { UserImageUploadModal } from "@/components/core/modals/user-image-upload
 import { CoverImage } from "@/components/common/cover-image";
 import { SettingsBoxedControlItem } from "@/components/settings/boxed-control-item";
 // helpers
-import { handleCoverImageChange } from "@/helpers/cover-image.helper";
+import { capaDe, handleCoverImageChange } from "@/helpers/cover-image.helper";
 // hooks
 import { useInstance } from "@/hooks/store/use-instance";
 import { useUser, useUserProfile } from "@/hooks/store/user";
@@ -34,6 +34,7 @@ import { validatePersonName, validateDisplayName } from "@plane/utils";
 type TUserProfileForm = {
   avatar_url: string;
   cover_image: string;
+  cover_color?: string | null;
   cover_image_asset: any;
   cover_image_url: string;
   first_name: string;
@@ -70,7 +71,9 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
     defaultValues: {
       avatar_url: user.avatar_url || "",
       cover_image_asset: null,
-      cover_image_url: user.cover_image_url || "",
+      // Evolury: um campo só para as duas capas — cor ou imagem —, separadas
+      // no envio por `handleCoverImageChange`.
+      cover_image_url: capaDe(user) || "",
       first_name: user.first_name || "",
       last_name: user.last_name || "",
       display_name: user.display_name || "",
@@ -126,7 +129,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
     };
 
     try {
-      const coverImagePayload = await handleCoverImageChange(user.cover_image_url, formData.cover_image_url, {
+      const coverImagePayload = await handleCoverImageChange(capaDe(user), formData.cover_image_url, {
         entityIdentifier: "",
         entityType: EFileAssetType.USER_COVER,
         isUserAsset: true,

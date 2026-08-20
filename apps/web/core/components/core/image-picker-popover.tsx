@@ -11,9 +11,16 @@ import { useDropzone } from "react-dropzone";
 import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import useSWR from "swr";
+import { Check } from "lucide-react";
 import { Popover } from "@headlessui/react";
 // plane imports
-import { ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE, MAX_FILE_SIZE } from "@plane/constants";
+import {
+  ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
+  CORES_DE_CAPA,
+  MAX_FILE_SIZE,
+  NANO_BLUE,
+  ehCorDeCapa,
+} from "@plane/constants";
 import { useOutsideClickDetector } from "@plane/hooks";
 import { Tabs } from "@plane/propel/tabs";
 import { Button, getButtonStyling } from "@plane/propel/button";
@@ -21,6 +28,7 @@ import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { EFileAssetType } from "@plane/types";
 import { Input, Loader } from "@plane/ui";
 import { useTranslation } from "@plane/i18n";
+import { cn } from "@plane/utils";
 // helpers
 import { STATIC_COVER_IMAGES, getCoverImageDisplayURL } from "@/helpers/cover-image.helper";
 // hooks
@@ -70,6 +78,14 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
   const hasUnsplashConfigured = config?.has_unsplash_configured || false;
   const tabOptions: TTabOption[] = useMemo(
     () => [
+      // Evolury: cor primeiro, e é a aba que abre. É a escolha mais barata —
+      // não sobe arquivo, não depende de serviço de terceiro — e é a que
+      // combina com o padrão da casa, onde capa nasce cor e imagem é decisão.
+      {
+        key: "colors",
+        title: t("ui.colors"),
+        isEnabled: true,
+      },
       {
         key: "unsplash",
         title: "Unsplash",
@@ -77,16 +93,16 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
       },
       {
         key: "images",
-        title: "Images",
+        title: t("ui.images"),
         isEnabled: true,
       },
       {
         key: "upload",
-        title: "Upload",
+        title: t("ui.upload"),
         isEnabled: true,
       },
     ],
-    [hasUnsplashConfigured]
+    [hasUnsplashConfigured, t]
   );
 
   const enabledTabs = useMemo(() => tabOptions.filter((tab) => tab.isEnabled), [tabOptions]);
@@ -114,6 +130,14 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
 
   const handleStaticImageSelect = (imageUrl: string) => {
     onChange(imageUrl);
+    setIsOpen(false);
+  };
+
+  // Evolury: cor e imagem saem pelo MESMO `onChange`, como uma string. Quem
+  // recebe separa na borda (`handleCoverImageChange`), e é por isso que o
+  // seletor não precisa de um segundo contrato só para cor.
+  const escolherCor = (hex: string) => {
+    onChange(hex);
     setIsOpen(false);
   };
 
@@ -214,6 +238,36 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                 <Tabs.Indicator />
               </Tabs.List>
               <div className="vertical-scrollbar mt-3 scrollbar-sm flex-1 overflow-x-hidden overflow-y-auto p-3">
+                <Tabs.Content value="colors" className="h-full w-full">
+                  <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
+                    {CORES_DE_CAPA.map((cor) => {
+                      // Capa vazia É o azul da marca na tela — a tela o pinta quando não
+                      // há capa. Marcar o azul aqui diz a verdade do que se vê;
+                      // deixar tudo sem marca diria que não há cor nenhuma.
+                      const escolhida =
+                        typeof value === "string" && value !== ""
+                          ? value.toUpperCase() === cor.hex.toUpperCase()
+                          : cor.hex === NANO_BLUE;
+                      return (
+                        <button
+                          key={cor.hex}
+                          type="button"
+                          onClick={() => escolherCor(cor.hex)}
+                          title={t(cor.i18n_nome)}
+                          aria-label={t(cor.i18n_nome)}
+                          aria-pressed={escolhida}
+                          className={cn(
+                            "relative grid aspect-video w-full place-items-center rounded-sm transition-opacity hover:opacity-80",
+                            { "ring-offset-surface-1 ring-2 ring-accent-strong ring-offset-2": escolhida }
+                          )}
+                          style={{ backgroundColor: cor.hex }}
+                        >
+                          {escolhida && <Check className="h-4 w-4 text-white" aria-hidden="true" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Tabs.Content>
                 <Tabs.Content value="unsplash" className="h-full w-full space-y-4">
                   {(unsplashImages || !unsplashError) && (
                     <>
@@ -305,7 +359,7 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                       <div
                         {...getRootProps()}
                         className={`relative grid h-full w-full cursor-pointer place-items-center rounded-lg p-12 text-center focus:ring-2 focus:ring-accent-strong focus:ring-offset-2 focus:outline-none ${
-                          (image === null && isDragActive) || !value
+                          (image === null && isDragActive) || !value || ehCorDeCapa(value)
                             ? "border-2 border-dashed border-subtle hover:bg-surface-2"
                             : ""
                         }`}
@@ -316,7 +370,9 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                         >
                           {t("edit")}
                         </button>
-                        {image !== null || (value && value !== "") ? (
+                        {/* Evolury: cor escolhida não tem o que pré-visualizar aqui — um
+                            <img src="#0C91EB"> renderiza ícone de imagem quebrada. */}
+                        {image !== null || (value && value !== "" && !ehCorDeCapa(value)) ? (
                           <>
                             <img
                               src={image ? URL.createObjectURL(image) : getCoverImageDisplayURL(value, "")}
@@ -362,7 +418,9 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                         disabled={!image}
                         loading={isImageUploading}
                       >
-                        {isImageUploading ? "Uploading" : t("workspace_settings.settings.applications.upload_and_save")}
+                        {isImageUploading
+                          ? t("ui.uploading")
+                          : t("workspace_settings.settings.applications.upload_and_save")}
                       </Button>
                     </div>
                   </div>

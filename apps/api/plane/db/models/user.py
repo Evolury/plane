@@ -74,6 +74,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     # cover image
     cover_image = models.URLField(blank=True, null=True, max_length=800)
+    # Evolury: a capa do perfil também pode ser uma cor. Aqui o campo próprio
+    # não é só higiene: `cover_image` é `URLField`, e a API recusa `#0C91EB`
+    # com "Enter a valid URL." — medido.
+    cover_color = models.CharField(max_length=7, blank=True, null=True)
     cover_image_asset = models.ForeignKey(
         FileAsset,
         on_delete=models.SET_NULL,

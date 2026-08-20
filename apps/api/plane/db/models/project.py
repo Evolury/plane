@@ -99,6 +99,11 @@ class Project(BaseModel):
     is_issue_type_enabled = models.BooleanField(default=False)
     guest_view_all_features = models.BooleanField(default=False)
     cover_image = models.TextField(blank=True, null=True)
+    # Evolury: a capa pode ser uma COR, e não só uma imagem. Campo próprio
+    # porque cor não é URL — enfiá-la em `cover_image` faria o resto do código,
+    # que trata esse campo como endereço de arquivo, passar a adivinhar.
+    # Preenchido, manda: quem escolhe cor limpa a imagem, e vice-versa.
+    cover_color = models.CharField(max_length=7, blank=True, null=True)
     cover_image_asset = models.ForeignKey(
         "db.FileAsset",
         on_delete=models.SET_NULL,

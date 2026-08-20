@@ -1481,6 +1481,11 @@
     "search_commands": "Buscar comandos...",
     "search_for_a_cycle": "Buscar um ciclo...",
     "search_for_images": "Buscar imagens",
+    "colors": "Cores",
+    "images": "Imagens",
+    "upload": "Enviar",
+    "uploading": "Enviando",
+    "cover_color": "Cor da capa",
     "search_for_shortcuts": "Buscar atalhos",
     "search_pages": "Buscar páginas",
     "select_repository": "Selecionar repositório",
@@ -1905,5 +1910,23 @@
   "lock": "Bloquear",
   "unlock": "Desbloquear",
   "move": "Mover",
-  "untitled": "Sem título"
+  "untitled": "Sem título",
+  "colors": {
+    "nano_blue": "Azul da marca",
+    "deep_blue": "Azul profundo",
+    "blue": "Azul",
+    "indigo": "Índigo",
+    "purple": "Roxo",
+    "pink": "Rosa",
+    "red": "Vermelho",
+    "orange": "Laranja",
+    "amber": "Âmbar",
+    "green": "Verde",
+    "teal": "Petróleo",
+    "graphite": "Grafite",
+    "gray": "Cinza",
+    "peach": "Pêssego",
+    "light_blue": "Azul claro",
+    "dark_blue": "Azul escuro"
+  }
 }

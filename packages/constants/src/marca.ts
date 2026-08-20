@@ -36,3 +36,44 @@ export const WHITE_BLUE = "#F6FAFF";
  * desapareceria. É o mesmo par que o logotipo usa.
  */
 export const ICONE_PADRAO_DE_PROJETO = { name: "view_kanban", color: DEEP_BLUE } as const;
+
+/**
+ * As cores que a capa pode ter, quando quem usa escolhe uma cor em vez de uma
+ * imagem.
+ *
+ * Todas foram medidas contra texto branco: as doze passam de 5:1, exceto as
+ * duas da marca, que entram por serem a identidade — NanoBlue fica em 3,35:1, e
+ * é por isso que o nome sobre a capa continua com o véu escuro, em vez de
+ * depender da cor crua.
+ *
+ * Só o tom, e nunca o nome, mora aqui: o rótulo vem da chave (ADR 0008).
+ */
+export type TCorDeCapa = { hex: string; i18n_nome: string };
+
+export const CORES_DE_CAPA: readonly TCorDeCapa[] = [
+  { hex: NANO_BLUE, i18n_nome: "colors.nano_blue" },
+  { hex: DEEP_BLUE, i18n_nome: "colors.deep_blue" },
+  { hex: "#1D4ED8", i18n_nome: "colors.blue" },
+  { hex: "#4338CA", i18n_nome: "colors.indigo" },
+  { hex: "#6D28D9", i18n_nome: "colors.purple" },
+  { hex: "#BE185D", i18n_nome: "colors.pink" },
+  { hex: "#B91C1C", i18n_nome: "colors.red" },
+  { hex: "#C2410C", i18n_nome: "colors.orange" },
+  { hex: "#B45309", i18n_nome: "colors.amber" },
+  { hex: "#166534", i18n_nome: "colors.green" },
+  { hex: "#0F5257", i18n_nome: "colors.teal" },
+  { hex: "#1F2937", i18n_nome: "colors.graphite" },
+] as const;
+
+/**
+ * `#RRGGBB`, e nada mais.
+ *
+ * A cor termina desenhada num `style`, e o valor vem do banco. Aceitar
+ * "qualquer coisa que comece com #" deixaria passar `#fff);background-image:…`
+ * — por isso a forma é exata, e a mesma regra existe no servidor
+ * (`plane/utils/cores.py`), que é quem de fato recusa a gravação.
+ */
+export const FORMATO_DE_COR_DE_CAPA = /^#[0-9a-fA-F]{6}$/;
+
+/** Distingue capa-cor de capa-imagem: os dois viajam no mesmo campo do formulário. */
+export const ehCorDeCapa = (valor: string | null | undefined): boolean => !!valor && FORMATO_DE_COR_DE_CAPA.test(valor);

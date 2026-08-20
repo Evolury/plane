@@ -16,6 +16,7 @@ import { Avatar, CustomMenu } from "@plane/ui";
 import { getFileURL } from "@plane/utils";
 // components
 import { CoverImage } from "@/components/common/cover-image";
+import { capaDe } from "@/helpers/cover-image.helper";
 import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
@@ -81,7 +82,7 @@ export const UserMenuRoot = observer(function UserMenuRoot() {
     >
       <div className="relative h-29 w-full rounded-lg">
         <CoverImage
-          src={currentUser?.cover_image_url ?? undefined}
+          src={capaDe(currentUser)}
           alt={currentUser?.display_name}
           className="h-29 w-full rounded-lg"
           showDefaultWhenEmpty

@@ -26,6 +26,7 @@ from plane.db.models import (
 from plane.utils.content_validator import (
     validate_html_content,
 )
+from plane.utils.cores import normalizar_cor_de_capa
 
 
 class ProjectSerializer(BaseSerializer):
@@ -94,6 +95,17 @@ class ProjectSerializer(BaseSerializer):
 
         return completion_state
 
+    def validate_cover_color(self, cover_color):
+        """Evolury: cor de capa é `#RRGGBB`, e é o servidor quem cobra.
+
+        O valor termina desenhado num `style` do navegador; aceitar texto livre
+        aqui transformaria um campo de cor em injeção de CSS.
+        """
+        try:
+            return normalizar_cor_de_capa(cover_color)
+        except ValueError:
+            raise serializers.ValidationError(detail="COVER_COLOR_INVALID")
+
     def validate(self, data):
         # Validate description content for security
         if "description_html" in data and data["description_html"]:
@@ -126,6 +138,8 @@ class ProjectLiteSerializer(BaseSerializer):
             "name",
             "cover_image",
             "cover_image_url",
+            # Evolury: sem isto a lista enxuta desenharia a capa sem a cor.
+            "cover_color",
             "logo_props",
             "description",
         ]
