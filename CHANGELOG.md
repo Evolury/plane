@@ -3,6 +3,52 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.32.0] — 2026-08-20
+
+**Minor**: a capa de um projeto ou de um perfil pode ser **uma cor**.
+
+### Na tela
+
+- **O seletor de capa ganhou a aba Cores**, ao lado de Imagens e Enviar — e é a
+  aba que abre. Doze tons, o azul da marca primeiro. É a escolha mais barata:
+  não sobe arquivo e não depende de serviço de terceiro. Vale para a capa do
+  projeto e para a do perfil.
+
+- **Cor e imagem não convivem.** Escolher uma limpa a outra, e a capa volta a
+  ser uma coisa só. Quando não há capa nenhuma, a tela segue pintando o azul da
+  marca — e a aba de cores mostra esse azul como o selecionado, porque é o que
+  se está vendo.
+
+- **O nome do projeto voltou a ter o véu escuro sobre qualquer capa.** Texto
+  branco sobre o azul da marca dá 3,35:1 de contraste, abaixo do mínimo de
+  4,5:1 que o identificador de 11px exige; com o véu, 7,6:1. A 1.31.0 tirava o
+  véu quando não havia foto — o número mostrou que não dava.
+
+- **O ícone do projeto ganhou uma placa clara no cartão.** Sobre a capa
+  escurecida, o ícone azul-escuro sobre um véu de 10% ficava entre 1,1:1 e
+  1,7:1 — sumia. Agora fica acima de 7:1 nas doze cores.
+
+- **O avatar do Início deixou de destoar.** A lista de primeiros passos
+  desenhava o avatar à mão, com o verde-azulado antigo cravado, e continuou
+  verde quando o resto virou azul. Era o avatar de quem está logado, não
+  enfeite.
+
+- **As cores dos recados agora têm nome.** Os quadradinhos eram botões sem
+  rótulo nenhum — nada para ler em voz alta, nada ao passar o mouse. O nome
+  existia no código, em inglês, e nunca chegava à tela.
+
+### Por dentro
+
+- A cor mora em **campo próprio** (`cover_color`), e não no campo de imagem: a
+  API recusa `#0C91EB` num campo de URL — medido, não deduzido. A decisão, com
+  as alternativas descartadas, está no **ADR 0017**.
+
+- **A forma é exata — `#RRGGBB` — e é o servidor que cobra.** A cor termina
+  desenhada num `style` do navegador; aceitar "começa com #" deixaria passar
+  CSS disfarçado de cor.
+
+- Uma varredura nova impede o verde-azulado antigo de voltar em qualquer tela.
+
 ## [1.31.0] — 2026-08-20
 
 **Minor**: projeto e avatar novos nascem com a identidade da marca, e não com um
