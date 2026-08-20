@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Hotel } from "lucide-react";
 // plane ui
-import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
+import { EUserPermissions, EUserPermissionsLevel, NANO_BLUE } from "@plane/constants";
 import { useLocalStorage } from "@plane/hooks";
 import { useTranslation } from "@plane/i18n";
 import { MembersPropertyIcon, CheckIcon, ProjectIcon, CloseIcon } from "@plane/propel/icons";
@@ -106,7 +106,14 @@ export const NoProjectsEmptyState = observer(function NoProjectsEmptyState() {
           </Link>
         ) : (
           <Link href={`/${workspaceSlug}/profile/${currentUser?.id}`}>
-            <span className="relative flex size-4 items-center justify-center rounded-full bg-[#028375] p-4 text-13 text-on-color capitalize">
+            {/* Evolury: o mesmo azul do avatar em toda a interface. Esta tela
+                desenha o avatar à mão, em vez de usar <Avatar>, e por isso
+                ficou para trás quando o padrão mudou — a mesma pessoa aparecia
+                verde-azulada aqui e azul em todo o resto. */}
+            <span
+              className="relative flex size-4 items-center justify-center rounded-full p-4 text-13 text-on-color capitalize"
+              style={{ backgroundColor: NANO_BLUE }}
+            >
               {(currentUser?.email ?? currentUser?.display_name ?? "?")[0]}
             </span>
           </Link>
