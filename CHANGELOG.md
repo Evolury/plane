@@ -3,6 +3,50 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.30.0] — 2026-08-20
+
+**Minor**: a interface fala português de ponta a ponta, e o **Intake** passa a
+se chamar **Triagem**.
+
+### Na tela
+
+- **O inglês que sobrava sumiu — 204 pontos.** Ciclos, módulos, analytics,
+  páginas, estimativas e os 25 cabeçalhos de filtro de tarefa. "Status of the
+  cycle" virou "Situação do ciclo", "1 week from now" virou "Daqui a 1 semana",
+  "Start date → End date" virou "Data de início → Data de término".
+
+  Não faltava tradução: das 5468 chaves do pt-BR, só 2% eram idênticas ao
+  inglês. **O texto estava lá e o código não o consultava** — as constantes
+  guardavam o rótulo em inglês ao lado da chave, e metade dos consumidores lia o
+  campo errado. O campo em inglês saiu, e agora escolher errado não compila.
+
+- **"Intake" agora é "Triagem".** O produto usava quatro nomes para a mesma
+  coisa — "Intake", "Entrada", "entrada" e "recebimento" —, às vezes na mesma
+  tela. São 40 textos, com a concordância refeita: "Ativar **a** Triagem", "**A**
+  Triagem não está habilitada", "tarefas **da** Triagem".
+
+  "Caixa de entrada" continua sendo o centro de notificações. Antes é que havia
+  confusão: os dois recursos disputavam a palavra "entrada".
+
+- **A comparação de planos saiu do Faturamento.** Ela vendia os planos pagos da
+  nuvem do Plane — Free, One, Pro, Business, Enterprise —, que não existem numa
+  instância própria. A tela mostrava ao usuário a tabela de preços de outra
+  empresa. Fica o que é verdade: "Community — projetos, tarefas, ciclos,
+  módulos, páginas e armazenamento ilimitados", e uma descrição que não promete
+  assinatura nenhuma.
+
+### Por dentro
+
+- **Uma verificação nova impede a volta do inglês.** `check:literais` falha a CI
+  quando um literal do código bate letra por letra com um texto já traduzido —
+  prova exata, não adivinhação. Os checks de i18n passaram a rodar também quando
+  o código dos componentes muda; filtrados só pelo pacote de tradução, nunca
+  disparariam nos PRs que criam o problema.
+
+- Duas armadilhas silenciosas foram desarmadas: um ícone cuja espessura dependia
+  de comparar o rótulo em inglês (`item.name === "Intake"`), e um campo chamado
+  `label` que guardava texto e era consultado como se fosse chave.
+
 ## [1.29.2] — 2026-08-20
 
 **Patch**: o histórico de propriedade personalizada volta a aparecer.
