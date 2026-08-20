@@ -3,6 +3,57 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.34.0] — 2026-08-20
+
+**Minor**: dá para **preencher campos de muitas tarefas de uma vez**.
+
+### Na tela
+
+- **A barra da seleção ganhou "Editar".** Um painel que junta as mudanças e
+  aplica com um botão só — estado, prioridade, responsável, etiquetas, datas e
+  **as propriedades personalizadas do projeto**, tudo na mesma passada. O botão
+  conta o que vai mudar: "Aplicar 2 mudanças".
+
+- **Nada é salvo antes do "Aplicar".** Escolher um valor não dispara nada; o
+  botão é o freio, e é por isso que não há diálogo de confirmação no caminho.
+
+- **Etiqueta soma, e não substitui.** Ao lado do campo estão os três modos —
+  Acrescentar, Remover e Substituir —, com Acrescentar já escolhido. Substituir
+  sem avisar é como se apaga a etiqueta de outra pessoa achando que se está
+  acrescentando.
+
+- **Campo com valores diferentes abre em "Vários".** Abrir com o valor da
+  primeira tarefa é o caminho mais curto para sobrescrever o das outras sem
+  perceber.
+
+- **Campo que a seleção não pode receber não aparece.** Estado, responsável,
+  etiqueta e propriedades são de cada projeto: numa seleção que atravessa
+  projetos, ficam prioridade e datas, com a explicação na própria tela.
+
+- **Se alguma tarefa da seleção não for sua, nada é alterado** — e o painel diz
+  quantas ficaram de fora.
+
+- **A data é conferida contra a que a tarefa já tem.** Mandar um início posterior
+  a um vencimento que ninguém tocou é recusado, com a mensagem certa para cada
+  caso.
+
+### Por dentro
+
+- O endpoint de operações em massa **não existia nesta edição** — só o cliente
+  dele, que já estava no código inteiro, sem nada que o usasse. Agora existe, com
+  o contrato que o cliente esperava e o campo de modos por cima.
+
+- Propriedade personalizada tem endpoint próprio, que **confere o valor uma vez
+  antes de escrever em qualquer tarefa**: recusar na décima deixaria nove
+  preenchidas e ninguém sabendo quais.
+
+- Uma edição em massa registra o histórico tarefa a tarefa — e é por ele que o
+  quadro de quem está junto se atualiza e as automações acordam. Notificação por
+  item não é enviada: duzentas de uma vez são um preenchimento, não duzentos
+  eventos.
+
+- A decisão inteira, com o que ficou de fora, está no **ADR 0019**.
+
 ## [1.33.0] — 2026-08-20
 
 **Minor**: dá para **excluir tarefas em massa** — e desfazer.
