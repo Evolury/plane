@@ -23,7 +23,7 @@ import { CoverImage } from "@/components/common/cover-image";
 import { ImagePickerPopover } from "@/components/core/image-picker-popover";
 import { TimezoneSelect } from "@/components/global";
 // helpers
-import { handleCoverImageChange } from "@/helpers/cover-image.helper";
+import { capaDe, handleCoverImageChange } from "@/helpers/cover-image.helper";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -64,6 +64,9 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
     defaultValues: {
       ...project,
       workspace: (project.workspace as IWorkspace).id,
+      // Evolury: um campo só para as duas capas. O seletor devolve uma string —
+      // cor ou endereço —, e a separação acontece no envio, não aqui.
+      cover_image_url: capaDe(project),
     },
   });
   // derived values
@@ -75,6 +78,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
       reset({
         ...project,
         workspace: (project.workspace as IWorkspace).id,
+        cover_image_url: capaDe(project),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,7 +169,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
 
     // Handle cover image changes
     try {
-      const coverImagePayload = await handleCoverImageChange(project.cover_image_url, formData.cover_image_url, {
+      const coverImagePayload = await handleCoverImageChange(capaDe(project), formData.cover_image_url, {
         workspaceSlug: workspaceSlug.toString(),
         entityIdentifier: project.id,
         entityType: EFileAssetType.PROJECT_COVER,
@@ -216,7 +220,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
                   isOpen={isOpen}
                   handleToggle={(val: boolean) => setIsOpen(val)}
                   className="flex items-center justify-center"
-                  buttonClassName="flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-lg bg-white/10"
+                  buttonClassName="flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-lg bg-white/80"
                   label={<Logo logo={value} size={28} />}
                   // TODO: fix types
                   onChange={(val: any) => {

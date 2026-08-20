@@ -38,6 +38,8 @@ export interface IUser extends IUserLite {
   cover_image?: string | null;
   // only for rendering the cover image
   cover_image_url: string | null;
+  // Evolury: a capa pode ser uma cor em vez de uma imagem. Preenchida, manda.
+  cover_color?: string | null;
   date_joined: string;
   email: string;
   is_active: boolean;
@@ -171,7 +173,10 @@ export interface IUserProfileProjectSegregation {
     id: string;
     pending_issues: number;
   }[];
-  user_data: Pick<IUser, "avatar_url" | "cover_image_url" | "display_name" | "first_name" | "last_name"> & {
+  user_data: Pick<
+    IUser,
+    "avatar_url" | "cover_image_url" | "cover_color" | "display_name" | "first_name" | "last_name"
+  > & {
     date_joined: Date;
     user_timezone: string;
   };

@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 # Module import
 from plane.db.models import Account, Profile, User, Workspace, WorkspaceMemberInvite
+from plane.utils.cores import normalizar_cor_de_capa
 from plane.utils.url import contains_url
 
 from .base import BaseSerializer
@@ -22,6 +23,17 @@ class UserSerializer(BaseSerializer):
         if contains_url(value):
             raise serializers.ValidationError("Last name cannot contain a URL.")
         return value
+
+    def validate_cover_color(self, cover_color):
+        """Evolury: cor de capa é `#RRGGBB`, e é o servidor quem cobra.
+
+        O valor termina desenhado num `style` do navegador; aceitar texto livre
+        aqui transformaria um campo de cor em injeção de CSS.
+        """
+        try:
+            return normalizar_cor_de_capa(cover_color)
+        except ValueError:
+            raise serializers.ValidationError("COVER_COLOR_INVALID")
 
     class Meta:
         model = User
@@ -67,6 +79,9 @@ class UserMeSerializer(BaseSerializer):
             "id",
             "avatar",
             "cover_image",
+            # Evolury: sem isto o front nunca veria a cor da própria capa — é
+            # este serializer que responde /api/users/me/.
+            "cover_color",
             "avatar_url",
             "cover_image_url",
             "date_joined",

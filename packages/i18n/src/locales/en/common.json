@@ -1481,6 +1481,11 @@
     "search_commands": "Search commands...",
     "search_for_a_cycle": "Search for a cycle...",
     "search_for_images": "Search for images",
+    "colors": "Colors",
+    "images": "Images",
+    "upload": "Upload",
+    "uploading": "Uploading",
+    "cover_color": "Cover color",
     "search_for_shortcuts": "Search for shortcuts",
     "search_pages": "Search pages",
     "select_repository": "Select Repository",
@@ -1905,5 +1910,23 @@
   "lock": "Lock",
   "unlock": "Unlock",
   "move": "Move",
-  "untitled": "Untitled"
+  "untitled": "Untitled",
+  "colors": {
+    "nano_blue": "Brand blue",
+    "deep_blue": "Deep blue",
+    "blue": "Blue",
+    "indigo": "Indigo",
+    "purple": "Purple",
+    "pink": "Pink",
+    "red": "Red",
+    "orange": "Orange",
+    "amber": "Amber",
+    "green": "Green",
+    "teal": "Teal",
+    "graphite": "Graphite",
+    "gray": "Gray",
+    "peach": "Peach",
+    "light_blue": "Light blue",
+    "dark_blue": "Dark blue"
+  }
 }

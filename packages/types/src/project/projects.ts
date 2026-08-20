@@ -50,6 +50,8 @@ export interface IProject extends IPartialProject {
   cover_image?: string;
   // only for rendering the cover image
   readonly cover_image_url?: string;
+  // Evolury: a capa pode ser uma cor em vez de uma imagem. Preenchida, manda.
+  cover_color?: string | null;
   default_assignee?: IUser | string | null;
   default_state?: string | null;
   // Evolury: destino do botão de concluir (ADR 0009); nulo = automático

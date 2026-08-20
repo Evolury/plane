@@ -7,49 +7,53 @@
 import type { TSticky } from "@plane/types";
 import { useTranslation } from "@plane/i18n";
 
+// Evolury: o nome da cor virou chave, e passou a ser DESENHADO. Ele existia
+// como texto em inglês e nunca chegava à tela: os quadradinhos eram botões sem
+// rótulo nenhum — invisíveis para leitor de tela, e um "escolha a cor" que só
+// funciona para quem enxerga a cor.
 export const STICKY_COLORS_LIST: {
   key: string;
-  label: string;
+  i18n_label: string;
   backgroundColor: string;
 }[] = [
   {
     key: "gray",
-    label: "Gray",
+    i18n_label: "colors.gray",
     backgroundColor: "var(--editor-colors-gray-background)",
   },
   {
     key: "peach",
-    label: "Peach",
+    i18n_label: "colors.peach",
     backgroundColor: "var(--editor-colors-peach-background)",
   },
   {
     key: "pink",
-    label: "Pink",
+    i18n_label: "colors.pink",
     backgroundColor: "var(--editor-colors-pink-background)",
   },
   {
     key: "orange",
-    label: "Orange",
+    i18n_label: "colors.orange",
     backgroundColor: "var(--editor-colors-orange-background)",
   },
   {
     key: "green",
-    label: "Green",
+    i18n_label: "colors.green",
     backgroundColor: "var(--editor-colors-green-background)",
   },
   {
     key: "light-blue",
-    label: "Light blue",
+    i18n_label: "colors.light_blue",
     backgroundColor: "var(--editor-colors-light-blue-background)",
   },
   {
     key: "dark-blue",
-    label: "Dark blue",
+    i18n_label: "colors.dark_blue",
     backgroundColor: "var(--editor-colors-dark-blue-background)",
   },
   {
     key: "purple",
-    label: "Purple",
+    i18n_label: "colors.purple",
     backgroundColor: "var(--editor-colors-purple-background)",
   },
 ];
@@ -74,6 +78,8 @@ export function ColorPalette(props: TProps) {
                 background_color: color.key,
               });
             }}
+            title={t(color.i18n_label)}
+            aria-label={t(color.i18n_label)}
             className="h-6 w-6 rounded-md transition-all hover:ring-2 hover:ring-accent-strong focus:ring-2 focus:ring-accent-strong focus:outline-none"
             style={{
               backgroundColor: color.backgroundColor,

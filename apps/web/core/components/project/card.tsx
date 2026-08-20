@@ -31,6 +31,7 @@ import { useAppRouter } from "@/hooks/use-app-router";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // local imports
 import { CoverImage } from "@/components/common/cover-image";
+import { capaDe } from "@/helpers/cover-image.helper";
 import { DeleteProjectModal } from "./delete-project-modal";
 import { JoinProjectModal } from "./join-project-modal";
 import { ArchiveRestoreProjectModal } from "./archive-restore-modal";
@@ -213,23 +214,27 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       >
         <ContextMenu parentRef={projectCardRef} items={MENU_ITEMS} />
         <div className="relative h-[118px] w-full rounded-t">
-          {/* Evolury: o véu escuro existe para o nome ficar legível sobre uma
-              FOTO, que pode ser clara em qualquer ponto. Sobre a cor da marca
-              ele não tem função e só enlameia o azul — o brandbook (p. 18) já
-              garante o contraste de texto branco sobre NanoBlue. */}
-          {project.cover_image_url && (
-            <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 to-transparent" />
-          )}
+          {/* Evolury: o véu escuro vale para QUALQUER capa, cor ou foto.
+              Medido: branco sobre NanoBlue dá 3,35:1, abaixo dos 4,5:1 que o
+              identificador de 11px exige — com o véu vai a 7,6:1. A versão
+              anterior tirava o véu quando não havia foto por achar que a cor
+              da marca dispensava; o número diz que não. */}
+          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 to-transparent" />
 
           <CoverImage
-            src={project.cover_image_url}
+            src={capaDe(project)}
             alt={project.name}
             className="absolute top-0 left-0 h-full w-full rounded-t"
           />
 
           <div className="absolute bottom-4 z-[1] flex h-10 w-full items-center justify-between gap-3 px-4">
             <div className="flex flex-grow items-center gap-2.5 truncate">
-              <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-sm bg-white/10">
+              {/* Evolury: placa clara, e não um véu de 10%. Medido, com a capa já
+                  escurecida pelo gradiente: o ícone DeepBlue sobre branco/10
+                  dá 1,1:1 a 1,7:1 — some. Sobre branco/80 dá 7:1 ou mais em
+                  todas as cores da paleta. Os outros botões continuam em /10:
+                  o conteúdo deles é branco, e branco sobre capa escura já lê. */}
+              <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-sm bg-white/80">
                 <Logo logo={project.logo_props} size={18} />
               </div>
 

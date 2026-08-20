@@ -364,6 +364,10 @@ class WorkspaceUserProfileEndpoint(BaseAPIView):
                     "last_name": user_data.last_name,
                     "avatar_url": user_data.avatar_url,
                     "cover_image_url": user_data.cover_image_url,
+                    # Evolury: a capa do perfil pode ser uma cor, e este dicionário
+                    # é montado à mão — sem a linha, o perfil de outra pessoa
+                    # apareceria no azul padrão em vez da cor que ela escolheu.
+                    "cover_color": user_data.cover_color,
                     "date_joined": user_data.date_joined,
                     "user_timezone": user_data.user_timezone,
                     "display_name": user_data.display_name,
