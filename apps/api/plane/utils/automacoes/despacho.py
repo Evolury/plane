@@ -162,13 +162,25 @@ def registrar_atividade_de_propriedade(
     if de == para:
         return
 
+    # O verbo é PRÓPRIO, e não o "updated" dos demais campos, porque a tela
+    # precisa reconhecer a linha sem adivinhar. `field` aqui é o NOME de uma
+    # propriedade do cliente, e nenhuma lista de campos conhecidos vai contê-lo:
+    # sem o verbo, a única saída seria "campo desconhecido é propriedade", que
+    # também casaria com a exclusão de tarefa (`field="issue"`) e com qualquer
+    # campo novo que o upstream venha a rastrear.
+    #
+    # `new_identifier` guarda o ID da propriedade — não o do valor, como nas
+    # outras atividades. É o que sobrevive a um rename: o rótulo em `field`
+    # continua sendo o nome de quando a mudança aconteceu, que é o que faz
+    # sentido para quem lê seis meses depois.
     IssueActivity.objects.create(
         issue=tarefa,
         actor_id=actor_id,
-        verb="updated",
+        verb="property_updated",
         old_value=de,
         new_value=para,
         field=propriedade.name,
+        new_identifier=propriedade.id,
         project_id=tarefa.project_id,
         workspace_id=tarefa.workspace_id,
         comment=f"alterou {propriedade.name} para",

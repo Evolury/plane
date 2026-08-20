@@ -806,7 +806,44 @@ const activityDetails: {
   },
 };
 
+// Evolury: mudança de propriedade personalizada (ADR 0011).
+//
+// O mapa acima é indexado por CAMPO, e o campo aqui é o nome de uma propriedade
+// do cliente — nunca vai casar. O verbo próprio é o que torna a linha
+// reconhecível, e sem ele toda mudança de propriedade era escrita no banco e
+// engolida por esta tela.
+const VERBO_DE_PROPRIEDADE = "property_updated";
+
+function MensagemDePropriedade({ activity }: { activity: IIssueActivity }) {
+  const de = activity.old_value?.trim();
+  const para = activity.new_value?.trim();
+  // Três frases, e não uma com pedaços vazios: "alterou Canal de para Anúncio"
+  // é o que sai quando o campo estava em branco.
+  if (!para)
+    return (
+      <>
+        {translate("activity_log.property.cleared")}
+        <span className="font-medium text-primary">{activity.field}</span>
+      </>
+    );
+  return (
+    <>
+      {de ? translate("activity_log.property.changed") : translate("activity_log.property.set")}
+      <span className="font-medium text-primary">{activity.field}</span>
+      {de && (
+        <>
+          {translate("activity_log.property.from")}
+          <span className="font-medium text-primary">{de}</span>
+        </>
+      )}
+      {de ? translate("activity_log.property.to") : translate("activity_log.property.as")}
+      <span className="font-medium text-primary">{para}</span>
+    </>
+  );
+}
+
 export function ActivityIcon({ activity }: { activity: IIssueActivity }) {
+  if (activity.verb === VERBO_DE_PROPRIEDADE) return <TagIcon className="size-3 text-secondary" aria-hidden="true" />;
   return <>{activityDetails[activity.field as keyof typeof activityDetails]?.icon}</>;
 }
 
@@ -818,6 +855,8 @@ type ActivityMessageProps = {
 export function ActivityMessage({ activity, showIssue = false }: ActivityMessageProps) {
   // router params
   const { workspaceSlug } = useParams();
+  if (activity.verb === VERBO_DE_PROPRIEDADE) return <MensagemDePropriedade activity={activity} />;
+
   const activityField = activity.field ?? "issue";
 
   return (

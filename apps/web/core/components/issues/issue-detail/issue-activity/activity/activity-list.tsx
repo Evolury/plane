@@ -30,7 +30,13 @@ import {
   IssueAttachmentActivity,
   IssueArchivedAtActivity,
   IssueInboxActivity,
+  IssuePropertyActivity,
 } from "./actions";
+
+// Evolury: mudança de propriedade personalizada (ADR 0011). O verbo é próprio
+// porque o campo é o NOME de uma propriedade do cliente — nenhuma lista de
+// campos conhecidos pode contê-lo.
+const VERBO_DE_PROPRIEDADE = "property_updated";
 
 type TIssueActivityItem = {
   activityId: string;
@@ -50,7 +56,14 @@ export const IssueActivityItem = observer(function IssueActivityItem(props: TIss
 
   const componentDefaultProps = { activityId, ends };
 
-  const activityField = getActivityById(activityId)?.field;
+  const activity = getActivityById(activityId);
+
+  // Antes do despacho por campo: o `switch` abaixo cai em `null` para tudo o
+  // que não reconhece, e era ali que toda mudança de propriedade sumia.
+  if (activity?.verb === VERBO_DE_PROPRIEDADE)
+    return <IssuePropertyActivity {...componentDefaultProps} showIssue={false} />;
+
+  const activityField = activity?.field;
   switch (activityField) {
     case null: // default issue creation
       return <IssueDefaultActivity {...componentDefaultProps} />;

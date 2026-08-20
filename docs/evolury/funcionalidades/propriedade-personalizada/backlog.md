@@ -231,3 +231,40 @@ acrescenta ou substitui? Sem resposta boa, não entra.
 
 **Lacuna registrada:** cartão movido em outra aba não troca de coluna sozinho.
 Está no [backlog técnico](../../backlog-tecnico.md), com o motivo e o caminho.
+
+## P11 — O histórico que era gravado e nunca aparecia — 20/08/2026
+
+Relatado como "arrastar entre etapas não registra nada nas atividades". A
+medição mostrou outra coisa: **a linha sempre foi gravada** — desde a v1.13.0, e
+igual pelos três caminhos de escrita (painel, automação e agora o arrasto). Quem
+não a mostrava era a tela.
+
+As três telas de atividade despacham por **campo conhecido** e devolvem nada
+para o resto (`default: return null`). O campo aqui é o NOME de uma propriedade
+do cliente, que nenhuma lista pode conter — então toda mudança de propriedade
+era escrita e engolida, em toda parte.
+
+- [x] P11.1 **Verbo próprio** (`property_updated`) em
+      `registrar_atividade_de_propriedade`, mais o id da propriedade em
+      `new_identifier`. Um fallback genérico foi descartado com medição: quem
+      cai no `default` inclui `field="issue"` (exclusão de tarefa) e qualquer
+      campo que o upstream venha a rastrear
+- [x] P11.2 **A linha desenhada** nas duas telas — histórico da tarefa e
+      "Minhas atividades" —, em três frases conforme o caso: "definiu Canal
+      como X", "alterou Canal de X para Y", "limpou Canal". Frase única com
+      pedaços vazios produzia "alterou Canal de para Anúncio"
+- [x] P11.3 **Migração 0149** para o histórico já gravado: casa por
+      **(projeto, nome)** e só toca `verb="updated"` sem `new_identifier`.
+      Propriedade renomeada não é alcançada, e é aceito — a linha antiga guarda
+      o nome de quando a mudança aconteceu, e inventar vínculo por semelhança
+      seria adivinhar
+- [x] P11.4 Testes de contrato, com a regra da migração extraída para
+      `marcar_atividades_de_propriedade` — o `pytest.ini` roda com
+      `--nomigrations`, então regra escrita dentro da migração não é executada
+      por teste nenhum (a lição da 0147)
+
+**Uma injeção passou, e o teste foi refeito.** Remover a guarda do
+`new_identifier` não derrubou nada: o que protegia a atividade de etiqueta era o
+casamento por nome, não a guarda. O teste passou a criar uma propriedade
+chamada `labels` — a colisão em que a guarda é o que de fato protege — e aí a
+injeção falhou como devia.

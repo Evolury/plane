@@ -22,6 +22,8 @@ export * from "./link";
 export * from "./attachment";
 export * from "./archived-at";
 export * from "./inbox";
+// Evolury: propriedade personalizada (ADR 0011)
+export * from "./issue-property";
 export * from "./label-activity-chip";
 
 // helpers

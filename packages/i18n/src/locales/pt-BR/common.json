@@ -1806,7 +1806,15 @@
     "is_being_blocked_by": "está bloqueada por",
     "as_duplicate_of": "como duplicada de",
     "added_this_project": "adicionou este projeto ",
-    "removed_this_project": "removeu este projeto "
+    "removed_this_project": "removeu este projeto ",
+    "property": {
+      "set": "definiu ",
+      "as": " como ",
+      "changed": "alterou ",
+      "from": " de ",
+      "to": " para ",
+      "cleared": "limpou "
+    }
   },
   "validation": {
     "name_required": "O nome é obrigatório",
