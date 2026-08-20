@@ -3,6 +3,54 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.33.0] — 2026-08-20
+
+**Minor**: dá para **excluir tarefas em massa** — e desfazer.
+
+### Na tela
+
+- **A barra da seleção ganhou "Excluir".** Ela já existia com o botão de
+  concluir; agora, ao selecionar tarefas em Lista, Planilha ou Cronograma, o
+  botão vermelho aparece ao lado. A confirmação diz o número e o que vai junto —
+  "Excluir 12 tarefas? As subtarefas e os comentários vão junto" —, e o botão
+  repete o número, em vez de um "OK" genérico.
+
+- **Dá para desfazer.** O aviso de sucesso traz "Desfazer" e fica na tela 12
+  segundos, contra os 5 de um aviso comum: uma saída que some antes de ser vista
+  não é uma saída. As tarefas voltam com tudo que caiu junto — subtarefas,
+  comentários, anexos.
+
+- **Excluir em massa passou a valer para quem cria, e não só para
+  administradores.** Antes, um membro que apagava dez tarefas suas uma a uma não
+  podia apagar as mesmas dez de uma vez. A regra não muda com a quantidade.
+
+- **Se alguma tarefa da seleção não for sua, nada é excluído.** O pedido inteiro
+  é recusado, e o modal avisa quantas ficaram de fora — apagar 8 de 10 sem dizer
+  quais ficaram seria pior.
+
+- **O histórico registra cada exclusão e cada restauração**, e o quadro de quem
+  está junto se atualiza na hora.
+
+### Por dentro
+
+- **A exclusão em massa passou a fazer o que a exclusão de uma tarefa faz.** O
+  endpoint existia e só marcava as tarefas: a subtarefa ficava viva apontando
+  para um pai que não existe mais, sem histórico e sem aviso de tempo real.
+  Agora a cascata é a mesma — e vai por conjunto de linhas, uma consulta por
+  relação, em vez de uma por tarefa.
+
+- **O desfazer não precisou de campo novo no banco.** Todas as linhas de uma
+  exclusão recebem o mesmo instante, e restaurar é limpar por aquele instante. A
+  exclusão sempre foi suave aqui, com expurgo definitivo só 60 dias depois; o
+  dado estava lá o tempo todo e faltava a porta.
+
+- **Um modal de exclusão em massa dormia no código sem ninguém para abri-lo** —
+  a única referência a ele era o próprio "fechar". Saiu junto com a fiação.
+
+- A linha de "restaurou" no histórico era gravada certa e **lida errada**: o
+  desenho mandava todo verbo que não fosse "criou" para "excluiu". A decisão
+  inteira está no **ADR 0018**.
+
 ## [1.32.0] — 2026-08-20
 
 **Minor**: a capa de um projeto ou de um perfil pode ser **uma cor**.
