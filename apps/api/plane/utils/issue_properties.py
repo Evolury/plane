@@ -628,3 +628,53 @@ def valores_de_agrupamento(group_by):
         .values_list("id", flat=True)
     )
     return opcoes + ["None"]
+
+
+#: O verbo das atividades de propriedade personalizada.
+#:
+#: Próprio, e não o "updated" dos demais campos, porque `field` aqui é o NOME
+#: de uma propriedade do cliente — nenhuma lista de campos conhecidos pode
+#: contê-lo, e as três telas de atividade despacham por campo conhecido.
+VERBO_DE_PROPRIEDADE = "property_updated"
+
+
+def marcar_atividades_de_propriedade(IssueActivity, IssueProperty):
+    """Dá o verbo próprio às atividades de propriedade já gravadas.
+
+    Mora aqui, e não dentro da migração, para poder ser provada: o `pytest.ini`
+    roda com `--nomigrations`, então uma regra escrita só na migração não é
+    executada por teste nenhum. Recebe os modelos por parâmetro porque a
+    migração usa os históricos (`apps.get_model`) e o teste usa os reais.
+
+    Duas travas que importam, e as duas são silenciosas quando erradas:
+
+    - só mexe em `verb="updated"` **sem** `new_identifier`, para não encostar
+      nas atividades de etiqueta, ciclo, módulo e responsável, que usam a mesma
+      coluna para o id do VALOR;
+    - casa por **(projeto, nome)**, e não por nome: o nome é único dentro do
+      projeto, e dois projetos podem ter "Canal" querendo dizer coisas
+      diferentes.
+
+    Devolve quantas linhas foram marcadas.
+    """
+    indice = {
+        (linha["project_id"], linha["name"]): linha["id"] for linha in IssueProperty.objects.all().values(
+            "id", "project_id", "name"
+        )
+    }
+    if not indice:
+        return 0
+
+    marcadas = 0
+    candidatas = IssueActivity.objects.filter(verb="updated", new_identifier__isnull=True).values(
+        "id", "project_id", "field"
+    )
+    for atividade in candidatas.iterator(chunk_size=2000):
+        propriedade_id = indice.get((atividade["project_id"], atividade["field"]))
+        if propriedade_id is None:
+            continue
+        IssueActivity.objects.filter(pk=atividade["id"]).update(
+            verb=VERBO_DE_PROPRIEDADE, new_identifier=propriedade_id
+        )
+        marcadas += 1
+    return marcadas

@@ -88,6 +88,7 @@ como ser preenchida.
 | Exportação CSV e XLSX       | uma coluna por propriedade, em texto legível |
 | API pública e webhook       | os valores **e a definição dos campos**      |
 | Histórico da tarefa         | cada mudança, com o nome do campo            |
+| Minhas atividades           | as mesmas mudanças, junto com as do produto  |
 
 **No cartão só aparecem as marcadas** porque trinta campos ali fariam do quadro
 uma planilha ruim. Quem quer todos tem o layout de tabela, que é onde a largura

@@ -239,6 +239,114 @@ class TestValores:
         atividades = list(IssueActivity.objects.filter(issue=tarefa, field="Canal").order_by("created_at"))
         assert [(a.old_value, a.new_value) for a in atividades] == [("", "Indicação"), ("Indicação", "Anúncio")]
 
+    def test_the_activity_is_recognisable_by_the_screen(self, session_client, workspace, projeto, create_user):
+        """A linha precisa se anunciar, senão a tela a engole.
+
+        As três telas de atividade despacham por CAMPO conhecido e devolvem
+        nada para o resto — e o campo aqui é o nome de uma propriedade do
+        cliente, que nenhuma lista pode conter. O verbo próprio é o que a torna
+        reconhecível; sem ele a mudança era gravada e nunca aparecia.
+
+        O `new_identifier` guarda o id da PROPRIEDADE, e não o do valor: é o
+        que sobrevive a um rename, enquanto `field` continua sendo o nome de
+        quando a mudança aconteceu.
+        """
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        canal = _propriedade(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+
+        session_client.post(url, {"property": str(canal.id), "value": str(indicacao.id)}, format="json")
+
+        atividade = IssueActivity.objects.get(issue=tarefa, field="Canal")
+        assert atividade.verb == "property_updated"
+        assert atividade.new_identifier == canal.id
+
+    def test_clearing_a_value_is_also_recorded(self, session_client, workspace, projeto, create_user):
+        """Apagar é mudança, e a tela precisa poder dizer "limpou Canal"."""
+        tarefa = _tarefa(projeto, create_user)
+        url = VALORES_URL.format(slug=workspace.slug, project_id=projeto.id, issue_id=tarefa.id)
+        canal = _propriedade(projeto, "Canal", "select")
+        indicacao = _opcao(canal, "Indicação")
+
+        session_client.post(url, {"property": str(canal.id), "value": str(indicacao.id)}, format="json")
+        session_client.post(url, {"property": str(canal.id), "value": None}, format="json")
+
+        ultima = IssueActivity.objects.filter(issue=tarefa, field="Canal").order_by("-created_at").first()
+        assert (ultima.old_value, ultima.new_value) == ("Indicação", "")
+        assert ultima.verb == "property_updated"
+
+    def test_the_backfill_reaches_the_history_already_written(self, session_client, workspace, projeto, create_user):
+        """O histórico já gravado também precisa aparecer.
+
+        Ele existe desde a v1.13.0 e nunca foi desenhado — corrigir só o futuro
+        deixaria meses de mudanças invisíveis para sempre.
+
+        A regra é exercitada pela mesma função que a migração chama: o
+        `pytest.ini` roda com `--nomigrations`, então regra escrita dentro da
+        migração não é executada por teste nenhum.
+        """
+        from plane.utils.issue_properties import marcar_atividades_de_propriedade
+
+        outro = Project.objects.create(
+            name="Outro", identifier="OUT", workspace=workspace, created_by=create_user
+        )
+        canal = _propriedade(projeto, "Canal", "select")
+        tarefa = _tarefa(projeto, create_user)
+
+        # Como as linhas antigas estão no banco: verbo genérico, sem id.
+        antiga = IssueActivity.objects.create(
+            issue=tarefa, project=projeto, workspace=workspace, actor=create_user,
+            verb="updated", field="Canal", old_value="", new_value="Indicação",
+        )
+        # Mesmo nome, OUTRO projeto: não é a mesma propriedade.
+        de_outro_projeto = IssueActivity.objects.create(
+            issue=tarefa, project=outro, workspace=workspace, actor=create_user,
+            verb="updated", field="Canal", old_value="", new_value="Indicação",
+        )
+        # Campo do produto, que já tem dono e não pode ser tocado.
+        de_estado = IssueActivity.objects.create(
+            issue=tarefa, project=projeto, workspace=workspace, actor=create_user,
+            verb="updated", field="state", old_value="A", new_value="B",
+        )
+
+        marcadas = marcar_atividades_de_propriedade(IssueActivity, IssueProperty)
+
+        antiga.refresh_from_db()
+        de_outro_projeto.refresh_from_db()
+        de_estado.refresh_from_db()
+        assert marcadas == 1
+        assert (antiga.verb, antiga.new_identifier) == ("property_updated", canal.id)
+        assert de_outro_projeto.verb == "updated"
+        assert de_estado.verb == "updated"
+
+    def test_the_backfill_does_not_touch_activities_that_carry_a_value_id(
+        self, session_client, workspace, projeto, create_user
+    ):
+        """Nome de propriedade é livre, e pode colidir com campo do produto.
+
+        Etiqueta, ciclo, módulo e responsável usam a MESMA coluna para o id do
+        VALOR. Uma propriedade chamada "labels" faria o casamento por nome
+        acertar a atividade de etiqueta — e reescrevê-la trocaria o significado
+        de um dado alheio. Quem impede é a guarda do `new_identifier`, e é por
+        isso que o cenário deste teste é justamente a colisão: sem ela, o
+        casamento por nome já bastaria e a guarda não estaria sendo provada.
+        """
+        from plane.utils.issue_properties import marcar_atividades_de_propriedade
+
+        _propriedade(projeto, "labels", "select")
+        tarefa = _tarefa(projeto, create_user)
+        etiqueta = IssueActivity.objects.create(
+            issue=tarefa, project=projeto, workspace=workspace, actor=create_user,
+            verb="updated", field="labels", new_value="Urgente", new_identifier=tarefa.id,
+        )
+
+        marcar_atividades_de_propriedade(IssueActivity, IssueProperty)
+
+        etiqueta.refresh_from_db()
+        assert etiqueta.verb == "updated"
+        assert etiqueta.new_identifier == tarefa.id
+
     def test_writing_the_same_value_writes_no_activity(self, session_client, workspace, projeto, create_user):
         """Histórico que registra o que não mudou é histórico que ninguém lê."""
         tarefa = _tarefa(projeto, create_user)
