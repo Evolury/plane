@@ -3,6 +3,29 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.29.1] — 2026-08-19
+
+**Patch**: o alvo de exclusão do arrasto deixa de parecer mensagem de erro.
+
+### Na tela
+
+- **Arrastar um cartão não abre mais um alerta vermelho no topo da tela.** A
+  caixa "solte aqui para excluir" nascia vermelha e em itálico no instante em
+  que qualquer arrasto começava — quem só queria mudar a tarefa de coluna lia
+  aquilo como erro. Agora ela é neutra enquanto você arrasta, com um ícone de
+  lixeira, e **só fica vermelha quando o cartão está em cima dela**, que é o
+  momento em que o aviso tem o que dizer.
+
+- Ao passar por cima, a caixa borrava o próprio texto e parecia quebrada. O
+  borrão saiu.
+
+- O rótulo encurtou para "Solte aqui para excluir": o ícone diz o resto, e sem o
+  objeto ele para de dizer "a tarefa" no quadro de épicos.
+
+Em "Minhas tarefas" a caixa continua não existindo — ali arrastar é organização
+pessoal e nunca toca o item real
+([ADR 0001](docs/evolury/decisoes/0001-minhas-tarefas-overlay-pessoal.md)).
+
 ## [1.29.0] — 2026-08-19
 
 **Minor**: a **propriedade personalizada vira eixo do quadro** — um projeto só
