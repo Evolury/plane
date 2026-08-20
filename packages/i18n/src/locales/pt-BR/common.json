@@ -1736,7 +1736,8 @@
     "chart_current": "{entity} atuais",
     "chart_ideal": "{entity} ideais",
     "step_of_steps": "Etapa {current} de {total}",
-    "projects_match_filters": "{filtered} de {total} projetos correspondem aos filtros aplicados."
+    "projects_match_filters": "{filtered} de {total} projetos correspondem aos filtros aplicados.",
+    "created_on_date": "Criado em {date}"
   },
   "activity_log": {
     "prep_in": " em ",

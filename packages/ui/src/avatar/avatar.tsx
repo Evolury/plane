@@ -6,6 +6,7 @@
 
 // ui
 import { Tooltip } from "@plane/propel/tooltip";
+import { NANO_BLUE } from "@plane/constants";
 // helpers
 import { cn } from "../utils";
 import type { TAvatarSize } from "./helper";
@@ -98,7 +99,10 @@ export function Avatar(props: Props) {
               className
             )}
             style={{
-              backgroundColor: fallbackBackgroundColor ?? "#028375",
+              // Evolury: o azul da marca (brandbook 1.02). Era "#028375", um
+              // verde-azulado cravado que não vem de lugar nenhum — e é o que
+              // toda pessoa sem foto exibia.
+              backgroundColor: fallbackBackgroundColor ?? NANO_BLUE,
               color: fallbackTextColor ?? "#ffffff",
             }}
           >

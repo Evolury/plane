@@ -10,6 +10,8 @@ export * from "./analytics";
 export * from "./automacao";
 export * from "./auth";
 export * from "./calendar";
+// Evolury: cores da marca (brandbook 1.02)
+export * from "./marca";
 export * from "./chart";
 export * from "./cycle";
 export * from "./dashboard";
