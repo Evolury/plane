@@ -29,7 +29,7 @@ type Props = {
 };
 
 export const FilterMember = observer(function FilterMember(props: Props) {
-  const { filterKey, label = "Members", memberIds, searchQuery } = props;
+  const { filterKey, label, memberIds, searchQuery } = props;
   // hooks
   const { inboxFilters, handleInboxIssueFilters } = useProjectInbox();
   const { t } = useTranslation();

@@ -5,6 +5,7 @@
  */
 
 import { useMemo, useCallback } from "react";
+import { translate } from "@plane/i18n";
 import { Tabs } from "@base-ui-components/react";
 import { Popover } from "../popover";
 import { cn } from "../utils/classname";
@@ -70,7 +71,7 @@ export function EmojiPicker(props: TCustomEmojiPicker) {
       [
         {
           key: "emoji",
-          label: "Emoji",
+          label: translate("editor.emoji"),
           content: (
             <EmojiRoot
               onChange={handleEmojiChange}
@@ -81,7 +82,7 @@ export function EmojiPicker(props: TCustomEmojiPicker) {
         },
         {
           key: "icon",
-          label: "Icon",
+          label: translate("ui.icon"),
           content: (
             <IconRoot
               defaultColor={defaultIconColor}

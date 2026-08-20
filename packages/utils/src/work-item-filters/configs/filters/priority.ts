@@ -6,6 +6,7 @@
 
 // plane imports
 import type { TIssuePriorities } from "@plane/constants";
+import { translate } from "@plane/i18n";
 import { ISSUE_PRIORITIES } from "@plane/constants";
 import type { TFilterProperty, TSupportedOperators } from "@plane/types";
 import { EQUALITY_OPERATOR, COLLECTION_OPERATOR } from "@plane/types";
@@ -34,11 +35,14 @@ export const getPriorityMultiSelectConfig = (
   params: TCreatePriorityFilterParams,
   singleValueOperator: TSupportedOperators
 ) =>
-  getMultiSelectConfig<{ key: TIssuePriorities; title: string }, TIssuePriorities, TIssuePriorities>(
+  getMultiSelectConfig<{ key: TIssuePriorities; i18n_title: string }, TIssuePriorities, TIssuePriorities>(
     {
       items: ISSUE_PRIORITIES,
       getId: (priority) => priority.key,
-      getLabel: (priority) => params.getOptionLabel?.(priority.key) ?? priority.title,
+      // Evolury: o padrão sai traduzido. Antes o fallback era o texto em
+      // inglês da constante, e quem não passasse `getOptionLabel` mostrava
+      // "Urgent" na tela.
+      getLabel: (priority) => params.getOptionLabel?.(priority.key) ?? translate(priority.i18n_title),
       getValue: (priority) => priority.key,
       getIconData: (priority) => priority.key,
     },

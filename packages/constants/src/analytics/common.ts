@@ -102,90 +102,78 @@ export const ANALYTICS_INSIGHTS_FIELDS: Record<TAnalyticsTabsBase, IInsightField
   ],
 };
 
-export const ANALYTICS_DURATION_FILTER_OPTIONS = [
-  {
-    name: "Yesterday",
-    value: "yesterday",
-  },
-  {
-    name: "Last 7 days",
-    value: "last_7_days",
-  },
-  {
-    name: "Last 30 days",
-    value: "last_30_days",
-  },
-  {
-    name: "Last 3 months",
-    value: "last_3_months",
-  },
+// Evolury (20/08/2026): só a chave, como no resto das constantes. O texto em
+// inglês ao lado era o que a tela lia.
+export const ANALYTICS_DURATION_FILTER_OPTIONS: { i18n_name: string; value: string }[] = [
+  { i18n_name: "date_filters.yesterday", value: "yesterday" },
+  { i18n_name: "date_filters.last_7_days", value: "last_7_days" },
+  { i18n_name: "date_filters.last_30_days", value: "last_30_days" },
+  { i18n_name: "ui.duration_last_3_months", value: "last_3_months" },
 ];
 
-export const ANALYTICS_X_AXIS_VALUES: { value: ChartXAxisProperty; label: string; i18n_label?: string }[] = [
+export const ANALYTICS_X_AXIS_VALUES: { value: ChartXAxisProperty; i18n_label: string }[] = [
   {
     value: ChartXAxisProperty.STATES,
-    label: "State name",
     i18n_label: "ui.axis_state_name",
   },
   {
     value: ChartXAxisProperty.STATE_GROUPS,
-    label: "State group",
     i18n_label: "ui.axis_state_group",
   },
   {
     value: ChartXAxisProperty.PRIORITY,
-    label: "Priority",
+    i18n_label: "ui.axis_priority",
   },
   {
     value: ChartXAxisProperty.LABELS,
-    label: "Label",
+    i18n_label: "ui.axis_label",
   },
   {
     value: ChartXAxisProperty.ASSIGNEES,
-    label: "Assignee",
+    i18n_label: "ui.axis_assignee",
   },
   {
     value: ChartXAxisProperty.ESTIMATE_POINTS,
-    label: "Estimate point",
+    i18n_label: "ui.axis_estimate_point",
   },
   {
     value: ChartXAxisProperty.CYCLES,
-    label: "Cycle",
+    i18n_label: "ui.axis_cycle",
   },
   {
     value: ChartXAxisProperty.MODULES,
-    label: "Module",
+    i18n_label: "ui.axis_module",
   },
   {
     value: ChartXAxisProperty.COMPLETED_AT,
-    label: "Completed date",
+    i18n_label: "ui.axis_completed_date",
   },
   {
     value: ChartXAxisProperty.TARGET_DATE,
-    label: "Due date",
+    i18n_label: "ui.axis_due_date",
   },
   {
     value: ChartXAxisProperty.START_DATE,
-    label: "Start date",
+    i18n_label: "ui.axis_start_date",
   },
   {
     value: ChartXAxisProperty.CREATED_AT,
-    label: "Created date",
+    i18n_label: "ui.axis_created_date",
   },
 ];
 
-export const ANALYTICS_Y_AXIS_VALUES: { value: ChartYAxisMetric; label: string }[] = [
+export const ANALYTICS_Y_AXIS_VALUES: { value: ChartYAxisMetric; i18n_label: string }[] = [
   {
     value: ChartYAxisMetric.WORK_ITEM_COUNT,
-    label: "Work item",
+    i18n_label: "ui.axis_work_item",
   },
   {
     value: ChartYAxisMetric.ESTIMATE_POINT_COUNT,
-    label: "Estimate",
+    i18n_label: "ui.axis_estimate",
   },
   {
     value: ChartYAxisMetric.EPIC_WORK_ITEM_COUNT,
-    label: "Epic",
+    i18n_label: "ui.axis_epic",
   },
 ];
 

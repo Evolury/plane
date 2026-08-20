@@ -4,6 +4,12 @@
  * See the LICENSE file for details.
  */
 
+// Evolury (20/08/2026): estas listas carregam SÓ a chave de tradução.
+//
+// Antes carregavam também o texto em inglês ao lado da chave, e bastava um
+// consumidor ler o campo errado para a tradução — que existe e está correta —
+// nunca chegar à tela. Com um campo só, escolher o errado não compila.
+
 import type {
   TIssueGroupByOptions,
   TIssueOrderByOptions,
@@ -91,33 +97,26 @@ export enum EIssueListRow {
 
 export const ISSUE_PRIORITIES: {
   key: TIssuePriorities;
-  title: string;
-  /** chave i18n; `title` é o fallback em inglês */
   i18n_title: string;
 }[] = [
   {
     key: "urgent",
-    title: "Urgent",
     i18n_title: "urgent",
   },
   {
     key: "high",
-    title: "High",
     i18n_title: "high",
   },
   {
     key: "medium",
-    title: "Medium",
     i18n_title: "medium",
   },
   {
     key: "low",
-    title: "Low",
     i18n_title: "low",
   },
   {
     key: "none",
-    title: "None",
     i18n_title: "none",
   },
 ];

@@ -236,7 +236,7 @@ export const useMenuItemFactory = (props: MenuItemFactoryProps) => {
 
   const createRestoreMenuItem = (): TContextMenuItem => ({
     key: "restore",
-    title: "Restore",
+    title: t("restore"),
     icon: ArchiveRestoreIcon,
     action: actionHandlers.handleIssueRestore,
     shouldRender: isRestoringAllowed,

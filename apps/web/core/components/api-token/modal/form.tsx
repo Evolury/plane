@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react";
+import { translate } from "@plane/i18n";
 import { add } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 import { Calendar } from "lucide-react";
@@ -29,7 +30,7 @@ type Props = {
 const EXPIRY_DATE_OPTIONS = [
   {
     key: "1_week",
-    label: "1 week",
+    label: translate("notification.snooze.1_week"),
     value: { weeks: 1 },
   },
   {

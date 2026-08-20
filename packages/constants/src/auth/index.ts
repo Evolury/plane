@@ -20,7 +20,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const SPACE_PASSWORD_CRITERIA = [
   {
     key: "min_8_char",
-    label: "Min 8 characters",
+    i18n_label: "auth_error.min_8_characters",
     isCriteriaValid: (password: string) => password.length >= PASSWORD_MIN_LENGTH,
   },
   // {

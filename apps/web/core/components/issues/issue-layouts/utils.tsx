@@ -256,7 +256,7 @@ function getCycleColumns(): IGroupByColumn[] | undefined {
   });
   cycles.push({
     id: "None",
-    name: "None",
+    name: translate("common.none"),
     icon: <CycleIcon className="h-3.5 w-3.5" />,
     payload: {},
   });
@@ -283,7 +283,7 @@ function getModuleColumns(): IGroupByColumn[] | undefined {
   });
   modules.push({
     id: "None",
-    name: "None",
+    name: translate("common.none"),
     icon: <ModuleIcon className="h-3.5 w-3.5" />,
     payload: {},
   });
@@ -338,7 +338,7 @@ function getLabelsColumns({ isWorkspaceLevel }: TGetColumns): IGroupByColumn[] {
   // map labels to group by columns
   const labels = [
     ...(isWorkspaceLevel ? workspaceLabels || [] : projectLabels || []),
-    { id: "None", name: "None", color: "#666" },
+    { id: "None", name: translate("common.none"), color: "#666" },
   ];
   // map labels to group by columns
   return labels.map((label) => ({
@@ -371,7 +371,7 @@ function getAssigneeColumns({ isWorkspaceLevel, projectId }: TGetColumns): IGrou
     });
   });
   if (includeNone) {
-    assigneeColumns.push({ id: "None", name: "None", icon: <Avatar size="md" />, payload: {} });
+    assigneeColumns.push({ id: "None", name: translate("common.none"), icon: <Avatar size="md" />, payload: {} });
   }
 
   return assigneeColumns;

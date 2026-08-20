@@ -5,6 +5,7 @@
  */
 
 import { observer } from "mobx-react";
+import { translate } from "@plane/i18n";
 import { Controller, useForm } from "react-hook-form";
 import { Box, PenTool, Rocket, Monitor, RefreshCw } from "lucide-react";
 // plane imports
@@ -28,7 +29,7 @@ const ROLES = [
   { id: "product-manager", label: "Product Manager", icon: Box },
   { id: "engineering-manager", label: "Engineering Manager", icon: ViewsIcon },
   { id: "designer", label: "Designer", icon: PenTool },
-  { id: "developer", label: "Developer", icon: Monitor },
+  { id: "developer", label: translate("common.developer"), icon: Monitor },
   { id: "founder-executive", label: "Founder/Executive", icon: Rocket },
   { id: "operations-manager", label: "Operations Manager", icon: RefreshCw },
   { id: "others", label: "Others", icon: Box },
@@ -61,10 +62,7 @@ export const RoleSetupStep = observer(function RoleSetupStep({ handleStepChange 
       role: formData.role,
     };
     try {
-      await Promise.all([
-        updateUserProfile(profileUpdatePayload),
-        // totalSteps > 2 && stepChange({ profile_complete: true }),
-      ]);
+      [await updateUserProfile(profileUpdatePayload)];
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: t("success"),

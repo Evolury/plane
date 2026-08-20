@@ -5,10 +5,13 @@
  */
 
 import { Outlet } from "react-router";
+import { translate } from "@plane/i18n";
 import type { Route } from "./+types/layout";
 
 export default function InvitationsLayout() {
   return <Outlet />;
 }
 
-export const meta: Route.MetaFunction = () => [{ title: "Invitations" }];
+// Evolury: o título da aba do navegador também é texto de tela. Fora do
+// React aqui, então `translate` e não o hook (ADR 0008).
+export const meta: Route.MetaFunction = () => [{ title: translate("invitations") }];

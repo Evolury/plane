@@ -12,7 +12,7 @@ import { useTranslation } from "@plane/i18n";
 type Props = {
   value?: ChartXAxisProperty;
   onChange: (val: ChartXAxisProperty | null) => void;
-  options: { value: ChartXAxisProperty; label: string }[];
+  options: { value: ChartXAxisProperty; i18n_label: string }[];
   placeholder?: string;
   hiddenOptions?: ChartXAxisProperty[];
   allowNoValue?: boolean;
@@ -29,7 +29,7 @@ export function SelectXAxis(props: Props) {
         if (hiddenOptions?.includes(item.value)) return null;
         return (
           <CustomSelect.Option key={item.value} value={item.value}>
-            {item.label}
+            {t(item.i18n_label)}
           </CustomSelect.Option>
         );
       })}

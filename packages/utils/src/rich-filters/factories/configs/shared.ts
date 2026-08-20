@@ -39,9 +39,12 @@ export type TCreateFilterConfigParams = Omit<TBaseFilterFieldConfig, "isOperator
   rightContent?: React.ReactNode; // content to display on the right side of the filter option in the dropdown
   tooltipContent?: React.ReactNode; // content to display when hovering over the applied filter item in the filter list
   /**
-   * Rótulo já traduzido. As fábricas definem um label em inglês e espalham
-   * `...params` logo depois, então informar este campo sobrescreve o padrão —
-   * é assim que o app traduz sem que @plane/utils dependa de @plane/i18n.
+   * Rótulo já traduzido, para sobrescrever o padrão da fábrica.
+   *
+   * O padrão da fábrica passou a sair traduzido (20/08/2026): antes ele era o
+   * texto em inglês da constante, e quem não informasse este campo mostrava
+   * inglês na tela. Sobrescrever continua valendo para quem tem um rótulo
+   * melhor no contexto.
    */
   label?: string;
 };

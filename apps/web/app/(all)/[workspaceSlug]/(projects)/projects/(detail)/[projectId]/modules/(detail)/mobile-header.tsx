@@ -108,7 +108,7 @@ export const ModuleIssuesMobileHeader = observer(function ModuleIssuesMobileHead
             placement="bottom-end"
             menuButton={
               <span className="flex items-center text-13 text-secondary">
-                Display
+                {t("common.display")}
                 <ChevronDownIcon className="ml-2 h-4 w-4 text-secondary" />
               </span>
             }

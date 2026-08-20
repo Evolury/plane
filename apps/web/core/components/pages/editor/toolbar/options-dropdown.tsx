@@ -100,20 +100,21 @@ export const PageOptionsDropdown = observer(function PageOptionsDropdown(props: 
             });
             router.push(updatedRoute);
           },
-          title: "Version history",
+          title: t("page_navigation_pane.tabs.info.version_history.label"),
           icon: History,
           shouldRender: true,
         },
         {
           key: "export",
           action: () => setIsExportModalOpen(true),
-          title: "Export",
+          title: t("export"),
           icon: ArrowUpToLine,
           shouldRender: true,
         },
       ];
     },
     [
+      t,
       handleFullWidth,
       isFullWidth,
       handleStickyToolbar,

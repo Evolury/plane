@@ -57,14 +57,14 @@ export type TEstimatePointsObject = {
 };
 
 export type TTemplateValues = {
-  title: string;
+  /** Evolury: só a chave. Com o texto em inglês ao lado, era ele que a tela
+   *  mostrava — "Fibonacci", "Squares", "T-Shirt Sizes" apareciam crus. */
   i18n_title: string;
   values: TEstimatePointsObject[];
   hide?: boolean;
 };
 
 export type TEstimateSystem = {
-  name: string;
   i18n_name: string;
   templates: Record<string, TTemplateValues>;
   is_available: boolean;

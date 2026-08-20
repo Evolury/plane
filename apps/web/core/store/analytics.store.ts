@@ -5,6 +5,7 @@
  */
 
 import { action, computed, makeObservable, observable, runInAction } from "mobx";
+import { translate } from "@plane/i18n";
 import { ANALYTICS_DURATION_FILTER_OPTIONS } from "@plane/constants";
 import type { TAnalyticsTabsBase } from "@plane/types";
 
@@ -63,7 +64,11 @@ export class BaseAnalyticsStore implements IBaseAnalyticsStore {
   }
 
   get selectedDurationLabel() {
-    return ANALYTICS_DURATION_FILTER_OPTIONS.find((item) => item.value === this.selectedDuration)?.name ?? null;
+    return (
+      translate(
+        ANALYTICS_DURATION_FILTER_OPTIONS.find((item) => item.value === this.selectedDuration)?.i18n_name ?? ""
+      ) || null
+    );
   }
 
   updateSelectedProjects = (projects: string[]) => {

@@ -60,7 +60,7 @@ export const FilterMembers = observer(function FilterMembers(props: Props) {
   return (
     <>
       <FilterHeader
-        title={`Members${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
+        title={`${t("common.members")}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
         isPreviewEnabled={previewEnabled}
         handleIsPreviewEnabled={() => setPreviewEnabled(!previewEnabled)}
       />
