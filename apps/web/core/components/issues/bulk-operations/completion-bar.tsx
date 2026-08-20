@@ -33,6 +33,7 @@ import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useCompletionTargets } from "@/hooks/use-issue-completed";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
 // local
+import { BotaoDeEditar } from "./editar";
 import { BotaoDeExcluir } from "./excluir";
 
 type Props = {
@@ -124,6 +125,7 @@ export const CompletionBulkBar = observer(function CompletionBulkBar(props: Prop
           >
             {t("issue.completion.complete")}
           </Button>
+          <BotaoDeEditar selecionadas={selecionadas} />
           <BotaoDeExcluir selecionadas={selecionadas} />
         </div>
       </div>

@@ -112,6 +112,24 @@ export class IssuePropertyService extends APIService {
   }
 
   /** Os valores de uma PÁGINA de tarefas — uma chamada, não uma por cartão. */
+  /**
+   * Evolury: grava o MESMO valor de propriedade em várias tarefas (ADR 0019).
+   *
+   * É o "preencher a coluna" da planilha. O valor é conferido uma vez, no
+   * servidor, antes de escrever em qualquer tarefa.
+   */
+  async setValuesForIssues(
+    workspaceSlug: string,
+    projectId: string,
+    data: { issue_ids: string[]; property: string; value: TPropertyValue }
+  ): Promise<{ updated: number }> {
+    return this.post(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issue-property-values/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async valuesForIssues(
     workspaceSlug: string,
     projectId: string,

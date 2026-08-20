@@ -5,6 +5,7 @@
 # Python imports
 import copy
 import json
+from collections import defaultdict
 
 # Django imports
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -23,6 +24,7 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Coalesce
+from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
@@ -57,19 +59,30 @@ from plane.db.models import (
     IssueReaction,
     IssueRelation,
     IssueSubscriber,
+    Label,
     ProjectUserProperty,
     ModuleIssue,
     Project,
     ProjectMember,
+    State,
     UserRecentVisit,
 )
 # Evolury: backend com propriedade personalizada (ADR 0011)
+from plane.utils.edicao_em_massa import (
+    CAMPOS_DE_LISTA,
+    CAMPOS_SIMPLES,
+    TETO_DE_EDICAO_EM_MASSA,
+    aplicar_modo,
+    erro_de_data,
+    modo_de,
+)
 from plane.utils.exclusao_em_massa import (
     TETO_DE_EXCLUSAO_EM_MASSA,
     marcar_excluidas,
     restaurar_lote,
     separar_por_permissao,
 )
+from plane.utils.error_codes import ERROR_CODES
 from plane.utils.filters import FiltroComPropriedades, IssueFilterSet
 from plane.utils.global_paginator import paginate
 from plane.utils.grouper import (
@@ -809,6 +822,222 @@ class ProjectUserDisplayPropertyEndpoint(BaseAPIView):
         issue_property, _ = ProjectUserProperty.objects.get_or_create(user=request.user, project_id=project_id)
         serializer = ProjectUserPropertySerializer(issue_property)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BulkOperationIssuesEndpoint(BaseAPIView):
+    """Evolury: preencher campos de muitas tarefas de uma vez (ADR 0019).
+
+    O cliente disto já existia inteiro — serviço, store, tipo do payload e até
+    as mensagens de erro traduzidas. O que faltava era o servidor:
+    `bulk-operation-issues` é da edição paga. O contrato aqui é o que o cliente
+    já espera, mais o `modes` que a pesquisa recomendou.
+
+    Ciclo e módulo não passam por aqui de propósito: os endpoints deles já
+    aceitam lista de tarefas e já gravam a atividade com o tipo certo.
+    """
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
+    def post(self, request, slug, project_id):
+        issue_ids = request.data.get("issue_ids", [])
+        propriedades = request.data.get("properties") or {}
+        modos = request.data.get("modes") or {}
+
+        if not len(issue_ids):
+            return Response({"error": "ISSUE_IDS_REQUIRED"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(issue_ids) > TETO_DE_EDICAO_EM_MASSA:
+            return Response(
+                {"error": "TOO_MANY_ISSUES", "limit": TETO_DE_EDICAO_EM_MASSA},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        conhecidos = set(CAMPOS_SIMPLES) | set(CAMPOS_DE_LISTA)
+        if not propriedades:
+            return Response({"error": "NOTHING_TO_UPDATE"}, status=status.HTTP_400_BAD_REQUEST)
+        if set(propriedades) - conhecidos:
+            return Response(
+                {"error": "UNKNOWN_PROPERTY", "fields": sorted(set(propriedades) - conhecidos)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        issues = list(self._anotadas(slug, project_id, issue_ids))
+        if not issues:
+            return Response({"error": "ISSUES_NOT_FOUND"}, status=status.HTTP_400_BAD_REQUEST)
+
+        erro = self._validar_escopo(project_id, propriedades)
+        if erro:
+            return erro
+
+        # Data é validada por TAREFA, e contra o que a tarefa já tem: comparar a
+        # data pedida com o vazio deixaria passar um início posterior a um
+        # vencimento que ninguém tocou. Os dois códigos já existem no produto e
+        # já têm mensagem traduzida.
+        for issue in issues:
+            campo = erro_de_data(issue, propriedades)
+            if campo:
+                codigo = "INVALID_ISSUE_START_DATE" if campo == "start_date" else "INVALID_ISSUE_TARGET_DATE"
+                return Response(
+                    {"error_code": ERROR_CODES[codigo], "error_message": codigo},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        self._aplicar(request, project_id, issues, propriedades, modos)
+        return Response({"updated": len(issues)}, status=status.HTTP_200_OK)
+
+    def _anotadas(self, slug, project_id, issue_ids):
+        """As tarefas com `label_ids` e `assignee_ids` — o histórico compara o
+        que era com o que ficou, e sem as listas o `de` sai vazio sempre."""
+        return (
+            Issue.issue_objects.filter(workspace__slug=slug, project_id=project_id, pk__in=issue_ids)
+            .annotate(
+                label_ids=Coalesce(
+                    ArrayAgg(
+                        "labels__id",
+                        distinct=True,
+                        filter=Q(~Q(labels__id__isnull=True) & Q(label_issue__deleted_at__isnull=True)),
+                    ),
+                    Value([], output_field=ArrayField(UUIDField())),
+                ),
+                assignee_ids=Coalesce(
+                    ArrayAgg(
+                        "assignees__id",
+                        distinct=True,
+                        filter=Q(
+                            ~Q(assignees__id__isnull=True)
+                            & Q(assignees__member_project__is_active=True)
+                            & Q(issue_assignee__deleted_at__isnull=True)
+                        ),
+                    ),
+                    Value([], output_field=ArrayField(UUIDField())),
+                ),
+            )
+        )
+
+    def _validar_escopo(self, project_id, propriedades):
+        """Estado, etiqueta e estimativa são DO PROJETO; responsável é de quem
+        participa dele. Um id de fora não é erro de digitação: é a tarefa de um
+        projeto recebendo o vocabulário de outro."""
+        state_id = propriedades.get("state_id")
+        if state_id and not State.objects.filter(pk=state_id, project_id=project_id).exists():
+            return Response({"error": "STATE_NOT_IN_PROJECT"}, status=status.HTTP_400_BAD_REQUEST)
+
+        label_ids = propriedades.get("label_ids")
+        if label_ids and Label.objects.filter(pk__in=label_ids, project_id=project_id).count() != len(set(label_ids)):
+            return Response({"error": "LABEL_NOT_IN_PROJECT"}, status=status.HTTP_400_BAD_REQUEST)
+
+        assignee_ids = propriedades.get("assignee_ids")
+        if assignee_ids:
+            # Uma tarefa tem UM responsável (ADR 0016), e o índice único no banco
+            # cobra isso. Recusar aqui devolve uma frase; deixar passar devolve
+            # um IntegrityError.
+            if len(set(assignee_ids)) > 1:
+                return Response({"error": "SINGLE_ASSIGNEE_ONLY"}, status=status.HTTP_400_BAD_REQUEST)
+            if ProjectMember.objects.filter(
+                project_id=project_id, member_id__in=assignee_ids, is_active=True
+            ).count() != len(set(assignee_ids)):
+                return Response({"error": "ASSIGNEE_NOT_IN_PROJECT"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return None
+
+    def _aplicar(self, request, project_id, issues, propriedades, modos):
+        simples = {campo: propriedades[campo] for campo in CAMPOS_SIMPLES if campo in propriedades}
+        finais = {}
+
+        # O retrato do ANTES é tirado agora, antes de qualquer escrita. Tirá-lo
+        # depois devolve o valor novo nos dois lados — e o histórico, que
+        # registra a DIFERENÇA entre pedido e anterior, não escreve nada. Foi o
+        # que aconteceu: a prioridade mudava na tela e não aparecia em lugar
+        # nenhum.
+        antes = {issue.id: self._retrato(issue, propriedades) for issue in issues}
+
+        for issue in issues:
+            valores = dict(simples)
+            for campo, modelo in (("label_ids", "labels"), ("assignee_ids", "assignees")):
+                if campo not in propriedades:
+                    continue
+                # Responsável não tem modo: é sempre substituir (ADR 0016).
+                modo = "replace" if campo == "assignee_ids" else modo_de(modos, campo)
+                valores[campo] = aplicar_modo(getattr(issue, campo, []), propriedades[campo], modo)
+            finais[issue.id] = valores
+
+        with transaction.atomic():
+            if simples:
+                for issue in issues:
+                    for campo, valor in simples.items():
+                        setattr(issue, campo, valor)
+                    issue.updated_by_id = request.user.id
+                # `bulk_update` não passa pelo `save()`, e é por isso que
+                # `updated_by` entra na lista à mão — sem ele, uma edição em
+                # massa não teria autor no registro da tarefa.
+                Issue.objects.bulk_update(issues, list(simples) + ["updated_by"], batch_size=100)
+
+            if "label_ids" in propriedades:
+                self._sincronizar(
+                    IssueLabel, "label_id", {i.id: finais[i.id]["label_ids"] for i in issues}, issues, project_id, request
+                )
+            if "assignee_ids" in propriedades:
+                self._sincronizar(
+                    IssueAssignee,
+                    "assignee_id",
+                    {i.id: finais[i.id]["assignee_ids"] for i in issues},
+                    issues,
+                    project_id,
+                    request,
+                )
+
+        for issue in issues:
+            issue_activity.delay(
+                type="issue.activity.updated",
+                requested_data=json.dumps(finais[issue.id], cls=DjangoJSONEncoder),
+                actor_id=str(request.user.id),
+                issue_id=str(issue.id),
+                project_id=str(project_id),
+                current_instance=json.dumps(antes[issue.id], cls=DjangoJSONEncoder),
+                epoch=int(timezone.now().timestamp()),
+                # Uma edição é um evento; duzentas são um preenchimento. Avisar
+                # por item transformaria a caixa de entrada em lixo — a mesma
+                # regra do ADR 0018.
+                notification=False,
+                origin=base_host(request=request, is_app=True),
+            )
+
+    def _retrato(self, issue, propriedades):
+        """O antes desta tarefa, nos campos que mudaram — é contra isto que o
+        histórico calcula `de → para`."""
+        antes = {campo: getattr(issue, campo, None) for campo in CAMPOS_SIMPLES if campo in propriedades}
+        for campo in CAMPOS_DE_LISTA:
+            if campo in propriedades:
+                antes[campo] = [str(item) for item in (getattr(issue, campo, []) or [])]
+        return antes
+
+    def _sincronizar(self, modelo, coluna, desejado, issues, project_id, request):
+        """Deixa a tabela de ligação igual ao desejado: apaga o que sobra,
+        cria o que falta. Em bloco, e não por tarefa."""
+        atuais = defaultdict(set)
+        for linha in modelo.objects.filter(issue__in=issues).values("issue_id", coluna):
+            atuais[linha["issue_id"]].add(str(linha[coluna]))
+
+        sobrando = []
+        faltando = []
+        for issue in issues:
+            alvo = set(desejado[issue.id])
+            sobrando += [item for item in atuais[issue.id] if item not in alvo]
+            faltando += [
+                modelo(
+                    issue=issue,
+                    project_id=project_id,
+                    workspace_id=issue.workspace_id,
+                    created_by_id=request.user.id,
+                    **{coluna: item},
+                )
+                for item in alvo
+                if item not in atuais[issue.id]
+            ]
+
+        if sobrando:
+            modelo.objects.filter(issue__in=issues, **{f"{coluna}__in": sobrando}).delete()
+        if faltando:
+            modelo.objects.bulk_create(faltando, batch_size=100, ignore_conflicts=True)
 
 
 class BulkDeleteIssuesEndpoint(BaseAPIView):

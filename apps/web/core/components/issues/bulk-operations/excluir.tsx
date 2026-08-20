@@ -28,28 +28,17 @@ import type { TIssue } from "@plane/types";
 import { AlertModalCore } from "@plane/ui";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
-import type { IBaseIssuesStore } from "@/store/issue/helpers/base-issues.store";
 import { useMultipleSelectStore } from "@/hooks/store/use-multiple-select-store";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
 // local
 import { TETO_DE_EXCLUSAO_EM_MASSA, agruparPorProjeto, passouDoTeto, separarElegiveis } from "./exclusao";
+import { sabeOperarEmMassa } from "./loja";
 
 type Props = {
   selecionadas: TIssue[];
 };
-
-/**
- * A loja da tela sabe excluir em massa?
- *
- * Nem toda loja de tarefas é uma `BaseIssuesStore`: a de rascunhos do espaço é
- * uma implementação à parte, com `removeBulkIssues` vazio. Perguntar em tempo
- * de execução é honesto; forçar a interface dela a declarar o que não faz seria
- * escrever a mentira no tipo para o compilador parar de reclamar.
- */
-const sabeExcluirEmMassa = (loja: unknown): loja is IBaseIssuesStore =>
-  typeof (loja as IBaseIssuesStore)?.restoreBulkIssues === "function";
 
 /** Um lote é (projeto, instante) — é assim que o desfazer sabe o que devolver. */
 type TLote = { projectId: string; batch: string };
@@ -63,7 +52,7 @@ export const BotaoDeExcluir = observer(function BotaoDeExcluir(props: Props) {
   const { workspaceSlug, viewId } = useParams();
   const storeType = useIssueStoreType();
   const { issues } = useIssues(storeType);
-  const loja = sabeExcluirEmMassa(issues) ? issues : undefined;
+  const loja = sabeOperarEmMassa(issues) ? issues : undefined;
   const { fetchIssues } = useIssuesActions(storeType);
   const { clearSelection } = useMultipleSelectStore();
   const { allowPermissions } = useUserPermissions();

@@ -213,7 +213,8 @@ urlpatterns = [
     ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/issue-property-values/",
-        IssuePropertyValuesBulkViewSet.as_view({"get": "list"}),
+        # Evolury: POST grava o mesmo valor em várias tarefas (ADR 0019)
+        IssuePropertyValuesBulkViewSet.as_view({"get": "list", "post": "create"}),
         name="project-issue-property-values-bulk",
     ),
     # Evolury: automações personalizadas (ADR 0012). "simular" vem antes da
