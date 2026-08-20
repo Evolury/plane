@@ -11,6 +11,9 @@
 // não quebra nada, só faz a lista de projetos virar um mosaico. Por isso a
 // regra é vigiada: se voltar a sortear, estes testes falham.
 
+import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { NANO_BLUE, DEEP_BLUE, ICONE_PADRAO_DE_PROJETO } from "@plane/constants";
 
@@ -46,5 +49,42 @@ describe("cores da marca", () => {
   it("são as do brandbook 1.02, página 17", () => {
     expect(NANO_BLUE).toBe("#0C91EB");
     expect(DEEP_BLUE).toBe("#013F6E");
+  });
+});
+
+// O avatar sem foto tem um componente só — <Avatar> —, mas nem toda tela o usa:
+// a lista de primeiros passos do Início desenhava o círculo à mão, com o
+// verde-azulado cravado, e continuou verde depois que o padrão virou azul. Foi
+// achado no bundle já publicado, e não na revisão; esta varredura é o que faz o
+// próximo aparecer antes.
+describe("o verde-azulado antigo não voltou", () => {
+  it("nenhuma tela crava #028375", () => {
+    // `import.meta.url` aqui vem como `/@fs/...`, do servidor do Vite, e não
+    // como caminho de disco — foi o que fez a primeira versão desta varredura
+    // procurar num diretório inexistente e passar sempre. A raiz vem do
+    // `process.cwd()` (o `apps/web`), e a asserção do `.git` é o que impede a
+    // varredura de voltar a ser vazia em silêncio.
+    const raiz = resolve(process.cwd(), "..", "..");
+    expect(existsSync(join(raiz, ".git"))).toBe(true);
+
+    // `git grep` em vez de varrer o disco: ignora node_modules, .next e build
+    // de graça, e só enxerga o que está versionado.
+    let saida = "";
+    try {
+      saida = execFileSync(
+        "git",
+        ["grep", "-lni", "028375", "--", "apps/web/core", "apps/web/app", "packages/ui/src", "packages/propel/src"],
+        { cwd: raiz, encoding: "utf8" }
+      );
+    } catch (erro: unknown) {
+      // `git grep` sai com 1 quando não acha nada, que é o desfecho esperado.
+      // Qualquer outra falha — git ausente, diretório errado — não pode passar
+      // por "está limpo".
+      const status = (erro as { status?: number })?.status;
+      if (status !== 1) throw erro;
+    }
+    // O comentário histórico em avatar.tsx cita a cor para dizer que ela saiu.
+    const arquivos = saida.split("\n").filter((f) => f && !f.endsWith("packages/ui/src/avatar/avatar.tsx"));
+    expect(arquivos).toEqual([]);
   });
 });
