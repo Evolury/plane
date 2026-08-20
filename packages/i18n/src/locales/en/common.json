@@ -1729,7 +1729,14 @@
     "active_cycles_zoom_title": "Zoom into cycles that need attention.",
     "filter_access": "Access",
     "filter_mention": "Mention",
-    "filter_cycle_status": "Status of the cycle"
+    "filter_cycle_status": "Status of the cycle",
+    "analytics_for": "Analytics for {entity}",
+    "analytics_for_in": "Analytics for {entity} in {scope}",
+    "of_total": "of {total}",
+    "chart_current": "Current {entity}",
+    "chart_ideal": "Ideal {entity}",
+    "step_of_steps": "{current} of {total} steps",
+    "projects_match_filters": "{filtered} of {total} projects match the applied filters."
   },
   "activity_log": {
     "prep_in": " for ",

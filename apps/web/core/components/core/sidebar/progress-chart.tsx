@@ -35,7 +35,7 @@ function ProgressChart({ distribution, totalIssues, className = "", plotTitle }:
         areas={[
           {
             key: "current",
-            label: `${t("current")} ${resolvedPlotTitle}`,
+            label: t("ui.chart_current", { entity: resolvedPlotTitle }),
             strokeColor: "#3F76FF",
             fill: "#3F76FF33",
             fillOpacity: 1,
@@ -46,7 +46,7 @@ function ProgressChart({ distribution, totalIssues, className = "", plotTitle }:
           },
           {
             key: "ideal",
-            label: `${t("ideal")} ${resolvedPlotTitle}`,
+            label: t("ui.chart_ideal", { entity: resolvedPlotTitle }),
             strokeColor: "#A9BBD0",
             fill: "#A9BBD0",
             fillOpacity: 0,

@@ -86,7 +86,15 @@ export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: 
                           backgroundColor: PROGRESS_STATE_GROUPS_DETAILS[index].color,
                         }}
                       />
-                      <span className="w-16 font-medium text-tertiary capitalize">{group}</span>
+                      {/* Evolury: o rótulo vem da chave de tradução, não da CHAVE do
+                          objeto. Antes era `{group}` com `capitalize` — a legenda
+                          mostrava "Completed / Started / Unstarted / Backlog"
+                          enquanto o gráfico logo acima já vinha traduzido. O
+                          literal não estava no código, e por isso a varredura de
+                          i18n não podia vê-lo: era o nome de um campo. */}
+                      <span className="w-28 font-medium text-tertiary">
+                        {t(PROGRESS_STATE_GROUPS_DETAILS[index].i18n_title)}
+                      </span>
                     </div>
                     <span className="text-tertiary">{`${groupedIssues[group]} ${
                       groupedIssues[group] > 1 ? t("issues") : t("common.work_item")

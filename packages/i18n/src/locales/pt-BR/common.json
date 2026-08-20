@@ -1729,7 +1729,14 @@
     "active_cycles_zoom_title": "Foque nos ciclos que pedem atenção.",
     "filter_access": "Acesso",
     "filter_mention": "Menção",
-    "filter_cycle_status": "Situação do ciclo"
+    "filter_cycle_status": "Situação do ciclo",
+    "analytics_for": "Análises de {entity}",
+    "analytics_for_in": "Análises de {entity} em {scope}",
+    "of_total": "de {total}",
+    "chart_current": "{entity} atuais",
+    "chart_ideal": "{entity} ideais",
+    "step_of_steps": "Etapa {current} de {total}",
+    "projects_match_filters": "{filtered} de {total} projetos correspondem aos filtros aplicados."
   },
   "activity_log": {
     "prep_in": " em ",
