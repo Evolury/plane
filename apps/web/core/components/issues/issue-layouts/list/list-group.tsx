@@ -10,7 +10,7 @@ import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { observer } from "mobx-react";
 // plane imports
-import { DRAG_ALLOWED_GROUPS } from "@plane/constants";
+import { podeArrastarNoAgrupamento } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type {
@@ -248,7 +248,7 @@ export const ListGroup = observer(function ListGroup(props: Props) {
     isWorkflowDropDisabled,
   ]);
 
-  const isDragAllowed = group_by ? DRAG_ALLOWED_GROUPS.includes(group_by) : true;
+  const isDragAllowed = group_by ? podeArrastarNoAgrupamento(group_by) : true;
   const canOverlayBeVisible = isWorkflowDropDisabled || orderBy !== "sort_order" || !!group.isDropDisabled;
   const isDropDisabled = isWorkflowDropDisabled || !!group.isDropDisabled;
 

@@ -112,14 +112,38 @@ escrito — converter texto em número teria de decidir sozinho o que fazer com
 "cerca de 30". A única conversão permitida é seleção única → múltipla, porque
 ela não perde nada: cada valor vira uma lista de um.
 
+## Usar em agrupamentos
+
+Ao criar ou editar uma propriedade de **seleção única**, a caixa **"usar em
+agrupamentos"** decide se ela aparece nos menus **Agrupar por** e **Subagrupar
+por**. Ela **nasce marcada** — agrupar é o uso natural de uma seleção, e a caixa
+existe para desligar ruído, não para ligar o óbvio.
+
+É diferente de "mostrar no cartão", e os custos explicam por quê: uma pastilha a
+mais disputa a largura do cartão com todas as outras, enquanto um agrupamento a
+mais é uma linha num menu que só quem abre vê.
+
+Desmarcar não é sugestão de tela: a propriedade some dos dois menus **e** o
+servidor passa a recusar o agrupamento por ela, venha o pedido de onde vier.
+
+Só seleção única tem a caixa. Os outros tipos não viram coluna (ver abaixo).
+
 ## Agrupar e filtrar por uma propriedade
 
-Na tela de tarefas do projeto:
+Na tela de tarefas do projeto, do ciclo, do módulo e das visões salvas:
 
-- **Agrupar por** (menu "Exibir") lista as propriedades de **seleção única**
-  junto com estado, prioridade e as demais. O quadro passa a ter uma coluna por
-  opção, na ordem em que você as configurou, e uma coluna "Nenhum" no fim para
-  as tarefas sem valor.
+- **Agrupar por** e **Subagrupar por** (menu "Exibir") listam as propriedades de
+  **seleção única** marcadas, junto com estado, prioridade e as demais. O quadro
+  passa a ter uma coluna por opção, na ordem em que você as configurou, e uma
+  coluna "Nenhum" no fim para as tarefas sem valor.
+- **Arrastar o cartão** entre as colunas **muda o valor da propriedade**, e
+  soltar em "Nenhum" apaga. Vale no quadro e na lista. A mudança entra no
+  histórico e aciona as automações, como qualquer edição feita na tela — ao
+  contrário das etapas de "Minhas tarefas", que são organização pessoal e
+  silenciosa.
+- Como cada módulo guarda o próprio agrupamento, **um projeto pode ter vários
+  fluxos ao mesmo tempo**: o módulo de aquisição agrupado por "Canal", o de
+  entrega por outra propriedade, sem precisar de um projeto por fluxo.
 - **Filtrar** (o ícone de funil) lista **todos os seis tipos**:
 
   | Tipo                     | Como filtra                                              |
@@ -133,7 +157,13 @@ Na tela de tarefas do projeto:
   salvar a visão.
 
 **Agrupar** aceita só seleção única: agrupar por texto, data ou dinheiro criaria
-uma coluna por valor distinto, que é ruído, e não organização.
+uma coluna por valor distinto, que é ruído, e não organização. Seleção múltipla
+fica de fora por outro motivo — ela duplicaria o cartão entre colunas, como
+etiqueta, e aí arrastar não teria resposta certa: acrescenta ou substitui?
+
+**O cartão movido em outra aba não troca de coluna sozinho.** A pastilha se
+atualiza na hora, mas a coluna só acompanha ao recarregar. Está registrado no
+[backlog técnico](../../backlog-tecnico.md).
 
 Se você desativar uma propriedade que está sendo usada num filtro salvo, a tela
 não quebra: aquela condição simplesmente deixa de filtrar.

@@ -28,6 +28,8 @@ export type TIssueProperty = {
   /** Desativar preserva os valores; some dos formulários e dos filtros. */
   is_active: boolean;
   show_on_card: boolean;
+  /** Se a propriedade vira eixo de "agrupar por" e "subagrupar por". */
+  show_in_grouping: boolean;
   sort_order: number;
   currency: TPropertyCurrency | null;
   decimal_places: number;

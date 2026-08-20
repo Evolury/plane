@@ -52,6 +52,9 @@ const padrao = (): Partial<TIssueProperty> => ({
   property_type: "text",
   is_required: false,
   show_on_card: false,
+  // Ligado, ao contrário de `show_on_card`: agrupar é o uso natural de uma
+  // seleção, e a caixa existe para desligar ruído, não para ligar o óbvio.
+  show_in_grouping: true,
   currency: "BRL",
   decimal_places: 2,
   icon: "",
@@ -283,6 +286,27 @@ export const IssuePropertyForm = observer(function IssuePropertyForm(props: TPro
           />
           <span className="text-secondary">{rotulo("form.show_on_card")}</span>
         </label>
+
+        {/* Só seleção única vira coluna: os outros tipos produziriam uma coluna
+            por valor distinto, que é ruído e não organização (ADR 0011). Por
+            isso a caixa some, em vez de aparecer desabilitada — controle que
+            não faz nada em lugar nenhum não devia ocupar a tela. */}
+        {dados.property_type === "select" && (
+          // oxlint-disable-next-line label-has-associated-control
+          <label htmlFor="propriedade-no-agrupamento" className="flex items-start gap-2 text-13">
+            <input
+              id="propriedade-no-agrupamento"
+              type="checkbox"
+              className="mt-1"
+              checked={dados.show_in_grouping !== false}
+              onChange={(e) => mudar({ show_in_grouping: e.target.checked })}
+            />
+            <span>
+              <span className="text-secondary">{rotulo("form.show_in_grouping")}</span>
+              <span className="block text-11 text-tertiary">{rotulo("form.show_in_grouping_hint")}</span>
+            </span>
+          </label>
+        )}
 
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={onClose} disabled={salvando}>

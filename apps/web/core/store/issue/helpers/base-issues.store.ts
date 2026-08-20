@@ -8,7 +8,7 @@ import { isEqual, concat, get, indexOf, isEmpty, orderBy, pull, set, uniq, updat
 import { action, computed, makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 // plane constants
-import { ALL_ISSUES, ISSUE_PRIORITIES } from "@plane/constants";
+import { ALL_ISSUES, ISSUE_PRIORITIES, ehChaveDePropriedade } from "@plane/constants";
 // types
 import type {
   TIssue,
@@ -155,6 +155,28 @@ export const ISSUE_FILTER_DEFAULT_DATA: Record<TIssueDisplayFilterOptions, keyof
   assignees: "assignee_ids",
   target_date: "target_date",
   team_project: "project_id",
+};
+
+/**
+ * Evolury: o campo da tarefa que corresponde ao agrupamento (ADR 0011).
+ *
+ * Para propriedade personalizada a chave **é** o nome do campo: o servidor
+ * anota `property_<uuid>` em cada tarefa da resposta agrupada
+ * (`issue_on_results`), e é por esse campo que a tarefa sabe em que coluna
+ * está. Ele não aparece em `TIssue` porque só existe em tempo de execução —
+ * daí o cast, concentrado aqui em vez de espalhado pelos quatro chamadores.
+ *
+ * Os dois mapas continuam sendo consultados por quem chama, porque eles
+ * discordam de propósito: agrupar por grupo de estado LÊ `state_id` e ESCREVE
+ * `state__group`.
+ */
+export const campoDoAgrupamento = (
+  chave: TIssueGroupByOptions | undefined,
+  mapa: Record<TIssueDisplayFilterOptions, keyof TIssue>
+): keyof TIssue | undefined => {
+  if (!chave) return undefined;
+  if (ehChaveDePropriedade(chave)) return chave as keyof TIssue;
+  return mapa[chave];
 };
 
 // This constant maps the order by keys to the respective issue property that the key relies on
@@ -354,20 +376,12 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
 
   // The Issue Property corresponding to the group by value
   get issueGroupKey() {
-    const groupBy = this.groupBy;
-
-    if (!groupBy) return;
-
-    return ISSUE_GROUP_BY_KEY[groupBy];
+    return campoDoAgrupamento(this.groupBy, ISSUE_GROUP_BY_KEY);
   }
 
   // The Issue Property corresponding to the sub group by value
   get issueSubGroupKey() {
-    const subGroupBy = this.subGroupBy;
-
-    if (!subGroupBy) return;
-
-    return ISSUE_GROUP_BY_KEY[subGroupBy];
+    return campoDoAgrupamento(this.subGroupBy, ISSUE_GROUP_BY_KEY);
   }
 
   /**

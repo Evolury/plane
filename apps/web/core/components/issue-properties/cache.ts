@@ -33,9 +33,15 @@ export const guardarPropriedades = (projectId: string, propriedades: TIssuePrope
 export const propriedadesDoProjeto = (projectId: string | undefined): TIssueProperty[] =>
   projectId ? (porProjeto.get(projectId) ?? []) : [];
 
-/** As que podem virar coluna do quadro: só seleção única (ADR 0011). */
+/**
+ * As que podem virar coluna do quadro: só seleção única (ADR 0011), e só a que
+ * foi marcada para isso na definição.
+ *
+ * O servidor recusa as demais por conta própria — este filtro é só para o menu
+ * não oferecer o que a consulta vai negar.
+ */
 export const propriedadesAgrupaveis = (projectId: string | undefined): TIssueProperty[] =>
-  propriedadesDoProjeto(projectId).filter((p) => p.property_type === "select");
+  propriedadesDoProjeto(projectId).filter((p) => p.property_type === "select" && p.show_in_grouping);
 
 /**
  * Acha a propriedade pelo id, com ou sem o projeto.

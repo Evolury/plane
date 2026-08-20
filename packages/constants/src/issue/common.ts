@@ -42,6 +42,16 @@ export enum EIssueGroupByToServerOptions {
 }
 
 /**
+ * Evolury: o prefixo da chave de agrupamento por propriedade personalizada
+ * (ADR 0011). Espelha `PREFIXO_DE_AGRUPAMENTO` do servidor.
+ */
+export const PREFIXO_DE_PROPRIEDADE = "property_";
+
+/** Se a chave de agrupamento é de propriedade personalizada. */
+export const ehChaveDePropriedade = (chave: string | null | undefined): boolean =>
+  !!chave && chave.startsWith(PREFIXO_DE_PROPRIEDADE);
+
+/**
  * Evolury: o nome do agrupamento no servidor (ADR 0011).
  *
  * Propriedade personalizada não está no enum porque o id só existe em tempo de
@@ -50,7 +60,7 @@ export enum EIssueGroupByToServerOptions {
  */
 export const groupByParaServidor = (chave: string | null | undefined): string | undefined => {
   if (!chave) return undefined;
-  if (chave.startsWith("property_")) return chave;
+  if (ehChaveDePropriedade(chave)) return chave;
   return EIssueGroupByToServerOptions[chave as keyof typeof EIssueGroupByToServerOptions];
 };
 
@@ -122,6 +132,16 @@ export const DRAG_ALLOWED_GROUPS: TIssueGroupByOptions[] = [
   // Evolury: etapa pessoal de minhas tarefas (ADR 0002)
   "my_task_stage",
 ];
+
+/**
+ * Evolury: se o agrupamento atual aceita arrastar cartão (ADR 0011).
+ *
+ * Existe porque `DRAG_ALLOWED_GROUPS` é uma lista fixa, e a chave de
+ * propriedade é um id que só existe em tempo de execução — não há como
+ * escrevê-la numa constante.
+ */
+export const podeArrastarNoAgrupamento = (chave: TIssueGroupByOptions | undefined): boolean =>
+  !!chave && (DRAG_ALLOWED_GROUPS.includes(chave) || ehChaveDePropriedade(chave));
 
 export type TCreateModalStoreTypes =
   | EIssuesStoreType.TEAM

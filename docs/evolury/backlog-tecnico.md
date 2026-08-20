@@ -8,7 +8,24 @@ arquivo é para o que sobra.
 
 ## Em aberto
 
-Nada.
+### A coluna do quadro não acompanha o valor de propriedade mudado em outra aba
+
+Com o quadro agrupado por propriedade personalizada (ADR 0011), mudar o valor em
+outra aba atualiza a **pastilha** do cartão na hora — o aviso de tempo real
+`propriedade` revalida a leitura de valores do projeto (ADR 0013) —, mas o
+cartão **não muda de coluna** até recarregar.
+
+O motivo é onde a informação mora: a coluna vem do campo `property_<uuid>` que o
+servidor anota em cada tarefa da resposta agrupada, e o aviso de tempo real não
+carrega esse campo. São duas leituras do mesmo dado, e o aviso atualiza só uma.
+
+**Número medido:** 1 caso — quadro agrupado por propriedade, com mais de uma aba
+aberta. Não afeta quem move o cartão (essa aba reagrupa sozinha, otimista).
+
+**Caminho provável:** o receptor do aviso `propriedade` conferir se o
+agrupamento atual é de propriedade e, se for, rebuscar a página; ou o aviso
+passar a carregar propriedade e opção, e o receptor gravar o campo anotado no
+store — que é o que `updateIssueList` já sabe reagrupar.
 
 ## Resolvido
 

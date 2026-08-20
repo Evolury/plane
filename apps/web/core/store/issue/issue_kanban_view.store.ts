@@ -6,7 +6,7 @@
 
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { DRAG_ALLOWED_GROUPS } from "@plane/constants";
+import { podeArrastarNoAgrupamento } from "@plane/constants";
 // types
 import type { TIssueGroupByOptions } from "@plane/types";
 // constants
@@ -62,9 +62,9 @@ export class IssueKanBanViewStore implements IIssueKanBanViewStore {
 
   getCanUserDragDrop = computedFn(
     (group_by: TIssueGroupByOptions | undefined, sub_group_by: TIssueGroupByOptions | undefined) => {
-      if (group_by && DRAG_ALLOWED_GROUPS.includes(group_by)) {
+      if (podeArrastarNoAgrupamento(group_by)) {
         if (!sub_group_by) return true;
-        if (sub_group_by && DRAG_ALLOWED_GROUPS.includes(sub_group_by)) return true;
+        if (podeArrastarNoAgrupamento(sub_group_by)) return true;
       }
       return false;
     }

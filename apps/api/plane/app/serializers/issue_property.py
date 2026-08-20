@@ -44,6 +44,7 @@ class IssuePropertySerializer(BaseSerializer):
             "is_required",
             "is_active",
             "show_on_card",
+            "show_in_grouping",
             "sort_order",
             "currency",
             "decimal_places",
