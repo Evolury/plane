@@ -170,6 +170,36 @@ indicação E etiqueta = urgente" devolveria vazio justamente para a tarefa que
 tem as duas. A subconsulta ainda resolve de graça a armadilha da exclusão
 lógica: junção não passa pelo gerente do modelo, subconsulta escrita à mão sim.
 
+### Agrupar virou opt-in por propriedade (19/08/2026)
+
+Toda propriedade de seleção única aparecia automaticamente em "agrupar por".
+Passou a depender de uma marca na definição, `show_in_grouping`, irmã de
+`show_on_card` — e com o padrão **invertido**: nasce ligada.
+
+A inversão não é inconsistência, é o custo de cada uma. Uma pastilha a mais
+disputa a largura do cartão com todas as outras; um agrupamento a mais é uma
+linha num menu que só quem abre vê. E nasce ligada também porque **já era assim
+antes da marca existir**: a migração liga para todas, e nenhum agrupamento em
+uso desaparece de um menu sem ninguém ter pedido.
+
+**A marca é honrada no servidor, e não só no menu.** Ela entrou em
+`alias_de_agrupamento`, que é a mesma função que a allowlist do paginador
+consulta (ver a seção seguinte): desmarcar deixa de ser sugestão de tela e vira
+recusa da consulta, venha o pedido da tela, de uma URL colada ou de um script.
+Esconder no menu e aceitar no servidor seria a forma de guarda que este projeto
+não escreve.
+
+No mesmo dia, **subagrupar** passou a oferecer as propriedades e **arrastar o
+cartão** passou a gravar o valor. Nenhuma das duas exigiu mecanismo novo: o
+servidor já tratava `sub_group_by` simetricamente desde o começo, e o arrasto
+reusa o endpoint de valor — que é o que faz o histórico e as automações saírem
+idênticos ao caminho do painel da tarefa.
+
+O arrasto **não** é silencioso, ao contrário do arrasto entre etapas pessoais de
+"Minhas tarefas" ([ADR 0001](0001-minhas-tarefas-overlay-pessoal.md)). A
+distinção é a mesma de sempre: etapa pessoal é organização de uma pessoa, valor
+de propriedade é dado do projeto.
+
 ### O nome do campo não cabe na allowlist — e não precisa caber
 
 Agrupar e filtrar por campo arbitrário é a família do GHSA-wwgj-929g-42cm, e a

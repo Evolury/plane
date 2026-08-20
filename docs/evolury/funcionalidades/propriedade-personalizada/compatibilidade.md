@@ -50,6 +50,13 @@ Decisão: [ADR 0011](../../decisoes/0011-propriedades-personalizadas.md).
 | 21h | Número e moeda             | "é" e "entre"; a moeda mostra o símbolo no campo                           | ✓ `[V]` faixa 20–100 e BRL 2500,00 · `[T]` currency_range               |
 | 21i | Faixa pela metade          | Uma ponta só não filtra — filtro parcial mostraria o que ninguém pediu     | ✓ `[I]` o campo só confirma com as duas                                 |
 | 21f | Valor apagado              | Para de contar — a subconsulta filtra `deleted_at`, a junção não filtrava  | ✓ `[T]` test_deleted_value_stops_counting                               |
+| 22  | Subagrupamento             | Mesma lista do "Agrupar por"; raias por opção, "Nenhum" no fim             | ✓ `[V]` Indicação 3 · Anúncio 1 · Nenhum 23 sob os estados              |
+| 23  | Arrastar no quadro         | Muda o valor pelo endpoint próprio; "Nenhum" apaga                         | ✓ `[V]` VAL-7 Indicação → Anúncio → sem valor, com histórico            |
+| 24  | Arrastar na lista          | Mesmo caminho do quadro — o funil de arrasto é um só                       | ✓ `[V]` VAL-139 Indicação → Anúncio no módulo                           |
+| 25  | Arrastar dois eixos        | Estado no PATCH, propriedade no endpoint dela, num arrasto só              | ✓ `[V]` VAL-6 (Em andamento, Anúncio) → (Pendente, Indicação)           |
+| 26  | Agrupar desmarcado         | Some dos dois menus **e** o servidor recusa a consulta                     | ✓ `[V]` 400 na URL forjada · `[T]` paginator refuses                    |
+| 27  | Ciclo, módulo e visão      | Mesmo motor de agrupamento do projeto — cada um guarda a própria escolha   | ✓ `[V]` módulo "Aquisição" agrupado por Canal                           |
+| 28  | Outra aba                  | Pastilha acompanha; a **coluna** só ao recarregar                          | ⚠ lacuna registrada no backlog técnico                                  |
 
 ## Saída do dado
 

@@ -576,9 +576,18 @@ def alias_de_agrupamento(group_by):
         identificador = _uuid.UUID(cru)
     except (ValueError, AttributeError, TypeError):
         return None
-    if not IssueProperty.objects.filter(pk=identificador, property_type=PropertyType.SELECT).exists():
+    if not IssueProperty.objects.filter(
+        pk=identificador,
+        property_type=PropertyType.SELECT,
+        show_in_grouping=True,
+    ).exists():
         # Só seleção única agrupa. Texto ou moeda produziriam uma coluna por
         # valor distinto, que é ruído e não organização (ADR 0011).
+        #
+        # E só a que foi marcada para isso. A marca é honrada AQUI, e não só no
+        # menu, porque esta função é a mesma que a allowlist do paginador
+        # consulta (GHSA-wwgj-929g-42cm): desmarcar deixa de ser sugestão de
+        # tela e vira recusa da consulta, valha ela de onde vier.
         return None
     return identificador
 

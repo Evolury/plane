@@ -590,6 +590,8 @@
       "required": "Obrigatória ao criar a tarefa",
       "required_hint": "Não impede concluir — só criar.",
       "show_on_card": "Mostrar no cartão",
+      "show_in_grouping": "Usar em agrupamentos",
+      "show_in_grouping_hint": "Fica disponível em “Agrupar por” e “Subagrupar por”, e o quadro passa a mostrar uma coluna por opção.",
       "currency": "Moeda",
       "decimal_places": "Casas decimais",
       "options": "Opções",

@@ -316,3 +316,40 @@ class TestConfiguracao:
         )
 
         assert IssuePropertyValue.objects.filter(issue_property=propriedade).count() == 1
+
+
+@pytest.mark.contract
+class TestUsoEmAgrupamento:
+    """A marca de "usar em agrupamentos" atravessa a API (ADR 0011)."""
+
+    def test_the_flag_round_trips(self, session_client, workspace, projeto):
+        resposta = session_client.post(
+            LISTA_URL.format(slug=workspace.slug, project_id=projeto.id),
+            {"name": "Canal", "property_type": "select", "show_in_grouping": False},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_201_CREATED
+        assert resposta.data["show_in_grouping"] is False
+
+    def test_the_flag_can_be_turned_back_on(self, session_client, workspace, projeto):
+        canal = _propriedade(projeto, name="Canal", show_in_grouping=False)
+
+        resposta = session_client.patch(
+            ITEM_URL.format(slug=workspace.slug, project_id=projeto.id, pk=canal.id),
+            {"show_in_grouping": True},
+            format="json",
+        )
+
+        assert resposta.status_code == status.HTTP_200_OK
+        canal.refresh_from_db()
+        assert canal.show_in_grouping is True
+
+    def test_the_listing_carries_the_flag(self, session_client, workspace, projeto):
+        """A tela monta o menu de "agrupar por" a partir desta listagem: sem o
+        campo, ela não teria como esconder o que o servidor vai recusar."""
+        _propriedade(projeto, name="Canal", show_in_grouping=False)
+
+        resposta = session_client.get(LISTA_URL.format(slug=workspace.slug, project_id=projeto.id))
+
+        assert resposta.data["properties"][0]["show_in_grouping"] is False

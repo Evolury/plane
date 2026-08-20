@@ -121,6 +121,14 @@ class IssueProperty(ProjectBaseModel):
     # filtros, e os valores continuam gravados.
     is_active = models.BooleanField(default=True)
     show_on_card = models.BooleanField(default=False)
+    # Se a propriedade vira eixo de "agrupar por" e "subagrupar por".
+    #
+    # Nasce LIGADO, ao contrário de `show_on_card`, porque os custos são
+    # opostos: uma pastilha a mais disputa a largura do cartão com todas as
+    # outras, enquanto um agrupamento a mais é uma linha num menu que só quem
+    # abre vê. Agrupar é o uso natural de uma seleção — a caixa existe para
+    # desligar ruído, não para ligar o óbvio.
+    show_in_grouping = models.BooleanField(default=True)
     sort_order = models.FloatField(default=65535)
     # Só para moeda. A moeda é da PROPRIEDADE, não do valor: guardá-la por
     # tarefa deixaria somar reais com dólares na mesma coluna — conta errada

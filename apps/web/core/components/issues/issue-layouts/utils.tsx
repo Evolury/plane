@@ -36,7 +36,7 @@ import { Avatar } from "@plane/ui";
 import { renderFormattedDate, getFileURL } from "@plane/utils";
 // store
 import { store } from "@/lib/store-context";
-import { ISSUE_FILTER_DEFAULT_DATA } from "@/store/issue/helpers/base-issues.store";
+import { ISSUE_FILTER_DEFAULT_DATA, campoDoAgrupamento } from "@/store/issue/helpers/base-issues.store";
 import { DEFAULT_DISPLAY_PROPERTIES } from "@/store/issue/issue-details/sub_issues_filter.store";
 // constants
 import { ISSUE_GROUP_BY_OPTIONS } from "@plane/constants";
@@ -626,7 +626,10 @@ export const handleGroupDragDrop = async (
 
   // update updatedIssue values based on the source and destination groupIds
   if (source.groupId && destination.groupId && source.groupId !== destination.groupId && groupBy) {
-    const groupKey = ISSUE_FILTER_DEFAULT_DATA[groupBy];
+    // Evolury: `campoDoAgrupamento` no lugar do acesso direto ao mapa — a chave
+    // de propriedade personalizada é um id de tempo de execução (ADR 0011).
+    const groupKey = campoDoAgrupamento(groupBy, ISSUE_FILTER_DEFAULT_DATA);
+    if (!groupKey) return;
     let groupValue: any = clone(sourceIssue[groupKey]);
 
     // If groupValues is an array, remove source groupId and add destination groupId
@@ -646,7 +649,8 @@ export const handleGroupDragDrop = async (
   // do the same for subgroup
   // update updatedIssue values based on the source and destination subGroupIds
   if (subGroupBy && source.subGroupId && destination.subGroupId && source.subGroupId !== destination.subGroupId) {
-    const subGroupKey = ISSUE_FILTER_DEFAULT_DATA[subGroupBy];
+    const subGroupKey = campoDoAgrupamento(subGroupBy, ISSUE_FILTER_DEFAULT_DATA);
+    if (!subGroupKey) return;
     let subGroupValue: any = clone(sourceIssue[subGroupKey]);
 
     // If subGroupValue is an array, remove source subGroupId and add destination subGroupId
@@ -923,5 +927,11 @@ export const useGroupByOptions = (
     title: propriedade.name,
   }));
 
-  return [...groupByOptions, ...dePropriedade];
+  // "Nenhum" é a última linha do menu — é a opção de desligar, e opção de
+  // desligar no meio da lista some. Entrando depois dela, as propriedades a
+  // empurrariam para o meio do "Subagrupar por", que é o único menu que a tem.
+  const nenhum = groupByOptions.filter((opcao) => opcao.key === null);
+  const nomeados = groupByOptions.filter((opcao) => opcao.key !== null);
+
+  return [...nomeados, ...dePropriedade, ...nenhum];
 };

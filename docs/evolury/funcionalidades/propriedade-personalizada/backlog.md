@@ -190,3 +190,44 @@ deixava uma referência órfã.
 
 Corrigido em 15/08/2026: o efeito passou a recriar ao montar, e a renderização
 lê a instância viva do store. `useMemo` não é dono de ciclo de vida.
+
+## P10 — A propriedade como eixo do quadro — 19/08/2026
+
+O pedido: usar propriedade personalizada como **etapa de fluxo**, com um projeto
+só em vez de um projeto por fluxo. A medição feita antes de planejar mostrou que
+faltava menos do que parecia — agrupar já funcionava, e o servidor já tratava
+`sub_group_by` simetricamente desde o P4.2.
+
+- [x] P10.1 **Subagrupar por propriedade** — só faltava o menu.
+      `sub-group-by.tsx` montava a lista direto de `ISSUE_GROUP_BY_OPTIONS`;
+      passou a usar o mesmo `useGroupByOptions` do "Agrupar por". Um arquivo, e
+      as raias já sabiam se desenhar. De quebra, "Nenhum" voltou a ser a última
+      linha: entrando depois dela, as propriedades empurravam a opção de
+      desligar para o meio do menu
+- [x] P10.2 **Escolher, na definição, se a propriedade agrupa** —
+      `show_in_grouping`, irmã de `show_on_card`, com o padrão **invertido**:
+      nasce ligada, e a migração liga para as que já existiam. Honrada em
+      `alias_de_agrupamento`, que é a mesma função que a allowlist do paginador
+      consulta — desmarcar vira 400, não só um item a menos no menu
+- [x] P10.3 **Arrastar o cartão muda o valor** — quadro e lista. Três pontos:
+      `DRAG_ALLOWED_GROUPS` virou função (`podeArrastarNoAgrupamento`), porque
+      lista fixa não comporta id de tempo de execução; `campoDoAgrupamento`
+      resolve a chave para o próprio nome do campo anotado pelo servidor, e é o
+      que faz `updateIssueList` reagrupar o cartão sozinho; e a escrita saiu do
+      PATCH em `updateIssueOnDrop`, onde ciclo e módulo já saíam pelo mesmo
+      motivo — não são campo da tarefa. Soltar em "Nenhum" apaga
+- [x] P10.4 Testes de contrato (recusa do servidor, ida e volta do campo pela
+      API, padrão ligado) e de unidade no front (chave, arrasto liberado, campo
+      do agrupamento, filtro do menu). Cada guarda provada por injeção de
+      defeito, **uma de cada vez**
+- [x] P10.5 Verificação na tela, contra o `planedev`: menu, raias, arrasto de
+      um e de dois eixos, "Nenhum" apagando, a marca escondendo dos dois menus,
+      a URL recusada com 400 — e o caso que motivou tudo, um **módulo** com o
+      quadro agrupado por "Canal"
+
+**O que ficou de fora:** seleção múltipla continua sem agrupar. Ela duplicaria o
+cartão entre colunas, como etiqueta, e aí arrastar não teria resposta certa —
+acrescenta ou substitui? Sem resposta boa, não entra.
+
+**Lacuna registrada:** cartão movido em outra aba não troca de coluna sozinho.
+Está no [backlog técnico](../../backlog-tecnico.md), com o motivo e o caminho.

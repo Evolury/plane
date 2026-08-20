@@ -167,3 +167,100 @@ class TestAgrupamento:
             "propertyx_" + str(canal.id),
         ):
             assert alias_de_agrupamento(forjado) is None, forjado
+
+
+class _PaginadorDeMentira:
+    """Dublê do paginador agrupado.
+
+    A prova mora em `BasePaginator.paginate()`, antes de o nome do campo tocar
+    o ORM — instanciar o paginador de verdade só traria consulta para dentro de
+    um teste que não é sobre consulta. Mesmo dublê de
+    `tests/unit/utils/test_paginator.py`.
+    """
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def get_result(self, limit, cursor):
+        from plane.utils.paginator import Cursor, CursorResult
+
+        return CursorResult(
+            results=[],
+            next=Cursor(limit, 1, False, False),
+            prev=Cursor(limit, -1, True, False),
+            hits=0,
+            max_hits=0,
+        )
+
+    def process_results(self, results):
+        return results
+
+
+@pytest.mark.contract
+class TestEscolhaDeAgrupar:
+    """Agrupar por propriedade é opt-in da definição (ADR 0011).
+
+    A marca é honrada AQUI, e não só no menu, porque `alias_de_agrupamento` é a
+    mesma função que a allowlist do paginador consulta
+    (GHSA-wwgj-929g-42cm): desmarcar deixa de ser sugestão de tela e vira
+    recusa da consulta, venha ela da tela, da URL ou de um script.
+    """
+
+    @pytest.mark.django_db
+    def test_an_unmarked_property_does_not_group(self, projeto, create_user):
+        canal = _select(projeto)
+        canal.show_in_grouping = False
+        canal.save(update_fields=["show_in_grouping"])
+
+        assert alias_de_agrupamento(f"property_{canal.id}") is None
+
+    @pytest.mark.django_db
+    def test_an_unmarked_property_is_refused_by_the_paginator(self, projeto, create_user):
+        """A recusa chega ao pedido, e não fica na tela.
+
+        `BasePaginator.paginate` é o funil por onde passam os seis endpoints
+        que aceitam `group_by`. Este teste exercita o funil de verdade — com a
+        propriedade marcada e com ela desmarcada — porque é ele que transforma
+        a marca em 400.
+        """
+        from django.test import RequestFactory
+        from rest_framework.exceptions import ParseError
+        from rest_framework.request import Request
+
+        from plane.utils.paginator import BasePaginator
+
+        canal = _select(projeto)
+        _opcao(canal, "Indicação", 1)
+        chave = f"property_{canal.id}"
+
+        def paginar():
+            pedido = Request(RequestFactory().get("/fake-url/", data={"group_by": chave}))
+            return BasePaginator().paginate(
+                request=pedido,
+                queryset=_como_a_view(projeto),
+                paginator_cls=_PaginadorDeMentira,
+                group_by_field_name=chave,
+                group_by_fields=[],
+            )
+
+        # Marcada: passa.
+        paginar()
+
+        canal.show_in_grouping = False
+        canal.save(update_fields=["show_in_grouping"])
+
+        with pytest.raises(ParseError):
+            paginar()
+
+    @pytest.mark.django_db
+    def test_a_property_is_groupable_by_default(self, projeto, create_user):
+        """Nasce ligada, ao contrário de `show_on_card`.
+
+        É também o que a migração faz com as que já existiam: antes do campo,
+        toda seleção única aparecia em "agrupar por", e nascer desligada faria
+        sumir do menu um agrupamento em uso.
+        """
+        canal = _select(projeto)
+
+        assert canal.show_in_grouping is True
+        assert alias_de_agrupamento(f"property_{canal.id}") == canal.id
