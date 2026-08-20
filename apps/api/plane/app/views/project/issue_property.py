@@ -22,8 +22,17 @@ from rest_framework.response import Response
 from plane.app.permissions import ROLE, allow_permission
 from plane.app.serializers.issue_property import IssuePropertySerializer
 from plane.app.views.base import BaseViewSet
-from plane.utils.issue_properties import valores_por_tarefa
+from plane.utils.edicao_em_massa import TETO_DE_EDICAO_EM_MASSA
+from plane.utils.automacoes.despacho import registrar_atividade_de_propriedade
+from plane.utils.issue_properties import (
+    ValorInvalido,
+    gravar_valor,
+    rotulo_do_valor,
+    validar_valores,
+    valores_por_tarefa,
+)
 from plane.db.models import (
+    Issue,
     IssueProperty,
     IssuePropertyOption,
     IssuePropertyValue,
@@ -247,6 +256,66 @@ class IssuePropertyValuesBulkViewSet(BaseViewSet):
             {"values": {str(tarefa): campos for tarefa, campos in valores.items()}},
             status=status.HTTP_200_OK,
         )
+
+    @allow_permission(allowed_roles=[ROLE.ADMIN, ROLE.MEMBER], level="PROJECT")
+    def create(self, request, slug, project_id):
+        """Evolury: grava o MESMO valor em várias tarefas de uma vez (ADR 0019).
+
+        É o "preencher a coluna" que a planilha faz e o produto não fazia:
+        escolher trinta tarefas e dizer que o Canal de todas é Indicação.
+
+        Escreve tarefa a tarefa de propósito. `gravar_valor` valida por tipo,
+        converte e apaga com vazio, e `registrar_atividade_de_propriedade`
+        escreve o histórico e acorda as automações (ADR 0012) — reproduzir isso
+        em bloco criaria um segundo caminho para o mesmo destino, e é assim que
+        os dois passam a divergir.
+        """
+        issue_ids = request.data.get("issue_ids", [])
+        propriedade_id = request.data.get("property")
+        novo_valor = request.data.get("value")
+
+        if not len(issue_ids):
+            return Response({"error": "ISSUE_IDS_REQUIRED"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(issue_ids) > TETO_DE_EDICAO_EM_MASSA:
+            return Response(
+                {"error": "TOO_MANY_ISSUES", "limit": TETO_DE_EDICAO_EM_MASSA},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        propriedade = IssueProperty.objects.filter(
+            pk=propriedade_id, project_id=project_id, is_active=True
+        ).first()
+        if propriedade is None:
+            return Response(
+                {"property": "Propriedade não encontrada neste projeto."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        tarefas = list(Issue.objects.filter(pk__in=issue_ids, project_id=project_id))
+        if not tarefas:
+            return Response({"error": "ISSUES_NOT_FOUND"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # O valor é conferido UMA vez, contra a definição, antes de escrever em
+        # trinta tarefas — recusar na décima deixaria nove preenchidas e vinte
+        # e uma não, que é o pior desfecho possível.
+        try:
+            validar_valores(project_id, {str(propriedade.id): novo_valor})
+        except ValorInvalido as erro:
+            return Response({"value": str(erro)}, status=status.HTTP_400_BAD_REQUEST)
+
+        anteriores = valores_por_tarefa([t.id for t in tarefas], property_ids=[propriedade.id])
+        for tarefa in tarefas:
+            anterior = anteriores.get(tarefa.id, {}).get(str(propriedade.id))
+            gravar_valor(tarefa, propriedade, novo_valor)
+            registrar_atividade_de_propriedade(
+                tarefa=tarefa,
+                propriedade=propriedade,
+                de=rotulo_do_valor(propriedade, anterior),
+                para=rotulo_do_valor(propriedade, novo_valor),
+                actor_id=request.user.id,
+            )
+
+        return Response({"updated": len(tarefas)}, status=status.HTTP_200_OK)
 
 
 class IssuePropertyOptionUsageViewSet(BaseViewSet):

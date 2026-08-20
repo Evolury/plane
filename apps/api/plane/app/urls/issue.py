@@ -7,6 +7,7 @@ from django.urls import path
 from plane.app.views import (
     BulkCreateIssueLabelsEndpoint,
     BulkDeleteIssuesEndpoint,
+    BulkOperationIssuesEndpoint,
     BulkRestoreIssuesEndpoint,
     SubIssuesEndpoint,
     IssueLinkViewSet,
@@ -88,6 +89,12 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-create-labels/",
         BulkCreateIssueLabelsEndpoint.as_view(),
         name="project-bulk-labels",
+    ),
+    # Evolury: preenchimento de campos em massa (ADR 0019)
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-operation-issues/",
+        BulkOperationIssuesEndpoint.as_view(),
+        name="project-issues-bulk-operation",
     ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-delete-issues/",

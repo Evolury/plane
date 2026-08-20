@@ -307,6 +307,23 @@
       "error": "Some of the selected work items could not be deleted.",
       "undo_error": "The deletion could not be undone.",
       "too_many": "You can delete at most {limit} work items per project at a time."
+    },
+    "bulk_edit": {
+      "button": "Edit",
+      "title": "{count, plural, one {Editing # work item} many {Editing # work items} other {Editing # work items}}",
+      "blocked": "{count, plural, one {# work item is not yours and will not change} many {# work items are not yours and will not change} other {# work items are not yours and will not change}}",
+      "cross_project": "The selection spans projects. State, assignee, labels and custom properties belong to each project, so they are not offered here.",
+      "mixed": "Various",
+      "apply": "{count, plural, one {Apply # change} many {Apply # changes} other {Apply # changes}}",
+      "apply_none": "Apply",
+      "modes": {
+        "add": "Add",
+        "remove": "Remove",
+        "replace": "Replace"
+      },
+      "success": "{count, plural, one {# work item updated} many {# work items updated} other {# work items updated}}",
+      "error": "Some of the selected work items could not be updated.",
+      "too_many": "You can update at most {limit} work items per project at a time."
     }
   },
   "sub_work_item": {

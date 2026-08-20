@@ -804,12 +804,21 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
           const propertyValue = data.properties[property];
           // update root issue map properties
           if (Array.isArray(propertyValue)) {
-            // if property value is array, append it to the existing values
+            // Evolury: a tela precisa mostrar o que o servidor vai gravar, e
+            // isso depende do MODO (ADR 0019). Somar sempre — como era aqui —
+            // fazia "remover" mostrar a etiqueta aparecendo antes de sumir.
             const existingValue = issueBeforeUpdate[property];
-            // convert existing value to an array
             const newExistingValue = Array.isArray(existingValue) ? existingValue : [];
+            const modo = data.modes?.[property as "label_ids" | "module_ids"] ?? "add";
+            // Responsável não tem modo: é sempre substituir (ADR 0016).
+            const final =
+              property === "assignee_ids" || modo === "replace"
+                ? propertyValue
+                : modo === "remove"
+                  ? newExistingValue.filter((item) => !propertyValue.includes(item))
+                  : uniq([...newExistingValue, ...propertyValue]);
             this.rootIssueStore.issues.updateIssue(issueId, {
-              [property]: uniq([...newExistingValue, ...propertyValue]),
+              [property]: final,
             });
           } else {
             // if property value is not an array, simply update the value

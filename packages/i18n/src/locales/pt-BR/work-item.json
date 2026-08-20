@@ -307,6 +307,23 @@
       "error": "Não foi possível excluir todas as tarefas selecionadas.",
       "undo_error": "Não foi possível desfazer a exclusão.",
       "too_many": "Dá para excluir no máximo {limit} tarefas de cada projeto por vez."
+    },
+    "bulk_edit": {
+      "button": "Editar",
+      "title": "{count, plural, one {Editando # tarefa} many {Editando # tarefas} other {Editando # tarefas}}",
+      "blocked": "{count, plural, one {# tarefa não é sua e não será alterada} many {# tarefas não são suas e não serão alteradas} other {# tarefas não são suas e não serão alteradas}}",
+      "cross_project": "A seleção tem tarefas de projetos diferentes. Estado, responsável, etiquetas e propriedades personalizadas são de cada projeto, e por isso não aparecem aqui.",
+      "mixed": "Vários",
+      "apply": "{count, plural, one {Aplicar # mudança} many {Aplicar # mudanças} other {Aplicar # mudanças}}",
+      "apply_none": "Aplicar",
+      "modes": {
+        "add": "Acrescentar",
+        "remove": "Remover",
+        "replace": "Substituir"
+      },
+      "success": "{count, plural, one {# tarefa atualizada} many {# tarefas atualizadas} other {# tarefas atualizadas}}",
+      "error": "Não foi possível atualizar todas as tarefas selecionadas.",
+      "too_many": "Dá para atualizar no máximo {limit} tarefas de cada projeto por vez."
     }
   },
   "sub_work_item": {

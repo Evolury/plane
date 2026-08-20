@@ -155,9 +155,19 @@ export type TBulkIssueProperties = Pick<
   | "estimate_point"
 >;
 
+/**
+ * Evolury: o modo de um campo de lista (ADR 0019).
+ *
+ * "add" é o padrão: substituir sem avisar é como se apaga a etiqueta de outra
+ * pessoa achando que se está acrescentando — a reclamação que o Jira levou anos
+ * para atender.
+ */
+export type TModoDeLista = "add" | "remove" | "replace";
+
 export type TBulkOperationsPayload = {
   issue_ids: string[];
   properties: Partial<TBulkIssueProperties>;
+  modes?: Partial<Record<"label_ids" | "module_ids", TModoDeLista>>;
 };
 
 export type TWorkItemWidgets = "sub-work-items" | "relations" | "links" | "attachments";
