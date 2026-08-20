@@ -95,7 +95,9 @@ class TestCamposSimples:
 
     def test_refuses_a_state_from_another_project(self, session_client, workspace, projeto, tarefas, create_user):
         vizinho = Project.objects.create(name="Vizinho", identifier="VIZ", workspace=workspace, created_by=create_user)
-        alheio = State.objects.create(name="Feito", group="completed", project=vizinho, workspace=workspace, color="#000")
+        alheio = State.objects.create(
+            name="Feito", group="completed", project=vizinho, workspace=workspace, color="#000"
+        )
         resposta, _ = pedir(
             session_client, workspace, projeto,
             {"issue_ids": [str(tarefas[0].id)], "properties": {"state_id": str(alheio.id)}},

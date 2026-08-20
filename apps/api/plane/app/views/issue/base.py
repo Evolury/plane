@@ -973,7 +973,12 @@ class BulkOperationIssuesEndpoint(BaseAPIView):
 
             if "label_ids" in propriedades:
                 self._sincronizar(
-                    IssueLabel, "label_id", {i.id: finais[i.id]["label_ids"] for i in issues}, issues, project_id, request
+                    IssueLabel,
+                    "label_id",
+                    {i.id: finais[i.id]["label_ids"] for i in issues},
+                    issues,
+                    project_id,
+                    request,
                 )
             if "assignee_ids" in propriedades:
                 self._sincronizar(
