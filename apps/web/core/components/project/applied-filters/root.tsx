@@ -28,7 +28,7 @@ type Props = {
   totalProjects: number;
 };
 
-const MEMBERS_FILTERS = ["lead", "members"];
+const MEMBERS_FILTERS = new Set(["lead", "members"]);
 const DATE_FILTERS = ["created_at"];
 
 export function ProjectAppliedFiltersList(props: Props) {
@@ -76,7 +76,7 @@ export function ProjectAppliedFiltersList(props: Props) {
                   values={value}
                 />
               )}
-              {MEMBERS_FILTERS.includes(filterKey) && (
+              {MEMBERS_FILTERS.has(filterKey) && (
                 <AppliedMembersFilters
                   editable={isEditingAllowed}
                   handleRemove={(val) => handleRemoveFilter(filterKey, val)}
@@ -117,12 +117,7 @@ export function ProjectAppliedFiltersList(props: Props) {
       </Header.LeftItem>
       <Header.RightItem>
         <Tooltip
-          tooltipContent={
-            <p>
-              <span className="font-semibold">{filteredProjects}</span> of{" "}
-              <span className="font-semibold">{totalProjects}</span> projects match the applied filters.
-            </p>
-          }
+          tooltipContent={<p>{t("ui.projects_match_filters", { filtered: filteredProjects, total: totalProjects })}</p>}
         >
           <span className="rounded-full bg-layer-1 px-2.5 py-1 text-13 font-medium">
             {filteredProjects}/{totalProjects}

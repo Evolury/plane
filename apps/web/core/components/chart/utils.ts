@@ -6,6 +6,7 @@
 
 import { getWeekOfMonth, isValid } from "date-fns";
 import { CHART_X_AXIS_DATE_PROPERTIES, ChartXAxisDateGrouping, TO_CAPITALIZE_PROPERTIES } from "@plane/constants";
+import { translate } from "@plane/i18n";
 import type { ChartXAxisProperty, TChart, TChartDatum } from "@plane/types";
 import {
   capitalizeFirstLetter,
@@ -55,6 +56,38 @@ const getDateGroupingName = (date: string, dateGrouping: ChartXAxisDateGrouping)
   return parsedName ?? date;
 };
 
+/**
+ * Evolury: o rótulo de prioridade e de grupo de estado é DADO, não texto.
+ *
+ * A API devolve "medium", "backlog"; o upstream só aplicava
+ * `capitalizeFirstLetter`, e o gráfico mostrava "Medium" e "Backlog" numa tela
+ * em português. A varredura de i18n não podia ver isso — não há literal em
+ * inglês no código, há um valor vindo do servidor.
+ *
+ * Valor desconhecido volta capitalizado, como antes: um grupo novo no upstream
+ * aparece feio, e não some.
+ */
+const CHAVE_POR_VALOR: Record<string, string> = {
+  urgent: "urgent",
+  high: "high",
+  medium: "medium",
+  low: "low",
+  none: "none",
+  backlog: "workspace_projects.state.backlog",
+  unstarted: "workspace_projects.state.unstarted",
+  started: "workspace_projects.state.started",
+  completed: "workspace_projects.state.completed",
+  cancelled: "workspace_projects.state.cancelled",
+};
+
+const rotuloTraduzido = (valor: string): string => {
+  const chave = CHAVE_POR_VALOR[valor?.toLowerCase?.()];
+  if (!chave) return capitalizeFirstLetter(valor);
+  const traduzido = translate(chave);
+  // O i18next devolve a própria chave quando não a encontra.
+  return traduzido === chave ? capitalizeFirstLetter(valor) : traduzido;
+};
+
 export const parseChartData = (
   data: TChart | null | undefined,
   xAxisProperty: ChartXAxisProperty | null | undefined,
@@ -78,7 +111,7 @@ export const parseChartData = (
     if (xAxisProperty) {
       // capitalize first letter if xAxisProperty is in TO_CAPITALIZE_PROPERTIES and no groupByProperty is set
       if (TO_CAPITALIZE_PROPERTIES.includes(xAxisProperty)) {
-        datum.name = capitalizeFirstLetter(datum.name);
+        datum.name = rotuloTraduzido(datum.name);
       }
 
       // parse timestamp to visual date if xAxisProperty is in WIDGET_X_AXIS_DATE_PROPERTIES
@@ -98,7 +131,7 @@ export const parseChartData = (
   if (groupByProperty) {
     if (TO_CAPITALIZE_PROPERTIES.includes(groupByProperty)) {
       Object.keys(updatedSchema).forEach((key) => {
-        updatedSchema[key] = capitalizeFirstLetter(updatedSchema[key]);
+        updatedSchema[key] = rotuloTraduzido(updatedSchema[key]);
       });
     }
 

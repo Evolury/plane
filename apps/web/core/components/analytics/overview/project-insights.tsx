@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -27,6 +27,23 @@ const RadarChart = lazy(function RadarChart() {
 });
 
 const analyticsService = new AnalyticsService();
+
+/**
+ * Evolury: os rótulos do radar vêm da CHAVE, não do `name` da resposta.
+ *
+ * A API monta o nome com `key.replace("_", " ").title()` — "Work Items",
+ * "Cycles", "Intake" —, e o front os exibia crus. A chave é o que tem
+ * identidade estável; o nome era só um enfeite feito no servidor.
+ */
+const CHAVE_DO_INSIGHT: Record<string, string> = {
+  work_items: "common.work_items",
+  cycles: "common.cycles",
+  modules: "common.modules",
+  intake: "intake",
+  members: "common.members",
+  pages: "common.pages",
+  views: "common.views",
+};
 
 const ProjectInsights = observer(function ProjectInsights() {
   const params = useParams();
@@ -51,6 +68,17 @@ const ProjectInsights = observer(function ProjectInsights() {
       )
   );
 
+  const dadosTraduzidos: TChartData<string, string>[] | undefined = useMemo(
+    () =>
+      projectInsightsData?.map((item) => ({
+        ...item,
+        // Chave desconhecida cai no nome do servidor: item novo no upstream
+        // aparece em inglês, e não some.
+        rotulo: CHAVE_DO_INSIGHT[item.key] ? t(CHAVE_DO_INSIGHT[item.key]) : item.name,
+      })),
+    [projectInsightsData, t]
+  );
+
   return (
     <AnalyticsSectionWrapper
       title={`${t("workspace_analytics.project_insights")}`}
@@ -72,7 +100,7 @@ const ProjectInsights = observer(function ProjectInsights() {
             <Suspense fallback={<ProjectInsightsLoader />}>
               <RadarChart
                 className="h-[350px] w-full text-accent-primary lg:w-3/5"
-                data={projectInsightsData}
+                data={dadosTraduzidos ?? []}
                 dataKey="key"
                 radars={[
                   {
@@ -90,7 +118,7 @@ const ProjectInsights = observer(function ProjectInsights() {
                 margin={{ top: 0, right: 40, bottom: 10, left: 40 }}
                 showTooltip
                 angleAxis={{
-                  key: "name",
+                  key: "rotulo",
                 }}
               />
             </Suspense>
@@ -103,9 +131,9 @@ const ProjectInsights = observer(function ProjectInsights() {
                 <div>{t("workspace_analytics.trend_on_charts")}</div>
                 <div>{t("common.work_items")}</div>
               </div>
-              {projectInsightsData?.map((item) => (
+              {dadosTraduzidos?.map((item) => (
                 <div key={item.key} className="flex items-center justify-between text-13 text-primary">
-                  <div>{item.name}</div>
+                  <div>{item.rotulo}</div>
                   <div className="flex items-center gap-1">
                     {/* <TrendPiece key={item.key} size='xs' /> */}
                     <div className="text-secondary">{item.count}</div>
