@@ -1827,6 +1827,7 @@
     "the_work_item": "the work item",
     "created_prefix": "created",
     "deleted_prefix": "deleted",
+    "restored_prefix": "restored",
     "removed_prefix": "removed",
     "marked_prefix": "marked",
     "added_this": "added this",

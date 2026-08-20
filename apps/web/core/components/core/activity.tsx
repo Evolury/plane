@@ -298,6 +298,15 @@ const activityDetails: {
             {translate("activity_log.to_an_epic")}
           </>
         );
+      // Evolury: o desfazer da exclusão em massa (ADR 0018). Sem este ramo, a
+      // linha de "restaurou" cai no `else` e o histórico conta o CONTRÁRIO do
+      // que aconteceu — a gravação estava certa e a leitura, errada.
+      else if (activity.verb === "restored")
+        return (
+          <>
+            {translate("activity_log.restored_prefix")} <IssueLink activity={activity} />
+          </>
+        );
       else
         return (
           <>

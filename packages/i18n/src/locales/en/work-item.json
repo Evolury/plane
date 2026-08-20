@@ -294,6 +294,19 @@
         "success": "{count, plural, one {# work item completed} other {# work items completed}}",
         "error": "Some of the selected work items could not be completed."
       }
+    },
+    "bulk_delete": {
+      "button": "Delete",
+      "title": "{count, plural, one {Delete # work item?} many {Delete # work items?} other {Delete # work items?}}",
+      "description": "Sub-work items and comments go with them. You will be able to undo this right after.",
+      "blocked": "{count, plural, one {# work item was created by someone else and will not be deleted} many {# work items were created by someone else and will not be deleted} other {# work items were created by someone else and will not be deleted}}",
+      "confirm": "{count, plural, one {Delete # work item} many {Delete # work items} other {Delete # work items}}",
+      "success": "{count, plural, one {# work item deleted} many {# work items deleted} other {# work items deleted}}",
+      "undo": "Undo",
+      "undone": "{count, plural, one {# work item restored} many {# work items restored} other {# work items restored}}",
+      "error": "Some of the selected work items could not be deleted.",
+      "undo_error": "The deletion could not be undone.",
+      "too_many": "You can delete at most {limit} work items per project at a time."
     }
   },
   "sub_work_item": {

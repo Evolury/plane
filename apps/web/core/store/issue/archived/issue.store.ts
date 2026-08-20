@@ -37,7 +37,6 @@ export interface IArchivedIssues extends IBaseIssuesStore {
   ) => Promise<TIssuesResponse | undefined>;
 
   restoreIssue: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
-  removeBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   bulkUpdateProperties: (workspaceSlug: string, projectId: string, data: TBulkOperationsPayload) => Promise<void>;
 
   updateIssue: undefined;

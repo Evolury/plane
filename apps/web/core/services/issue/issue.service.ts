@@ -350,8 +350,29 @@ export class IssueService extends APIService {
     data: {
       issue_ids: string[];
     }
-  ): Promise<any> {
+  ): Promise<{ deleted: number; batch: string }> {
     return this.delete(`/api/workspaces/${workspaceSlug}/projects/${projectId}/bulk-delete-issues/`, data)
+      .then(async (response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /**
+   * Evolury: desfazer a exclusão em massa (ADR 0018).
+   *
+   * Recebe o INSTANTE do lote, e não ids: a exclusão marca todas as linhas —
+   * tarefas, subtarefas, comentários — com o mesmo `deleted_at`, e é por ele
+   * que o servidor sabe o que devolver.
+   */
+  async bulkRestoreIssues(
+    workspaceSlug: string,
+    projectId: string,
+    data: {
+      batch: string;
+    }
+  ): Promise<{ restored: number }> {
+    return this.post(`/api/workspaces/${workspaceSlug}/projects/${projectId}/bulk-restore-issues/`, data)
       .then(async (response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

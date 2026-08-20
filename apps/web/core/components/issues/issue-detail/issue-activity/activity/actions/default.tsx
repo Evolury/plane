@@ -46,6 +46,11 @@ export const IssueDefaultActivity = observer(function IssueDefaultActivity(props
           ) : (
             <span> {t("activity_log.created_work_item")}</span>
           )
+        ) : activity.verb === "restored" ? (
+          /* Evolury: o desfazer da exclusão em massa (ADR 0018). Sem este ramo,
+             "restaurou" cairia no `else` e a linha diria "excluiu" — o
+             histórico contando o contrário do que aconteceu. */
+          <span> {t("activity_log.restored_work_item")}</span>
         ) : (
           <span> {t("activity_log.deleted_work_item")}</span>
         )}

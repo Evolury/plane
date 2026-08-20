@@ -32,6 +32,14 @@ type SetToastProps =
       title: string;
       message?: string;
       actionItems?: React.ReactNode;
+      /**
+       * Evolury: quanto tempo o aviso fica na tela, em ms.
+       *
+       * Existe por causa do "Desfazer": um aviso com ação dentro não pode
+       * durar o mesmo que um aviso de leitura, senão a saída some antes de a
+       * pessoa perceber que precisa dela.
+       */
+      timeout?: number;
     };
 
 type PromiseToastCallback<ToastData> = (data: ToastData) => string;
@@ -258,6 +266,7 @@ export const setToast = (props: SetToastProps) => {
         message: props.message,
         actionItems: props.actionItems,
       },
+      ...(props.timeout ? { timeout: props.timeout } : {}),
     });
   } else {
     toastId = toastManager.add({

@@ -30,7 +30,6 @@ export interface IBaseCommandPaletteStore {
   createPageModal: TCreatePageModal;
   isCreateIssueModalOpen: boolean;
   isDeleteIssueModalOpen: boolean;
-  isBulkDeleteIssueModalOpen: boolean;
   createIssueStoreType: TCreateModalStoreTypes;
   createWorkItemAllowedProjectIds: string[] | undefined;
   profileSettingsModal: {
@@ -48,7 +47,6 @@ export interface IBaseCommandPaletteStore {
   toggleCreateIssueModal: (value?: boolean, storeType?: TCreateModalStoreTypes, allowedProjectIds?: string[]) => void;
   toggleCreateModuleModal: (value?: boolean) => void;
   toggleDeleteIssueModal: (value?: boolean) => void;
-  toggleBulkDeleteIssueModal: (value?: boolean) => void;
   toggleAllStickiesModal: (value?: boolean) => void;
   toggleProjectListOpen: (projectId: string, value?: boolean) => void;
   toggleProfileSettingsModal: (value: { activeTab?: TProfileSettingsTabs | null; isOpen?: boolean }) => void;
@@ -62,7 +60,6 @@ export class BaseCommandPaletteStore implements IBaseCommandPaletteStore {
   isCreateViewModalOpen: boolean = false;
   isCreateIssueModalOpen: boolean = false;
   isDeleteIssueModalOpen: boolean = false;
-  isBulkDeleteIssueModalOpen: boolean = false;
   createPageModal: TCreatePageModal = DEFAULT_CREATE_PAGE_MODAL_DATA;
   createIssueStoreType: TCreateModalStoreTypes = EIssuesStoreType.PROJECT;
   createWorkItemAllowedProjectIds: IBaseCommandPaletteStore["createWorkItemAllowedProjectIds"] = undefined;
@@ -82,7 +79,6 @@ export class BaseCommandPaletteStore implements IBaseCommandPaletteStore {
       isCreateViewModalOpen: observable.ref,
       isCreateIssueModalOpen: observable.ref,
       isDeleteIssueModalOpen: observable.ref,
-      isBulkDeleteIssueModalOpen: observable.ref,
       createPageModal: observable,
       createIssueStoreType: observable,
       createWorkItemAllowedProjectIds: observable,
@@ -97,7 +93,6 @@ export class BaseCommandPaletteStore implements IBaseCommandPaletteStore {
       toggleCreateIssueModal: action,
       toggleCreateModuleModal: action,
       toggleDeleteIssueModal: action,
-      toggleBulkDeleteIssueModal: action,
       toggleAllStickiesModal: action,
       toggleProjectListOpen: action,
       toggleProfileSettingsModal: action,
@@ -121,7 +116,6 @@ export class BaseCommandPaletteStore implements IBaseCommandPaletteStore {
       this.isCreateModuleModalOpen ||
       this.isCreateViewModalOpen ||
       store.powerK.isShortcutsListModalOpen ||
-      this.isBulkDeleteIssueModalOpen ||
       this.isDeleteIssueModalOpen ||
       this.createPageModal.isOpen ||
       this.allStickiesModal
@@ -247,13 +241,6 @@ export class BaseCommandPaletteStore implements IBaseCommandPaletteStore {
    * @param value
    * @returns
    */
-  toggleBulkDeleteIssueModal = (value?: boolean) => {
-    if (value !== undefined) {
-      this.isBulkDeleteIssueModalOpen = value;
-    } else {
-      this.isBulkDeleteIssueModalOpen = !this.isBulkDeleteIssueModalOpen;
-    }
-  };
 
   /**
    * Toggles the all stickies modal

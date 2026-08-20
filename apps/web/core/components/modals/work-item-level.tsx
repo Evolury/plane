@@ -10,13 +10,11 @@ import { useParams } from "next/navigation";
 import type { TIssue } from "@plane/types";
 import { EIssueServiceType, EIssuesStoreType } from "@plane/types";
 // components
-import { BulkDeleteIssuesModal } from "@/components/core/modals/bulk-delete-issues-modal";
 import { DeleteIssueModal } from "@/components/issues/delete-issue-modal";
 import { CreateUpdateIssueModal } from "@/components/issues/issue-modal/modal";
 // hooks
 import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
-import { useUser } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
 
@@ -30,7 +28,6 @@ export const WorkItemLevelModals = observer(function WorkItemLevelModals(props: 
   const { workspaceSlug, cycleId, moduleId } = useParams();
   const router = useAppRouter();
   // store hooks
-  const { data: currentUser } = useUser();
   const {
     issue: { getIssueById, getIssueIdByIdentifier },
   } = useIssueDetail();
@@ -46,8 +43,6 @@ export const WorkItemLevelModals = observer(function WorkItemLevelModals(props: 
     toggleCreateIssueModal,
     isDeleteIssueModalOpen,
     toggleDeleteIssueModal,
-    isBulkDeleteIssueModalOpen,
-    toggleBulkDeleteIssueModal,
     createWorkItemAllowedProjectIds,
   } = useCommandPalette();
   // derived values
@@ -101,11 +96,6 @@ export const WorkItemLevelModals = observer(function WorkItemLevelModals(props: 
           isEpic={workItemDetails?.is_epic}
         />
       )}
-      <BulkDeleteIssuesModal
-        isOpen={isBulkDeleteIssueModalOpen}
-        onClose={() => toggleBulkDeleteIssueModal(false)}
-        user={currentUser}
-      />
     </>
   );
 });
