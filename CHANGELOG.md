@@ -3,6 +3,54 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.29.0] — 2026-08-19
+
+**Minor**: a **propriedade personalizada vira eixo do quadro** — um projeto só
+com vários fluxos, em vez de um projeto por fluxo
+([ADR 0011](docs/evolury/decisoes/0011-propriedades-personalizadas.md)).
+
+### Na tela
+
+- **Arrastar o cartão entre as colunas muda o valor da propriedade.** No quadro
+  e na lista; soltar em "Nenhum" apaga. Era o gesto que faltava: dava para ver o
+  fluxo e filtrar por ele, mas mudar o valor exigia abrir a tarefa. A mudança
+  entra no histórico e aciona as automações, como qualquer edição feita na tela.
+
+- **Subagrupar por propriedade.** O menu passou a oferecer as mesmas
+  propriedades do "Agrupar por" — o servidor já sabia responder desde a
+  v1.13.0, só o menu não oferecia. Quadro por estado com raias por "Canal",
+  por exemplo.
+
+- **"Usar em agrupamentos" na definição da propriedade.** Seleção única já
+  aparecia automaticamente nos menus de agrupar; agora é escolha, e a caixa
+  **nasce marcada**. É diferente de "mostrar no cartão" pelo custo de cada uma:
+  uma pastilha a mais disputa a largura do cartão com todas as outras, um
+  agrupamento a mais é uma linha num menu que só quem abre vê.
+
+- **Cada módulo com o próprio fluxo.** Como o módulo guarda o agrupamento dele,
+  o de aquisição pode ficar por "Canal" e o de entrega por outra propriedade —
+  no mesmo projeto, ao mesmo tempo. É o que dispensa criar um projeto para cada
+  conjunto de etapas.
+
+- "Nenhum" voltou a ser a última linha do menu de subagrupar. As propriedades
+  entravam depois dela e empurravam a opção de desligar para o meio da lista.
+
+### Por dentro
+
+- Desmarcar "usar em agrupamentos" **não é sugestão de tela**: a marca entrou na
+  mesma função que a allowlist do paginador consulta (GHSA-wwgj-929g-42cm), então
+  o pedido é recusado com 400 venha da tela, de uma URL colada ou de um script.
+
+- A migração liga a marca em todas as propriedades que já existiam — nenhum
+  agrupamento em uso desaparece de um menu sem ninguém ter pedido.
+
+- Seleção múltipla continua sem agrupar: duplicaria o cartão entre colunas, como
+  etiqueta, e aí arrastar não teria resposta certa — acrescenta ou substitui?
+
+- Conhecido: cartão movido em **outra aba** atualiza a pastilha na hora, mas só
+  troca de coluna ao recarregar. Registrado no
+  [backlog técnico](docs/evolury/backlog-tecnico.md).
+
 ## [1.28.0] — 2026-08-19
 
 **Minor**: uma tarefa passa a ter **um** responsável, e nunca mais de um
