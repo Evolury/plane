@@ -141,14 +141,14 @@
       },
       "intake_trends": {
         "title": "Ainda não há dados",
-        "description": "A análise de tendências de intake aparecerá aqui. Adicione tarefas ao intake para começar a acompanhar as tendências."
+        "description": "A análise de tendências da Triagem aparecerá aqui. Adicione tarefas à Triagem para começar a acompanhar as tendências."
       }
     },
     "upgrade_to_plan": "Faça upgrade para {plan} para desbloquear {tab}",
     "workitem_resolved_vs_pending": "Tarefas resolvidas vs pendentes",
     "projects_by_status": "Projetos por status",
     "active_users": "Usuários ativos",
-    "intake_trends": "Tendências de entrada"
+    "intake_trends": "Tendências da Triagem"
   },
   "workspace_projects": {
     "label": "{count, plural, one {Projeto} other {Projetos}}",

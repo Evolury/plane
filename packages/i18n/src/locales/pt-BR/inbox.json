@@ -37,7 +37,7 @@
         "success": "Tarefa excluída com sucesso",
         "confirmation": {
           "prefix": "Tem certeza de que deseja excluir a tarefa",
-          "suffix": "? A tarefa será excluída apenas do Intake e essa ação não pode ser desfeita."
+          "suffix": "? A tarefa será excluída apenas da Triagem e essa ação não pode ser desfeita."
         }
       }
     },
@@ -65,10 +65,10 @@
       "updated_at": "Atualizado em",
       "id": "ID"
     },
-    "label": "Intake",
-    "page_label": "{workspace} - Intake",
+    "label": "Triagem",
+    "page_label": "{workspace} - Triagem",
     "modal": {
-      "title": "Criar tarefa no Intake"
+      "title": "Criar tarefa na Triagem"
     },
     "tabs": {
       "open": "Aberto",
@@ -85,7 +85,7 @@
       },
       "sidebar_filter": {
         "title": "Nenhuma tarefa correspondente",
-        "description": "Nenhuma tarefa corresponde ao filtro aplicado no Intake. Crie uma nova tarefa."
+        "description": "Nenhuma tarefa corresponde ao filtro aplicado na Triagem. Crie uma nova tarefa."
       },
       "detail": {
         "title": "Selecione uma tarefa para visualizar seus detalhes."
