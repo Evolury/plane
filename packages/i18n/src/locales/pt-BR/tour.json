@@ -94,11 +94,11 @@
     },
     "intake": {
       "step_zero": {
-        "title": "Simplifique solicitações com entrada",
+        "title": "Simplifique solicitações com a Triagem",
         "description": "Um recurso exclusivo do Evotask que permite aos Convidados criar tarefas para bugs, solicitações ou tickets."
       },
       "step_one": {
-        "title": "Solicitações de entrada abertas/fechadas",
+        "title": "Solicitações de triagem abertas/fechadas",
         "description": "Solicitações pendentes permanecem na guia Abertas e, uma vez atendidas por um administrador ou membro, elas são movidas para Fechadas."
       },
       "step_two": {

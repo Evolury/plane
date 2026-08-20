@@ -87,12 +87,12 @@
       "description": "Arquive páginas que não estão no seu radar. Acesse-as aqui quando necessário."
     },
     "intake_sidebar": {
-      "title": "Registrar solicitações de Entrada",
+      "title": "Registrar solicitações na Triagem",
       "description": "Envie novas solicitações para serem revisadas, priorizadas e rastreadas dentro do fluxo de trabalho do seu projeto.",
-      "cta_primary": "Criar solicitação de Entrada"
+      "cta_primary": "Criar solicitação na Triagem"
     },
     "intake_main": {
-      "title": "Selecione uma tarefa de Entrada para ver seus detalhes"
+      "title": "Selecione uma tarefa da Triagem para ver seus detalhes"
     },
     "epics": {
       "title": "Transforme projetos complexos em Epics estruturados.",
@@ -166,7 +166,7 @@
       "title": "Crie módulos para organizar seu trabalho e acompanhar o progresso em diferentes estágios."
     },
     "analytics_no_intake": {
-      "title": "Configure a entrada para gerenciar solicitações recebidas e rastrear como elas são aceitas e rejeitadas"
+      "title": "Configure a Triagem para gerenciar solicitações recebidas e rastrear como elas são aceitas e rejeitadas"
     },
     "home_widget_stickies": {
       "title": "Anote uma ideia, capture um momento de inspiração ou registre um lampejo. Adicione um adesivo para começar."

@@ -403,18 +403,18 @@
         "toggle_description": "Os membros do projeto poderão criar e editar páginas."
       },
       "intake": {
-        "intake_responsibility": "Responsabilidade de recebimento",
-        "intake_sources": "Fontes de recebimento",
-        "title": "Intake",
-        "short_title": "Intake",
+        "intake_responsibility": "Responsabilidade da triagem",
+        "intake_sources": "Fontes da triagem",
+        "title": "Triagem",
+        "short_title": "Triagem",
         "description": "Permita que não membros compartilhem bugs, feedback e sugestões; sem interromper seu fluxo de trabalho.",
-        "toggle_title": "Ativar o Intake",
-        "toggle_description": "Permitir que membros do projeto criem solicitações no Intake pelo aplicativo.",
+        "toggle_title": "Ativar a Triagem",
+        "toggle_description": "Permitir que membros do projeto criem solicitações na Triagem pelo aplicativo.",
         "toggle_tooltip_on": "Peça ao administrador do projeto para ativar.",
         "toggle_tooltip_off": "Peça ao administrador do projeto para desativar.",
         "notify_assignee": {
           "title": "Notificar responsáveis",
-          "description": "Para uma nova solicitação de recebimento, os responsáveis padrão serão alertados via notificações"
+          "description": "Para uma nova solicitação de triagem, os responsáveis padrão serão alertados via notificações"
         },
         "in_app": {
           "title": "No aplicativo",
@@ -441,10 +441,10 @@
           "select_properties": "Selecionar propriedades",
           "search_placeholder": "Pesquisar propriedades",
           "toasts": {
-            "success_create": "Formulário de recebimento criado com sucesso",
-            "success_update": "Formulário de recebimento atualizado com sucesso",
-            "error_create": "Falha ao criar formulário de recebimento",
-            "error_update": "Falha ao atualizar formulário de recebimento"
+            "success_create": "Formulário de triagem criado com sucesso",
+            "success_update": "Formulário de triagem atualizado com sucesso",
+            "error_create": "Falha ao criar formulário de triagem",
+            "error_update": "Falha ao atualizar formulário de triagem"
           }
         },
         "toasts": {

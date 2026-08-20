@@ -304,8 +304,8 @@
   "disabled_project": {
     "empty_state": {
       "inbox": {
-        "title": "O Intake não está habilitado para o projeto.",
-        "description": "O Intake ajuda você a gerenciar as solicitações recebidas para o seu projeto e adicioná-las como tarefas em seu fluxo de trabalho. Habilite o Intake nas configurações do projeto para gerenciar as solicitações.",
+        "title": "A Triagem não está habilitada para o projeto.",
+        "description": "A Triagem ajuda você a gerenciar as solicitações recebidas para o seu projeto e adicioná-las como tarefas em seu fluxo de trabalho. Habilite a Triagem nas configurações do projeto para gerenciar as solicitações.",
         "primary_button": {
           "text": "Gerenciar funcionalidades"
         }

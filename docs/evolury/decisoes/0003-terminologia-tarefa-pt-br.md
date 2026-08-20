@@ -49,8 +49,44 @@ A pergunta estrutural era: isso é tradução ou arquitetura? A varredura
 | Epic                      | Épico                        | Épico (inalterado)   |
 | My tasks (funcionalidade) | Minhas tarefas               | Minhas tarefas       |
 | to-do list (bloco editor) | Lista de tarefas             | Lista de tarefas (¹) |
+| Intake (funcionalidade)   | Intake / Entrada             | Triagem (²)          |
 
 (¹) O bloco de checklist do editor coexiste sem conflito prático; manter.
+
+(²) Ver o adendo de 20/08/2026 abaixo.
+
+## Adendo (20/08/2026) — "Intake" vira "Triagem"
+
+O recurso que recebe solicitações de fora chamava-se **Intake** na tela. Pior:
+não se chamava só isso. A varredura achou **quatro** termos para a mesma coisa
+no pt-BR — "Intake", "Entrada", "entrada" e "recebimento" —, às vezes na mesma
+tela de configuração.
+
+Passa a ser **Triagem**, em 40 strings. Palavra portuguesa, descreve o que a
+tela faz (avaliar antes de aceitar) e não pede glossário.
+
+**Gênero mudou**, e por isso não foi busca-e-troca: "o Intake" é masculino,
+"a Triagem" é feminino. Cada string foi reescrita — "Ativar o Intake" → "Ativar
+a Triagem", "O Intake não está habilitado" → "A Triagem não está habilitada",
+"tarefas do Intake" → "tarefas da Triagem". É a mesma regra do item 4 acima.
+
+**Não colide com o estado `triage`**, e isso foi conferido: o estado de triagem
+é filtrado de toda listagem por `is_triage=False` — some da tela de Estados, do
+agrupamento e dos seletores. Ele existe só para segurar o item enquanto ele
+espera avaliação. O nome do recurso e o do estado apontarem para a mesma ideia é
+coerência, não ambiguidade.
+
+**Não colide com "Caixa de entrada"**, que é o centro de notificações. Antes
+colidia: com o Intake às vezes chamado de "Entrada", os dois recursos disputavam
+a mesma palavra.
+
+Camada de tradução apenas: chaves (`inbox_issue.*`, `sidebar.intake`), código,
+rotas e API seguem com `intake`/`inbox`. O `en` mantém "Intake".
+
+| Conceito (en)           | pt-BR anterior                           | pt-BR canônico                |
+| ----------------------- | ---------------------------------------- | ----------------------------- |
+| Intake (funcionalidade) | Intake · Entrada · entrada · recebimento | **Triagem**                   |
+| Inbox (notificações)    | Caixa de entrada                         | Caixa de entrada (inalterado) |
 
 ## Adendo (12/08/2026) — nomes de estado são dado, não rótulo
 
