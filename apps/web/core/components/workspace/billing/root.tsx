@@ -1,67 +1,46 @@
 /**
  * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * Copyright (c) 2026-present Evolury
  * SPDX-License-Identifier: AGPL-3.0-only
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
+// Evolury (20/08/2026): a comparação de planos saiu.
+//
+// Ela vendia os planos pagos da NUVEM do Plane — Free, One, Pro, Business,
+// Enterprise —, com textos como "without leaving Plane". Numa instância própria
+// nenhum deles existe, e a tela mostrava ao usuário a tabela de preços de outra
+// empresa dentro do produto dele.
+//
+// Não foi só o conteúdo: o chassi (`comparison/base.tsx`, `plan-detail.tsx`,
+// `frequency-toggle.tsx`) importava `TPlanePlans`, `PLANE_PLANS` e
+// `shouldRenderPlanDetail` do próprio `plans.tsx`. Não era uma tabela genérica
+// esperando conteúdo; era A comparação do Plane, repartida em arquivos. A
+// página de planos da Evolury terá outros planos e outro modelo de cobrança, e
+// o chassi seria refeito de qualquer forma.
+//
+// O que fica é o que é verdade aqui: a instância é Community e não tem limite.
+// Reversível pelo git, como os 17 idiomas do ADR 0004 — `git show v1.29.2` traz
+// os arquivos de volta.
+
 import { observer } from "mobx-react";
 // plane imports
-import { DEFAULT_PRODUCT_BILLING_FREQUENCY, SUBSCRIPTION_WITH_BILLING_FREQUENCY } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import type { TBillingFrequency, TProductBillingFrequency } from "@plane/types";
-import { EProductSubscriptionEnum } from "@plane/types";
 // components
 import { SettingsBoxedControlItem } from "@/components/settings/boxed-control-item";
 import { SettingsHeading } from "@/components/settings/heading";
-// local imports
-import { PlansComparison } from "./comparison/root";
 
 export const BillingRoot = observer(function BillingRoot() {
-  const [isCompareAllFeaturesSectionOpen, setIsCompareAllFeaturesSectionOpen] = useState(false);
-  const [productBillingFrequency, setProductBillingFrequency] = useState<TProductBillingFrequency>(
-    DEFAULT_PRODUCT_BILLING_FREQUENCY
-  );
   const { t } = useTranslation();
-
-  /**
-   * Retrieves the billing frequency for a given subscription type
-   * @param {EProductSubscriptionEnum} subscriptionType - Type of subscription to get frequency for
-   * @returns {TBillingFrequency | undefined} - Billing frequency if subscription supports it, undefined otherwise
-   */
-  const getBillingFrequency = (subscriptionType: EProductSubscriptionEnum): TBillingFrequency | undefined =>
-    SUBSCRIPTION_WITH_BILLING_FREQUENCY.includes(subscriptionType)
-      ? productBillingFrequency[subscriptionType]
-      : undefined;
-
-  /**
-   * Updates the billing frequency for a specific subscription type
-   * @param {EProductSubscriptionEnum} subscriptionType - Type of subscription to update
-   * @param {TBillingFrequency} frequency - New billing frequency to set
-   * @returns {void}
-   */
-  const setBillingFrequency = (subscriptionType: EProductSubscriptionEnum, frequency: TBillingFrequency): void =>
-    setProductBillingFrequency({ ...productBillingFrequency, [subscriptionType]: frequency });
 
   return (
     <section className="relative scrollbar-hide size-full overflow-y-auto">
-      <div>
-        <SettingsHeading
-          title={t("workspace_settings.settings.billing_and_plans.heading")}
-          description={t("workspace_settings.settings.billing_and_plans.description")}
-        />
-        <div className="mt-6">
-          <SettingsBoxedControlItem title="Community" description={t("ui.unlimited_everything")} />
-        </div>
-      </div>
-      <div className="mt-10 flex flex-col gap-y-3">
-        <h4 className="text-h6-semibold">{t("ui.all_plans")}</h4>
-        <PlansComparison
-          isCompareAllFeaturesSectionOpen={isCompareAllFeaturesSectionOpen}
-          getBillingFrequency={getBillingFrequency}
-          setBillingFrequency={setBillingFrequency}
-          setIsCompareAllFeaturesSectionOpen={setIsCompareAllFeaturesSectionOpen}
-        />
+      <SettingsHeading
+        title={t("workspace_settings.settings.billing_and_plans.heading")}
+        description={t("workspace_settings.settings.billing_and_plans.description")}
+      />
+      <div className="mt-6">
+        <SettingsBoxedControlItem title={t("ui.community")} description={t("ui.unlimited_everything")} />
       </div>
     </section>
   );

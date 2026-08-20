@@ -72,7 +72,7 @@
       },
       "billing_and_plans": {
         "heading": "Billing & Plans",
-        "description": "Choose your plan, manage subscriptions, and easily upgrade as your needs grow.",
+        "description": "This is a self-hosted Evolury instance. There is no plan to choose and no subscription to manage.",
         "title": "Billing & Plans",
         "current_plan": "Current plan",
         "free_plan": "You are currently using the free plan",
