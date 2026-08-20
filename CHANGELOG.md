@@ -3,6 +3,55 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.31.0] — 2026-08-20
+
+**Minor**: projeto e avatar novos nascem com a identidade da marca, e não com um
+sorteio.
+
+### Na tela
+
+- **Projeto novo não recebe mais uma foto sorteada.** Eram 29 capas e dezenas de
+  emojis, sorteados a cada criação: dois projetos criados no mesmo minuto não
+  tinham nada em comum, e a lista virava um mosaico que ninguém escolheu. Agora a
+  capa é o azul da marca, **NanoBlue `#0C91EB`** (brandbook 1.02, p. 17).
+
+- **O ícone é o mesmo para todos** — um quadro de trabalho, que é o que um
+  projeto é aqui. Pasta remete a arquivo guardado; emoji sorteado, a nada. Ele
+  aparece em **DeepBlue `#013F6E`**, e não em NanoBlue: como fica sobre a capa,
+  num chip translúcido, azul sobre azul desapareceria. É o mesmo par que o
+  logotipo usa.
+
+- **Avatar sem foto passa a ser NanoBlue, em toda a interface.** Havia dois
+  padrões diferentes — um verde-azulado cravado no código e o tom de destaque do
+  tema —, e a mesma pessoa aparecia de cores diferentes conforme a tela que a
+  desenhava. A capa do perfil segue o mesmo azul.
+
+- **Pôr imagem ou trocar o ícone continua possível**, e passa a ser o que sempre
+  deveria ter sido: decisão de quem cria, não do sorteio. "Alterar capa" segue
+  onde estava.
+
+- **Rótulos de gráfico e de análise deixaram de aparecer em inglês.** Eram os que
+  vinham do dado, e não de um texto fixo: a legenda de progresso do ciclo
+  ("Backlog", "Started", "Completed") e a aba de análises do módulo, onde os
+  nomes das seções chegavam da API. Também o "Created on" do cartão de projeto e
+  da lista de páginas, que era montado por concatenação.
+
+### Por dentro
+
+- As cores da marca passam a morar num lugar só, em `packages/constants`, em vez
+  de repetidas em cada componente.
+
+- **Nada de dado existente muda.** A API nunca atribuiu capa nem ícone — os
+  campos nascem vazios no banco, e todo o sorteio estava no formulário. Projeto
+  que já tem capa continua com ela.
+
+- O véu escuro do cartão de projeto agora só aparece quando há foto: ele existe
+  para o nome ficar legível sobre uma imagem, e sobre a cor da marca apenas
+  enlameava o azul.
+
+- **Recados e etiquetas seguem sorteando cor, de propósito**: ali a variedade é a
+  funcionalidade. O que mudou foi a identidade inventada, não a cor com função.
+
 ## [1.30.0] — 2026-08-20
 
 **Minor**: a interface fala português de ponta a ponta, e o **Intake** passa a
