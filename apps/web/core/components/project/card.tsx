@@ -213,7 +213,13 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       >
         <ContextMenu parentRef={projectCardRef} items={MENU_ITEMS} />
         <div className="relative h-[118px] w-full rounded-t">
-          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 to-transparent" />
+          {/* Evolury: o véu escuro existe para o nome ficar legível sobre uma
+              FOTO, que pode ser clara em qualquer ponto. Sobre a cor da marca
+              ele não tem função e só enlameia o azul — o brandbook (p. 18) já
+              garante o contraste de texto branco sobre NanoBlue. */}
+          {project.cover_image_url && (
+            <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 to-transparent" />
+          )}
 
           <CoverImage
             src={project.cover_image_url}
@@ -276,7 +282,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
           <p className="line-clamp-2 text-13 break-words text-tertiary">
             {project.description && project.description.trim() !== ""
               ? project.description
-              : `Created on ${renderFormattedDate(project.created_at)}`}
+              : t("ui.created_on_date", { date: renderFormattedDate(project.created_at) })}
           </p>
           <div className="item-center flex justify-between">
             <div className="flex items-center justify-center gap-2">

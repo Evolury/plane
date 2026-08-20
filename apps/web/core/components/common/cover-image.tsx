@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { NANO_BLUE } from "@plane/constants";
 import { cn } from "@plane/utils";
 // helpers
 import { getCoverImageDisplayURL, DEFAULT_COVER_IMAGE_URL } from "@/helpers/cover-image.helper";
@@ -11,11 +12,22 @@ import { getCoverImageDisplayURL, DEFAULT_COVER_IMAGE_URL } from "@/helpers/cove
 type TCoverImageProps = {
   /** The cover image URL - can be static, uploaded, or external */
   src: string | null | undefined;
+  /**
+   * Evolury: `true` enquanto a entidade ainda está sendo carregada.
+   *
+   * Sem isto não dá para distinguir "ainda não sei" de "não tem capa": os dois
+   * chegavam como `src` vazio, e o componente mostrava esqueleto para ambos —
+   * um projeto sem capa ficava pulsando para sempre.
+   */
+  carregando?: boolean;
   /** Alt text for the image */
   alt?: string;
   /** Additional className for the image or skeleton */
   className?: string;
-  /** Whether to show default image when src is null/undefined. If false, shows loading skeleton */
+  /**
+   * @deprecated Evolury: sem efeito. Capa vazia passou a ser o azul da marca,
+   * e não uma imagem padrão — a prop fica para não quebrar os chamadores.
+   */
   showDefaultWhenEmpty?: boolean;
   /** Custom fallback URL to use instead of DEFAULT_COVER_IMAGE_URL */
   fallbackUrl?: string;
@@ -34,14 +46,21 @@ export function CoverImage(props: TCoverImageProps) {
     src,
     alt = "Cover image",
     className,
+    carregando = false,
     showDefaultWhenEmpty = false,
     fallbackUrl = DEFAULT_COVER_IMAGE_URL,
     ...restProps
   } = props;
 
-  // Show loading skeleton when src is undefined/null and we don't want to show default
-  if (!src && !showDefaultWhenEmpty) {
+  if (carregando) {
     return <div className={cn("animate-pulse bg-layer-2", className)} />;
+  }
+
+  // Evolury: sem capa, o azul da marca — e não uma foto sorteada nem um
+  // esqueleto eterno. É o que faz projeto novo e perfil novo nascerem com a
+  // mesma cara; pôr imagem vira escolha de quem usa (brandbook 1.02, NanoBlue).
+  if (!src) {
+    return <div className={cn(className)} style={{ backgroundColor: NANO_BLUE }} aria-label={alt} role="img" />;
   }
 
   const displayUrl = getCoverImageDisplayURL(src, fallbackUrl);
