@@ -43,7 +43,6 @@ export interface IMyTasksIssues extends IBaseIssuesStore {
   ) => Promise<TIssuesResponse | undefined>;
   updateIssue: (workspaceSlug: string, projectId: string, issueId: string, data: Partial<TIssue>) => Promise<void>;
   archiveIssue: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
-  removeBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   archiveBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<void>;
   bulkUpdateProperties: (workspaceSlug: string, projectId: string, data: TBulkOperationsPayload) => Promise<void>;
   reposicionarPeloCiclo: (
@@ -209,8 +208,8 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
     const grupoAnterior = rootStore.state.getStateById(previousStateId ?? undefined)?.group;
     if (!grupoNovo || grupoNovo === grupoAnterior) return;
 
-    const encerrados = ["completed", "cancelled"];
-    if (!encerrados.includes(grupoNovo) && !encerrados.includes(grupoAnterior ?? "")) return;
+    const encerrados = new Set(["completed", "cancelled"]);
+    if (!encerrados.has(grupoNovo) && !encerrados.has(grupoAnterior ?? "")) return;
 
     const etapas = rootStore.myTasksStore.sortedStages;
     // O botão de reabrir devolve a tarefa ao estado PADRÃO do projeto, e ali

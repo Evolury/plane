@@ -53,15 +53,34 @@ export enum EIssueGroupedAction {
   DELETE = "DELETE",
   REORDER = "REORDER",
 }
+/** Evolury: o que a exclusão em massa devolve (ADR 0018). */
+export type TExclusaoEmMassa = {
+  deleted: number;
+  /** O instante do lote — a chave que o desfazer usa para achar o que devolver. */
+  batch: string;
+};
+
 export interface IBaseIssuesStore {
   // observable
   loader: Record<string, TLoader>;
+  /**
+   * Evolury: a paginação em vigor, para quem precisa REBUSCAR a lista como ela
+   * está — o desfazer da exclusão em massa. Pública na classe desde sempre,
+   * nunca declarada aqui.
+   */
+  paginationOptions: IssuePaginationOptions | undefined;
 
   groupedIssueIds: TGroupedIssues | TSubGroupedIssues | undefined; // object to store Issue Ids based on group or subgroup
   groupedIssueCount: TGroupedIssueCount; // map of groupId/subgroup and issue count of that particular group/subgroup
   issuePaginationData: TIssuePaginationData; // map of groupId/subgroup and pagination Data of that particular group/subgroup
 
   //actions
+  // Evolury: exclusão em massa e o seu desfazer (ADR 0018). A declaração de
+  // `removeBulkIssues` vivia repetida em nove interfaces, sempre como
+  // `Promise<void>` — e o método sempre devolveu a resposta do servidor. Sem o
+  // tipo certo, o instante do lote não chega a quem precisa desfazer.
+  removeBulkIssues: (workspaceSlug: string, projectId: string, issueIds: string[]) => Promise<TExclusaoEmMassa>;
+  restoreBulkIssues: (workspaceSlug: string, projectId: string, batch: string) => Promise<{ restored: number }>;
   // Evolury: `issueUpdate` é público na classe desde sempre, mas nunca foi
   // declarado aqui — quem só tinha a interface na mão não o enxergava. Declarado
   // porque o receptor de eventos do `live` (ADR 0013) o chama com
@@ -274,6 +293,7 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
       removeIssue: action.bound,
       issueArchive: action.bound,
       removeBulkIssues: action.bound,
+      restoreBulkIssues: action.bound,
       bulkArchiveIssues: action.bound,
       bulkUpdateProperties: action.bound,
 
@@ -724,6 +744,20 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
         this.rootIssueStore.issues.removeIssue(issueId);
       });
     });
+    return response;
+  }
+
+  /**
+   * Evolury: desfaz uma exclusão em massa (ADR 0018).
+   *
+   * Não recoloca nada na lista, de propósito: a tarefa volta do servidor com
+   * tudo que caiu junto, e quem chama rebusca a lista logo em seguida. Tentar
+   * reinserir aqui exigiria reproduzir agrupamento, ordenação e filtros ricos
+   * do quadro — a mesma conta que o servidor já faz na busca.
+   */
+  async restoreBulkIssues(workspaceSlug: string, projectId: string, batch: string) {
+    const response = await this.issueService.bulkRestoreIssues(workspaceSlug, projectId, { batch });
+    this.fetchParentStats(workspaceSlug, projectId);
     return response;
   }
 

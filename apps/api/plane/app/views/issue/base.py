@@ -24,6 +24,7 @@ from django.db.models import (
 )
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
 from django.views.decorators.gzip import gzip_page
 
@@ -40,6 +41,7 @@ from plane.app.serializers import (
     IssueSerializer,
     ProjectUserPropertySerializer,
 )
+from plane.bgtasks.exclusao_em_massa_task import registrar_exclusao_em_massa
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.bgtasks.issue_description_version_task import issue_description_version_task
 from plane.bgtasks.recent_visited_task import recent_visited_task
@@ -62,6 +64,12 @@ from plane.db.models import (
     UserRecentVisit,
 )
 # Evolury: backend com propriedade personalizada (ADR 0011)
+from plane.utils.exclusao_em_massa import (
+    TETO_DE_EXCLUSAO_EM_MASSA,
+    marcar_excluidas,
+    restaurar_lote,
+    separar_por_permissao,
+)
 from plane.utils.filters import FiltroComPropriedades, IssueFilterSet
 from plane.utils.global_paginator import paginate
 from plane.utils.grouper import (
@@ -804,30 +812,124 @@ class ProjectUserDisplayPropertyEndpoint(BaseAPIView):
 
 
 class BulkDeleteIssuesEndpoint(BaseAPIView):
-    @allow_permission([ROLE.ADMIN])
+    """Evolury: exclusão em massa que é a MESMA exclusão, em bloco (ADR 0018).
+
+    O que existia aqui marcava `deleted_at` só nas tarefas, e nada mais: sem
+    cascata (a subtarefa ficava viva apontando para um pai excluído), sem
+    histórico, sem aviso de tempo real, e só para administrador — enquanto a
+    exclusão de uma tarefa aceita também quem a criou.
+    """
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def delete(self, request, slug, project_id):
         issue_ids = request.data.get("issue_ids", [])
 
         if not len(issue_ids):
-            return Response({"error": "Issue IDs are required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "ISSUE_IDS_REQUIRED"}, status=status.HTTP_400_BAD_REQUEST)
 
-        issues = Issue.issue_objects.filter(workspace__slug=slug, project_id=project_id, pk__in=issue_ids)
+        if len(issue_ids) > TETO_DE_EXCLUSAO_EM_MASSA:
+            return Response(
+                {"error": "TOO_MANY_ISSUES", "limit": TETO_DE_EXCLUSAO_EM_MASSA},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        total_issues = len(issues)
+        issues = list(Issue.issue_objects.filter(workspace__slug=slug, project_id=project_id, pk__in=issue_ids))
+        if not issues:
+            return Response({"error": "ISSUES_NOT_FOUND"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # First, delete all related cycle issues
-        CycleIssue.objects.filter(issue__in=issues).delete()
+        e_admin = ProjectMember.objects.filter(
+            member=request.user,
+            workspace__slug=slug,
+            project_id=project_id,
+            role=ROLE.ADMIN.value,
+            is_active=True,
+        ).exists()
+        permitidas, negadas = separar_por_permissao(issues, request.user.id, e_admin)
 
-        # Then, delete all related module issues
-        ModuleIssue.objects.filter(issue__in=issues).delete()
+        # Recusa o pedido inteiro, e não a parte proibida: excluir 8 de 10 sem
+        # dizer quais ficaram é pior que não excluir nada.
+        if negadas:
+            return Response(
+                {"error": "NOT_ALLOWED_FOR_SOME", "count": len(negadas)},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        # Finally, delete the issues themselves
-        issues.delete()
+        # O instante é a identidade do lote — é por ele que o desfazer acha o
+        # que devolver, sem coluna nova.
+        momento = timezone.now()
+        ids = [str(issue.id) for issue in permitidas]
+        marcar_excluidas(Issue, ids, momento)
+
+        UserRecentVisit.objects.filter(
+            project_id=project_id, workspace__slug=slug, entity_identifier__in=ids, entity_name="issue"
+        ).delete(soft=False)
+
+        registrar_exclusao_em_massa.delay(
+            issue_ids=ids,
+            project_id=str(project_id),
+            workspace_id=str(permitidas[0].workspace_id),
+            actor_id=str(request.user.id),
+            epoch=int(momento.timestamp()),
+            verbo="deleted",
+        )
 
         return Response(
-            {"message": f"{total_issues} issues were deleted"},
+            {"deleted": len(ids), "batch": momento.isoformat()},
             status=status.HTTP_200_OK,
         )
+
+
+class BulkRestoreIssuesEndpoint(BaseAPIView):
+    """Evolury: desfazer a exclusão em massa (ADR 0018).
+
+    Existe porque a exclusão aqui é suave: `deleted_at` fica marcado e o expurgo
+    definitivo só passa 60 dias depois. O dado está lá o tempo todo — faltava a
+    porta.
+
+    Recebe o INSTANTE do lote, e não ids. Desfazer é desfazer o lote: devolver o
+    pai e deixar as subtarefas excluídas recriaria, na mão, o estado que a
+    cascata existe para não criar.
+    """
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
+    def post(self, request, slug, project_id):
+        momento = parse_datetime(str(request.data.get("batch", "")))
+        if momento is None:
+            return Response({"error": "BATCH_REQUIRED"}, status=status.HTTP_400_BAD_REQUEST)
+
+        issues = list(
+            Issue.all_objects.filter(workspace__slug=slug, project_id=project_id, deleted_at=momento)
+        )
+        if not issues:
+            return Response({"error": "NOTHING_TO_RESTORE"}, status=status.HTTP_400_BAD_REQUEST)
+
+        e_admin = ProjectMember.objects.filter(
+            member=request.user,
+            workspace__slug=slug,
+            project_id=project_id,
+            role=ROLE.ADMIN.value,
+            is_active=True,
+        ).exists()
+        _, negadas = separar_por_permissao(issues, request.user.id, e_admin)
+        if negadas:
+            return Response(
+                {"error": "NOT_ALLOWED_FOR_SOME", "count": len(negadas)},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        restaurar_lote(Issue, momento)
+        ids = [str(issue.id) for issue in issues]
+
+        registrar_exclusao_em_massa.delay(
+            issue_ids=ids,
+            project_id=str(project_id),
+            workspace_id=str(issues[0].workspace_id),
+            actor_id=str(request.user.id),
+            epoch=int(timezone.now().timestamp()),
+            verbo="restored",
+        )
+
+        return Response({"restored": len(ids)}, status=status.HTTP_200_OK)
 
 
 class DeletedIssuesListViewSet(BaseAPIView):

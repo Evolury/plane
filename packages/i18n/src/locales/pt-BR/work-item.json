@@ -294,6 +294,19 @@
         "success": "{count, plural, one {# tarefa concluída} other {# tarefas concluídas}}",
         "error": "Não foi possível concluir todas as tarefas selecionadas."
       }
+    },
+    "bulk_delete": {
+      "button": "Excluir",
+      "title": "{count, plural, one {Excluir # tarefa?} many {Excluir # tarefas?} other {Excluir # tarefas?}}",
+      "description": "As subtarefas e os comentários vão junto. Você poderá desfazer logo em seguida.",
+      "blocked": "{count, plural, one {# tarefa foi criada por outra pessoa e não será excluída} many {# tarefas foram criadas por outras pessoas e não serão excluídas} other {# tarefas foram criadas por outras pessoas e não serão excluídas}}",
+      "confirm": "{count, plural, one {Excluir # tarefa} many {Excluir # tarefas} other {Excluir # tarefas}}",
+      "success": "{count, plural, one {# tarefa excluída} many {# tarefas excluídas} other {# tarefas excluídas}}",
+      "undo": "Desfazer",
+      "undone": "{count, plural, one {# tarefa restaurada} many {# tarefas restauradas} other {# tarefas restauradas}}",
+      "error": "Não foi possível excluir todas as tarefas selecionadas.",
+      "undo_error": "Não foi possível desfazer a exclusão.",
+      "too_many": "Dá para excluir no máximo {limit} tarefas de cada projeto por vez."
     }
   },
   "sub_work_item": {

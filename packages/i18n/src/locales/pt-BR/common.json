@@ -1827,6 +1827,7 @@
     "the_work_item": "a tarefa",
     "created_prefix": "criou",
     "deleted_prefix": "excluiu",
+    "restored_prefix": "restaurou",
     "removed_prefix": "removeu",
     "marked_prefix": "marcou",
     "added_this": "adicionou este",

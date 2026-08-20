@@ -7,6 +7,7 @@ from django.urls import path
 from plane.app.views import (
     BulkCreateIssueLabelsEndpoint,
     BulkDeleteIssuesEndpoint,
+    BulkRestoreIssuesEndpoint,
     SubIssuesEndpoint,
     IssueLinkViewSet,
     IssueAttachmentEndpoint,
@@ -92,6 +93,12 @@ urlpatterns = [
         "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-delete-issues/",
         BulkDeleteIssuesEndpoint.as_view(),
         name="project-issues-bulk",
+    ),
+    # Evolury: desfazer a exclusão em massa (ADR 0018)
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-restore-issues/",
+        BulkRestoreIssuesEndpoint.as_view(),
+        name="project-issues-bulk-restore",
     ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/bulk-archive-issues/",

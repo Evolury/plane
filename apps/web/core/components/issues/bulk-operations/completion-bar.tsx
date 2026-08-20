@@ -4,9 +4,13 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: conclusão em massa (ADR 0009). Ocupa o lugar da faixa de upsell que
-// o Plane mostrava ao selecionar itens — a seleção múltipla já existia inteira
-// no código, só não tinha nenhuma ação disponível nesta edição.
+// Evolury: a barra da seleção múltipla. Ocupa o lugar da faixa de upsell que o
+// Plane mostrava ao selecionar itens — a seleção já existia inteira no código,
+// só não tinha nenhuma ação disponível nesta edição.
+//
+// Duas ações moram aqui: **concluir** (ADR 0009) e **excluir** (ADR 0018). A
+// conta de cada uma é diferente e nenhuma é do componente: concluir ignora o
+// que já está concluído, excluir ignora o que não é de quem pediu.
 //
 // Não há endpoint de operação em massa aqui (`bulk-operation-issues` é da
 // edição paga), então a barra repete a MESMA atualização de estado item a item,
@@ -28,6 +32,8 @@ import { useProjectState } from "@/hooks/store/use-project-state";
 import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useCompletionTargets } from "@/hooks/use-issue-completed";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
+// local
+import { BotaoDeExcluir } from "./excluir";
 
 type Props = {
   className?: string;
@@ -118,6 +124,7 @@ export const CompletionBulkBar = observer(function CompletionBulkBar(props: Prop
           >
             {t("issue.completion.complete")}
           </Button>
+          <BotaoDeExcluir selecionadas={selecionadas} />
         </div>
       </div>
     </div>
