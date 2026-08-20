@@ -92,7 +92,9 @@ export const CreateEstimateModal = observer(function CreateEstimateModal(props: 
         setButtonLoader(true);
         const payload: IEstimateFormData = {
           estimate: {
-            name: ESTIMATE_SYSTEMS[estimateSystem]?.name,
+            // Evolury: o nome gravado sai traduzido — ele aparece na tela de
+            // estimativas do projeto, e "Points" era o que ficava no banco.
+            name: t(ESTIMATE_SYSTEMS[estimateSystem]?.i18n_name ?? ""),
             type: estimateSystem,
             last_used: true,
           },

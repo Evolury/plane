@@ -23,22 +23,22 @@ const sidebarOptions: {
   },
   {
     key: "cycles",
-    label: "Cycles",
+    label: translate("common.cycles"),
     Icon: CycleIcon,
   },
   {
     key: "modules",
-    label: "Modules",
+    label: translate("common.modules"),
     Icon: ModuleIcon,
   },
   {
     key: "views",
-    label: "Views",
+    label: translate("common.views"),
     Icon: ViewsIcon,
   },
   {
     key: "pages",
-    label: "Pages",
+    label: translate("common.pages"),
     Icon: PageIcon,
   },
 ];

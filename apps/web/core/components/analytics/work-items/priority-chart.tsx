@@ -140,15 +140,11 @@ const PriorityChart = observer(function PriorityChart(props: Props) {
   }, [chart_model, group_by, parsedData, resolvedTheme, t, workspaceStates, x_axis, y_axis]);
 
   const yAxisLabel = useMemo(
-    () => ANALYTICS_Y_AXIS_VALUES.find((item) => item.value === props.y_axis)?.label ?? props.y_axis,
-    [props.y_axis]
+    () => t(ANALYTICS_Y_AXIS_VALUES.find((item) => item.value === props.y_axis)?.i18n_label ?? "") || props.y_axis,
+    [props.y_axis, t]
   );
   const xAxisLabel = useMemo(
-    () =>
-      (() => {
-        const o = ANALYTICS_X_AXIS_VALUES.find((item) => item.value === props.x_axis);
-        return o?.i18n_label ? t(o.i18n_label) : (o?.label ?? props.x_axis);
-      })(),
+    () => t(ANALYTICS_X_AXIS_VALUES.find((item) => item.value === props.x_axis)?.i18n_label ?? "") || props.x_axis,
     [props.x_axis, t]
   );
 

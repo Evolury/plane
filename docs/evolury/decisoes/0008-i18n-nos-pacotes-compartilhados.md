@@ -37,6 +37,42 @@ mudos é texto em inglês na cara do usuário.
 Não há risco de ciclo de dependência: `@plane/i18n` depende apenas de
 bibliotecas externas (i18next e React), de nenhum pacote interno.
 
+## Extensão: constante carrega chave, nunca texto (20/08/2026)
+
+A decisão acima trata do texto que nasce dentro de um pacote. A varredura de
+20/08/2026 achou o mesmo defeito num lugar diferente e por um mecanismo
+diferente — e ele era **maior**.
+
+`packages/constants` declara **233** campos `i18n_*`. Em **46** deles o texto em
+inglês vivia ao lado da chave, e num caso o comentário dizia por quê: "`name`
+fica como rótulo cru de referência; a interface exibe `i18n_name`". A interface
+não exibia. Metade dos consumidores lia o campo em inglês, e a tradução — que
+existia, correta, nos dois locales — nunca chegava à tela.
+
+**Constante passa a carregar a chave e só a chave.** Não é limpeza estética: com
+os dois campos, escolher o errado compila e roda, e o defeito só aparece quando
+alguém olha a tela; com um campo só, o compilador recusa. Foram **204** pontos
+corrigidos, e cada consumidor foi apontado pelo `check:types`, não caçado à mão.
+
+É a mesma lição do `contrastNote` registrada abaixo, aplicada a outro formato:
+**o que é opcional não traduz nada sozinho.**
+
+Dois corolários, ambos aprendidos na mesma varredura:
+
+- **Identidade não se compara com rótulo.** `item.name === "Intake"` decidia a
+  espessura de um ícone — traduzir o rótulo teria quebrado a tela sem erro
+  nenhum. Identidade é `key`.
+- **Nome de campo é contrato.** `IBaseLayoutConfig.label` guardava texto em
+  inglês e o consumidor fazia `t(layout.label)`: passava o texto como se fosse
+  chave, e o i18next devolvia o texto inalterado. O nome errado escondeu o
+  defeito. Chave se chama `i18n_*`.
+
+A verificação `literais-traduziveis` nasceu dessa varredura e é o que impede a
+volta: ela falha quando um literal do código bate **letra por letra** com um
+valor do `en`. Prova exata, não heurística — e por isso o workflow deixou de
+filtrar por `packages/i18n/**`, senão nunca rodaria nos PRs que introduzem o
+problema.
+
 ## Consequências
 
 - Texto que nasce dentro de `ui`/`editor`/`propel` deve usar `translate` e ter

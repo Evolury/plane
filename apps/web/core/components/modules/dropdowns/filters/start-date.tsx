@@ -32,7 +32,7 @@ export const FilterStartDate = observer(function FilterStartDate(props: Props) {
   const appliedFiltersCount = appliedFilters?.length ?? 0;
 
   const filteredOptions = DATE_AFTER_FILTER_OPTIONS.filter((d) =>
-    d.name.toLowerCase().includes(searchQuery.toLowerCase())
+    t(d.i18n_name).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const isCustomDateSelected = () => {
@@ -57,7 +57,7 @@ export const FilterStartDate = observer(function FilterStartDate(props: Props) {
         />
       )}
       <FilterHeader
-        title={`Start date${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
+        title={`${t("common.order_by.start_date")}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
         isPreviewEnabled={previewEnabled}
         handleIsPreviewEnabled={() => setPreviewEnabled(!previewEnabled)}
       />
@@ -70,7 +70,7 @@ export const FilterStartDate = observer(function FilterStartDate(props: Props) {
                   key={option.value}
                   isChecked={appliedFilters?.includes(option.value) ? true : false}
                   onClick={() => handleUpdate(option.value)}
-                  title={option.name}
+                  title={t(option.i18n_name)}
                   multiple
                 />
               ))}

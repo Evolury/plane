@@ -16,9 +16,11 @@
 /**
  * Traduz uma mensagem de validação.
  *
- * @plane/utils não depende de @plane/i18n — nenhum pacote compartilhado
- * depende, e isso é deliberado. Quem chama injeta o `t` do app; sem ele, a
- * mensagem em inglês é devolvida, então o comportamento antigo é preservado.
+ * Quem chama injeta o `t` do app; sem ele, a mensagem em inglês é devolvida,
+ * então o comportamento antigo é preservado. A injeção existe porque a
+ * validação roda em contexto sem React — e não porque o pacote seja mudo:
+ * desde o ADR 0008 ele depende de @plane/i18n e usa `translate` onde faz
+ * sentido.
  * Se o `t` devolver a própria chave (i18next faz isso quando ela não existe),
  * o fallback também entra.
  */

@@ -5,6 +5,7 @@
  */
 
 import { observer } from "mobx-react";
+import { useTranslation } from "@plane/i18n";
 // icons
 import { DATE_AFTER_FILTER_OPTIONS } from "@plane/constants";
 import { CloseIcon } from "@plane/propel/icons";
@@ -20,13 +21,14 @@ type Props = {
 
 export const AppliedDateFilters = observer(function AppliedDateFilters(props: Props) {
   const { editable, handleRemove, values } = props;
+  const { t } = useTranslation();
 
   const getDateLabel = (value: string): string => {
     let dateLabel = "";
 
     const dateDetails = DATE_AFTER_FILTER_OPTIONS.find((d) => d.value === value);
 
-    if (dateDetails) dateLabel = dateDetails.name;
+    if (dateDetails) dateLabel = t(dateDetails.i18n_name);
     else {
       const dateParts = value.split(";");
 

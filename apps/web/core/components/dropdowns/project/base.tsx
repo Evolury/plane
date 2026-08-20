@@ -64,7 +64,7 @@ export const ProjectDropdownBase = observer(function ProjectDropdownBase(props: 
     multiple,
     onChange,
     onClose,
-    placeholder = "Project",
+    placeholder,
     placement,
     projectIds,
     renderByDefault = true,

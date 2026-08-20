@@ -6,6 +6,7 @@
 
 // hoc/withDockItems.tsx
 import React from "react";
+import { translate } from "@plane/i18n";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { PlaneNewIcon } from "@plane/propel/icons";
@@ -23,7 +24,7 @@ export function withDockItems<P extends WithDockItemsProps>(WrappedComponent: Re
 
     const dockItems: (AppSidebarItemData & { shouldRender: boolean })[] = [
       {
-        label: "Projects",
+        label: translate("common.projects"),
         icon: <PlaneNewIcon className="size-5" />,
         href: `/${workspaceSlug}/`,
         isActive: isProjectsPath && !isNotificationsPath,

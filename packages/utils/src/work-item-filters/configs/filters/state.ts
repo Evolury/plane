@@ -5,6 +5,7 @@
  */
 
 // plane imports
+import { translate } from "@plane/i18n";
 import { STATE_GROUPS } from "@plane/constants";
 import type { IState, TFilterProperty, TStateGroups, TSupportedOperators } from "@plane/types";
 import { COLLECTION_OPERATOR, EQUALITY_OPERATOR } from "@plane/types";
@@ -32,11 +33,12 @@ export const getStateGroupMultiSelectConfig = (
   params: TCreateStateGroupFilterParams,
   singleValueOperator: TSupportedOperators
 ) =>
-  getMultiSelectConfig<{ key: TStateGroups; label: string }, TStateGroups, TStateGroups>(
+  getMultiSelectConfig<{ key: TStateGroups; i18n_label: string }, TStateGroups, TStateGroups>(
     {
       items: Object.values(STATE_GROUPS),
       getId: (state) => state.key,
-      getLabel: (state) => params.getOptionLabel?.(state.key) ?? state.label,
+      // Evolury: o padrão sai traduzido — ver a nota em `priority.ts`.
+      getLabel: (state) => params.getOptionLabel?.(state.key) ?? translate(state.i18n_label),
       getValue: (state) => state.key,
       getIconData: (state) => state.key,
     },

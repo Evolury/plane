@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from "react";
+import { translate } from "@plane/i18n";
 // plane editor
 import type { TMentionSection, TMentionSuggestion } from "@plane/editor";
 // plane types
@@ -59,7 +60,7 @@ export const useEditorMention = (args: TArgs) => {
             }));
             suggestionSections.push({
               key: "users",
-              title: "Users",
+              title: translate("common.users"),
               items,
             });
           }

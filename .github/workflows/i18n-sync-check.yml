@@ -10,14 +10,29 @@ on:
       - "synchronize"
       - "reopened"
       - "ready_for_review"
+    # Evolury: a lista alcança o código dos componentes, e não só o pacote de
+    # tradução. O check `literais-traduziveis` lê `apps/web`, `packages/ui`,
+    # `packages/propel` e `packages/constants` — filtrado só por
+    # `packages/i18n/**`, ele nunca rodaria justamente nos PRs que introduzem o
+    # problema que ele existe para pegar.
     paths:
       - "packages/i18n/**"
+      - "packages/constants/**"
+      - "packages/ui/src/**"
+      - "packages/propel/src/**"
+      - "apps/web/core/**"
+      - "apps/web/app/**"
       - ".github/workflows/i18n-sync-check.yml"
   push:
     branches:
       - "main"
     paths:
       - "packages/i18n/**"
+      - "packages/constants/**"
+      - "packages/ui/src/**"
+      - "packages/propel/src/**"
+      - "apps/web/core/**"
+      - "apps/web/app/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -55,3 +70,9 @@ jobs:
       # identificador, sem quebrar nada e sem alarme.
       - name: Chaves usadas no código existem no pt-BR
         run: pnpm dlx tsx packages/i18n/scripts/chaves-usadas.ts --ci
+
+      # Evolury: o defeito mais comum não é chave faltando — é chave existente
+      # e não consultada. A tradução está lá, correta, e o componente mostra o
+      # texto em inglês. Nenhum dos dois checks acima enxerga isso.
+      - name: Nenhum literal em inglês com tradução pronta
+        run: pnpm dlx tsx packages/i18n/scripts/literais-traduziveis.ts --ci

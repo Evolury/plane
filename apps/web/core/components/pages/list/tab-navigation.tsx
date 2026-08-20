@@ -5,6 +5,7 @@
  */
 
 import Link from "next/link";
+import { translate } from "@plane/i18n";
 // types
 import type { TPageNavigationTabs } from "@plane/types";
 // helpers
@@ -20,15 +21,15 @@ type TPageTabNavigation = {
 const pageTabs: { key: TPageNavigationTabs; label: string }[] = [
   {
     key: "public",
-    label: "Public",
+    label: translate("public"),
   },
   {
     key: "private",
-    label: "Private",
+    label: translate("private"),
   },
   {
     key: "archived",
-    label: "Archived",
+    label: translate("wiki_collections.predefined.archived"),
   },
 ];
 

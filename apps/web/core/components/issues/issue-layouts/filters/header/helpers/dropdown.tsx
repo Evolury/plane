@@ -29,7 +29,7 @@ export function FiltersDropdown(props: Props) {
     children,
     miniIcon,
     icon,
-    title = "Dropdown",
+    title,
     placement,
     disabled = false,
     tabIndex,

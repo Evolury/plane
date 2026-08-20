@@ -4,6 +4,12 @@
  * See the LICENSE file for details.
  */
 
+// Evolury (20/08/2026): estas listas carregam SÓ a chave de tradução.
+//
+// Antes carregavam também o texto em inglês ao lado da chave, e bastava um
+// consumidor ler o campo errado para a tradução — que existe e está correta —
+// nunca chegar à tela. Com um campo só, escolher o errado não compila.
+
 import type { TStateGroups } from "@plane/types";
 
 export type TDraggableData = {
@@ -14,45 +20,33 @@ export type TDraggableData = {
 export const STATE_GROUPS: {
   [key in TStateGroups]: {
     key: TStateGroups;
-    label: string;
     i18n_label: string;
-    defaultStateName: string;
     color: string;
   };
 } = {
   backlog: {
     key: "backlog",
-    label: "Backlog",
     i18n_label: "workspace_projects.state.backlog",
-    defaultStateName: "Backlog",
     color: "#d9d9d9",
   },
   unstarted: {
     key: "unstarted",
-    label: "Unstarted",
     i18n_label: "workspace_projects.state.unstarted",
-    defaultStateName: "Todo",
     color: "#3f76ff",
   },
   started: {
     key: "started",
-    label: "Started",
     i18n_label: "workspace_projects.state.started",
-    defaultStateName: "In Progress",
     color: "#f59e0b",
   },
   completed: {
     key: "completed",
-    label: "Completed",
     i18n_label: "workspace_projects.state.completed",
-    defaultStateName: "Done",
     color: "#16a34a",
   },
   cancelled: {
     key: "cancelled",
-    label: "Canceled",
     i18n_label: "workspace_projects.state.cancelled",
-    defaultStateName: "Cancelled",
     color: "#dc2626",
   },
 };
@@ -104,25 +98,21 @@ export const STATE_DISTRIBUTION = {
 export const PROGRESS_STATE_GROUPS_DETAILS = [
   {
     key: "completed_issues",
-    title: "Completed",
     i18n_title: "workspace_projects.state.completed",
     color: "#16A34A",
   },
   {
     key: "started_issues",
-    title: "Started",
     i18n_title: "workspace_projects.state.started",
     color: "#F59E0B",
   },
   {
     key: "unstarted_issues",
-    title: "Unstarted",
     i18n_title: "workspace_projects.state.unstarted",
     color: "#3A3A3A",
   },
   {
     key: "backlog_issues",
-    title: "Backlog",
     i18n_title: "workspace_projects.state.backlog",
     color: "#A3A3A3",
   },

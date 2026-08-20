@@ -108,7 +108,8 @@
         "choose_estimate_system": "Choose an estimate system",
         "enter_estimate_point": "Enter estimate",
         "step": "Step {step} of {total}",
-        "label": "Create estimate"
+        "label": "Create estimate",
+        "add_your_own": "Add your own {system} from scratch."
       },
       "toasts": {
         "created": {

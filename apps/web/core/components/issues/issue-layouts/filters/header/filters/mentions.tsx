@@ -60,7 +60,7 @@ export const FilterMentions = observer(function FilterMentions(props: Props) {
   return (
     <>
       <FilterHeader
-        title={`Mention${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
+        title={`${t("ui.filter_mention")}${appliedFiltersCount > 0 ? ` (${appliedFiltersCount})` : ""}`}
         isPreviewEnabled={previewEnabled}
         handleIsPreviewEnabled={() => setPreviewEnabled(!previewEnabled)}
       />

@@ -63,7 +63,10 @@ export type TBaseLayoutType = "list" | "kanban" | "gantt";
 export interface IBaseLayoutConfig {
   key: TBaseLayoutType;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  label: string;
+  /** Evolury: a CHAVE de tradução. O campo se chamava `label` e o consumidor
+   *  fazia `t(layout.label)` — passando o texto em inglês como se fosse chave,
+   *  o que o i18next devolve inalterado. O nome errado escondia o defeito. */
+  i18n_label: string;
 }
 
 // Base Layout Props

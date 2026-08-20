@@ -19,7 +19,7 @@ type Props = {
   value: ChartYAxisMetric;
   onChange: (val: ChartYAxisMetric | null) => void;
   hiddenOptions?: ChartYAxisMetric[];
-  options: { value: ChartYAxisMetric; label: string }[];
+  options: { value: ChartYAxisMetric; i18n_label: string }[];
 };
 
 export const SelectYAxis = observer(function SelectYAxis({ value, onChange, hiddenOptions, options }: Props) {
@@ -51,7 +51,7 @@ export const SelectYAxis = observer(function SelectYAxis({ value, onChange, hidd
       label={
         <div className="flex items-center gap-2">
           <ProjectIcon className="h-3 w-3" />
-          <span>{options.find((v) => v.value === value)?.label ?? t("ui.add_metric")}</span>
+          <span>{t(options.find((v) => v.value === value)?.i18n_label ?? "ui.add_metric")}</span>
         </div>
       }
       onChange={onChange}
@@ -62,7 +62,7 @@ export const SelectYAxis = observer(function SelectYAxis({ value, onChange, hidd
         return (
           isEstimateEnabled(item.value) && (
             <CustomSelect.Option key={item.value} value={item.value}>
-              {item.label}
+              {t(item.i18n_label)}
             </CustomSelect.Option>
           )
         );

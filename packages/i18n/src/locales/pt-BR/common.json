@@ -1709,7 +1709,27 @@
     "welcome_tour_description": "Que bom ter você aqui. Agora você pode gerenciar seus projetos com facilidade — comece criando um projeto.",
     "welcome_to_product": "Boas-vindas ao {product}",
     "delete_state_confirm_before": "Tem certeza de que quer excluir ",
-    "delete_state_confirm_after": "? Tudo o que estiver associado será removido permanentemente, e esta ação não pode ser desfeita."
+    "delete_state_confirm_after": "? Tudo o que estiver associado será removido permanentemente, e esta ação não pode ser desfeita.",
+    "axis_priority": "Prioridade",
+    "axis_label": "Etiqueta",
+    "axis_assignee": "Responsável",
+    "axis_estimate_point": "Ponto de estimativa",
+    "axis_cycle": "Ciclo",
+    "axis_module": "Módulo",
+    "axis_completed_date": "Data de conclusão",
+    "axis_due_date": "Data de vencimento",
+    "axis_start_date": "Data de início",
+    "axis_estimate": "Estimativa",
+    "axis_epic": "Epic",
+    "duration_last_3_months": "Últimos 3 meses",
+    "duration": "Período",
+    "active_cycles_compare_title": "Compare os burndowns.",
+    "active_cycles_critical_title": "Veja de relance o que decide o ciclo.",
+    "active_cycles_critical_text": "Espie as tarefas de prioridade alta de cada ciclo em relação ao vencimento. Veja todas as de um ciclo em um clique.",
+    "active_cycles_zoom_title": "Foque nos ciclos que pedem atenção.",
+    "filter_access": "Acesso",
+    "filter_mention": "Menção",
+    "filter_cycle_status": "Situação do ciclo"
   },
   "activity_log": {
     "prep_in": " em ",
@@ -1851,7 +1871,9 @@
     "today": "Hoje",
     "yesterday": "Ontem",
     "last_7_days": "Últimos 7 dias",
-    "last_30_days": "Últimos 30 dias"
+    "last_30_days": "Últimos 30 dias",
+    "after": "Depois de",
+    "before": "Antes de"
   },
   "my_tasks": {
     "stages": {

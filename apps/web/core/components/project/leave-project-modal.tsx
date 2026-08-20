@@ -118,7 +118,9 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
 
         <div className="text-secondary">
           <p className="text-13 break-words">
-            Enter the project name <span className="font-medium text-primary">{project?.name}</span> to continue:
+            {t("project_settings.general.delete_project.enter_name.prefix")}{" "}
+            <span className="font-medium text-primary">{project?.name}</span>{" "}
+            {t("project_settings.general.delete_project.enter_name.suffix")}
           </p>
           <Controller
             control={control}

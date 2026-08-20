@@ -5,6 +5,7 @@
  */
 
 import React, { useRef, useState } from "react";
+import { useTranslation } from "@plane/i18n";
 import { observer } from "mobx-react";
 import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
@@ -62,7 +63,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
     maxDate,
     onChange,
     onClose,
-    placeholder = "Date",
+    placeholder,
     placement,
     showTooltip = false,
     tabIndex,
@@ -71,6 +72,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
     renderByDefault = true,
     labelClassName = "",
   } = props;
+  const { t } = useTranslation();
   // states
   const [isOpen, setIsOpen] = useState(defaultOpen);
   // refs
@@ -138,8 +140,8 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
       <DropdownButton
         className={buttonClassName}
         isActive={isOpen}
-        tooltipHeading={placeholder}
-        tooltipContent={value ? renderFormattedDate(value, formatToken) : "None"}
+        tooltipHeading={placeholder ?? t("date")}
+        tooltipContent={value ? renderFormattedDate(value, formatToken) : t("common.none")}
         showTooltip={showTooltip}
         variant={buttonVariant}
         renderToolTipByDefault={renderByDefault}

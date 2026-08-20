@@ -31,7 +31,7 @@ const PROJECT_FEATURES_LIST = {
   cycles: {
     key: "cycles",
     property: "cycle_view",
-    title: "Cycles",
+    title: translate("common.cycles"),
     description: translate("ui.cycles_description"),
     icon: <CycleIcon className="h-5 w-5 flex-shrink-0 rotate-180 text-tertiary" />,
     isPro: false,
@@ -40,7 +40,7 @@ const PROJECT_FEATURES_LIST = {
   modules: {
     key: "modules",
     property: "module_view",
-    title: "Modules",
+    title: translate("common.modules"),
     description: translate("ui.modules_description"),
     icon: <ModuleIcon width={20} height={20} className="flex-shrink-0 text-tertiary" />,
     isPro: false,
@@ -49,7 +49,7 @@ const PROJECT_FEATURES_LIST = {
   views: {
     key: "views",
     property: "issue_views_view",
-    title: "Views",
+    title: translate("common.views"),
     description: translate("ui.views_description"),
     icon: <ViewsIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,
@@ -58,7 +58,7 @@ const PROJECT_FEATURES_LIST = {
   pages: {
     key: "pages",
     property: "page_view",
-    title: "Pages",
+    title: translate("common.pages"),
     description: translate("ui.write_anything"),
     icon: <PageIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,
@@ -67,7 +67,7 @@ const PROJECT_FEATURES_LIST = {
   inbox: {
     key: "intake",
     property: "inbox_view",
-    title: "Intake",
+    title: translate("intake"),
     description: translate("ui.intake_description"),
     icon: <IntakeIcon className="h-5 w-5 flex-shrink-0 text-tertiary" />,
     isPro: false,

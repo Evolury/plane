@@ -83,7 +83,7 @@ export const ModuleEmptyState = observer(function ModuleEmptyState() {
             description={t("common_empty_state.search.description")}
             actions={[
               {
-                label: "Clear filters",
+                label: t("sub_work_item.empty_state.list_filters.action"),
                 onClick: moduleWorkItemFilter?.clearFilters,
                 disabled: !canPerformEmptyStateActions || !moduleWorkItemFilter,
                 variant: "secondary",

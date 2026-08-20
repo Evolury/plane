@@ -5,6 +5,7 @@
  */
 
 import { Eye, EyeClosed } from "lucide-react";
+import { translate } from "@plane/i18n";
 import { useState } from "react";
 import { Tooltip } from "@plane/propel/tooltip";
 import { cn } from "@plane/utils";
@@ -27,7 +28,7 @@ export function PasswordInput({
   id,
   value,
   onChange,
-  placeholder = "Enter your password",
+  placeholder = translate("ui.enter_your_password"),
   className,
   showToggle = true,
   error = false,

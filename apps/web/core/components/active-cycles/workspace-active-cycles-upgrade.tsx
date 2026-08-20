@@ -41,20 +41,19 @@ export const WORKSPACE_ACTIVE_CYCLES_DETAILS = [
   },
   {
     key: "compare_burndowns",
-    title: "Compare burndowns.",
+    title: translate("ui.active_cycles_compare_title"),
     description: translate("ui.active_cycles_monitor"),
     icon: BarChart4,
   },
   {
     key: "quickly_see_make_or_break_issues",
-    title: "Quickly see make-or-break work items. ",
-    description:
-      "Preview high-priority work items for each cycle against due dates. See all of them per cycle in one click.",
+    title: translate("ui.active_cycles_critical_title"),
+    description: translate("ui.active_cycles_critical_text"),
     icon: AlertOctagon,
   },
   {
     key: "zoom_into_cycles_that_need_attention",
-    title: "Zoom into cycles that need attention. ",
+    title: translate("ui.active_cycles_zoom_title"),
     description: translate("ui.active_cycles_investigate"),
     icon: SearchIcon,
   },

@@ -29,7 +29,7 @@ export const FilterDueDate = observer(function FilterDueDate(props: Props) {
   const appliedFiltersCount = appliedFilters?.length ?? 0;
 
   const filteredOptions = DATE_AFTER_FILTER_OPTIONS.filter((d) =>
-    d.name.toLowerCase().includes(searchQuery.toLowerCase())
+    t(d.i18n_name).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const isCustomDateSelected = () => {
@@ -67,7 +67,7 @@ export const FilterDueDate = observer(function FilterDueDate(props: Props) {
                   key={option.value}
                   isChecked={appliedFilters?.includes(option.value) ? true : false}
                   onClick={() => handleUpdate(option.value)}
-                  title={option.name}
+                  title={t(option.i18n_name)}
                   multiple
                 />
               ))}

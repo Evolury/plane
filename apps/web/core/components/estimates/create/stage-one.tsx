@@ -84,8 +84,9 @@ export function EstimateCreateStageOne(props: TEstimateCreateStageOne) {
             >
               <p className="text-14 font-medium">{t("project_settings.estimates.create.custom")}</p>
               <p className="text-11 text-tertiary">
-                {/* TODO: Translate here */}
-                Add your own <span className="lowercase">{currentEstimateSystem.name}</span> from scratch.
+                {t("project_settings.estimates.create.add_your_own", {
+                  system: t(currentEstimateSystem.i18n_name).toLowerCase(),
+                })}
               </p>
             </button>
           </div>
@@ -102,7 +103,7 @@ export function EstimateCreateStageOne(props: TEstimateCreateStageOne) {
                     className="space-y-1 rounded-md border border-subtle p-3 py-2.5 text-left hover:bg-surface-2"
                     onClick={() => handleEstimatePoints(name)}
                   >
-                    <p className="text-14 font-medium">{currentEstimateSystem.templates[name]?.title}</p>
+                    <p className="text-14 font-medium">{t(currentEstimateSystem.templates[name]?.i18n_title ?? "")}</p>
                     <p className="text-11 text-tertiary">
                       {currentEstimateSystem.templates[name]?.values
                         ?.map((template) =>

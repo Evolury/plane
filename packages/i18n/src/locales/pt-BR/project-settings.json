@@ -108,7 +108,8 @@
         "choose_estimate_system": "Escolher um sistema de estimativa",
         "enter_estimate_point": "Inserir estimativa",
         "step": "Passo {step} de {total}",
-        "label": "Criar estimativa"
+        "label": "Criar estimativa",
+        "add_your_own": "Adicione seus próprios {system} do zero."
       },
       "toasts": {
         "created": {

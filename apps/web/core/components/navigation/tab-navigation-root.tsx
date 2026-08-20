@@ -31,7 +31,10 @@ import { useNavigationItems } from "./use-navigation-items";
 
 // Local type definition for navigation items with app-specific fields
 export type TNavigationItem = {
-  name: string;
+  /** Evolury: sem `name` em inglês. O rótulo é `i18n_key`, e a identidade é
+   *  `key` — com os dois campos, a identidade acabava sendo comparada com o
+   *  texto ("item.name === 'Intake'"), que é o jeito mais silencioso de
+   *  quebrar uma tela ao traduzi-la. */
   href: string;
   icon: React.ElementType;
   access: EUserPermissions[] | EUserProjectRoles[];

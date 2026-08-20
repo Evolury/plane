@@ -18,8 +18,21 @@ mudança tem número (tamanho de imagem, tempo de query, contagem de strings),
 inclua a medição.
 
 **PR.** Base sempre `main`, seguindo o [template](.github/pull_request_template.md).
-Os checks que rodam: lint e build (api e web apps), tipos, sync de i18n quando
-`packages/i18n/**` for tocado, copyright e CodeQL.
+Os checks que rodam: lint e build (api e web apps), tipos, sync de i18n,
+migrações quando o modelo mudar, copyright e CodeQL.
+
+Os de i18n são três, e cada um pega o que os outros não veem:
+
+| Check            | O que pega                                                                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `check:sync`     | chave que existe num idioma e falta no outro                                                                                             |
+| `check:chaves`   | chave que o código pede e não existe em lugar nenhum — na tela ela aparece como o próprio identificador                                  |
+| `check:literais` | **texto em inglês no código que já tem tradução pronta** — o defeito mais comum, e o único que nenhuma comparação entre arquivos enxerga |
+
+Para deixar um texto em inglês de propósito — nome próprio, formato de papel,
+termo técnico —, acrescente-o à lista comentada em
+`packages/i18n/scripts/literais-traduziveis.ts`. A lista é curta por regra:
+exceção sem justificativa é onde o problema se esconde.
 
 **Merge.** Squash, um commit por PR. As mensagens dos commits da branch viram o
 corpo da mensagem final.
@@ -105,6 +118,14 @@ That’s it! You’re all set to begin coding. Remember to refresh your browser 
   `pnpm fix` corrige o que é automático.
 - Texto visível ao usuário nunca é escrito direto no componente: vai para o
   i18n, seguindo o guia de tradução abaixo.
+- **Constante carrega chave, nunca texto.** Um campo `label`/`title`/`name` em
+  inglês ao lado de um `i18n_*` é a forma mais comum de o inglês vazar para a
+  tela: o texto existe, a tradução existe, e algum consumidor lê o campo
+  errado — sem erro de compilação e sem alarme em teste. Guarde só o
+  `i18n_*` ([ADR 0008](docs/evolury/decisoes/0008-i18n-nos-pacotes-compartilhados.md)).
+- **Identidade é `key`, nunca o rótulo.** Comparar com o texto
+  (`item.name === "Intake"`) faz a tela quebrar em silêncio no dia em que
+  alguém a traduzir.
 - Ao alterar arquivo herdado do upstream, marque a divergência com um comentário
   começando por `Evolury:` explicando o motivo. É o que torna a mudança
   reconhecível anos depois, quando ninguém lembra do contexto.

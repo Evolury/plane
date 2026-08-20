@@ -135,7 +135,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
     {
       key: "join",
       action: () => setJoinProjectModal(true),
-      title: "Join",
+      title: t("common.join"),
       icon: UserPlus,
       shouldRender: !isMemberOfProject && !isArchived,
     },
@@ -156,7 +156,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
     {
       key: "restore",
       action: () => setRestoreProject(true),
-      title: "Restore",
+      title: t("restore"),
       icon: ArchiveRestoreIcon,
       shouldRender: isArchived && hasAdminRole,
     },

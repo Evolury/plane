@@ -62,7 +62,7 @@ const TOUR_STEPS: {
   },
   {
     key: "views",
-    title: "Views",
+    title: translate("common.views"),
     // Evolury: descrição vira chave i18n (é resolvida com t() na renderização)
     description: "ui.views_description_long",
     image: ViewsTour,
