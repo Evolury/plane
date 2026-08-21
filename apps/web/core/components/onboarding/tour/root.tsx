@@ -100,7 +100,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
             </div>
             <div className="flex flex-col overflow-y-auto p-6">
               <h3 className="font-semibold sm:text-18">
-                {t("ui.welcome_to_product", { product: "Evotask" })}, {currentUser?.first_name} {currentUser?.last_name}
+                {t("ui.welcome_to_product", { product: "QooWork" })}, {currentUser?.first_name} {currentUser?.last_name}
               </h3>
               <p className="mt-3 text-13 text-secondary">{t("ui.welcome_tour_description")}</p>
               <div className="flex h-full items-end">

@@ -1,6 +1,6 @@
 # ADR 0017 — A capa é cor; a imagem é escolha
 
-- **Status:** Aceito (20/08/2026)
+- **Status:** Substituído por [ADR 0020](0020-qoowork-nome-e-identidade.md) (20/08/2026)
 - **Relacionado:** [ADR 0004](0004-idioma-unico-pt-br.md) (idioma único), [ADR 0008](0008-i18n-nos-pacotes-compartilhados.md) (constante carrega chave, nunca texto)
 
 ## Contexto

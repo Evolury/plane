@@ -6,6 +6,14 @@
 
 import { useTranslation } from "@plane/i18n";
 
+// QooWork: apontavam para os documentos legais do Plane — a tela de entrada
+// dizia à pessoa que ela concorda com os termos de OUTRA empresa. As páginas
+// precisam existir no domínio antes da produção real (ADR 0020).
+const LEGAL_LINKS = {
+  termsOfService: "https://qoowork.com.br/termos",
+  privacyPolicy: "https://qoowork.com.br/privacidade",
+} as const;
+
 type Props = {
   isSignUp?: boolean;
 };
@@ -16,13 +24,13 @@ export function TermsAndConditions(props: Props) {
   return (
     <span className="flex items-center justify-center py-6">
       <p className="text-center text-13 whitespace-pre-line text-secondary">
-        {isSignUp ? t("ui.by_creating_an_account") : t("ui.by_signing_in")}, you agree to our{" \n"}
-        <a href="https://plane.so/legals/terms-and-conditions" target="_blank" rel="noopener noreferrer">
+        {`${isSignUp ? t("ui.by_creating_an_account") : t("ui.by_signing_in")}${t("ui.terms_agreement")}`}
+        <a href={LEGAL_LINKS.termsOfService} target="_blank" rel="noopener noreferrer">
           <span className="text-13 font-medium underline hover:cursor-pointer">{t("ui.terms_of_service")}</span>
         </a>{" "}
-        and{" "}
-        <a href="https://plane.so/legals/privacy-policy" target="_blank" rel="noopener noreferrer">
-          <span className="text-13 font-medium underline hover:cursor-pointer">Privacy Policy</span>
+        {t("ui.and")}{" "}
+        <a href={LEGAL_LINKS.privacyPolicy} target="_blank" rel="noopener noreferrer">
+          <span className="text-13 font-medium underline hover:cursor-pointer">{t("ui.privacy_policy")}</span>
         </a>
         {"."}
       </p>

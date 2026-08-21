@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { NANO_BLUE, ehCorDeCapa } from "@plane/constants";
+import { COR_DE_CAPA_PADRAO, ehCorDeCapa } from "@plane/constants";
 import { cn } from "@plane/utils";
 // helpers
 import { getCoverImageDisplayURL, DEFAULT_COVER_IMAGE_URL } from "@/helpers/cover-image.helper";
@@ -56,11 +56,13 @@ export function CoverImage(props: TCoverImageProps) {
     return <div className={cn("animate-pulse bg-layer-2", className)} />;
   }
 
-  // Evolury: sem capa, o azul da marca — e não uma foto sorteada nem um
-  // esqueleto eterno. É o que faz projeto novo e perfil novo nascerem com a
-  // mesma cara; pôr imagem vira escolha de quem usa (brandbook 1.02, NanoBlue).
+  // QooWork: sem capa, o preto da marca — e não uma foto sorteada nem um
+  // esqueleto eterno. Preto, e não a cor de assinatura: capa é superfície
+  // grande, e o manual reserva o Iris para no máximo 3% da tela (ADR 0020).
   if (!src) {
-    return <div className={cn(className)} style={{ backgroundColor: NANO_BLUE }} aria-label={alt} role="img" />;
+    return (
+      <div className={cn(className)} style={{ backgroundColor: COR_DE_CAPA_PADRAO }} aria-label={alt} role="img" />
+    );
   }
 
   // Evolury: capa escolhida como cor. Vem no mesmo `src` da imagem — é um

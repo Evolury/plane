@@ -4,65 +4,95 @@
  * See the LICENSE file for details.
  */
 
-// Evolury: as cores da marca, como o brandbook 1.02 as define (página 17).
+// QooWork: as cores da marca, como o manual as define (ADR 0020).
 //
-// Um lugar só. Antes, o azul da identidade não existia no código: capa de
-// projeto era uma foto sorteada entre 29, o ícone era um emoji sorteado entre
-// dezenas, e o avatar caía num verde-azulado cravado (#028375) que não vem de
-// lugar nenhum. Cada criação inventava uma aparência, e o resultado era ruído.
+// Um lugar só, e substitui o azul da Evolury que vigorou até a 1.34: a
+// plataforma passou a se chamar QooWork, com identidade própria.
 //
-// Estas constantes são para o que a PLATAFORMA desenha por padrão. O tema tem
-// os tokens dele (`--brand-*`), que hoje partem de um azul diferente (#006399)
-// — a divergência entre o azul do produto e o azul da marca está registrada e
-// é decisão à parte, maior que esta.
+// **A regra que manda é de proporção, não de matiz**: "preto e branco primeiro;
+// Iris depois. A cor de assinatura ocupa no máximo 3% da superfície — sinal de
+// ação e importância, nunca preenchimento." É por isso que a capa de um projeto
+// novo é PRETA e não Iris: capa é superfície grande, e pintá-la com a cor de
+// assinatura seria justamente o preenchimento que o manual proíbe.
+//
+// O Iris mora onde a ação mora — botão primário, estado ativo, progresso —, e
+// isso não é decidido aqui: é a rampa `--brand-*` do tema, agora gerada em
+// torno dele.
 
-/** #0C91EB — o azul da marca. Fundo de capa e de avatar sem imagem. */
-export const NANO_BLUE = "#0C91EB";
+/** #18181B — base, texto e fundos profundos. */
+export const QOO_BLACK = "#18181B";
 
-/** #013F6E — o azul escuro. Contrasta sobre a capa e sobre fundo claro. */
-export const DEEP_BLUE = "#013F6E";
+/** #27272A — superfícies e divisores no escuro. */
+export const GRAPHITE = "#27272A";
 
-/** #F6FAFF — o branco azulado do brandbook. */
-export const WHITE_BLUE = "#F6FAFF";
+/** #71717A — texto secundário e apoio. Também o estado "bloqueado". */
+export const GRAY = "#71717A";
+
+/** #E4E4E7 — bordas e estados inativos. */
+export const MIST = "#E4E4E7";
+
+/** #FAFAFA — fundo claro e espaço negativo. */
+export const CLOUD = "#FAFAFA";
+
+/** #625BF6 — a assinatura. Ação, prioridade, progresso; no máximo 3% da tela. */
+export const QOO_IRIS = "#625BF6";
+
+/**
+ * As cores de estado do manual. Sinal, nunca decoração: aparecem em ponto,
+ * etiqueta ou barra de progresso — jamais como fundo de um bloco inteiro.
+ */
+export const CORES_DE_ESTADO = {
+  em_fluxo: QOO_IRIS,
+  concluido: "#0EA06E",
+  atencao: "#D98A16",
+  erro: "#DC4438",
+  bloqueado: GRAY,
+} as const;
+
+/** A capa de quem ainda não escolheu uma. Preto, e não Iris — ver a regra dos 3%. */
+export const COR_DE_CAPA_PADRAO = QOO_BLACK;
+
+/**
+ * O fundo do avatar de quem não tem foto, e a cor da inicial em cima dele.
+ *
+ * Mist com a inicial preta é o que o próprio manual desenha no produto (1d), e
+ * é o que sobrevive à regra dos 3%: uma tela de equipe com trinta pessoas seria
+ * trinta manchas Iris.
+ */
+export const AVATAR_SEM_FOTO = { fundo: MIST, texto: QOO_BLACK } as const;
 
 /**
  * O ícone que um projeto novo recebe.
  *
- * `view_kanban` porque é o que um projeto É aqui — um quadro de trabalho. Pasta
- * remete a arquivo guardado, e emoji sorteado remete a nada.
+ * `view_kanban` porque é o que um projeto É aqui — um quadro de trabalho.
  *
- * A cor é DeepBlue, e não NanoBlue: o ícone aparece SOBRE a capa (num chip
- * translúcido) e também na barra lateral clara. NanoBlue sobre NanoBlue
- * desapareceria. É o mesmo par que o logotipo usa.
+ * Preto, e não Iris: o ícone aparece numa placa clara sobre a capa, e medido ali
+ * o Iris dá 2,98:1 contra os 10,9:1 do preto. Abaixo de 3:1 um ícone deixa de
+ * ser legível para quem enxerga pouco.
  */
-export const ICONE_PADRAO_DE_PROJETO = { name: "view_kanban", color: DEEP_BLUE } as const;
+export const ICONE_PADRAO_DE_PROJETO = { name: "view_kanban", color: QOO_BLACK } as const;
 
 /**
- * As cores que a capa pode ter, quando quem usa escolhe uma cor em vez de uma
- * imagem.
+ * As cores que a capa pode receber quando quem usa escolhe uma.
  *
- * Todas foram medidas contra texto branco: as doze passam de 5:1, exceto as
- * duas da marca, que entram por serem a identidade — NanoBlue fica em 3,35:1, e
- * é por isso que o nome sobre a capa continua com o véu escuro, em vez de
- * depender da cor crua.
+ * Todas saem do manual — os cinco neutros, a assinatura e as quatro de estado.
+ * Nenhuma cor de fora: uma capa lilás-neon num produto que se define por "preto
+ * e branco primeiro" é a primeira rachadura da identidade.
  *
- * Só o tom, e nunca o nome, mora aqui: o rótulo vem da chave (ADR 0008).
+ * Só o tom mora aqui, nunca o nome: o rótulo vem da chave (ADR 0008).
  */
 export type TCorDeCapa = { hex: string; i18n_nome: string };
 
 export const CORES_DE_CAPA: readonly TCorDeCapa[] = [
-  { hex: NANO_BLUE, i18n_nome: "colors.nano_blue" },
-  { hex: DEEP_BLUE, i18n_nome: "colors.deep_blue" },
-  { hex: "#1D4ED8", i18n_nome: "colors.blue" },
-  { hex: "#4338CA", i18n_nome: "colors.indigo" },
-  { hex: "#6D28D9", i18n_nome: "colors.purple" },
-  { hex: "#BE185D", i18n_nome: "colors.pink" },
-  { hex: "#B91C1C", i18n_nome: "colors.red" },
-  { hex: "#C2410C", i18n_nome: "colors.orange" },
-  { hex: "#B45309", i18n_nome: "colors.amber" },
-  { hex: "#166534", i18n_nome: "colors.green" },
-  { hex: "#0F5257", i18n_nome: "colors.teal" },
-  { hex: "#1F2937", i18n_nome: "colors.graphite" },
+  { hex: QOO_BLACK, i18n_nome: "colors.qoo_black" },
+  { hex: GRAPHITE, i18n_nome: "colors.graphite" },
+  { hex: GRAY, i18n_nome: "colors.gray" },
+  { hex: MIST, i18n_nome: "colors.mist" },
+  { hex: CLOUD, i18n_nome: "colors.cloud" },
+  { hex: QOO_IRIS, i18n_nome: "colors.qoo_iris" },
+  { hex: CORES_DE_ESTADO.concluido, i18n_nome: "colors.green" },
+  { hex: CORES_DE_ESTADO.atencao, i18n_nome: "colors.amber" },
+  { hex: CORES_DE_ESTADO.erro, i18n_nome: "colors.red" },
 ] as const;
 
 /**

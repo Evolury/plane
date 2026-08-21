@@ -367,7 +367,7 @@
         },
         "confirmation": {
           "title": "Uma vez ativados, os Tipos de Tarefa não podem ser desativados.",
-          "description": "A Tarefa do Evotask se tornará o tipo de tarefa padrão para este projeto e aparecerá com seu ícone e plano de fundo neste projeto.",
+          "description": "A Tarefa do QooWork se tornará o tipo de tarefa padrão para este projeto e aparecerá com seu ícone e plano de fundo neste projeto.",
           "button": {
             "default": "Ativar",
             "loading": "Configurando"

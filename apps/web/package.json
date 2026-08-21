@@ -23,6 +23,7 @@
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "catalog:",
     "@bprogress/core": "catalog:",
     "@fontsource-variable/inter": "catalog:",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
     "@fontsource/ibm-plex-mono": "catalog:",
     "@fontsource/material-symbols-rounded": "catalog:",
     "@headlessui/react": "catalog:",

@@ -77,7 +77,7 @@ const IGNORAR = [
  * vira o lugar onde o problema se esconde.
  */
 const NOMES_PROPRIOS = new Set([
-  "Evotask", // o produto
+  "QooWork", // o produto
   "Fibonacci", // o matemático — o pt-BR também diz "Fibonacci"
   "Linear", // idem: a sequência linear se chama assim nos dois idiomas
   "T-Shirt Sizes", // a técnica, conhecida por este nome

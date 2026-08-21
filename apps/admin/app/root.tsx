@@ -22,7 +22,7 @@ import { translate } from "@plane/i18n";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
 
-const APP_TITLE = "Evotask | Simple, extensible, open-source project management tool.";
+const APP_TITLE = "QooWork | Simple, extensible, open-source project management tool.";
 const APP_DESCRIPTION = translate("instance_admin.open_source_project_management_tool_to_manage_wo");
 
 export const links: LinksFunction = () => [

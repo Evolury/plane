@@ -3,7 +3,7 @@
     "label": "Configurações do espaço de trabalho",
     "page_label": "{workspace} - Configurações gerais",
     "key_created": "Chave criada",
-    "copy_key": "Copie e salve esta chave secreta no Páginas do Evotask. Você não pode ver esta chave depois de clicar em Fechar. Um arquivo CSV contendo a chave foi baixado.",
+    "copy_key": "Copie e salve esta chave secreta no Páginas do QooWork. Você não pode ver esta chave depois de clicar em Fechar. Um arquivo CSV contendo a chave foi baixado.",
     "token_copied": "Token copiado para a área de transferência.",
     "settings": {
       "general": {
@@ -72,7 +72,7 @@
       },
       "billing_and_plans": {
         "heading": "Faturamento e planos",
-        "description": "Esta é uma instância própria da Evolury. Não há plano a escolher nem assinatura a gerenciar.",
+        "description": "Esta é uma instância própria da QooWork. Não há plano a escolher nem assinatura a gerenciar.",
         "title": "Faturamento e planos",
         "current_plan": "Plano atual",
         "free_plan": "Você está usando o plano gratuito atualmente",
@@ -171,7 +171,7 @@
         "generating": "Gerando",
         "delete": {
           "title": "Excluir token de API",
-          "description": "Qualquer aplicativo que use este token não terá mais acesso aos dados do Evotask. Esta ação não pode ser desfeita.",
+          "description": "Qualquer aplicativo que use este token não terá mais acesso aos dados do QooWork. Esta ação não pode ser desfeita.",
           "success": {
             "title": "Sucesso!",
             "message": "O token de API foi excluído com sucesso"
@@ -186,7 +186,7 @@
         "title": "Integrações",
         "heading": "Integrações",
         "description": "Conecte-se com ferramentas e serviços populares para sincronizar seu trabalho em todo o seu ecossistema de fluxo de trabalho.",
-        "page_title": "Trabalhe com seus dados do Evotask em aplicativos disponíveis ou nos seus próprios.",
+        "page_title": "Trabalhe com seus dados do QooWork em aplicativos disponíveis ou nos seus próprios.",
         "page_description": "Veja todas as integrações em uso por este workspace ou por você."
       },
       "imports": {
@@ -268,7 +268,7 @@
       "project_states": {
         "title": "Estados do projeto",
         "heading": "Veja uma visão geral do progresso de todos os projetos.",
-        "description": "Os Estados de projeto são um recurso exclusivo do Evotask para acompanhar o progresso de todos os seus projetos por qualquer propriedade do projeto.",
+        "description": "Os Estados de projeto são um recurso exclusivo do QooWork para acompanhar o progresso de todos os seus projetos por qualquer propriedade do projeto.",
         "go_to_settings": "Ir para as configurações"
       },
       "projects": {
@@ -313,14 +313,14 @@
         "install": "Instalar",
         "installed": "Instalado",
         "configure": "Configurar",
-        "app_available": "Você fez este aplicativo disponível para uso com um workspace do Evotask",
+        "app_available": "Você fez este aplicativo disponível para uso com um workspace do QooWork",
         "app_credentials_regenrated": {
           "title": "As credenciais do aplicativo foram regeneradas com sucesso",
           "description": "Substitua o segredo do cliente em todos os lugares onde for usado. O segredo anterior não é mais válido."
         },
         "app_created": {
           "title": "Aplicativo criado com sucesso",
-          "description": "Use as credenciais para instalar o aplicativo em um workspace Evotask"
+          "description": "Use as credenciais para instalar o aplicativo em um workspace QooWork"
         },
         "installed_apps": "Aplicativos instalados",
         "all_apps": "Todos os aplicativos",
@@ -361,10 +361,10 @@
         },
         "redirect_uris": {
           "label": "URIs de redirecionamento (separadas por espaço)",
-          "description": "Os usuários serão redirecionados para este caminho após se autenticarem com o Evotask.",
+          "description": "Os usuários serão redirecionados para este caminho após se autenticarem com o QooWork.",
           "placeholder": "https://example.com https://example.com/"
         },
-        "app_available_description": "Conecte um workspace do Evotask para começar a usar",
+        "app_available_description": "Conecte um workspace do QooWork para começar a usar",
         "client_id_and_secret": "ID do cliente e chave secreta",
         "client_id_and_secret_description": "Copie e salve esta chave secreta em Páginas. Você não poderá ver esta chave novamente após fechar.",
         "client_id_and_secret_download": "Você pode baixar um CSV com a chave aqui.",
@@ -413,12 +413,12 @@
         "workspace_permissions": "Permissões de workspace",
         "workspace_permissions_description": "Permissões de workspace são usadas para conceder acesso ao workspace.",
         "with_the_permissions": "com as permissões",
-        "app_consent_title": "{app} está solicitando acesso ao seu workspace do Evotask e perfil.",
+        "app_consent_title": "{app} está solicitando acesso ao seu workspace do QooWork e perfil.",
         "choose_workspace_to_connect_app_with": "Escolha um workspace para conectar o aplicativo",
         "app_consent_workspace_permissions_title": "{app} gostaria de",
         "app_consent_user_permissions_title": "{app} também pode solicitar permissão de um usuário para os seguintes recursos. Essas permissões serão solicitadas e autorizadas apenas por um usuário.",
         "app_consent_accept_title": "Ao aceitar, você",
-        "app_consent_accept_1": "Conceda ao aplicativo acesso aos seus dados do Evotask onde você puder usar o aplicativo dentro ou fora do Evotask",
+        "app_consent_accept_1": "Conceda ao aplicativo acesso aos seus dados do QooWork onde você puder usar o aplicativo dentro ou fora do QooWork",
         "app_consent_accept_2": "Concorda com a Política de Privacidade e Termos de Uso de {app}",
         "accepting": "Aceitando...",
         "accept": "Aceitar",
@@ -460,7 +460,7 @@
         "upload_and_save": "Carregar e salvar",
         "app_consent_no_access_title": "Solicitação para instalar",
         "app_consent_no_access_description": "Este aplicativo só pode ser instalado depois que um administrador do workspace o instalar. Entre em contato com o administrador do seu workspace para continuar.",
-        "app_consent_unapproved_title": "Este aplicativo ainda não foi revisado ou aprovado pelo Evotask.",
+        "app_consent_unapproved_title": "Este aplicativo ainda não foi revisado ou aprovado pelo QooWork.",
         "app_consent_unapproved_description": "Certifique-se de confiar neste aplicativo antes de conectá-lo ao seu espaço de trabalho.",
         "go_to_app": "Ir para o aplicativo",
         "enable_app_mentions": "Ativar menções do aplicativo",
@@ -485,12 +485,12 @@
         }
       },
       "plane-intelligence": {
-        "title": "Evotask AI",
-        "heading": "Evotask AI",
+        "title": "QooWork AI",
+        "heading": "QooWork AI",
         "description": "Veja seu trabalho se tornar mais inteligente e mais rápido com IA que está conectada de forma nativa ao seu trabalho e base de conhecimentos."
       },
       "runners": {
-        "title": "Evotask Runner",
+        "title": "QooWork Runner",
         "heading": "Scripts",
         "new_script": "Novo Script",
         "description": "Automatize seus fluxos de trabalho com scripts personalizados e regras de automação."
@@ -499,7 +499,7 @@
     "empty_state": {
       "api_tokens": {
         "title": "Nenhum token de API criado",
-        "description": "As APIs do Evotask podem ser usadas para integrar seus dados no Evotask com qualquer sistema externo. Crie um token para começar."
+        "description": "As APIs do QooWork podem ser usadas para integrar seus dados no QooWork com qualquer sistema externo. Crie um token para começar."
       },
       "webhooks": {
         "title": "Nenhum webhook adicionado",
@@ -524,25 +524,25 @@
     "admin_instance_setup_sign_in": "Admin – Configuração da instância e acesso",
     "allow_anyone_to_sign_up_even_without_an_invite": "Permitir que qualquer pessoa se cadastre, mesmo sem convite",
     "allow_members_to_create_accounts_with_passwords": "Permitir que os membros criem contas com senha e usem o e-mail para entrar.",
-    "allow_members_to_log_in_or_sign_up_for_plane_wit": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do GitHub.",
-    "allow_members_to_log_in_or_sign_up_for_plane_wit_2": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do Google.",
-    "allow_members_to_log_in_or_sign_up_to_plane_with": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do GitLab.",
-    "allow_members_to_log_in_or_sign_up_to_plane_with_2": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do Gitea.",
-    "allow_members_to_login_or_sign_up_to_plane_with": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do GitHub.",
-    "allow_members_to_login_or_sign_up_to_plane_with_2": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do GitLab.",
-    "allow_members_to_login_or_sign_up_to_plane_with_3": "Permitir que os membros entrem ou se cadastrem no Evotask com a conta do Gitea.",
+    "allow_members_to_log_in_or_sign_up_for_plane_wit": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do GitHub.",
+    "allow_members_to_log_in_or_sign_up_for_plane_wit_2": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do Google.",
+    "allow_members_to_log_in_or_sign_up_to_plane_with": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do GitLab.",
+    "allow_members_to_log_in_or_sign_up_to_plane_with_2": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do Gitea.",
+    "allow_members_to_login_or_sign_up_to_plane_with": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do GitHub.",
+    "allow_members_to_login_or_sign_up_to_plane_with_2": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do GitLab.",
+    "allow_members_to_login_or_sign_up_to_plane_with_3": "Permitir que os membros entrem ou se cadastrem no QooWork com a conta do Gitea.",
     "artificial_intelligence_settings_god_mode": "Configurações de inteligência artificial - God Mode",
     "at_least_one_authentication_method_must_remain_e": "Pelo menos um método de autenticação precisa continuar ativo. Ative outro método antes de desativar este.",
-    "authentication_settings_plane_web": "Configurações de autenticação - Evotask Web",
+    "authentication_settings_plane_web": "Configurações de autenticação - QooWork Web",
     "cannot_disable_authentication": "Não é possível desativar a autenticação",
     "change_the_name_of_your_instance_and_instance_ad": "Altere o nome da instância e os e-mails de administrador. Ative ou desative a telemetria na sua instância.",
     "configuration_saved": "Configuração salva",
     "configuration_saved_successfully": "Configuração salva com sucesso",
     "configure_authentication_modes_for_your_team_and": "Configure os modos de autenticação da sua equipe e restrinja o cadastro a convites.",
     "configure_instance_wide_settings_to_secure_your": "Defina configurações da instância inteira para protegê-la",
-    "configure_your_ai_api_credentials_so_plane_ai_fe": "Configure suas credenciais de API de IA para ativar os recursos do Evotask AI em todos os espaços de trabalho.",
+    "configure_your_ai_api_credentials_so_plane_ai_fe": "Configure suas credenciais de API de IA para ativar os recursos do QooWork AI em todos os espaços de trabalho.",
     "configure_your_openai_creds": "Configure suas credenciais da OpenAI.",
-    "configure_your_plane_instance_or_sign_in_to_the": "Configure sua instância do Evotask ou entre no portal de administração.",
+    "configure_your_plane_instance_or_sign_in_to_the": "Configure sua instância do QooWork ou entre no portal de administração.",
     "configure_your_smtp_controls": "Configure seus controles de SMTP.",
     "create_workspace_god_mode": "Criar espaço de trabalho - God Mode",
     "create_a_new_workspace_on_this_instance": "Crie um novo espaço de trabalho nesta instância.",
@@ -560,11 +560,11 @@
     "failed_to_send_email": "Não foi possível enviar o e-mail",
     "general_settings_god_mode": "Configurações gerais - God Mode",
     "github_oauth_application_settings": "Configurações da aplicação OAuth do GitHub",
-    "github_provided_details_for_plane": "Dados fornecidos pelo GitHub ao Evotask",
-    "gitlab_provided_details_for_plane": "Dados fornecidos pelo GitLab ao Evotask",
+    "github_provided_details_for_plane": "Dados fornecidos pelo GitHub ao QooWork",
+    "gitlab_provided_details_for_plane": "Dados fornecidos pelo GitLab ao QooWork",
     "gitea_oauth_application_settings": "Configurações da aplicação OAuth do Gitea",
-    "gitea_provided_details_for_plane": "Dados fornecidos pelo Gitea ao Evotask",
-    "google_provided_details_for_plane": "Dados fornecidos pelo Google ao Evotask",
+    "gitea_provided_details_for_plane": "Dados fornecidos pelo Gitea ao QooWork",
+    "google_provided_details_for_plane": "Dados fornecidos pelo Google ao QooWork",
     "identify_your_instances_and_get_key_details": "Identifique suas instâncias e veja os dados principais.",
     "if_you_still_cannot_find_it_recheck_your_smtp_co": "Se ainda assim não encontrar, revise sua configuração de SMTP e dispare um novo e-mail de teste.",
     "if_you_use_chatgpt_this_is_for_you": "Se você usa o ChatGPT, isto é para você.",
@@ -572,23 +572,23 @@
     "images_settings_god_mode": "Configurações de imagens - God Mode",
     "instance_name": "Nome da instância",
     "let_your_users_search_and_choose_images_from_thi": "Deixe seus usuários buscarem e escolherem imagens de bibliotecas de terceiros",
-    "log_in_or_sign_up_for_plane_using_codes_sent_via": "Entre ou cadastre-se no Evotask usando códigos enviados por e-mail. É preciso ter o SMTP configurado para usar este método.",
+    "log_in_or_sign_up_for_plane_using_codes_sent_via": "Entre ou cadastre-se no QooWork usando códigos enviados por e-mail. É preciso ter o SMTP configurado para usar este método.",
     "manage_all_workspaces_on_this_instance": "Gerencie todos os espaços de trabalho desta instância.",
     "manage_authentication_modes_for_your_instance": "Gerencie os modos de autenticação da sua instância",
-    "manage_your_plane_instance": "Gerencie sua instância do Evotask",
+    "manage_your_plane_instance": "Gerencie sua instância do QooWork",
     "misconfigs_can_lead_to_email_bounces_and_errors": "Configurações erradas podem causar falhas e erros no envio de e-mails.",
     "name_of_instance": "Nome da instância",
     "no_email_security": "Sem segurança de e-mail",
     "open_source_project_management_tool_to_manage_wo": "Ferramenta de gestão de projetos open-source para gerenciar tarefas, sprints e roadmaps de produto com tranquilidade.",
     "openai_api_keys_page": "Página de chaves de API da OpenAI",
-    "plane_provided_details_for_github": "Dados fornecidos pelo Evotask ao GitHub",
-    "plane_provided_details_for_gitlab": "Dados fornecidos pelo Evotask ao GitLab",
-    "plane_provided_details_for_gitea": "Dados fornecidos pelo Evotask ao Gitea",
-    "plane_provided_details_for_google": "Dados fornecidos pelo Evotask ao Google",
-    "post_setup_you_will_be_able_to_manage_this_plane": "Após a configuração, você poderá gerenciar esta instância do Evotask.",
+    "plane_provided_details_for_github": "Dados fornecidos pelo QooWork ao GitHub",
+    "plane_provided_details_for_gitlab": "Dados fornecidos pelo QooWork ao GitLab",
+    "plane_provided_details_for_gitea": "Dados fornecidos pelo QooWork ao Gitea",
+    "plane_provided_details_for_google": "Dados fornecidos pelo QooWork ao Google",
+    "post_setup_you_will_be_able_to_manage_this_plane": "Após a configuração, você poderá gerenciar esta instância do QooWork.",
     "prevent_anyone_else_from_creating_a_workspace": "Impeça que outras pessoas criem espaços de trabalho.",
     "receiver_email": "E-mail do destinatário",
-    "redirect_to_plane": "Redirecionar para o Evotask",
+    "redirect_to_plane": "Redirecionar para o QooWork",
     "secure_emails_from_your_own_instance": "E-mails seguros a partir da sua própria instância",
     "see_all_workspaces_and_control_who_can_create_th": "Veja todos os espaços de trabalho e controle quem pode criá-los.",
     "send_email": "Enviar e-mail",
@@ -597,7 +597,7 @@
     "sending_email": "Enviando e-mail",
     "set_your_workspace_apos_s_url": "Defina a URL do seu espaço de trabalho",
     "settings_updated_successfully": "Configurações atualizadas com sucesso",
-    "setup_your_plane_instance": "Configure sua instância do Evotask",
+    "setup_your_plane_instance": "Configure sua instância do QooWork",
     "some_error_occurred_while_creating_workspace_ple": "Ocorreu um erro ao criar o espaço de trabalho. Tente novamente.",
     "the_organization_github_id": "O ID da organização no GitHub.",
     "the_unique_url_of_your_workspace": "A URL única do seu espaço de trabalho",

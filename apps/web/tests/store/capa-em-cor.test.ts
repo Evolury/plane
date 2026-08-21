@@ -14,7 +14,7 @@
 // desenha.
 
 import { describe, expect, it, vi } from "vitest";
-import { CORES_DE_CAPA, NANO_BLUE, ehCorDeCapa } from "@plane/constants";
+import { COR_DE_CAPA_PADRAO, CORES_DE_CAPA, ehCorDeCapa } from "@plane/constants";
 import { EFileAssetType } from "@plane/types";
 
 vi.mock("@/services/file.service", () => ({ FileService: class {} }));
@@ -98,8 +98,8 @@ describe("qual capa vale", () => {
 });
 
 describe("a paleta", () => {
-  it("começa pelo azul da marca", () => {
-    expect(CORES_DE_CAPA[0].hex).toBe(NANO_BLUE);
+  it("começa pela cor padrão da capa", () => {
+    expect(CORES_DE_CAPA[0].hex).toBe(COR_DE_CAPA_PADRAO);
   });
 
   it("só tem cores na forma exata, e nenhuma repetida", () => {

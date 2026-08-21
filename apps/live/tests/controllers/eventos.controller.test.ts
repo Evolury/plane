@@ -33,12 +33,12 @@ vi.mock("@/services/user.service", () => ({
   },
 }));
 vi.mock("@/lib/eventos-de-tarefa", () => ({ salasDeEventos: { entrar, sair: vi.fn() }, CANAL: "evolury:tarefas" }));
-vi.mock("@/env", () => ({ env: { CORS_ALLOWED_ORIGINS: "https://plane.evolury.app.br" } }));
+vi.mock("@/env", () => ({ env: { CORS_ALLOWED_ORIGINS: "https://qoowork.com.br" } }));
 
 const { EventosController } = await import("@/controllers/eventos.controller");
 
 const PROJETO = "181b5270-48dd-4a87-87b6-aa8e4df76a08";
-const ORIGEM = "https://plane.evolury.app.br";
+const ORIGEM = "https://qoowork.com.br";
 
 const socketFalso = () => ({
   readyState: 1,

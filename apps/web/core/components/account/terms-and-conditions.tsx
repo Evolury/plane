@@ -14,9 +14,12 @@ interface TermsAndConditionsProps {
 }
 
 // Constants for better maintainability
+// QooWork: apontavam para os documentos legais do Plane — a tela de entrada
+// dizia à pessoa que ela concorda com os termos de OUTRA empresa. As páginas
+// precisam existir no domínio antes da produção real (ADR 0020).
 const LEGAL_LINKS = {
-  termsOfService: "https://plane.so/legals/terms-and-conditions",
-  privacyPolicy: "https://plane.so/legals/privacy-policy",
+  termsOfService: "https://qoowork.com.br/termos",
+  privacyPolicy: "https://qoowork.com.br/privacidade",
 } as const;
 
 const MESSAGES = {

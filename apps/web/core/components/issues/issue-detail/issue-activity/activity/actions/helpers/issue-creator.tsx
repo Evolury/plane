@@ -27,7 +27,7 @@ export function IssueCreatorDisplay(props: TIssueUser) {
   return (
     <>
       {customUserName ? (
-        <span className="font-medium text-primary">{customUserName || "Evotask"}</span>
+        <span className="font-medium text-primary">{customUserName || "QooWork"}</span>
       ) : (
         <Link
           href={`/${activity?.workspace_detail?.slug}/profile/${activity?.actor_detail?.id}`}
