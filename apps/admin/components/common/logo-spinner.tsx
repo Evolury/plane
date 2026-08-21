@@ -1,21 +1,23 @@
 /**
  * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * Copyright (c) 2026-present Evolury
  * SPDX-License-Identifier: AGPL-3.0-only
  * See the LICENSE file for details.
  */
 
-import { useTheme } from "next-themes";
-import LogoSpinnerDark from "@/app/assets/images/logo-spinner-dark.gif?url";
-import LogoSpinnerLight from "@/app/assets/images/logo-spinner-light.gif?url";
+// QooWork: o sinal de carregamento é a marca da casa pulsando (ADR 0020).
+//
+// Eram dois GIFs do Plane — a marca de outra empresa aparecendo em toda
+// transição de página, que é justamente quando a pessoa olha para a tela
+// esperando. Aqui é o Q do wordmark, com uma pulsação de opacidade: sem
+// gradiente, sem sombra e sem arquivo para carregar, como o manual pede.
+
+import { QooWorkMark } from "@plane/propel/icons";
 
 export function LogoSpinner() {
-  const { resolvedTheme } = useTheme();
-
-  const logoSrc = resolvedTheme === "dark" ? LogoSpinnerLight : LogoSpinnerDark;
-
   return (
-    <div className="flex items-center justify-center">
-      <img src={logoSrc} alt="logo" className="h-6 w-auto sm:h-11" />
+    <div className="flex items-center justify-center" role="status" aria-label="Carregando">
+      <QooWorkMark size={44} className="text-on-inverse animate-pulse bg-inverse" />
     </div>
   );
 }

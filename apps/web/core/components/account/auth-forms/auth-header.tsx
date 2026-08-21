@@ -6,7 +6,7 @@
 
 import { observer } from "mobx-react";
 import useSWR from "swr";
-import { translate, useTranslation } from "@plane/i18n";
+import { useTranslation } from "@plane/i18n";
 import type { IWorkspaceMemberInvitation } from "@plane/types";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
@@ -24,36 +24,20 @@ type TAuthHeader = {
   currentAuthStep: EAuthSteps;
 };
 
-const Titles = {
-  [EAuthModes.SIGN_IN]: {
-    [EAuthSteps.EMAIL]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.welcome_back_to_plane"),
-    },
-    [EAuthSteps.PASSWORD]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.welcome_back_to_plane"),
-    },
-    [EAuthSteps.UNIQUE_CODE]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.welcome_back_to_plane"),
-    },
-  },
-  [EAuthModes.SIGN_UP]: {
-    [EAuthSteps.EMAIL]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.create_your_plane_account"),
-    },
-    [EAuthSteps.PASSWORD]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.create_your_plane_account"),
-    },
-    [EAuthSteps.UNIQUE_CODE]: {
-      header: translate("ui.work_in_all_dimensions"),
-      subHeader: translate("ui.create_your_plane_account"),
-    },
-  },
-};
+// QooWork: os títulos são resolvidos NA RENDERIZAÇÃO, e não no corpo do módulo.
+//
+// Este objeto era montado com `translate()` no topo do arquivo — avaliado quando
+// o módulo é importado, que é antes de o i18n ter carregado o pacote de
+// traduções. O que ele congelava não era o texto: era a própria CHAVE, e a tela
+// de entrada exibia "ui.work_in_all_dimensions" para quem chegasse.
+//
+// Não é caso para `translate()`: ele existe para quem não tem React em volta
+// (ADR 0008). Aqui há componente e há `useTranslation`.
+const chavesDoTitulo = (authMode: EAuthModes) => ({
+  cabecalho: "ui.work_in_all_dimensions" as const,
+  subCabecalho:
+    authMode === EAuthModes.SIGN_UP ? ("ui.create_your_plane_account" as const) : ("ui.welcome_back_to_plane" as const),
+});
 
 const workSpaceService = new WorkspaceService();
 
@@ -72,7 +56,7 @@ export const AuthHeader = observer(function AuthHeader(props: TAuthHeader) {
   );
 
   const getHeaderSubHeader = (
-    step: EAuthSteps,
+    _step: EAuthSteps,
     mode: EAuthModes,
     invitation: IWorkspaceMemberInvitation | undefined,
     email: string | undefined
@@ -91,7 +75,8 @@ export const AuthHeader = observer(function AuthHeader(props: TAuthHeader) {
       };
     }
 
-    return Titles[mode][step];
+    const chaves = chavesDoTitulo(mode);
+    return { header: t(chaves.cabecalho), subHeader: t(chaves.subCabecalho) };
   };
 
   const { header, subHeader } = getHeaderSubHeader(currentAuthStep, authMode, invitation || undefined, invitationEmail);
