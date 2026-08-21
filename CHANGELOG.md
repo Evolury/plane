@@ -3,6 +3,64 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.35.0] — 2026-08-21
+
+**Minor**: a plataforma se chama **QooWork**, com identidade visual nova.
+
+### Na tela
+
+- **O nome mudou em tudo que se vê**: títulos e abas do navegador, textos,
+  assinatura dos e-mails, manifesto do aplicativo e o logotipo no rodapé da
+  barra lateral. São 328 textos traduzidos.
+
+- **O logotipo é o wordmark do manual**, composto na própria família da marca —
+  no rodapé, 18px em peso 600 com o tracking que o manual define para esse
+  tamanho. **O ícone do aplicativo é o Q recortado do wordmark**, num quadrado
+  arredondado preto: é o que aparece na aba do navegador, no atalho da tela
+  inicial e no favicon.
+
+- **A cor mudou de lógica, e não só de tom.** O manual manda "preto e branco
+  primeiro; Iris depois", com a cor de assinatura ocupando no máximo 3% da tela.
+  Por isso:
+
+  | O quê                        | Antes              | Agora                        |
+  | ---------------------------- | ------------------ | ---------------------------- |
+  | Capa de projeto sem imagem   | azul da Evolury    | **preto**                    |
+  | Ícone do projeto             | azul escuro        | **preto**                    |
+  | Avatar sem foto              | azul, letra branca | **cinza claro, letra preta** |
+  | Botões, links e estado ativo | azul `#006399`     | **Iris `#625BF6`**           |
+  | Cores de capa à escolha      | 12 tons livres     | **9 tons do manual**         |
+
+  O Iris não vai na capa porque capa é superfície grande. Não vai no ícone
+  porque, medido sobre a placa clara da capa, ele fica em 2,98:1 — abaixo do
+  mínimo para um ícone ser legível para quem enxerga pouco; o preto fica em
+  10,9:1.
+
+- **A fonte da interface passou a ser Schibsted Grotesk**, a família do manual.
+
+- **O Plane saiu das telas onde ainda aparecia.** A tela de entrada apontava os
+  Termos de Serviço e a Política de Privacidade para os documentos legais do
+  Plane — o produto declarava ao usuário um contrato de outra empresa. O quadro
+  público trazia o logotipo do Plane no rodapé. O e-mail de suporte e os links
+  de planos apontavam para lá.
+
+- Colateral, na mesma tela: a frase de termos do quadro público estava metade em
+  português e metade em inglês.
+
+### Por dentro
+
+- A cor de ação não foi trocada componente a componente: a **rampa de marca do
+  tema foi regerada** em torno do Iris, preservando a luminosidade de cada
+  degrau — 24 degraus, claro e escuro.
+
+- **Uma guarda impede a volta do nome antigo**: a verificação falha se
+  "Evotask" reaparecer em tela, tradução, e-mail ou constante.
+
+- Copyright e marcadores de autoria no código continuam **Evolury**: dizem quem
+  detém o direito, não como o produto se apresenta.
+
+- A decisão está no **ADR 0020**, que substitui o ADR 0017.
+
 ## [1.34.0] — 2026-08-20
 
 **Minor**: dá para **preencher campos de muitas tarefas de uma vez**.
