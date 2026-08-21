@@ -3,6 +3,36 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.35.1] — 2026-08-21
+
+**Patch**: o Plane ainda aparecia na entrada, no carregamento e no favicon.
+
+### Na tela
+
+- **A tela de entrada mostrava códigos no lugar dos textos** —
+  "ui.work_in_all_dimensions", "ui.by_signing_in, você entende e concorda…". Os
+  títulos e a frase de termos eram traduzidos cedo demais, quando o arquivo é
+  carregado e antes de os textos existirem; o que ficava congelado era o código
+  da frase, e não a frase. Agora a tradução acontece na hora de desenhar a tela.
+
+- **O logotipo do Plane sobrevivia em oito telas** — a de entrada, o convite, a
+  criação de espaço, o tour e o rodapé de novidades, além do quadro público e do
+  painel de administração. Agora é o logotipo da QooWork, com o espaçamento que
+  o manual define para cada tamanho.
+
+- **O ícone que gira no carregamento era do Plane** — aparecia em toda troca de
+  página, que é justamente quando se está olhando para a tela. Virou o Q da
+  QooWork, com uma pulsação suave.
+
+- **O favicon ficou quadrado.** Arredondado, os cantos apareciam claros contra o
+  fundo da aba do navegador. Quem arredonda o ícone é o próprio sistema.
+
+### Por dentro
+
+- Duas verificações novas impedem a volta dos dois primeiros: nenhuma tela de
+  entrada pode traduzir no carregamento do arquivo, e nenhuma tela pode usar o
+  logotipo do Plane.
+
 ## [1.35.0] — 2026-08-21
 
 **Minor**: a plataforma se chama **QooWork**, com identidade visual nova.
