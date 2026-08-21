@@ -15,7 +15,8 @@ função de transporte, com respostas gravadas do sandbox.
 - `utils/planos.py` — catálogo com os preços do ADR 0021
 - `utils/regua.py` — máquina de estados a partir de `pago_ate`
 - Códigos 4801–4806 em `error_codes.py`
-- Todo espaço existente entra `sem_assinatura`; espaço novo nasce `sem_assinatura`
+- Espaço novo nasce `sem_assinatura`; o que **já existe** entra em `em_cortesia` com prazo de
+  90 dias, para que ligar a trava na E2 não congele cliente pagante
 
 **Aceite**
 
@@ -23,10 +24,13 @@ função de transporte, com respostas gravadas do sandbox.
 2. Descida monotônica de preço por assento e de adicional, provada por teste
 3. A régua percorre os nove estados em teste unitário, dia a dia, sem banco
 4. Preço do plano alterado sem alterar a régua **reprova** a suíte (injeção)
+5. A migração deixa cada espaço existente em cortesia com data, e cada linha com o seu
+   registro no histórico — cortesia sem data é assinatura grátis para sempre, em silêncio
 
 ## E2 — O motor de travas
 
-A maior e a mais arriscada. Sete travas booleanas e três quantitativas.
+A maior e a mais arriscada. Três travas booleanas — analytics, webhooks, API pública — e
+quatro quantitativas — propriedades, automações, assentos, convidados.
 
 - `utils/direitos.py` com cache em Redis e invalidação
 - `ExigePlanoCom(...)` em analytics, webhooks e API pública
@@ -38,7 +42,7 @@ A maior e a mais arriscada. Sete travas booleanas e três quantitativas.
 
 **Aceite**
 
-1. Cada uma das dez travas devolve 402 com o código certo, provada por teste de contrato
+1. Cada uma das sete travas devolve 402 com o código certo, provada por teste de contrato
 2. Cada trava, removida uma de cada vez, **reprova** a suíte
 3. O middleware recusa escrita em espaço restrito e **deixa passar** faturamento, exportação e autenticação — as três exceções com teste próprio
 4. Espaço `ativa` não sofre nenhuma restrição: uma tarefa é criada, editada e excluída com a suíte inteira verde

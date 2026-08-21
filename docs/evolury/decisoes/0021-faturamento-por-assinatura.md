@@ -236,9 +236,13 @@ deliberadamente não depende dela.
 - **`TETO_DE_PROPRIEDADES` deixa de ser constante e vira consulta ao plano.**
   O ponto de aplicação já existe; o valor passa a depender do espaço.
 - **Teto de automações ativas é trava nova** — não existia.
-- **Todo espaço criado a partir de agora nasce `sem_assinatura`.** Os espaços
-  que já existem entram por migração no estado que o comercial definir, um a um,
-  pelo god-mode.
+- **Espaço novo nasce `sem_assinatura`; o que já existe entra em cortesia com
+  prazo.** Aplicar `sem_assinatura` ao que está em produção congelaria cliente
+  pagante no dia em que a trava fosse ligada. A migração dá 90 dias de cortesia
+  a cada espaço existente — prazo, e não cortesia aberta, pelo mesmo motivo da
+  decisão 10: cortesia sem data é assinatura grátis para sempre, em silêncio.
+  Com data, ela aparece no painel com um relógio correndo, e o comercial tem
+  esses 90 dias para classificar espaço por espaço.
 - **O middleware de somente leitura atravessa toda a API.** É a peça capaz de
   quebrar o produto para quem está em dia — nasce desligada atrás de um estado
   que nenhum espaço tem ainda, e cada exceção dela é provada por injeção.
