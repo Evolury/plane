@@ -20,12 +20,16 @@
 
 # Django imports
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils import timezone
 
 # Module imports
 from plane.utils import regua
-from plane.utils.planos import CICLOS, CHAVES
+from plane.utils.planos import AVANCADO, CICLO_MENSAL, CICLOS, CHAVES, copia_para_contrato
 
 from .base import BaseModel
+from .workspace import Workspace
 
 ESCOLHAS_DE_PLANO = tuple((chave, chave.capitalize()) for chave in CHAVES)
 ESCOLHAS_DE_CICLO = tuple((ciclo, ciclo.capitalize()) for ciclo in CICLOS)
@@ -200,3 +204,59 @@ class HistoricoDeAssinatura(BaseModel):
 
     def __str__(self):
         return f"{self.evento}: {self.de or '—'} → {self.para or '—'}"
+
+
+@receiver(post_save, sender=Workspace)
+def conceder_cortesia_ao_espaco_novo(sender, instance, created, **kwargs):
+    """Espaço novo nasce em cortesia, com prazo — enquanto não houver como pagar.
+
+    A regra do produto é outra: quem não contratou não tem plano
+    (`sem_assinatura`, o padrão do modelo). Ela só pode valer quando existir
+    contratação, que é a E4. Aplicá-la agora trancaria todo espaço novo num
+    produto sem forma de pagamento — trava sem porta de saída.
+
+    Por isso a cortesia, com o mesmo desenho da migração 0151: plano maior,
+    preço zerado, 90 dias de prazo. Prazo, e não cortesia aberta, porque
+    cortesia sem data é assinatura grátis para sempre, em silêncio.
+
+    **Some na E4**, quando a contratação existir. Até lá é o que mantém o
+    produto usável sem abrir buraco no motor de direitos, que continua tratando
+    "sem plano" como "nenhum recurso".
+    """
+    if not created:
+        return
+
+    fim = regua.fim_da_cortesia_de_transicao(timezone.now().date())
+    assinatura = Assinatura.objects.create(
+        workspace=instance,
+        status=regua.EM_CORTESIA,
+        pago_ate=fim,
+        **copia_para_contrato(AVANCADO, CICLO_MENSAL, gratuita=True),
+    )
+    HistoricoDeAssinatura.objects.create(
+        assinatura=assinatura,
+        evento="cortesia_de_espaco_novo",
+        de=regua.SEM_ASSINATURA,
+        para=regua.EM_CORTESIA,
+        motivo=f"Cortesia automática ao criar o espaço, válida até {fim.isoformat()}.",
+    )
+
+
+@receiver(post_save, sender=Assinatura)
+def esquecer_retrato_do_espaco(sender, instance, **kwargs):
+    """Qualquer escrita na assinatura derruba o cache de direitos.
+
+    O webhook e a troca de plano poderiam invalidar à mão, mas invalidação que
+    depende de alguém lembrar é a que falha justamente no caminho novo. Aqui
+    passa tudo: cortesia, pagamento, bloqueio manual, conciliação.
+
+    Derruba pelas **duas** chaves, id e slug, e não só pela que mudou. O motivo
+    é o slug poder ser reusado: um espaço apagado libera o nome, e o espaço
+    seguinte com o mesmo nome leria o retrato do anterior — que é um espaço
+    diferente, com outro plano e outro estado. Como todo espaço novo nasce com
+    uma assinatura, este é o ponto em que o retrato velho morre.
+    """
+    from plane.utils import direitos
+
+    slug = Workspace.objects.values_list("slug", flat=True).filter(pk=instance.workspace_id).first()
+    direitos.esquecer(workspace_id=instance.workspace_id, slug=slug)

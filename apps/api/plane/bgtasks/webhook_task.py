@@ -51,7 +51,9 @@ from plane.db.models import (
 )
 from plane.license.utils.instance_value import get_email_configuration
 from plane.utils.email import generate_plain_text_from_html
+from plane.utils import direitos
 from plane.utils.exception_logger import log_exception
+from plane.utils.planos import RECURSO_WEBHOOKS
 from plane.utils.url_security import pinned_fetch
 
 
@@ -430,6 +432,13 @@ def webhook_activity(
         race conditions where objects might have been deleted.
     """
     try:
+        # Evolury: o plano é conferido no disparo, e não só na criação (ADR
+        # 0021). Um espaço que cai para o Essencial mantém os webhooks
+        # cadastrados e para de entregá-los — apagá-los seria perder
+        # configuração que volta a valer no dia em que ele subir de plano.
+        if not direitos.recurso_liberado(RECURSO_WEBHOOKS, slug=slug):
+            return
+
         webhooks = Webhook.objects.filter(workspace__slug=slug, is_active=True)
 
         if event == "project":

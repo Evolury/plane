@@ -7,17 +7,22 @@ from django.db import IntegrityError
 
 # Third party imports
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 # Module imports
 from plane.db.models import Webhook, WebhookLog, Workspace
 from plane.db.models.webhook import generate_token
 from ..base import BaseAPIView
-from plane.app.permissions import allow_permission, ROLE
+from plane.app.permissions import allow_permission, ExigePlanoCom, ROLE
 from plane.app.serializers import WebhookSerializer, WebhookLogSerializer
+from plane.utils.planos import RECURSO_WEBHOOKS
 
 
 class WebhookEndpoint(BaseAPIView):
+    # Evolury: webhook é recurso de plano (ADR 0021).
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_WEBHOOKS)]
+
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def post(self, request, slug):
         workspace = Workspace.objects.get(slug=slug)
@@ -109,6 +114,9 @@ class WebhookEndpoint(BaseAPIView):
 
 
 class WebhookSecretRegenerateEndpoint(BaseAPIView):
+    # Evolury: webhook é recurso de plano (ADR 0021).
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_WEBHOOKS)]
+
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def post(self, request, slug, pk):
         webhook = Webhook.objects.get(workspace__slug=slug, pk=pk)
@@ -119,6 +127,9 @@ class WebhookSecretRegenerateEndpoint(BaseAPIView):
 
 
 class WebhookLogsEndpoint(BaseAPIView):
+    # Evolury: webhook é recurso de plano (ADR 0021).
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_WEBHOOKS)]
+
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def get(self, request, slug, webhook_id):
         webhook_logs = WebhookLog.objects.filter(workspace__slug=slug, webhook=webhook_id)

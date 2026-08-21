@@ -128,6 +128,10 @@ MIDDLEWARE = [
     "plane.middleware.request_body_size.RequestBodySizeLimitMiddleware",
     "plane.middleware.logger.APITokenLogMiddleware",
     "plane.middleware.logger.RequestLoggerMiddleware",
+    # Evolury: travas de faturamento que dependem do caminho (ADR 0021) —
+    # somente leitura por estado, e API pública por plano. Por último porque
+    # recusar antes pularia o registro da requisição.
+    "plane.middleware.faturamento.FaturamentoMiddleware",
 ]
 
 # Rest Framework settings

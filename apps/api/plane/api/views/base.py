@@ -155,9 +155,7 @@ class BaseViewSet(TarefaPertenceAoProjetoMixin, TimezoneMixin, ReadReplicaContro
     model = None
 
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [
-        IsAuthenticated,
-    ]
+    permission_classes = [IsAuthenticated]
     use_read_replica = False
 
     def get_queryset(self):
