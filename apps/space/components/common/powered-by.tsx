@@ -5,8 +5,6 @@
  */
 
 import { WEBSITE_URL } from "@plane/constants";
-// assets
-import { PlaneLogo } from "@plane/propel/icons";
 
 type TPoweredBy = {
   disabled?: boolean;
@@ -25,9 +23,11 @@ export function PoweredBy(props: TPoweredBy) {
       target="_blank"
       rel="noreferrer noopener"
     >
-      <PlaneLogo className="h-3 w-auto text-primary" />
+      {/* QooWork: era o logotipo do Plane com link para plane.so — a marca de
+          outra empresa no rodapé do quadro público de quem usa o nosso produto.
+          O selo agora é o wordmark, do jeito que o manual o define (ADR 0020). */}
       <div className="text-11">
-        Powered by <span className="font-semibold">QooWork Publish</span>
+        Feito com <span className="font-semibold tracking-[-0.02em]">QooWork</span>
       </div>
     </a>
   );
