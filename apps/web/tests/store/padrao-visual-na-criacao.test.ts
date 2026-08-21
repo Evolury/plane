@@ -132,3 +132,64 @@ describe("o nome antigo não voltou", () => {
     expect(saida.split("\n").filter(Boolean)).toEqual([]);
   });
 });
+
+// A tela de ENTRADA é a primeira que carrega, e por isso é onde `translate()`
+// no corpo do módulo quebra: ele roda antes de o i18n ter os textos e congela a
+// própria chave — "ui.by_signing_in, você entende e concorda…" foi o que a tela
+// exibiu em produção. Dentro de componente existe `t`; `translate` é para quem
+// não tem React em volta (ADR 0008).
+describe("as telas de entrada não traduzem cedo demais", () => {
+  it("nenhum `translate()` no corpo do módulo em components/account", () => {
+    const raiz = resolve(process.cwd(), "..", "..");
+    expect(existsSync(join(raiz, ".git"))).toBe(true);
+
+    let saida = "";
+    try {
+      saida = execFileSync(
+        "git",
+        ["grep", "-n", "translate(", "--", "apps/web/core/components/account", "apps/space/components/account"],
+        { cwd: raiz, encoding: "utf8" }
+      );
+    } catch (erro: unknown) {
+      const status = (erro as { status?: number })?.status;
+      if (status !== 1) throw erro;
+    }
+
+    // `t(` do componente e comentários não contam — só a chamada crua do helper.
+    const suspeitas = saida
+      .split("\n")
+      .filter(Boolean)
+      .filter((linha) => {
+        const conteudo = linha.split(":").slice(2).join(":").trim();
+        return !conteudo.startsWith("//") && !conteudo.startsWith("*") && /\btranslate\(/.test(conteudo);
+      });
+
+    expect(suspeitas).toEqual([]);
+  });
+});
+
+// O logotipo do Plane sobrevivia em oito telas — a de entrada entre elas, que é
+// a primeira que alguém vê, e o sinal de carregamento, que aparece em toda
+// transição. Nenhuma delas dizia "Evotask", então a varredura do nome não as
+// alcançou.
+describe("o logotipo do Plane não voltou", () => {
+  it("nenhuma tela usa PlaneLockup ou PlaneLogo", () => {
+    const raiz = resolve(process.cwd(), "..", "..");
+    expect(existsSync(join(raiz, ".git"))).toBe(true);
+
+    let saida = "";
+    try {
+      // Sem `apps/web/tests`: é onde esta busca mora, e ela se encontraria.
+      saida = execFileSync(
+        "git",
+        ["grep", "-l", "PlaneLockup\\|PlaneLogo", "--", "apps/web/core", "apps/web/app", "apps/space", "apps/admin"],
+        { cwd: raiz, encoding: "utf8" }
+      );
+    } catch (erro: unknown) {
+      const status = (erro as { status?: number })?.status;
+      if (status !== 1) throw erro;
+    }
+
+    expect(saida.split("\n").filter(Boolean)).toEqual([]);
+  });
+});

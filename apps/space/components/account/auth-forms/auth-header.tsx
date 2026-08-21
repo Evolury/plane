@@ -6,7 +6,7 @@
 
 // helpers
 import { EAuthModes } from "@/types/auth";
-import { translate, useTranslation } from "@plane/i18n";
+import { useTranslation } from "@plane/i18n";
 
 type TAuthHeader = {
   authMode: EAuthModes;
@@ -17,20 +17,20 @@ type TAuthHeaderContent = {
   subHeader: string;
 };
 
-type TAuthHeaderDetails = {
-  [mode in EAuthModes]: TAuthHeaderContent;
-};
-
-const Titles: TAuthHeaderDetails = {
+// QooWork: chaves, e não textos. Montado com `translate()` no corpo do módulo,
+// este objeto era avaliado antes de o i18n carregar e congelava a própria
+// chave — a tela de entrada exibia "ui.sign_in_to_upvote_or_comment". A
+// tradução acontece na renderização, com o `t` do componente.
+const CHAVES = {
   [EAuthModes.SIGN_IN]: {
-    header: translate("ui.sign_in_to_upvote_or_comment"),
-    subHeader: translate("ui.contribute_in_nudging_the_features_you_want_to_g"),
+    header: "ui.sign_in_to_upvote_or_comment",
+    subHeader: "ui.contribute_in_nudging_the_features_you_want_to_g",
   },
   [EAuthModes.SIGN_UP]: {
-    header: translate("ui.view_comment_and_do_more"),
-    subHeader: translate("ui.sign_up_or_log_in_to_work_with_plane_work_items"),
+    header: "ui.view_comment_and_do_more",
+    subHeader: "ui.sign_up_or_log_in_to_work_with_plane_work_items",
   },
-};
+} as const;
 
 export function AuthHeader(props: TAuthHeader) {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export function AuthHeader(props: TAuthHeader) {
 
   const getHeaderSubHeader = (mode: EAuthModes | null): TAuthHeaderContent => {
     if (mode) {
-      return Titles[mode];
+      return { header: t(CHAVES[mode].header), subHeader: t(CHAVES[mode].subHeader) };
     }
 
     return {

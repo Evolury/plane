@@ -7,7 +7,7 @@
 import React from "react";
 import Link from "next/link";
 import { EAuthModes } from "@plane/constants";
-import { translate, useTranslation } from "@plane/i18n";
+import { useTranslation } from "@plane/i18n";
 
 interface TermsAndConditionsProps {
   authType?: EAuthModes;
@@ -22,9 +22,13 @@ const LEGAL_LINKS = {
   privacyPolicy: "https://qoowork.com.br/privacidade",
 } as const;
 
-const MESSAGES = {
-  [EAuthModes.SIGN_UP]: translate("ui.by_creating_an_account"),
-  [EAuthModes.SIGN_IN]: translate("ui.by_signing_in"),
+// QooWork: a chave, e não o texto. Este objeto era montado com `translate()` no
+// corpo do módulo — avaliado antes de o i18n carregar —, e o que congelava era a
+// própria chave: a tela de entrada dizia "ui.by_signing_in, você entende e
+// concorda…". A tradução acontece na renderização, com o `t` do componente.
+const CHAVES = {
+  [EAuthModes.SIGN_UP]: "ui.by_creating_an_account",
+  [EAuthModes.SIGN_IN]: "ui.by_signing_in",
 } as const;
 
 // Reusable link component to reduce duplication
@@ -42,7 +46,7 @@ export function TermsAndConditions({ authType = EAuthModes.SIGN_IN }: TermsAndCo
     <div className="flex items-center justify-center">
       {/* Evolury: frase montada por fragmentos traduzidos, já que os links ficam no meio dela */}
       <p className="text-center text-13 whitespace-pre-line text-tertiary">
-        {`${MESSAGES[authType]}${t("ui.terms_agreement")}`}
+        {`${t(CHAVES[authType])}${t("ui.terms_agreement")}`}
         <LegalLink href={LEGAL_LINKS.termsOfService}>{t("ui.terms_of_service")}</LegalLink> {t("ui.and")}{" "}
         <LegalLink href={LEGAL_LINKS.privacyPolicy}>{t("ui.privacy_policy")}</LegalLink>.
       </p>

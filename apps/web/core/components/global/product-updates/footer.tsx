@@ -8,7 +8,7 @@ import { USER_TRACKER_ELEMENTS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 // ui
 import { getButtonStyling } from "@plane/propel/button";
-import { PlaneLogo } from "@plane/propel/icons";
+import { QooWorkMark } from "@plane/propel/icons";
 // helpers
 import { cn } from "@plane/utils";
 
@@ -69,7 +69,7 @@ export function ProductUpdatesFooter() {
         )}
         rel="noreferrer"
       >
-        <PlaneLogo className="h-4 w-auto text-primary" />
+        <QooWorkMark size={16} className="text-on-inverse bg-inverse text-primary" />
         {t("powered_by_plane_pages")}
       </a>
     </div>
