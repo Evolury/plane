@@ -60,7 +60,7 @@ describe("imagemEhSegura — o que o servidor recusa buscar", () => {
     const legitimos = [
       "data:image/jpeg;base64,/9j/4AAQSkZJRg==", // o que `processImages` devolve
       "data:image/png;base64,iVBORw0KGgo=",
-      "https://plane.evolury.app.br/uploads/a.png",
+      "https://qoowork.com.br/uploads/a.png",
       "https://exemplo-s3.amazonaws.com/bucket/chave.png?assinatura=x",
       "http://cdn.exemplo.com/a.png",
     ];

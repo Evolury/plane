@@ -25,7 +25,7 @@ import { translate } from "@plane/i18n";
 import "@fontsource/material-symbols-rounded";
 import "@fontsource/ibm-plex-mono";
 
-const APP_TITLE = "Evotask Publish | Make your Evotask boards public with one-click";
+const APP_TITLE = "QooWork Publish | Make your QooWork boards public with one-click";
 const APP_DESCRIPTION = translate("ui.plane_publish_is_a_customer_feedback_management");
 
 export const links: Route.LinksFunction = () => [

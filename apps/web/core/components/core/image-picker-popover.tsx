@@ -18,7 +18,7 @@ import {
   ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
   CORES_DE_CAPA,
   MAX_FILE_SIZE,
-  NANO_BLUE,
+  COR_DE_CAPA_PADRAO,
   ehCorDeCapa,
 } from "@plane/constants";
 import { useOutsideClickDetector } from "@plane/hooks";
@@ -241,13 +241,13 @@ export const ImagePickerPopover = observer(function ImagePickerPopover(props: Pr
                 <Tabs.Content value="colors" className="h-full w-full">
                   <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
                     {CORES_DE_CAPA.map((cor) => {
-                      // Capa vazia É o azul da marca na tela — a tela o pinta quando não
-                      // há capa. Marcar o azul aqui diz a verdade do que se vê;
+                      // Capa vazia É a cor padrão na tela — a tela a pinta quando não
+                      // há capa. Marcá-la aqui diz a verdade do que se vê;
                       // deixar tudo sem marca diria que não há cor nenhuma.
                       const escolhida =
                         typeof value === "string" && value !== ""
                           ? value.toUpperCase() === cor.hex.toUpperCase()
-                          : cor.hex === NANO_BLUE;
+                          : cor.hex === COR_DE_CAPA_PADRAO;
                       return (
                         <button
                           key={cor.hex}

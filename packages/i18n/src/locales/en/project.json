@@ -199,8 +199,8 @@
         "primary_button": {
           "text": "Create your first work item",
           "comic": {
-            "title": "Work items are building blocks in Evotask.",
-            "description": "Redesign the Evotask UI, Rebrand the company, or Launch the new fuel injection system are examples of work items that likely have sub-work items."
+            "title": "Work items are building blocks in QooWork.",
+            "description": "Redesign the QooWork UI, Rebrand the company, or Launch the new fuel injection system are examples of work items that likely have sub-work items."
           }
         }
       },
@@ -275,8 +275,8 @@
   "project_page": {
     "empty_state": {
       "general": {
-        "title": "Write a note, a doc, or a full knowledge base. Get Galileo, Evotask's AI assistant, to help you get started",
-        "description": "Pages are thoughts potting space in Evotask. Take down meeting notes, format them easily, embed work items, lay them out using a library of components, and keep them all in your project's context. To make short work of any doc, invoke Galileo, Evotask's AI, with a shortcut or the click of a button.",
+        "title": "Write a note, a doc, or a full knowledge base. Get Galileo, QooWork's AI assistant, to help you get started",
+        "description": "Pages are thoughts potting space in QooWork. Take down meeting notes, format them easily, embed work items, lay them out using a library of components, and keep them all in your project's context. To make short work of any doc, invoke Galileo, QooWork's AI, with a shortcut or the click of a button.",
         "primary_button": {
           "text": "Create your first page"
         }

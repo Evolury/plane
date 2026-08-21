@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import { NANO_BLUE } from "@plane/constants";
+import { AVATAR_SEM_FOTO } from "@plane/constants";
 import { Avatar as AvatarPrimitive } from "@base-ui-components/react/avatar";
 import { cn } from "../utils/classname";
 
@@ -114,11 +114,11 @@ export function Avatar(props: Props) {
         <AvatarPrimitive.Fallback
           className={cn(sizeInfo.fontSize, "grid h-full w-full place-items-center", getBorderRadius(shape), className)}
           style={{
-            // Evolury: o azul da marca, o mesmo do avatar do @plane/ui e da capa
-            // sem imagem. O accent do tema é outro azul (#006399), e ter dois
-            // fazia a mesma pessoa aparecer de duas cores conforme o componente.
-            backgroundColor: fallbackBackgroundColor ?? NANO_BLUE,
-            color: fallbackTextColor ?? "var(--text-color-on-color)",
+            // QooWork: Mist com a inicial preta, o mesmo do avatar do @plane/ui
+            // e o que o manual desenha no produto. A cor de assinatura ficaria
+            // fora da regra dos 3% numa tela de equipe com trinta pessoas.
+            backgroundColor: fallbackBackgroundColor ?? AVATAR_SEM_FOTO.fundo,
+            color: fallbackTextColor ?? AVATAR_SEM_FOTO.texto,
           }}
         >
           {fallbackLetter}

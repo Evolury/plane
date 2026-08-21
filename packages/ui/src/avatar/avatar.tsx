@@ -6,7 +6,7 @@
 
 // ui
 import { Tooltip } from "@plane/propel/tooltip";
-import { NANO_BLUE } from "@plane/constants";
+import { AVATAR_SEM_FOTO } from "@plane/constants";
 // helpers
 import { cn } from "../utils";
 import type { TAvatarSize } from "./helper";
@@ -99,11 +99,11 @@ export function Avatar(props: Props) {
               className
             )}
             style={{
-              // Evolury: o azul da marca (brandbook 1.02). Era "#028375", um
-              // verde-azulado cravado que não vem de lugar nenhum — e é o que
-              // toda pessoa sem foto exibia.
-              backgroundColor: fallbackBackgroundColor ?? NANO_BLUE,
-              color: fallbackTextColor ?? "#ffffff",
+              // QooWork: Mist com a inicial preta, como o manual desenha o
+              // avatar no produto. Era o azul da Evolury, e antes dele um
+              // verde-azulado cravado que não vinha de lugar nenhum.
+              backgroundColor: fallbackBackgroundColor ?? AVATAR_SEM_FOTO.fundo,
+              color: fallbackTextColor ?? AVATAR_SEM_FOTO.texto,
             }}
           >
             {name?.[0]?.toUpperCase() ?? fallbackText ?? "?"}

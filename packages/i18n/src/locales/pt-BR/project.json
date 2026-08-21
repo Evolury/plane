@@ -199,8 +199,8 @@
         "primary_button": {
           "text": "Crie seu primeira tarefa",
           "comic": {
-            "title": "As tarefas são blocos de construção no Evotask.",
-            "description": "Redesenhar a interface do usuário do Evotask, reformular a marca da empresa ou lançar o novo sistema de injeção de combustível são exemplos de tarefas que provavelmente têm subtarefas."
+            "title": "As tarefas são blocos de construção no QooWork.",
+            "description": "Redesenhar a interface do usuário do QooWork, reformular a marca da empresa ou lançar o novo sistema de injeção de combustível são exemplos de tarefas que provavelmente têm subtarefas."
           }
         }
       },
@@ -275,8 +275,8 @@
   "project_page": {
     "empty_state": {
       "general": {
-        "title": "Escreva uma nota, um documento ou uma base de conhecimento completa. Peça a Galileo, o assistente de IA do Evotask, para ajudá-lo a começar",
-        "description": "As páginas são espaço para registrar pensamentos no Evotask. Anote notas de reunião, formate-as facilmente, incorpore tarefas, organize-as usando uma biblioteca de componentes e mantenha-as todas no contexto do seu projeto. Para facilitar qualquer documento, invoque Galileo, a IA do Evotask, com um atalho ou o clique de um botão.",
+        "title": "Escreva uma nota, um documento ou uma base de conhecimento completa. Peça a Galileo, o assistente de IA do QooWork, para ajudá-lo a começar",
+        "description": "As páginas são espaço para registrar pensamentos no QooWork. Anote notas de reunião, formate-as facilmente, incorpore tarefas, organize-as usando uma biblioteca de componentes e mantenha-as todas no contexto do seu projeto. Para facilitar qualquer documento, invoque Galileo, a IA do QooWork, com um atalho ou o clique de um botão.",
         "primary_button": {
           "text": "Crie sua primeira página"
         }

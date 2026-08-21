@@ -11,4 +11,4 @@ export default function ResetPasswordLayout() {
   return <Outlet />;
 }
 
-export const meta: Route.MetaFunction = () => [{ title: "Reset Password - Evotask" }];
+export const meta: Route.MetaFunction = () => [{ title: "Reset Password - QooWork" }];
