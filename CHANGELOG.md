@@ -3,9 +3,13 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
-## [1.35.1] — 2026-08-21
+## [1.35.2] — 2026-08-21
 
 **Patch**: o Plane ainda aparecia na entrada, no carregamento e no favicon.
+
+> A 1.35.1 saiu vazia — o envio da branch foi recusado e o erro passou
+> despercebido, então aquela versão foi ao ar idêntica à 1.35.0. É esta que
+> leva as correções abaixo.
 
 ### Na tela
 
@@ -32,6 +36,12 @@ versionamento descrito em [VERSIONING.md](VERSIONING.md).
 - Duas verificações novas impedem a volta dos dois primeiros: nenhuma tela de
   entrada pode traduzir no carregamento do arquivo, e nenhuma tela pode usar o
   logotipo do Plane.
+
+## [1.35.1] — 2026-08-21
+
+**Sem efeito.** Versão publicada por engano sem nenhuma mudança: o envio da
+branch foi recusado por histórico divergente e o erro não foi conferido. O
+conteúdo previsto para ela está na 1.35.2.
 
 ## [1.35.0] — 2026-08-21
 
