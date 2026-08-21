@@ -42,7 +42,9 @@ quatro quantitativas — propriedades, automações, assentos, convidados.
 
 **Aceite**
 
-1. Cada uma das sete travas devolve 402 com o código certo, provada por teste de contrato
+1. Seis das sete travas devolvem 402 com o código certo, provadas por teste de contrato.
+   A sétima — assento de membro — **não recusa**: convidar acima do teto passa, e o
+   excedente entra no ciclo seguinte (E7). É decisão, e tem teste dizendo isso
 2. Cada trava, removida uma de cada vez, **reprova** a suíte
 3. O middleware recusa escrita em espaço restrito e **deixa passar** faturamento, exportação e autenticação — as três exceções com teste próprio
 4. Espaço `ativa` não sofre nenhuma restrição: uma tarefa é criada, editada e excluída com a suíte inteira verde
