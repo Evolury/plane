@@ -125,3 +125,12 @@ from .automation import (
 )
 
 from .description import Description, DescriptionVersion
+
+# Evolury: assinatura por espaço de trabalho (ADR 0021)
+from .faturamento import (
+    Assinatura,
+    Cobranca,
+    Cupom,
+    EventoAsaas,
+    HistoricoDeAssinatura,
+)
