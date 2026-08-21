@@ -11,17 +11,24 @@ import { useParams } from "react-router";
 import {
   EUserPermissionsLevel,
   GROUPED_WORKSPACE_SETTINGS,
+  RECURSO_WEBHOOKS,
   WORKSPACE_SETTINGS_CATEGORIES,
   WORKSPACE_SETTINGS_CATEGORY_LABELS,
 } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { joinUrlPath } from "@plane/utils";
 // components
+import { RotuloDePlano } from "@/components/faturamento";
 import { SettingsSidebarItem } from "@/components/settings/sidebar/item";
 // hooks
 import { useUserPermissions } from "@/hooks/store/user";
 // local imports
 import { WORKSPACE_SETTINGS_ICONS } from "./item-icon";
+
+/** Evolury: quais itens das configurações do espaço são recurso de plano. */
+const RECURSOS_POR_ITEM: Record<string, string | undefined> = {
+  webhooks: RECURSO_WEBHOOKS,
+};
 
 export const WorkspaceSettingsSidebarItemCategories = observer(function WorkspaceSettingsSidebarItemCategories() {
   // params
@@ -62,6 +69,10 @@ export const WorkspaceSettingsSidebarItemCategories = observer(function Workspac
                     isActive={isItemActive}
                     icon={WORKSPACE_SETTINGS_ICONS[item.key]}
                     label={t(item.i18n_label)}
+                    // Evolury (ADR 0021): o item continua visível, com o nome do
+                    // plano que o libera. Esconder o que se vende é esconder a
+                    // venda — e o servidor recusa de qualquer forma.
+                    selo={<RotuloDePlano recurso={RECURSOS_POR_ITEM[item.key]} />}
                   />
                 );
               })}
