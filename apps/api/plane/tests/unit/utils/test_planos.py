@@ -199,6 +199,40 @@ class TestValorDoCiclo:
 
 
 @pytest.mark.unit
+class TestCopiaParaContrato:
+    """O que a assinatura guarda no ato — e por que não é referência."""
+
+    def test_copia_o_plano_inteiro(self):
+        copia = planos.copia_para_contrato(PROFISSIONAL, CICLO_MENSAL)
+        assert copia == {
+            "plano": PROFISSIONAL,
+            "ciclo": CICLO_MENSAL,
+            "assentos_incluidos": 10,
+            "convidados_por_assento": 2,
+            "valor_base": 69000,
+            "valor_por_assento": 6500,
+        }
+
+    def test_o_anual_copia_o_preco_anual(self):
+        copia = planos.copia_para_contrato(PROFISSIONAL, CICLO_ANUAL)
+        assert copia["valor_base"] == 690000
+        assert copia["valor_por_assento"] == 65000
+
+    def test_cortesia_zera_preco_e_mantem_capacidade(self):
+        """Cortesia não cobra — mas assento e cota de convidado continuam valendo."""
+        copia = planos.copia_para_contrato(AVANCADO, CICLO_MENSAL, gratuita=True)
+        assert copia["valor_base"] == 0
+        assert copia["valor_por_assento"] == 0
+        assert copia["assentos_incluidos"] == 30
+        assert copia["convidados_por_assento"] == 5
+        assert copia["plano"] == AVANCADO
+
+    def test_recusa_ciclo_desconhecido(self):
+        with pytest.raises(ValueError, match="Ciclo desconhecido"):
+            planos.copia_para_contrato(PROFISSIONAL, "trimestral")
+
+
+@pytest.mark.unit
 class TestNavegacao:
     def test_seguinte_sobe_um_degrau(self):
         assert planos.seguinte(ESSENCIAL).chave == PROFISSIONAL

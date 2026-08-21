@@ -13,7 +13,8 @@
 # está em produção congelaria cliente pagante no dia em que a trava for ligada.
 #
 # Por isso o que já existe entra em `em_cortesia`, com prazo: 90 dias a contar
-# desta migração. Prazo, e não cortesia aberta, pelo mesmo motivo que todo
+# desta migração, **no plano maior e com preço zerado** — o que esses espaços já
+# têm hoje, sem cobrar por isso. Prazo, e não cortesia aberta, pelo mesmo motivo que todo
 # cupom tem fim (ADR 0021, decisão 10) — cortesia sem data é assinatura grátis
 # para sempre, em silêncio. Com data, ela aparece no painel com um relógio
 # correndo, e o comercial tem 90 dias para classificar espaço por espaço.
@@ -27,6 +28,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
+from plane.utils.planos import AVANCADO, CICLO_MENSAL, copia_para_contrato
 from plane.utils.regua import EM_CORTESIA, SEM_ASSINATURA, fim_da_cortesia_de_transicao
 
 
@@ -41,8 +43,18 @@ def conceder_cortesia_de_transicao(apps, schema_editor):
     hoje = timezone.now().date()
     fim = fim_da_cortesia_de_transicao(hoje)
 
+    # A cortesia carrega plano, e carrega o maior. Não é generosidade: é o que
+    # esses espaços já têm hoje — analytics, API, webhooks, automação sem teto.
+    # Cortesia sem plano seria pior que `sem_assinatura`, porque o motor de
+    # direitos leria "nenhum recurso" e tiraria da mão de cliente pagante o que
+    # ele usa desde ontem.
+    #
+    # Preço zerado porque cortesia não cobra; capacidade preservada porque
+    # assento e cota de convidado precisam continuar valendo.
+    cortesia = copia_para_contrato(AVANCADO, CICLO_MENSAL, gratuita=True)
+
     assinaturas = [
-        Assinatura(workspace_id=workspace_id, status=EM_CORTESIA, pago_ate=fim)
+        Assinatura(workspace_id=workspace_id, status=EM_CORTESIA, pago_ate=fim, **cortesia)
         for workspace_id in Workspace.objects.values_list("id", flat=True)
     ]
     if not assinaturas:
@@ -66,9 +78,17 @@ def conceder_cortesia_de_transicao(apps, schema_editor):
 
 
 def remover_cortesia_de_transicao(apps, schema_editor):
-    """A volta apaga o que a ida criou — as tabelas caem junto com a migração."""
-    Assinatura = apps.get_model("db", "Assinatura")
-    Assinatura.objects.filter(status=EM_CORTESIA, plano="").delete()
+    """A volta não apaga linha nenhuma: as tabelas caem inteiras logo em seguida.
+
+    A primeira versão apagava as assinaturas antes, por simetria. O Postgres
+    recusou — `cannot ALTER TABLE "assinaturas" because it has pending trigger
+    events` —, porque o DELETE deixa gatilhos de chave estrangeira pendentes na
+    mesma transação em que o DROP TABLE acontece. Medido desfazendo a migração
+    no planedev, não deduzido.
+
+    Simetria bonita que quebra a volta é pior que nenhuma: reverter esta
+    migração derruba as cinco tabelas, e não sobra o que limpar.
+    """
 
 
 class Migration(migrations.Migration):

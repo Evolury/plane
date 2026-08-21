@@ -172,6 +172,29 @@ def convidados_permitidos(chave: str, assentos_pagos: int) -> int:
     return plano(chave).convidados_por_assento * assentos_pagos
 
 
+def copia_para_contrato(chave: str, ciclo: str, gratuita: bool = False) -> dict:
+    """Os campos que a assinatura guarda como **cópia** do catálogo.
+
+    Reajustar a tabela não pode reescrever contrato assinado (ADR 0021, decisão
+    11), então o que vale para o cliente é o que foi copiado no dia em que ele
+    contratou — não o que este arquivo diz hoje.
+
+    `gratuita` zera o preço e mantém a capacidade: é a forma da cortesia, que
+    não cobra mas precisa saber quantos assentos e quantos convidados libera.
+    """
+    escolhido = plano(chave)
+    if ciclo not in CICLOS:
+        raise ValueError(f"Ciclo desconhecido: {ciclo!r}. Conhecidos: {', '.join(CICLOS)}")
+    return {
+        "plano": escolhido.chave,
+        "ciclo": ciclo,
+        "assentos_incluidos": escolhido.assentos,
+        "convidados_por_assento": escolhido.convidados_por_assento,
+        "valor_base": 0 if gratuita else escolhido.preco(ciclo),
+        "valor_por_assento": 0 if gratuita else escolhido.adicional(ciclo),
+    }
+
+
 def incoerencias() -> list:
     """As duas regras que o catálogo tem de obedecer, em forma de conferência.
 
