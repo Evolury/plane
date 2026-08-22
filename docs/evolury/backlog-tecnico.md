@@ -27,6 +27,106 @@ agrupamento atual é de propriedade e, se for, rebuscar a página; ou o aviso
 passar a carregar propriedade e opção, e o receptor gravar o campo anotado no
 store — que é o que `updateIssueList` já sabe reagrupar.
 
+### Ícones de e-mail hospedados no S3 de marketing do Plane
+
+`apps/api/templates/emails/notifications/issue-updates.html` busca **doze
+pictogramas** (estado, prioridade, responsável, etiqueta, prazo, duplicata,
+bloqueio, vínculo, seta) em
+`https://plane-marketing.s3.ap-south-1.amazonaws.com/plane-assets/emails/`.
+
+Não são marca — são pictogramas funcionais —, e por isso ficaram de fora da
+limpeza de 22/08/2026 ([1.38.0](../../CHANGELOG.md)). Mas são **dependência de
+terceiro num e-mail nosso**: se o balde sair do ar, o e-mail de atualização de
+tarefa chega quebrado, e enquanto ele estiver no ar entrega o IP de quem abre a
+mensagem para a infraestrutura do Plane.
+
+**Número medido:** 12 imagens em 1 modelo, dos 11 que existem. Os outros dez já
+estão limpos.
+
+**Caminho provável:** copiar os doze arquivos para `plane/static/logos/` — que
+já hospeda os ícones sociais — e trocar o `src` por `{{ current_site }}/static/…`,
+como `project_invitation.html` já faz. É substituição de atributo, sem mexer na
+estrutura das tabelas.
+
+**A guarda já cobre:** `plane/tests/unit/marca/test_marca_nos_emails.py` detecta
+esses endereços e carrega o modelo numa exceção nomeada. Resolver a dívida é
+apagar a entrada de `EXCECOES` e ver o teste passar.
+
+### `plane.evolury.app.br` parado na 1.37.0
+
+A produção de desenvolvimento não recebeu a 1.38.0, que está em
+`app.qoowork.com.br`. Enquanto ficar atrás, ela **não tem o conserto do upload**
+— mas ali o armazenamento é MinIO, que implementa POST assinado, então o defeito
+não se manifesta. O que ela não tem é a marca corrigida nos e-mails e o proxy
+com upstream nomeável.
+
+**Número medido:** 1 versão de diferença (1.37.0 → 1.38.0), 4 PRs.
+
+### Cloudflare em SSL _Full_, não _Full (strict)_
+
+A zona `qoowork.com.br` está em **Full**: a Cloudflare valida que a origem fala
+TLS, mas **não valida o certificado dela**. Com _Full (strict)_ passa a validar,
+e o certificado de origem instalado já é da própria Cloudflare — ou seja, o
+aperto não exige emissão nova.
+
+Ficou em Full durante a subida para não confundir erro de certificado com erro
+de aplicação. O site está provado desde 22/08/2026; não há mais razão para
+segurar.
+
+**Número medido:** 1 zona.
+
+### A raiz `qoowork.com.br` redireciona para o app
+
+Provisório por decisão de 22/08/2026: a raiz fica reservada para a página de
+venda e assinatura, que será construída no Payload. Enquanto ela não existe,
+raiz e `www` devolvem 301 para `app.qoowork.com.br`, para que ninguém que digite
+o domínio caia em erro.
+
+Quando a página entrar, o bloco da raiz no Caddy vira o dela e o redirecionamento
+sai. O `EMAIL_FROM` **continua** em `@qoowork.com.br` — é no domínio raiz que o
+DKIM está publicado e autenticado no Brevo, e movê-lo mandaria convite para spam.
+
+### Cupom de valor fixo não existe no catálogo
+
+`plane/utils/cupons.py` só conhece `percentual` (inteiro) e `cortesia`. Não há
+como dizer "este cliente paga R$ 150" sem calcular porcentagem, e a porcentagem
+inteira nem sempre chega ao valor desejado.
+
+**Número medido:** apareceu em 22/08/2026, no teste real de pagamento. Sobre o
+Essencial de R$ 290, os degraus vizinhos são 99% → R$ 2,90 (recusado: o Asaas
+exige mínimo de R$ 5,00) e 98% → R$ 5,80. R$ 5,00 exigiria 98,27%.
+
+**Caminho provável:** um terceiro tipo, `valor_fixo`, em que `Cupom.valor` é o
+desconto em centavos. `valor_com_desconto` ganha um ramo; `fim_da_promocao` e
+`primeira_cobranca` não mudam.
+
+### O `AWS_S3_ENDPOINT_URL` do `planedev` aponta para o MinIO de outro projeto
+
+A pilha de desenvolvimento usa `http://localhost:9000`, e nesta máquina quem
+atende nessa porta é `evolury-minio` — de outro projeto. O MinIO do próprio
+`planedev` **não publica porta no host**.
+
+**Número medido:** descoberto em 22/08/2026 ao tentar provar o upload localmente.
+A tentativa devolveu 403 por credencial errada. O 403 foi sorte: com credencial
+compatível, o teste teria escrito no balde alheio.
+
+**Caminho provável:** publicar a porta do `planedev-plane-minio-1` e apontar o
+endpoint para ela, ou dar ao serviço um nome de host próprio.
+
+### A configuração da instância não segue o ambiente
+
+`manage.py configure_instance` usa `get_or_create`: ele **cria** as linhas de
+`InstanceConfiguration` que faltam e **nunca atualiza** as que existem. Trocar
+uma credencial no ambiente não muda nada em produção, porque o app lê do banco
+(`SKIP_ENV_VAR=1`).
+
+**Número medido:** mordeu **duas vezes** no mesmo dia, 22/08/2026 — a chave SMTP
+do Brevo e a chave do Asaas rotacionada ficaram velhas no banco enquanto o
+ambiente já tinha as novas. As duas foram corrigidas à mão, uma a uma.
+
+**Caminho provável:** um `--sincronizar` no comando, que reescreve as linhas a
+partir do ambiente quando divergirem, e diz quais mudou sem imprimir valor.
+
 ## Resolvido
 
 ### Migração nenhuma era executada por CI — 19/08/2026
