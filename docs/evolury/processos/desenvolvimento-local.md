@@ -237,3 +237,46 @@ Na primeira execução ele achou duas chaves inexistentes em código herdado.
 
 Apague o que você criou no `planedev`. Ele é ambiente compartilhado entre
 sessões, e dado de teste esquecido vira ruído na validação seguinte.
+
+## O armazenamento de objetos é compartilhado
+
+Os arquivos do ambiente de desenvolvimento vão para o **MinIO compartilhado** em
+`infra/minio` — um só para todos os produtos da máquina, e não um por produto.
+
+```
+AWS_S3_ENDPOINT_URL=http://172.17.0.1:9200
+AWS_S3_BUCKET_NAME=planedev
+USE_MINIO=0
+```
+
+Isso mora em **`apps/api/.env`**, não no `.env` da raiz: o serviço `api` do
+`docker-compose-local.yml` lê `./apps/api/.env`. O da raiz alimenta a
+interpolação do Compose (portas, nome de balde do serviço embarcado). Editar o
+errado não dá erro — só não faz efeito, e o contêiner segue com o valor antigo.
+
+**Por que o endereço é `172.17.0.1` e não `localhost`.** A assinatura SigV4
+inclui o Host: quem assina a URL (a API, dentro de um contêiner) e quem a usa (o
+navegador, no host) precisam falar o mesmo endereço. Sobre `localhost` os dois
+discordam — cada um enxerga a si mesmo.
+
+**Por que `USE_MINIO=0`.** Com `1`, o Plane reescreve o endereço para o host da
+requisição e espera que alguém esteja proxiando o balde sob o domínio do app.
+É outro desenho, e não é o que se usa aqui.
+
+O MinIO embarcado no `docker-compose-local.yml` continua existindo, atrás de um
+perfil, para quem não tem a pilha do `infra`:
+
+```bash
+docker compose -f docker-compose-local.yml --profile minio-embarcado up -d
+```
+
+Ele saiu do caminho porque estava fazendo mal calado: publicava `localhost:9000`,
+porta que nesta máquina já é de outro projeto. O bind falhava, o serviço não
+subia, e o endereço continuava resolvendo — para o balde do vizinho. Um upload
+de teste levou 403 por credencial errada; com credencial compatível, teria
+escrito lá.
+
+**As portas do host são configuráveis** pelo mesmo motivo: `DEV_DB_PORT`,
+`DEV_REDIS_PORT`, `DEV_API_PORT`, `DEV_MINIO_PORT`. O padrão é a porta de
+sempre, então quem tem a máquina só para o Plane não muda nada; quem roda vários
+produtos escolhe as suas.

@@ -100,34 +100,53 @@ exige mínimo de R$ 5,00) e 98% → R$ 5,80. R$ 5,00 exigiria 98,27%.
 desconto em centavos. `valor_com_desconto` ganha um ramo; `fim_da_promocao` e
 `primeira_cobranca` não mudam.
 
-### O `AWS_S3_ENDPOINT_URL` do `planedev` aponta para o MinIO de outro projeto
-
-A pilha de desenvolvimento usa `http://localhost:9000`, e nesta máquina quem
-atende nessa porta é `evolury-minio` — de outro projeto. O MinIO do próprio
-`planedev` **não publica porta no host**.
-
-**Número medido:** descoberto em 22/08/2026 ao tentar provar o upload localmente.
-A tentativa devolveu 403 por credencial errada. O 403 foi sorte: com credencial
-compatível, o teste teria escrito no balde alheio.
-
-**Caminho provável:** publicar a porta do `planedev-plane-minio-1` e apontar o
-endpoint para ela, ou dar ao serviço um nome de host próprio.
-
-### A configuração da instância não segue o ambiente
-
-`manage.py configure_instance` usa `get_or_create`: ele **cria** as linhas de
-`InstanceConfiguration` que faltam e **nunca atualiza** as que existem. Trocar
-uma credencial no ambiente não muda nada em produção, porque o app lê do banco
-(`SKIP_ENV_VAR=1`).
-
-**Número medido:** mordeu **duas vezes** no mesmo dia, 22/08/2026 — a chave SMTP
-do Brevo e a chave do Asaas rotacionada ficaram velhas no banco enquanto o
-ambiente já tinha as novas. As duas foram corrigidas à mão, uma a uma.
-
-**Caminho provável:** um `--sincronizar` no comando, que reescreve as linhas a
-partir do ambiente quando divergirem, e diz quais mudou sem imprimir valor.
-
 ## Resolvido
+
+### O `planedev` escrevia no MinIO de outro projeto — 22/08/2026
+
+A pilha de desenvolvimento usava `http://localhost:9000`, e nesta máquina quem
+atende nessa porta é o MinIO do `evolury-dev`. Descoberto em 22/08/2026 ao
+tentar provar o upload localmente: a tentativa devolveu 403 por credencial
+errada. O 403 foi sorte — com credencial compatível, o teste teria escrito no
+balde alheio.
+
+**A raiz apareceu no caminho, e era pior:** o MinIO do `planedev` **nunca
+subia**. Publicava `localhost:9000`, porta já ocupada; o bind falhava em
+silêncio, o serviço não existia, e o endereço continuava resolvendo — para o
+vizinho.
+
+**Como foi resolvido.** O ambiente de desenvolvimento ganhou um MinIO
+**compartilhado** em `infra/minio`, um só para todos os produtos da máquina, em
+`172.17.0.1:9200` — o gateway do docker, e não `localhost`, porque a assinatura
+SigV4 inclui o Host e servidor e navegador precisam falar o mesmo endereço.
+Cada produto tem o seu balde.
+
+O MinIO embarcado passou para o perfil `minio-embarcado`, para quem não tem a
+pilha do `infra`, e as portas do host viraram configuráveis (`DEV_DB_PORT`,
+`DEV_REDIS_PORT`, `DEV_API_PORT`, `DEV_MINIO_PORT`), com o padrão de sempre
+para quem tem a máquina limpa.
+
+### A configuração da instância não seguia o ambiente — 22/08/2026
+
+`configure_instance` usava `get_or_create`: criava as linhas que faltavam e
+**nunca atualizava** as que existiam. Como o app lê do banco (`SKIP_ENV_VAR=1`),
+trocar uma credencial no ambiente não mudava nada em produção.
+
+Mordeu **duas vezes no mesmo dia**, 22/08/2026 — a chave SMTP do Brevo e a chave
+do Asaas recém-rotacionada ficaram velhas no banco enquanto o ambiente já tinha
+as novas. As duas foram corrigidas à mão, uma a uma.
+
+**Como foi resolvido.** O comando ganhou `--sincronizar`, que reescreve as
+linhas divergentes a partir do ambiente, e `--simular`, que diz o que mudaria
+sem gravar. A saída mostra impressão digital, nunca valor: segredo em log de
+deploy é segredo vazado, e já aconteceu nesta casa.
+
+Duas escolhas que os testes guardam, ambas provadas por injeção: **sincronizar
+é opcional**, porque o god-mode deixa o administrador editar essas linhas pela
+tela e sincronizar a cada deploy desfaria a edição dele em silêncio; e
+**ambiente vazio não apaga configuração**, porque a variável pode não estar
+definida naquele deploy, e sobrescrever com vazio desligaria e-mail ou pagamento
+sem ninguém pedir.
 
 ### Migração nenhuma era executada por CI — 19/08/2026
 
