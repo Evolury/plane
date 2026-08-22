@@ -164,7 +164,7 @@ class UserAssetEndpoint(BaseAPIView):
         # Get the presigned URL
         storage = S3Storage(request=request)
         # Generate a presigned URL to share an S3 object
-        presigned_url = storage.generate_presigned_post(object_name=asset_key, file_type=type, file_size=size_limit)
+        presigned_url = storage.generate_presigned_put(object_name=asset_key, file_type=type)
         # Return the presigned URL
         return Response(
             {
@@ -337,7 +337,7 @@ class UserServerAssetEndpoint(BaseAPIView):
         # Get the presigned URL
         storage = S3Storage(request=request, is_server=True)
         # Generate a presigned URL to share an S3 object
-        presigned_url = storage.generate_presigned_post(object_name=asset_key, file_type=type, file_size=size_limit)
+        presigned_url = storage.generate_presigned_put(object_name=asset_key, file_type=type)
         # Return the presigned URL
         return Response(
             {
@@ -579,7 +579,7 @@ class GenericAssetEndpoint(BaseAPIView):
 
         # Get the presigned URL
         storage = S3Storage(request=request, is_server=True)
-        presigned_url = storage.generate_presigned_post(object_name=asset_key, file_type=type, file_size=size_limit)
+        presigned_url = storage.generate_presigned_put(object_name=asset_key, file_type=type)
 
         return Response(
             {

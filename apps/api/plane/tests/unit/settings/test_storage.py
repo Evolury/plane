@@ -62,25 +62,17 @@ class TestS3StorageSignedURLExpiration:
         clear=True,
     )
     @patch("plane.settings.storage.boto3")
-    def test_generate_presigned_post_uses_default_expiration(self, mock_boto3):
-        """Test that generate_presigned_post uses the configured default expiration"""
-        # Mock the boto3 client and its response
+    def test_generate_presigned_put_uses_default_expiration(self, mock_boto3):
+        """O PUT assinado usa a expiração padrão quando nenhuma é passada."""
         mock_s3_client = Mock()
-        mock_s3_client.generate_presigned_post.return_value = {
-            "url": "https://test-url.com",
-            "fields": {},
-        }
+        mock_s3_client.generate_presigned_url.return_value = "https://test-url.com"
         mock_boto3.client.return_value = mock_s3_client
 
-        # Create S3Storage instance
         storage = S3Storage()
+        storage.generate_presigned_put("test-object", "image/png")
 
-        # Call generate_presigned_post without explicit expiration
-        storage.generate_presigned_post("test-object", "image/png", 1024)
-
-        # Assert that the boto3 method was called with the default expiration (3600)
-        mock_s3_client.generate_presigned_post.assert_called_once()
-        call_kwargs = mock_s3_client.generate_presigned_post.call_args[1]
+        mock_s3_client.generate_presigned_url.assert_called_once()
+        call_kwargs = mock_s3_client.generate_presigned_url.call_args[1]
         assert call_kwargs["ExpiresIn"] == 3600
 
     @patch.dict(
@@ -95,25 +87,17 @@ class TestS3StorageSignedURLExpiration:
         clear=True,
     )
     @patch("plane.settings.storage.boto3")
-    def test_generate_presigned_post_uses_custom_expiration(self, mock_boto3):
-        """Test that generate_presigned_post uses custom expiration from env variable"""
-        # Mock the boto3 client and its response
+    def test_generate_presigned_put_uses_custom_expiration(self, mock_boto3):
+        """SIGNED_URL_EXPIRATION do ambiente manda na validade da URL."""
         mock_s3_client = Mock()
-        mock_s3_client.generate_presigned_post.return_value = {
-            "url": "https://test-url.com",
-            "fields": {},
-        }
+        mock_s3_client.generate_presigned_url.return_value = "https://test-url.com"
         mock_boto3.client.return_value = mock_s3_client
 
-        # Create S3Storage instance with SIGNED_URL_EXPIRATION=60
         storage = S3Storage()
+        storage.generate_presigned_put("test-object", "image/png")
 
-        # Call generate_presigned_post without explicit expiration
-        storage.generate_presigned_post("test-object", "image/png", 1024)
-
-        # Assert that the boto3 method was called with custom expiration (60)
-        mock_s3_client.generate_presigned_post.assert_called_once()
-        call_kwargs = mock_s3_client.generate_presigned_post.call_args[1]
+        mock_s3_client.generate_presigned_url.assert_called_once()
+        call_kwargs = mock_s3_client.generate_presigned_url.call_args[1]
         assert call_kwargs["ExpiresIn"] == 60
 
     @patch.dict(
@@ -204,3 +188,43 @@ class TestS3StorageSignedURLExpiration:
         mock_s3_client.generate_presigned_url.assert_called_once()
         call_kwargs = mock_s3_client.generate_presigned_url.call_args[1]
         assert call_kwargs["ExpiresIn"] == 120
+
+
+class TestPresignedPut:
+    """O formato do PUT assinado.
+
+    O `Content-Type` precisa entrar na assinatura E voltar nos cabeçalhos: quem
+    envia tem de repetir exatamente o que foi assinado, ou o armazenamento
+    recusa. Um teste que olhasse só a URL deixaria passar a falta do cabeçalho.
+    """
+
+    @patch.dict(
+        os.environ,
+        {
+            "AWS_ACCESS_KEY_ID": "test-key",
+            "AWS_SECRET_ACCESS_KEY": "test-secret",
+            "AWS_S3_BUCKET_NAME": "test-bucket",
+            "AWS_REGION": "us-east-1",
+        },
+        clear=True,
+    )
+    @patch("plane.settings.storage.boto3")
+    def test_assina_put_object_com_content_type(self, mock_boto3):
+        mock_s3_client = Mock()
+        mock_s3_client.generate_presigned_url.return_value = "https://exemplo/put"
+        mock_boto3.client.return_value = mock_s3_client
+
+        storage = S3Storage()
+        resposta = storage.generate_presigned_put("pasta/arquivo.png", "image/png")
+
+        operacao = mock_s3_client.generate_presigned_url.call_args[0][0]
+        parametros = mock_s3_client.generate_presigned_url.call_args[1]["Params"]
+        assert operacao == "put_object"
+        assert parametros["Key"] == "pasta/arquivo.png"
+        assert parametros["ContentType"] == "image/png"
+
+        assert resposta == {
+            "url": "https://exemplo/put",
+            "method": "PUT",
+            "headers": {"Content-Type": "image/png"},
+        }
