@@ -361,6 +361,19 @@ CELERY_IMPORTS = (
     # descarta como "unregistered task": a varredura simplesmente não acontece,
     # sem erro em lugar nenhum.
     "plane.bgtasks.etapas_por_vencimento_task",
+    # Evolury: faturamento (ADR 0021). Terceira vez que esta lista existe pelo
+    # mesmo motivo — e a primeira em que o defeito chegou à produção: a 1.36.0
+    # subiu com cinco das seis tarefas registradas, porque cinco eram importadas
+    # sem querer por alguma view e a sexta, a régua, não é importada por
+    # ninguém. O agendador a disparava todo dia e o worker a descartava.
+    #
+    # A régua é justamente a que move os espaços para somente leitura e
+    # bloqueio: sem ela, a inadimplência não tem consequência nenhuma.
+    "plane.bgtasks.faturamento_conciliacao",
+    "plane.bgtasks.faturamento_evento",
+    "plane.bgtasks.faturamento_excedente",
+    "plane.bgtasks.faturamento_promocao",
+    "plane.bgtasks.faturamento_regua",
 )
 
 FILE_SIZE_LIMIT = int(os.environ.get("FILE_SIZE_LIMIT", 5242880))
