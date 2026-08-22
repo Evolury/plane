@@ -16,8 +16,17 @@ services:
       - dev_env
     volumes:
       - redisdata:/data
+    # Evolury: a porta do host é configurável desde 22/08/2026.
+    #
+    # Esta máquina roda vários produtos em desenvolvimento ao mesmo tempo, e
+    # todos publicavam as portas padrão. O primeiro a subir ficava com elas; os
+    # outros falhavam no bind — e o caso do MinIO foi pior que falhar, porque
+    # `localhost:9000` passou a responder pelo balde de outro projeto.
+    #
+    # O padrão continua sendo a porta de sempre: quem tem a máquina só para o
+    # Plane não muda nada.
     ports:
-      - "6379:6379"
+      - "${DEV_REDIS_PORT:-6379}:6379"
 
   plane-mq:
     image: rabbitmq:3.13.6-management-alpine
@@ -33,7 +42,21 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
 
+  # Evolury: fora do `up` por padrão, desde 22/08/2026.
+  #
+  # O armazenamento de objetos do ambiente de desenvolvimento é COMPARTILHADO e
+  # mora em `infra/minio` — um só para todos os produtos da máquina. Este aqui
+  # ficou porque quem não tem a pilha do `infra` precisa de alguma coisa:
+  #
+  #     docker compose -f docker-compose-local.yml --profile minio-embarcado up -d
+  #
+  # E ele saiu do caminho porque estava fazendo mal calado. Publicava 9000 no
+  # host, porta que nesta máquina já é de outro projeto; o bind falhava, o
+  # serviço nem subia, e `AWS_S3_ENDPOINT_URL=http://localhost:9000` passava a
+  # apontar para o MinIO do vizinho. Um upload de teste levou 403 por credencial
+  # errada — com credencial compatível, teria escrito no balde alheio.
   plane-minio:
+    profiles: ["minio-embarcado"]
     image: minio/minio
     restart: unless-stopped
     networks:
@@ -55,8 +78,8 @@ services:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - "${DEV_MINIO_PORT:-9000}:9000"
+      - "${DEV_MINIO_CONSOLE_PORT:-9090}:9090"
 
   plane-db:
     image: postgres:15.7-alpine
@@ -70,8 +93,17 @@ services:
       - .env
     environment:
       PGDATA: /var/lib/postgresql/data
+    # Evolury: a porta do host é configurável desde 22/08/2026.
+    #
+    # Esta máquina roda vários produtos em desenvolvimento ao mesmo tempo, e
+    # todos publicavam as portas padrão. O primeiro a subir ficava com elas; os
+    # outros falhavam no bind — e o caso do MinIO foi pior que falhar, porque
+    # `localhost:9000` passou a responder pelo balde de outro projeto.
+    #
+    # O padrão continua sendo a porta de sempre: quem tem a máquina só para o
+    # Plane não muda nada.
     ports:
-      - "5432:5432"
+      - "${DEV_DB_PORT:-5432}:5432"
 
   api:
     build:
@@ -92,7 +124,7 @@ services:
       - plane-redis
       - plane-mq
     ports:
-      - "8000:8000"
+      - "${DEV_API_PORT:-8000}:8000"
 
   worker:
     build:
