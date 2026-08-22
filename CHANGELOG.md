@@ -3,6 +3,46 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.39.0] — 2026-08-22
+
+**Minor**: cinco refinamentos vindos do uso real — o quadro que piscava, o
+título que abreviava, as colunas que não se viam, o nome repetido e a cortesia
+que não deixava escolher plano.
+
+### Consertado
+
+- **O quadro piscava a cada mudança.** Criar uma tarefa, ou trocar a etapa em
+  Minhas tarefas, apagava a lista por meio segundo e punha esqueleto no lugar.
+  Não era recarga de página: era o store esvaziando a lista antes de ir buscar
+  os dados novos. Isso faz sentido na primeira carga, quando não há o que
+  mostrar; numa revalidação em segundo plano, é apagar o que a pessoa está
+  olhando. Os oito quadros passam a manter os cartões na tela enquanto
+  atualizam.
+
+- **O título do cartão vinha cortado.** Uma linha só, e quase todo título de
+  mais de quatro palavras terminava em reticências — justamente no lugar onde
+  se decide o que abrir. Passa a quebrar em até três linhas. Na lista continua
+  uma linha, porque ali a altura da linha é a grade.
+
+- **As colunas do quadro não se distinguiam.** Fundo do quadro e fundo do
+  cartão diferiam em 1,5% de luminosidade, e a coluna não tinha borda nenhuma —
+  o resultado era um campo chapado. A coluna ganhou corpo, cantos e uma borda
+  fina.
+
+- **O sobrenome aparecia duas vezes.** "Boas-vindas ao QooWork, Tássio Câmara
+  Câmara". Oito lugares juntavam nome e sobrenome com um espaço no meio, e quem
+  lê "Nome" e digita o nome inteiro colhia a repetição. O sobrenome agora só é
+  acrescentado quando o nome ainda não termina nele.
+
+- **A cota de convidados ignorava o assento excedente.** Quem pagava por 35
+  assentos recebia cota de convidado calculada sobre os 30 do plano.
+
+### Novo
+
+- **A cortesia do god-mode deixa escolher o plano e os assentos.** Antes usava
+  o plano que a assinatura já tinha, então liberar o produto inteiro para a
+  conta da casa exigia mexer no banco. Cortesia sem prazo continua recusada.
+
 ## [1.38.0] — 2026-08-22
 
 **Minor**: nenhum upload funcionava em produção, e o e-mail que saía daqui era
