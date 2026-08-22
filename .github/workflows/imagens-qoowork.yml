@@ -1,0 +1,116 @@
+# Publica as imagens do QooWork no GHCR.
+#
+# Por que existe: a produção do QooWork roda numa VPS que atende cliente. Buildar
+# lá gasta a CPU de quem está usando o produto e obriga o servidor a ter uma
+# cópia do repositório — dois acoplamentos que não pagam nada. Aqui a imagem sai
+# pronta, versionada pela tag, e o deploy vira `pull` + `up`.
+#
+# O gatilho é a tag de release (`v*`), que é criada depois do merge do PR de
+# versão (ver VERSIONING.md). `workflow_dispatch` existe para republicar sem
+# cortar versão nova.
+name: Imagens QooWork
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: "Versão a publicar (ex.: 1.37.0). Vazio usa a do package.json."
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  versao:
+    name: Descobrir a versão
+    runs-on: ubuntu-24.04
+    outputs:
+      numero: ${{ steps.calcular.outputs.numero }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: calcular
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.versao }}" ]; then
+            NUMERO="${{ inputs.versao }}"
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            NUMERO="${GITHUB_REF#refs/tags/v}"
+          else
+            NUMERO=$(node -p "require('./package.json').version")
+          fi
+
+          # A tag e o package.json precisam concordar: imagem com número que não
+          # bate com o código é o tipo de coisa que só se descobre depurando a
+          # produção.
+          NO_PACOTE=$(node -p "require('./package.json').version")
+          if [ "$NUMERO" != "$NO_PACOTE" ]; then
+            echo "::error::A versão pedida ($NUMERO) não bate com o package.json ($NO_PACOTE)."
+            exit 1
+          fi
+
+          echo "numero=$NUMERO" >> "$GITHUB_OUTPUT"
+          echo "publicando $NUMERO"
+
+  publicar:
+    name: ${{ matrix.servico }}
+    needs: versao
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - servico: api
+            contexto: ./apps/api
+            dockerfile: ./apps/api/Dockerfile.api
+          - servico: web
+            contexto: .
+            dockerfile: ./apps/web/Dockerfile.web
+          - servico: admin
+            contexto: .
+            dockerfile: ./apps/admin/Dockerfile.admin
+          - servico: space
+            contexto: .
+            dockerfile: ./apps/space/Dockerfile.space
+          - servico: live
+            contexto: .
+            dockerfile: ./apps/live/Dockerfile.live
+          - servico: proxy
+            contexto: ./apps/proxy
+            dockerfile: ./apps/proxy/Dockerfile.ce
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir e publicar
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.contexto }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          # `latest` existe para conveniência de quem inspeciona; o compose da
+          # produção fixa a versão, porque "latest" num servidor é a receita
+          # para ninguém saber o que está no ar.
+          tags: |
+            ghcr.io/evolury/qoowork-${{ matrix.servico }}:${{ needs.versao.outputs.numero }}
+            ghcr.io/evolury/qoowork-${{ matrix.servico }}:latest
+          # O cache é por serviço: um build de web não deve invalidar o de api.
+          cache-from: type=gha,scope=qoowork-${{ matrix.servico }}
+          cache-to: type=gha,mode=max,scope=qoowork-${{ matrix.servico }}
+          provenance: false
