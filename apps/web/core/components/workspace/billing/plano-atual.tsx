@@ -10,7 +10,7 @@ import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
 import type { TRetratoDoPlano } from "@/services/faturamento.service";
-import { emData } from "./formato";
+import { emData } from "@/components/faturamento/formato";
 
 type Props = { retrato: TRetratoDoPlano };
 

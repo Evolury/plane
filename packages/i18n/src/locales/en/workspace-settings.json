@@ -156,7 +156,40 @@
         "downgrade_agendado": "Plan switched. The new price applies from the next cycle.",
         "aguardando_pagamento": "Charge created. Access is released as soon as payment is confirmed.",
         "abrir_cobranca": "Open charge",
-        "erro_no_gateway": "Asaas refused: {detalhe}"
+        "erro_no_gateway": "Asaas refused: {detalhe}",
+        "faixa": {
+          "atrasada": "Payment overdue. Settle it to keep your access.",
+          "restrita": "This workspace is read-only due to non-payment. You can still see and export everything.",
+          "aviso_de_restricao": "Read-only from {data}.",
+          "aviso_de_bloqueio": "Access blocked from {data}.",
+          "regularizar": "Settle payment",
+          "bloqueada_titulo": "This workspace is blocked",
+          "bloqueada_texto": "The subscription is outstanding. Settle the payment to use the workspace again — your data is still here, and export is still available.",
+          "encerrada_titulo": "This workspace's contract has ended",
+          "encerrada_texto": "Data is kept until {data}. After that it is removed.",
+          "remocao_em_dias": "This workspace's data will be removed in {dias} days.",
+          "ir_para_faturamento": "Go to Billing"
+        },
+        "cancelar": {
+          "titulo": "Cancel subscription",
+          "descricao": "Access continues until the end of the cycle you already paid for. After that, data is kept for 90 days.",
+          "acao": "Cancel subscription",
+          "confirmar": "Are you sure? Access runs until {data}.",
+          "motivo": "Tell us why (optional)",
+          "cancelada": "Subscription canceled. Access runs until {data}.",
+          "reativar": "Reactivate subscription",
+          "reativada": "Subscription reactivated.",
+          "dados_removidos": "This workspace's data has already been removed."
+        },
+        "reembolso": {
+          "titulo": "Request a refund",
+          "descricao": "30-day guarantee. The request goes to finance, who processes the refund.",
+          "motivo": "Reason for the request",
+          "acao": "Send request",
+          "enviado": "Request recorded. Finance will get in touch.",
+          "sem_motivo": "Write the reason for the request.",
+          "aviso": "Once processed, the refund ends the workspace and starts data removal."
+        }
       },
       "exports": {
         "heading": "Exports",

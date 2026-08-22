@@ -17,7 +17,7 @@ import { cn } from "@plane/utils";
 import type { TCupom, TRetratoDoPlano } from "@/services/faturamento.service";
 import { FaturamentoService } from "@/services/faturamento.service";
 // local imports
-import { emReais } from "./formato";
+import { emReais } from "@/components/faturamento/formato";
 
 const servico = new FaturamentoService();
 

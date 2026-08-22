@@ -5,11 +5,14 @@
 from django.urls import path
 
 from plane.app.views.faturamento import (
+    CancelarEndpoint,
     CobrancasEndpoint,
     ConferirCupomEndpoint,
     ContratarEndpoint,
     DadosDeCobrancaEndpoint,
     PlanoDoEspacoEndpoint,
+    ReativarEndpoint,
+    ReembolsoEndpoint,
     TrocarPlanoEndpoint,
     webhook_do_asaas,
 )
@@ -44,6 +47,21 @@ urlpatterns = [
         "workspaces/<str:slug>/faturamento/cobrancas/",
         CobrancasEndpoint.as_view(),
         name="faturamento-cobrancas",
+    ),
+    path(
+        "workspaces/<str:slug>/faturamento/cancelar/",
+        CancelarEndpoint.as_view(),
+        name="faturamento-cancelar",
+    ),
+    path(
+        "workspaces/<str:slug>/faturamento/reativar/",
+        ReativarEndpoint.as_view(),
+        name="faturamento-reativar",
+    ),
+    path(
+        "workspaces/<str:slug>/faturamento/reembolso/",
+        ReembolsoEndpoint.as_view(),
+        name="faturamento-reembolso",
     ),
     # Fora de `workspaces/` de propósito: quem chama é o Asaas, que não tem
     # sessão nem espaço de trabalho — e o middleware de faturamento só olha

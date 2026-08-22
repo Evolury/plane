@@ -156,7 +156,40 @@
         "downgrade_agendado": "Plano trocado. O novo valor vale a partir do próximo ciclo.",
         "aguardando_pagamento": "Cobrança gerada. O acesso é liberado assim que o pagamento for confirmado.",
         "abrir_cobranca": "Abrir cobrança",
-        "erro_no_gateway": "O Asaas recusou: {detalhe}"
+        "erro_no_gateway": "O Asaas recusou: {detalhe}",
+        "faixa": {
+          "atrasada": "Pagamento em atraso. Regularize para não perder o acesso.",
+          "restrita": "Este espaço está em somente leitura por falta de pagamento. Você continua vendo e exportando tudo.",
+          "aviso_de_restricao": "Somente leitura a partir de {data}.",
+          "aviso_de_bloqueio": "Acesso bloqueado a partir de {data}.",
+          "regularizar": "Regularizar",
+          "bloqueada_titulo": "Este espaço está bloqueado",
+          "bloqueada_texto": "A assinatura está em aberto. Regularize o pagamento para voltar a usar o espaço — seus dados continuam aqui, e a exportação continua disponível.",
+          "encerrada_titulo": "O contrato deste espaço foi encerrado",
+          "encerrada_texto": "Os dados ficam guardados até {data}. Depois disso são removidos.",
+          "remocao_em_dias": "Os dados deste espaço serão removidos em {dias} dias.",
+          "ir_para_faturamento": "Ir para Faturamento"
+        },
+        "cancelar": {
+          "titulo": "Cancelar assinatura",
+          "descricao": "O acesso continua até o fim do ciclo já pago. Depois disso, os dados ficam guardados por 90 dias.",
+          "acao": "Cancelar assinatura",
+          "confirmar": "Tem certeza? O acesso vai até {data}.",
+          "motivo": "Conte o motivo (opcional)",
+          "cancelada": "Assinatura cancelada. O acesso vai até {data}.",
+          "reativar": "Reativar assinatura",
+          "reativada": "Assinatura reativada.",
+          "dados_removidos": "Os dados deste espaço já foram removidos."
+        },
+        "reembolso": {
+          "titulo": "Pedir reembolso",
+          "descricao": "Garantia de 30 dias. O pedido vai para o financeiro, que processa o estorno.",
+          "motivo": "Motivo do pedido",
+          "acao": "Enviar pedido",
+          "enviado": "Pedido registrado. O financeiro entra em contato.",
+          "sem_motivo": "Escreva o motivo do pedido.",
+          "aviso": "Ao ser processado, o estorno encerra o espaço e inicia a remoção dos dados."
+        }
       },
       "exports": {
         "heading": "Exportações",

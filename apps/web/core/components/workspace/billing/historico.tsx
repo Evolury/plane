@@ -10,7 +10,7 @@ import { useTranslation } from "@plane/i18n";
 // services
 import type { TCobranca } from "@/services/faturamento.service";
 // local imports
-import { emData, emReais } from "./formato";
+import { emData, emReais } from "@/components/faturamento/formato";
 
 type Props = { cobrancas: TCobranca[] };
 

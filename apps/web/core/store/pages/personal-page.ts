@@ -136,7 +136,15 @@ export class PersonalPage extends BasePage implements TPersonalPage {
   }
 
   get isContentEditable() {
-    return this.canCurrentUserEditPage && !this.archived_at && !this.is_locked;
+    // Evolury (ADR 0021): espaço em somente leitura não aceita digitação.
+    //
+    // A trava do servidor pega a gravação — a página salva chamando a API de
+    // volta pelo `apps/live` —, mas o usuário só descobriria depois de ter
+    // escrito, com um "Unable to save the page". Somente leitura que perde
+    // trabalho digitado é o oposto do que a degradação existe para fazer.
+    const espacoEscreve = this.rootStore.faturamento.podeEscrever(this.rootStore.router.workspaceSlug ?? "");
+
+    return espacoEscreve && this.canCurrentUserEditPage && !this.archived_at && !this.is_locked;
   }
 
   getRedirectionLink = computedFn(() => {

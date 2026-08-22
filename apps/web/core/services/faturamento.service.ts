@@ -116,6 +116,30 @@ export class FaturamentoService extends APIService {
       });
   }
 
+  async cancelar(workspaceSlug: string, motivo?: string): Promise<{ status: string; acesso_ate: string }> {
+    return this.post(`/api/workspaces/${workspaceSlug}/faturamento/cancelar/`, { motivo })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async reativar(workspaceSlug: string): Promise<{ status: string; precisa_contratar: boolean }> {
+    return this.post(`/api/workspaces/${workspaceSlug}/faturamento/reativar/`, {})
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async pedirReembolso(workspaceSlug: string, motivo: string): Promise<{ registrado: boolean }> {
+    return this.post(`/api/workspaces/${workspaceSlug}/faturamento/reembolso/`, { motivo })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async cobrancas(workspaceSlug: string): Promise<TCobranca[]> {
     return this.get(`/api/workspaces/${workspaceSlug}/faturamento/cobrancas/`)
       .then((response) => response?.data)
