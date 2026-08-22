@@ -3,6 +3,92 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.36.0] — 2026-08-22
+
+**Minor**: o QooWork passa a ser um produto pago — assinatura por espaço de
+trabalho, com cobrança pelo Asaas.
+
+### O que se vende
+
+Três planos, cobrados por espaço de trabalho. O do meio é o alvo: custa 2,38× o
+menor e entrega 3,33× os assentos, e é o único salto que muda o que o produto
+faz.
+
+|                                  | Essencial | Profissional | Avançado    |
+| -------------------------------- | --------- | ------------ | ----------- |
+| Assentos incluídos               | 3         | 10           | 30          |
+| Mensal                           | R$ 290    | R$ 690       | R$ 1.590    |
+| Assento adicional                | R$ 90     | R$ 65        | R$ 49       |
+| Anual (2 meses grátis)           | R$ 2.900  | R$ 6.900     | R$ 15.900   |
+| Convidados grátis                | —         | 2× assentos  | 5× assentos |
+| Propriedades por projeto         | 5         | 30           | 30          |
+| Automações ativas                | 2         | sem teto     | sem teto    |
+| Analytics, webhooks, API pública | —         | ✓            | ✓           |
+
+Convidado não consome assento, e robô nunca conta.
+
+### Na tela
+
+- **Faturamento virou tela de verdade** — plano atual, uso contra o teto,
+  próxima cobrança, troca de plano, cupom, dados de cobrança e histórico de
+  cobranças. Até aqui ela dizia "Community, tudo ilimitado".
+
+- **Contratar por PIX ou cartão.** O cartão vai pela página do Asaas: o dado do
+  cartão nunca passa por aqui. O acesso é liberado quando o pagamento é
+  confirmado, e não quando o navegador volta — quem sai do checkout pode fechar
+  a aba.
+
+- **O que o plano não inclui aparece com o nome do plano que libera**, em vez de
+  sumir. Some, em compensação, o selo "Pro" que o upstream mostrava fixo em
+  Ciclos ativos: era de um plano da nuvem do Plane que aqui nunca existiu.
+
+- **A régua de inadimplência é visível e gradual** — aviso no vencimento,
+  somente leitura no sétimo dia, bloqueio no décimo quinto. Em somente leitura o
+  editor de páginas entra em modo de leitura **antes** de aceitar digitação:
+  descobrir depois de escrever seria perder trabalho.
+
+- **Exportar funciona em todos os estados**, inclusive bloqueado. É o que separa
+  cobrança de sequestro de dado.
+
+- **Cancelar mantém o acesso até o fim do ciclo pago**, e reativar recupera a
+  mesma assinatura enquanto os dados existirem — 90 dias.
+
+### Para quem opera
+
+- **Painel de Assinaturas no god-mode**: quem está em qual plano, quanto perto
+  do teto, quem está em excedente, receita mensal e inadimplência. Com bloqueio
+  e liberação manuais — o Asaas não bloqueia nada por nós — e cortesia com
+  prazo. Nenhum ato sem motivo, e todos com autor no histórico.
+
+### Por dentro
+
+- **Cinco tabelas novas** e nenhuma alteração em modelo herdado. O preço é
+  copiado para dentro do contrato: reajustar a tabela não reescreve o que o
+  cliente assinou.
+
+- **A trava vive no caminho, não no destino.** Somente leitura e API pública são
+  middleware — uma permissão por view seria esquecida na próxima view. A API
+  pública provou o ponto: como permissão, foi ignorada por trinta views que
+  sobrescrevem `permission_classes`.
+
+- **402, e não 403**: papel é permissão, plano é dinheiro, e as duas recusas
+  levam a telas diferentes.
+
+- **O webhook grava e responde 200 sempre.** Quinze erros seguidos interrompem a
+  fila do Asaas — que é da conta inteira, com os outros negócios da Evolury
+  dentro. Idempotência pelo `id` do evento, conciliação diária e alarme quando o
+  silêncio passa de 24 horas.
+
+- **Rotinas diárias**: régua (01:05), excedente (01:08), fim de promoção (01:10)
+  e conciliação (01:15).
+
+- **O catálogo mora em código, nos dois lados**, e um teste lê o arquivo do
+  servidor para conferir o da tela número a número: preço divergente é o pior
+  tipo de bug de cobrança.
+
+- Os espaços que já existem entram em cortesia de 90 dias, no plano maior e com
+  preço zero — o que eles já têm hoje, sem cobrar por isso.
+
 ## [1.35.2] — 2026-08-21
 
 **Patch**: o Plane ainda aparecia na entrada, no carregamento e no favicon.
