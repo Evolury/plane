@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 // plane internal packages
-import { WEB_BASE_URL } from "@plane/constants";
+import { AVANCADO, ORDEM_DOS_PLANOS, PLANOS, WEB_BASE_URL } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
@@ -41,6 +41,11 @@ export const AssinaturaListItem = observer(function AssinaturaListItem({ assinat
   const [aberto, setAberto] = useState(false);
   const [motivo, setMotivo] = useState("");
   const [dias, setDias] = useState(30);
+  // O plano começa no que a assinatura já tem; sem isso, conceder cortesia a
+  // quem está no Essencial renovaria o Essencial calado, e quem clicou queria
+  // liberar o produto inteiro.
+  const [plano, setPlano] = useState(assinatura.plano || AVANCADO);
+  const [extras, setExtras] = useState(assinatura.assentos_extras ?? 0);
   const [ocupado, setOcupado] = useState(false);
   const [linhas, setLinhas] = useState<any[] | undefined>();
 
@@ -134,6 +139,27 @@ export const AssinaturaListItem = observer(function AssinaturaListItem({ assinat
             {t("instance_admin.assinaturas_bloquear")}
           </Button>
         )}
+        <select
+          className="rounded-md border border-subtle bg-layer-2 px-2 py-1 text-13 outline-none"
+          value={plano}
+          onChange={(evento) => setPlano(evento.target.value)}
+          aria-label={t("instance_admin.assinaturas_plano_da_cortesia")}
+        >
+          {ORDEM_DOS_PLANOS.map((chave) => (
+            <option key={chave} value={chave}>
+              {PLANOS[chave]?.nome ?? chave}
+            </option>
+          ))}
+        </select>
+        <input
+          type="number"
+          min={0}
+          className="w-20 rounded-md border border-subtle bg-layer-2 px-2 py-1 text-13 outline-none"
+          value={extras}
+          onChange={(evento) => setExtras(Number(evento.target.value))}
+          aria-label={t("instance_admin.assinaturas_assentos_extras")}
+          title={t("instance_admin.assinaturas_assentos_extras")}
+        />
         <input
           type="number"
           min={1}
@@ -141,12 +167,13 @@ export const AssinaturaListItem = observer(function AssinaturaListItem({ assinat
           value={dias}
           onChange={(evento) => setDias(Number(evento.target.value))}
           aria-label={t("instance_admin.assinaturas_dias")}
+          title={t("instance_admin.assinaturas_dias")}
         />
         <Button
           size="sm"
           variant="secondary"
           disabled={ocupado}
-          onClick={() => executar({ acao: "conceder_cortesia", motivo, dias })}
+          onClick={() => executar({ acao: "conceder_cortesia", motivo, dias, plano, assentos_extras: extras })}
         >
           {t("instance_admin.assinaturas_cortesia")}
         </Button>

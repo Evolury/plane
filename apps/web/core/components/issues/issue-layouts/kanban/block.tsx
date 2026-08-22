@@ -144,7 +144,14 @@ const KanbanIssueDetailsBlock = observer(function KanbanIssueDetailsBlock(props:
       </div>
 
       <Tooltip tooltipContent={issue.name} isMobile={isMobile} renderByDefault={false}>
-        <div className="line-clamp-1 w-full text-body-sm-medium text-primary">
+        {/* Evolury: três linhas, não uma.
+            Com `line-clamp-1` o cartão abreviava quase todo título — "Revisar
+            tradução de textos do Popup de…" era o que se lia de um título de
+            oito palavras, e o cartão do quadro é onde a pessoa DECIDE o que
+            abrir. Três linhas é o que quadro de mercado usa: cobre a grande
+            maioria dos títulos sem deixar um cartão virar parede. Na lista
+            continua uma linha, porque ali a altura da linha é a grade. */}
+        <div className="line-clamp-3 w-full text-body-sm-medium break-words text-primary">
           <span>{issue.name}</span>
         </div>
       </Tooltip>
@@ -297,7 +304,10 @@ export const KanbanIssueBlock = observer(function KanbanIssueBlock(props: IssueB
             { "bg-danger-subtle/50": estiloEncerrada["bg-danger-subtle/50"] },
             { "hover:cursor-pointer": isDragAllowed },
             { "border border-accent-strong hover:border-accent-strong": getIsIssuePeeked(issue.id) },
-            { "z-[100] bg-layer-1": isCurrentBlockDragging }
+            // Evolury: o cartão em movimento tem de ficar ACIMA, e `layer-1`
+            // passou a ser a cor da coluna. Mantém o branco do cartão e sobe a
+            // sombra: é assim que se lê "isto está solto".
+            { "z-[100] shadow-raised-300": isCurrentBlockDragging }
           )}
           onClick={() => handleIssuePeekOverview(issue)}
           disabled={!!issue?.tempId}

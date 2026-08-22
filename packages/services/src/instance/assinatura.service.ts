@@ -53,6 +53,9 @@ export type TAcaoDeAssinatura = {
   plano?: string;
   ciclo?: string;
   dias?: number;
+  /** Assentos além do plano. Em cortesia o preço por assento é zero, então
+   *  isto é capacidade pura — é o que a conta interna ajusta. */
+  assentos_extras?: number;
 };
 
 /**

@@ -257,3 +257,111 @@ class TestSaudeDaIntegracao:
         assert "24h" in resposta.data["alarme"]
         assert resposta.data["por_status"]["ativa"] == 1
         assert resposta.data["por_status"]["bloqueada"] == 0
+
+
+@pytest.mark.contract
+class TestCortesiaAjustavel:
+    """A cortesia com plano e assentos escolhidos na tela.
+
+    O painel é de poucas pessoas e precisa de flexibilidade para a conta da
+    própria casa: escolher o nível e quantos assentos além dele, sem que nada
+    vire contrato ou cobrança.
+
+    Antes de 22/08/2026 a tela não mandava plano nenhum, e a ação caía no
+    `assinatura.plano` que já existia — conceder cortesia a um espaço no
+    Essencial renovava o Essencial de três assentos, quando quem clicou queria
+    liberar o produto inteiro.
+    """
+
+    def test_escolher_o_plano_troca_a_capacidade(self, admin_da_instancia, workspace, assinada):
+        resposta = admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {"acao": "conceder_cortesia", "motivo": "conta interna", "plano": AVANCADO, "dias": 365},
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_200_OK
+
+        assinatura = workspace.assinatura
+        assinatura.refresh_from_db()
+        esperado = copia_para_contrato(AVANCADO, CICLO_MENSAL, gratuita=True)
+        assert assinatura.plano == AVANCADO
+        assert assinatura.status == regua.EM_CORTESIA
+        assert assinatura.assentos_incluidos == esperado["assentos_incluidos"]
+        assert assinatura.valor_base == 0
+        assert assinatura.valor_por_assento == 0
+
+    def test_assentos_extras_viram_capacidade_de_verdade(self, admin_da_instancia, workspace, assinada):
+        """O número digitado precisa valer para o produto, não só para a fatura.
+
+        `cota_de_convidados` prometia "múltiplo dos assentos pagos" e contava só
+        os incluídos — quem pagava por assento extra recebia cota de convidado
+        do plano cru.
+        """
+        from plane.utils import direitos, planos
+
+        resposta = admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {
+                "acao": "conceder_cortesia",
+                "motivo": "conta interna",
+                "plano": PROFISSIONAL,
+                "assentos_extras": 7,
+                "dias": 365,
+            },
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_200_OK
+
+        assinatura = workspace.assinatura
+        assinatura.refresh_from_db()
+        profissional = planos.plano(PROFISSIONAL)
+        assert assinatura.assentos_extras == 7
+        assert direitos.assentos_contratados(workspace_id=workspace.id) == profissional.assentos + 7
+        assert direitos.cota_de_convidados(workspace_id=workspace.id) == (
+            profissional.convidados_por_assento * (profissional.assentos + 7)
+        )
+
+    def test_sem_dias_continua_recusada(self, admin_da_instancia, workspace, assinada):
+        """Grátis para sempre, em silêncio, continua fora. A decisão não mudou."""
+        resposta = admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {"acao": "conceder_cortesia", "motivo": "x", "plano": AVANCADO, "dias": 0},
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert resposta.data["error"] == "DIAS_INVALIDOS"
+
+    def test_plano_inexistente_e_recusado(self, admin_da_instancia, workspace, assinada):
+        resposta = admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {"acao": "conceder_cortesia", "motivo": "x", "plano": "platina", "dias": 30},
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert resposta.data["error"] == "PLANO_INVALIDO"
+
+    def test_assentos_negativos_sao_recusados(self, admin_da_instancia, workspace, assinada):
+        resposta = admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {
+                "acao": "conceder_cortesia", "motivo": "x", "plano": AVANCADO,
+                "assentos_extras": -1, "dias": 30,
+            },
+            format="json",
+        )
+        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert resposta.data["error"] == "ASSENTOS_INVALIDOS"
+
+    def test_sem_informar_assentos_o_valor_atual_e_mantido(self, admin_da_instancia, workspace, assinada):
+        """Conceder cortesia de novo não pode zerar o que já estava concedido."""
+        assinatura = workspace.assinatura
+        assinatura.assentos_extras = 4
+        assinatura.save()
+
+        admin_da_instancia.patch(
+            ITEM_URL.format(workspace_id=workspace.id),
+            {"acao": "conceder_cortesia", "motivo": "x", "plano": AVANCADO, "dias": 30},
+            format="json",
+        )
+        assinatura.refresh_from_db()
+        assert assinatura.assentos_extras == 4

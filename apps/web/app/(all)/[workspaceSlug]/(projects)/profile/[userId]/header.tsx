@@ -20,6 +20,7 @@ import { ProfileIssuesFilter } from "@/components/profile/profile-issues-filter"
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 import { Button } from "@plane/propel/button";
+import { nomeCompleto } from "@plane/utils";
 
 type TUserProfileHeader = {
   userProjectsData: IUserProfileProjectSegregation | undefined;
@@ -47,7 +48,7 @@ export const UserProfileHeader = observer(function UserProfileHeader(props: TUse
 
   const tabsList = isAuthorized ? [...PROFILE_VIEWER_TAB, ...PROFILE_ADMINS_TAB] : PROFILE_VIEWER_TAB;
 
-  const userName = `${userProjectsData?.user_data?.first_name} ${userProjectsData?.user_data?.last_name}`;
+  const userName = nomeCompleto(userProjectsData?.user_data);
 
   const isCurrentUser = currentUser?.id === userId;
 

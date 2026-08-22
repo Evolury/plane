@@ -281,7 +281,10 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
       id={`${groupId}__${sub_group_id}`}
       className={cn(
         "relative h-full min-h-[120px] transition-all",
-        { "rounded-sm bg-layer-1": isDraggingOverColumn },
+        // Evolury: `layer-1` virou a cor da coluna em 22/08/2026, e o realce
+        // de arrasto some contra ela. `layer-3` desce mais um degrau — o alvo
+        // de soltura precisa se distinguir DA COLUNA, não do quadro.
+        { "rounded-sm bg-layer-3": isDraggingOverColumn },
         { "vertical-scrollbar scrollbar-md": !sub_group_by && !shouldOverlayBeVisible }
       )}
       ref={columnRef}
@@ -327,7 +330,7 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
       {enableQuickIssueCreate &&
         !disableIssueCreation &&
         !getIsWorkflowWorkItemCreationDisabled(groupId, sub_group_id) && (
-          <div className="sticky bottom-0 w-full bg-surface-2 py-0.5">
+          <div className="sticky bottom-0 w-full rounded-b-lg bg-layer-1 py-0.5">
             <QuickAddIssueRoot
               layout={EIssueLayoutTypes.KANBAN}
               QuickAddButton={KanbanQuickAddIssueButton}

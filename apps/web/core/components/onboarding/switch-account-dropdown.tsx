@@ -8,7 +8,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import { Menu, Transition } from "@headlessui/react";
 // ui
-import { cn, getFileURL } from "@plane/utils";
+import { cn, getFileURL, nomeCompleto } from "@plane/utils";
 // helpers
 // hooks
 import { useUser } from "@/hooks/store/user";
@@ -29,7 +29,7 @@ export const SwitchAccountDropdown = observer(function SwitchAccountDropdown(pro
   const { data: user } = useUser();
 
   const displayName = user?.first_name
-    ? `${user?.first_name} ${user?.last_name ?? ""}`
+    ? nomeCompleto(user)
     : fullName && fullName.trim().length > 0
       ? fullName
       : user?.email;

@@ -747,6 +747,8 @@
     "assinaturas_atribuir_plano": "Assign plan",
     "assinaturas_motivo": "Reason (required)",
     "assinaturas_dias": "Complimentary days",
+    "assinaturas_plano_da_cortesia": "Courtesy plan",
+    "assinaturas_assentos_extras": "Seats beyond the plan",
     "assinaturas_confirmar": "Confirm",
     "assinaturas_historico": "History",
     "assinaturas_feito": "Done.",

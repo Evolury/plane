@@ -21,6 +21,7 @@ import { useUser } from "@/hooks/store/user";
 // local imports
 import { TourSidebar } from "./sidebar";
 import { translate, useTranslation } from "@plane/i18n";
+import { nomeCompleto } from "@plane/utils";
 
 export type TOnboardingTourProps = {
   onComplete: () => void;
@@ -100,7 +101,7 @@ export const TourRoot = observer(function TourRoot(props: TOnboardingTourProps) 
             </div>
             <div className="flex flex-col overflow-y-auto p-6">
               <h3 className="font-semibold sm:text-18">
-                {t("ui.welcome_to_product", { product: "QooWork" })}, {currentUser?.first_name} {currentUser?.last_name}
+                {t("ui.welcome_to_product", { product: "QooWork" })}, {nomeCompleto(currentUser)}
               </h3>
               <p className="mt-3 text-13 text-secondary">{t("ui.welcome_tour_description")}</p>
               <div className="flex h-full items-end">

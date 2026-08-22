@@ -93,7 +93,7 @@ export class MyTasksIssues extends BaseIssuesStore implements IMyTasksIssues {
       runInAction(() => {
         this.setLoader(loadType);
       });
-      this.clear(!isExistingPaginationOptions);
+      this.clear(!isExistingPaginationOptions, !isExistingPaginationOptions);
 
       const params = this.issueFilterStore?.getFilterParams(options, undefined, undefined, undefined);
       const response = await this.myTasksService.getIssues(workspaceSlug, params, {

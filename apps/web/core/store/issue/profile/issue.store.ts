@@ -131,7 +131,7 @@ export class ProfileIssues extends BaseIssuesStore implements IProfileIssues {
       runInAction(() => {
         this.setLoader(loadType);
       });
-      this.clear(!isExistingPaginationOptions);
+      this.clear(!isExistingPaginationOptions, !isExistingPaginationOptions);
 
       // set ViewId
       this.setViewId(view);

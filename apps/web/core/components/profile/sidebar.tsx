@@ -17,7 +17,7 @@ import { EditIcon, ChevronDownIcon } from "@plane/propel/icons";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { IUserProfileProjectSegregation } from "@plane/types";
 import { Loader } from "@plane/ui";
-import { cn, renderFormattedDate, getFileURL } from "@plane/utils";
+import { cn, renderFormattedDate, getFileURL, nomeCompleto } from "@plane/utils";
 // components
 import { CoverImage } from "@/components/common/cover-image";
 import { capaDe } from "@/helpers/cover-image.helper";
@@ -132,9 +132,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
           </div>
           <div className="px-5">
             <div className="mt-[38px]">
-              <h4 className="text-16 font-semibold">
-                {userData?.first_name} {userData?.last_name}
-              </h4>
+              <h4 className="text-16 font-semibold">{nomeCompleto(userData)}</h4>
               <h6 className="text-13 text-secondary">({userData?.display_name})</h6>
             </div>
             <div className="mt-6 space-y-5">
