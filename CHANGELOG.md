@@ -3,6 +3,28 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.37.0] — 2026-08-22
+
+**Minor**: prepara o produto para a produção do QooWork — arquivos no Cloudflare
+R2, agenda das tarefas fora do banco (ADR 0022).
+
+### Por dentro
+
+- **Os arquivos passam a poder morar no Cloudflare R2.** O R2 não implementa ACL
+  de objeto — mandar `x-amz-acl` é erro, não opção ignorada —, e aqui a ACL nunca
+  fez falta: o produto sobe arquivo por URL de upload assinada e serve por URL
+  assinada, então o balde é privado por construção.
+
+- **A agenda das tarefas sai do banco e vai para um arquivo.** Ela sempre viveu
+  no código; o banco era a cópia, não a fonte. O agendador antigo consultava o
+  banco a cada poucos segundos, para sempre.
+
+- **O código passa a saber viver atrás de um agrupador de conexões**, atrás da
+  variável `BANCO_COM_POOLER`, desligada por padrão. Com ela ligada, o Django
+  para de usar cursor de servidor — que não sobrevive a um PgBouncer em modo
+  transação e falha de um jeito que não menciona pooling. É preparo para quando
+  o banco sair de casa; até lá, nada muda.
+
 ## [1.36.1] — 2026-08-22
 
 **Patch**: a régua de inadimplência não rodava.
