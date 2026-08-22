@@ -217,7 +217,6 @@ else:
         }
     }
 
-
 if os.environ.get("ENABLE_READ_REPLICA", "0") == "1":
     if bool(os.environ.get("DATABASE_READ_REPLICA_URL")):
         # Parse database configuration from $DATABASE_URL
@@ -236,6 +235,24 @@ if os.environ.get("ENABLE_READ_REPLICA", "0") == "1":
     DATABASE_ROUTERS = ["plane.utils.core.dbrouters.ReadReplicaRouter"]
     # Add middleware at the end for read replica routing
     MIDDLEWARE.append("plane.middleware.db_routing.ReadReplicaRoutingMiddleware")
+
+# Evolury: banco atrás de um agrupador de conexões (ADR 0022).
+#
+# O Neon oferece dois endereços para o mesmo banco: o direto e o `-pooler`, que
+# é um PgBouncer em modo transação. O modo transação devolve a conexão ao fim de
+# **cada transação**, e com isso some tudo que dependa de estado de sessão — e
+# cursor nomeado é exatamente isso: `.iterator()` abre um cursor no servidor e
+# lê em partes, o que só funciona enquanto a mesma conexão continuar sendo a
+# mesma.
+#
+# A falha não se anuncia como "pooling": vira `cursor "_django_curs_..." does
+# not exist` no meio de uma exportação grande, sem padrão aparente.
+#
+# Ligado por variável para que instância com Postgres próprio — sem pooler —
+# continue usando cursor de servidor, que é melhor para varredura grande.
+if os.environ.get("BANCO_COM_POOLER", "0") == "1":
+    for _conexao in DATABASES.values():
+        _conexao["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 
 # Redis Config
@@ -306,7 +323,14 @@ AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "access-key")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "secret-key")
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_S3_BUCKET_NAME", "uploads")
 AWS_REGION = os.environ.get("AWS_REGION", "")
-AWS_DEFAULT_ACL = "public-read"
+# Evolury: sem ACL de objeto (ADR 0022).
+#
+# O Cloudflare R2 não implementa ACL por objeto — mandar `x-amz-acl` é erro, não
+# opção ignorada. E aqui a ACL nunca fez falta: o produto sobe arquivo por
+# presigned POST (sem campo de ACL) e serve por URL assinada, então o balde é
+# privado por construção. `public-read` só teria efeito em quem chamasse o
+# `save()` do django-storages, que é justamente o caminho que quebraria no R2.
+AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_ENDPOINT_URL = os.environ.get("AWS_S3_ENDPOINT_URL", None) or os.environ.get("MINIO_ENDPOINT_URL", None)
