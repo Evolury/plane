@@ -4,5 +4,9 @@
  * See the LICENSE file for details.
  */
 
+export * from "./espaco-bloqueado";
+export * from "./formato";
+export * from "./faixa-de-estado";
 export * from "./recursos-da-navegacao";
+export * from "./telas-liberadas";
 export * from "./rotulo-de-plano";

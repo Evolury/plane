@@ -7,7 +7,7 @@
 import type { ReactNode } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import useSWR from "swr";
 // ui
 import { LogOut } from "lucide-react";
@@ -34,6 +34,7 @@ import {
   WORKSPACE_PROJECT_NAVIGATION_PREFERENCES,
 } from "@plane/constants";
 // hooks
+import { EspacoBloqueado, FaixaDeEstado, TELAS_QUE_ATRAVESSAM_O_BLOQUEIO } from "@/components/faturamento";
 import { useFaturamento } from "@/hooks/store/use-faturamento";
 import { useFavorite } from "@/hooks/store/use-favorite";
 import { useMember } from "@/hooks/store/use-member";
@@ -52,6 +53,7 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
   const { children, isLoading: isParentLoading = false } = props;
   // router params
   const { workspaceSlug } = useParams();
+  const pathname = usePathname();
   const { t } = useTranslation();
   // store hooks
   const { signOut, data: currentUser } = useUser();
@@ -65,7 +67,7 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
   const { loader, workspaceInfoBySlug, fetchUserWorkspaceInfo, fetchUserProjectPermissions, allowPermissions } =
     useUserPermissions();
   const { fetchWorkspaceStates } = useProjectState();
-  const { buscarRetrato } = useFaturamento();
+  const { buscarRetrato, retrato: retratoDoPlano } = useFaturamento();
   // derived values
   const canPerformWorkspaceMemberActions = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
@@ -241,5 +243,28 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
     );
   }
 
-  return <>{children}</>;
+  // Evolury (ADR 0021): a régua entra na tela aqui, no ponto por onde toda
+  // página do espaço passa.
+  //
+  // Bloqueado substitui o produto — menos a própria tela de faturamento, senão
+  // pagar dependeria de estar pago. Atrasado e restrito ganham só uma faixa: o
+  // dado continua à vista, que é o que faz o cliente voltar.
+  const estado = retratoDoPlano(workspaceSlug?.toString() ?? "")?.status;
+  // Duas telas atravessam o bloqueio, e a segunda é a que separa cobrança de
+  // sequestro de dado: pagar não pode depender de estar pago, e **exportar
+  // sobrevive a todos os estados** (ADR 0021). A primeira versão desta trava
+  // escondia Exportações junto com o resto — visto no navegador, não deduzido.
+  const telaLiberada = TELAS_QUE_ATRAVESSAM_O_BLOQUEIO.some((rota) => pathname?.includes(rota));
+  const bloqueado = estado === "bloqueada" || estado === "encerrada" || estado === "removida";
+
+  if (bloqueado && !telaLiberada) {
+    return <EspacoBloqueado />;
+  }
+
+  return (
+    <>
+      <FaixaDeEstado />
+      {children}
+    </>
+  );
 });

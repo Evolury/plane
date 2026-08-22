@@ -32,6 +32,7 @@ import { useFaturamento } from "@/hooks/store/use-faturamento";
 // services
 import { FaturamentoService } from "@/services/faturamento.service";
 // local imports
+import { CicloDeVida } from "./ciclo-de-vida";
 import { DadosDeCobranca } from "./dados-de-cobranca";
 import { EscolherPlano } from "./escolher-plano";
 import { HistoricoDeCobrancas } from "./historico";
@@ -82,6 +83,8 @@ export const BillingRoot = observer(function BillingRoot() {
         {atual ? <EscolherPlano workspaceSlug={slug} retrato={atual} aoMudar={recarregarTudo} /> : null}
 
         <HistoricoDeCobrancas cobrancas={cobrancas ?? []} />
+
+        {atual?.plano ? <CicloDeVida workspaceSlug={slug} retrato={atual} aoMudar={recarregarTudo} /> : null}
       </div>
     </section>
   );

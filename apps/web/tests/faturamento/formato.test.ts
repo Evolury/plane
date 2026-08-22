@@ -10,7 +10,7 @@
 // bom tempo.
 
 import { describe, expect, it } from "vitest";
-import { emData, emReais } from "@/components/workspace/billing/formato";
+import { emData, emReais } from "@/components/faturamento/formato";
 
 describe("dinheiro na tela", () => {
   it.each([

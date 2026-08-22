@@ -64,6 +64,13 @@ app.conf.beat_schedule = {
     # Evolury: faturamento (ADR 0021). A conciliação roda depois da purga e
     # antes do resto — se um evento se perdeu, o conserto acontece de
     # madrugada, e não no dia em que o cliente reclama.
+    # A régua roda antes da conciliação: primeiro o estado deriva do que já
+    # sabemos, depois o Asaas corrige o que faltar. A ordem inversa faria a
+    # conciliação trabalhar sobre um estado que a régua ainda ia mudar.
+    "evolury-avancar-regua-de-faturamento": {
+        "task": "plane.bgtasks.faturamento_regua.avancar_regua",
+        "schedule": crontab(hour=1, minute=5),  # UTC 01:05
+    },
     "evolury-conciliar-assinaturas": {
         "task": "plane.bgtasks.faturamento_conciliacao.conciliar_assinaturas",
         "schedule": crontab(hour=1, minute=15),  # UTC 01:15
