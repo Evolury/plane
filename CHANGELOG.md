@@ -3,6 +3,28 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.36.1] — 2026-08-22
+
+**Patch**: a régua de inadimplência não rodava.
+
+### Por dentro
+
+- **A tarefa diária da régua não era registrada no worker.** A 1.36.0 subiu com
+  cinco das seis tarefas de faturamento registradas; a que faltou é justamente a
+  que move os espaços para somente leitura e bloqueio. O agendador disparava
+  todo dia, a fila aceitava, e o worker descartava com "unregistered task" — em
+  silêncio, porque o despacho dá certo e a recusa fica num log que ninguém lê.
+
+  O motivo é o de sempre nesta base: o worker não carrega as URLs, então uma
+  tarefa só fica registrada se alguém no caminho de inicialização importar o
+  módulo. Cinco eram importadas sem querer por alguma view; a régua não é
+  importada por ninguém.
+
+- **Uma verificação nova percorre a agenda inteira** e reprova se ela citar
+  qualquer tarefa que o worker não conheça. Era a terceira vez que este defeito
+  aparecia no projeto (ADR 0012, ADR 0014) e a primeira em que chegou à
+  produção.
+
 ## [1.36.0] — 2026-08-22
 
 **Minor**: o QooWork passa a ser um produto pago — assinatura por espaço de
