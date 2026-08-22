@@ -4,4 +4,5 @@
  * See the LICENSE file for details.
  */
 
+export * from "./assinatura.service";
 export * from "./instance.service";
