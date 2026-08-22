@@ -157,4 +157,22 @@ def setup_task_loggers(logger, *args, **kwargs):
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-app.conf.beat_scheduler = "django_celery_beat.schedulers.DatabaseScheduler"
+# Evolury: o agendador lê a agenda de um arquivo, não do banco (ADR 0022).
+#
+# O `DatabaseScheduler` consulta o banco a cada poucos segundos para saber se a
+# agenda mudou. Num Postgres próprio isso é irrelevante; num banco que dorme
+# quando ninguém o usa — o caso do Neon — é uma batida constante que impede o
+# adormecimento e mantém uma conexão aberta o tempo todo, sem que nenhuma
+# tarefa esteja rodando.
+#
+# A agenda deste produto vive em `beat_schedule`, aqui neste arquivo, versionada
+# junto do código. Ela não muda em tempo de execução, então o banco nunca foi a
+# fonte da verdade — era só o lugar onde ela era copiada.
+#
+# O `PersistentScheduler` (padrão do Celery) guarda apenas o **último disparo**
+# de cada entrada, num arquivo. Esse arquivo precisa sobreviver a reinício,
+# senão uma tarefa diária pode rodar duas vezes no mesmo dia: daí o
+# `--schedule` apontar para um volume no compose.
+app.conf.beat_schedule_filename = os.environ.get(
+    "CELERY_BEAT_SCHEDULE_FILE", "/tmp/celerybeat-schedule"
+)
