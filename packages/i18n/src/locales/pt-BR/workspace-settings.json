@@ -753,6 +753,11 @@
     "assinaturas_sem_motivo": "Escreva o motivo: histórico sem explicação é o mesmo que não ter histórico.",
     "assinaturas_alarme": "Integração com o Asaas: {alarme}",
     "assinaturas_ultimo_evento": "Último evento do Asaas: {quando}",
-    "assinaturas_sem_evento": "Nenhum evento do Asaas recebido ainda."
+    "assinaturas_sem_evento": "Nenhum evento do Asaas recebido ainda.",
+    "resumo_receita": "Receita mensal",
+    "resumo_cobrando": "Assinaturas cobrando",
+    "resumo_inadimplentes": "Inadimplentes",
+    "resumo_excedentes": "Com excedente",
+    "resumo_promocoes": "Promoções a vencer"
   }
 }

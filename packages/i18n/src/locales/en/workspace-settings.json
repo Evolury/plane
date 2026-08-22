@@ -753,6 +753,11 @@
     "assinaturas_sem_motivo": "Write the reason: history without an explanation is the same as no history.",
     "assinaturas_alarme": "Asaas integration: {alarme}",
     "assinaturas_ultimo_evento": "Last Asaas event: {quando}",
-    "assinaturas_sem_evento": "No Asaas event received yet."
+    "assinaturas_sem_evento": "No Asaas event received yet.",
+    "resumo_receita": "Monthly revenue",
+    "resumo_cobrando": "Billing subscriptions",
+    "resumo_inadimplentes": "Overdue",
+    "resumo_excedentes": "Over the cap",
+    "resumo_promocoes": "Promotions ending"
   }
 }

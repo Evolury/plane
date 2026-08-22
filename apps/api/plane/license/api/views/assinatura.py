@@ -30,6 +30,8 @@ from rest_framework.response import Response
 
 from plane.app.views.base import BaseAPIView
 from plane.bgtasks.faturamento_conciliacao import CHAVE_DO_ALARME, CHAVE_DO_ULTIMO_EVENTO
+from plane.bgtasks.faturamento_excedente import ESTADOS_QUE_COBRAM
+from plane.bgtasks.faturamento_promocao import promocoes_a_vencer
 from plane.db.models import Assinatura, HistoricoDeAssinatura, WorkspaceMember
 from plane.license.api.permissions import InstanceAdminPermission
 from plane.utils import planos, regua
@@ -39,6 +41,9 @@ ACAO_LIBERAR = "liberar"
 ACAO_PLANO = "atribuir_plano"
 ACAO_CORTESIA = "conceder_cortesia"
 ACOES = (ACAO_BLOQUEAR, ACAO_LIBERAR, ACAO_PLANO, ACAO_CORTESIA)
+
+# Quem está devendo — o que o painel chama de inadimplência.
+ESTADOS_EM_ATRASO = (regua.ATRASADA, regua.RESTRITA, regua.BLOQUEADA)
 
 
 def _contagem(**filtros):
@@ -129,6 +134,59 @@ class InstanceSaudeDoFaturamentoEndpoint(BaseAPIView):
                 "por_status": {estado: contagens.get(estado, 0) for estado in regua.ESTADOS},
                 "planos": list(planos.CHAVES),
                 "estados": list(regua.ESTADOS),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class InstanceResumoDoFaturamentoEndpoint(BaseAPIView):
+    """Receita recorrente, distribuição por plano e inadimplência (ADR 0021).
+
+    **Tudo mensalizado.** Um contrato anual de R$ 6.900 não é R$ 6.900 de
+    receita recorrente mensal; é R$ 690. Somar os dois ciclos crus daria um
+    número dez vezes maior no mês em que alguém assina o anual, e ninguém
+    perceberia o erro para menos no mês seguinte.
+
+    **Cortesia não entra na receita.** Ela cobra zero, e é isso que o número
+    tem de dizer — inflar o painel com o que não é cobrado é enganar quem o lê.
+    """
+
+    permission_classes = [InstanceAdminPermission]
+
+    def get(self, request):
+        assinaturas = Assinatura.objects.exclude(plano="").values(
+            "plano", "ciclo", "status", "valor_base", "valor_por_assento", "assentos_extras"
+        )
+
+        receita = 0
+        por_plano = {chave: 0 for chave in planos.CHAVES}
+        inadimplentes = 0
+        cobrando = 0
+
+        for assinatura in assinaturas:
+            por_plano[assinatura["plano"]] = por_plano.get(assinatura["plano"], 0) + 1
+
+            if assinatura["status"] not in ESTADOS_QUE_COBRAM:
+                continue
+
+            cobrando += 1
+            if assinatura["status"] in ESTADOS_EM_ATRASO:
+                inadimplentes += 1
+
+            total = assinatura["valor_base"] + assinatura["valor_por_assento"] * assinatura["assentos_extras"]
+            if assinatura["ciclo"] == planos.CICLO_ANUAL:
+                # Mensalizado: o anual custa dez mensalidades.
+                total = total // planos.MESES_DO_CICLO_ANUAL
+            receita += total
+
+        return Response(
+            {
+                "receita_recorrente_mensal": receita,
+                "por_plano": por_plano,
+                "assinaturas_cobrando": cobrando,
+                "inadimplentes": inadimplentes,
+                "excedentes": Assinatura.objects.filter(assentos_extras__gt=0).count(),
+                "promocoes_a_vencer": promocoes_a_vencer(timezone.now().date()).count(),
             },
             status=status.HTTP_200_OK,
         )

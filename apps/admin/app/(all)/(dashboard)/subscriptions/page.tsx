@@ -13,6 +13,7 @@ import { Loader } from "@plane/ui";
 // components
 import { PageWrapper } from "@/components/common/page-wrapper";
 import { AssinaturaListItem } from "@/components/assinatura/list-item";
+import { ResumoDoFaturamento } from "@/components/assinatura/resumo";
 import { SaudeDoFaturamento } from "@/components/assinatura/saude";
 // hooks
 import { useAssinatura } from "@/hooks/store";
@@ -29,13 +30,14 @@ import type { Route } from "./+types/page";
  */
 const SubscriptionsPage = observer(function SubscriptionsPage(_props: Route.ComponentProps) {
   const { t } = useTranslation();
-  const { assinaturas, saude, carregando, buscar, buscarSaude } = useAssinatura();
+  const { assinaturas, saude, resumo, carregando, buscar, buscarSaude, buscarResumo } = useAssinatura();
   const [busca, setBusca] = useState("");
   const [estado, setEstado] = useState("");
   const [soExcedentes, setSoExcedentes] = useState(false);
 
   useSWR("INSTANCE_ASSINATURAS", () => buscar({ search: busca, status: estado, excedentes: soExcedentes }));
   useSWR("INSTANCE_ASSINATURAS_SAUDE", () => buscarSaude());
+  useSWR("INSTANCE_ASSINATURAS_RESUMO", () => buscarResumo());
 
   const aplicar = (mudanca: { search?: string; status?: string; excedentes?: boolean }) => {
     const proximo = { search: busca, status: estado, excedentes: soExcedentes, ...mudanca };
@@ -54,6 +56,8 @@ const SubscriptionsPage = observer(function SubscriptionsPage(_props: Route.Comp
       size="lg"
     >
       <div className="flex flex-col gap-4">
+        <ResumoDoFaturamento resumo={resumo} />
+
         <SaudeDoFaturamento saude={saude} />
 
         <div className="flex flex-wrap items-center gap-2">

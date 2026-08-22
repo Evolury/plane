@@ -71,6 +71,16 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.faturamento_regua.avancar_regua",
         "schedule": crontab(hour=1, minute=5),  # UTC 01:05
     },
+    # Depois da régua e antes da conciliação: o excedente muda o valor, o fim
+    # da promoção também, e a conciliação confere os dois contra o Asaas.
+    "evolury-ajustar-excedentes": {
+        "task": "plane.bgtasks.faturamento_excedente.ajustar_excedentes",
+        "schedule": crontab(hour=1, minute=8),  # UTC 01:08
+    },
+    "evolury-encerrar-promocoes": {
+        "task": "plane.bgtasks.faturamento_promocao.encerrar_promocoes",
+        "schedule": crontab(hour=1, minute=10),  # UTC 01:10
+    },
     "evolury-conciliar-assinaturas": {
         "task": "plane.bgtasks.faturamento_conciliacao.conciliar_assinaturas",
         "schedule": crontab(hour=1, minute=15),  # UTC 01:15

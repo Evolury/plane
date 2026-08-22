@@ -31,5 +31,6 @@ from .workspace import (
 from .assinatura import (
     InstanceAssinaturaEndpoint,
     InstanceAssinaturasEndpoint,
+    InstanceResumoDoFaturamentoEndpoint,
     InstanceSaudeDoFaturamentoEndpoint,
 )

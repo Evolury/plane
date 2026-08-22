@@ -38,6 +38,15 @@ export type TSaudeDoFaturamento = {
   estados: string[];
 };
 
+export type TResumoDoFaturamento = {
+  receita_recorrente_mensal: number;
+  por_plano: Record<string, number>;
+  assinaturas_cobrando: number;
+  inadimplentes: number;
+  excedentes: number;
+  promocoes_a_vencer: number;
+};
+
 export type TAcaoDeAssinatura = {
   acao: "bloquear" | "liberar" | "atribuir_plano" | "conceder_cortesia";
   motivo: string;
@@ -68,6 +77,14 @@ export class InstanceAssinaturaService extends APIService {
 
   async saude(): Promise<TSaudeDoFaturamento> {
     return this.get(`/api/instances/assinaturas/saude/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async resumo(): Promise<TResumoDoFaturamento> {
+    return this.get(`/api/instances/assinaturas/resumo/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
