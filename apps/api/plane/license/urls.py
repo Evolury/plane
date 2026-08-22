@@ -21,6 +21,7 @@ from plane.license.api.views import (
     # Evolury: painel de assinaturas (ADR 0021)
     InstanceAssinaturaEndpoint,
     InstanceAssinaturasEndpoint,
+    InstanceResumoDoFaturamentoEndpoint,
     InstanceSaudeDoFaturamentoEndpoint,
 )
 
@@ -77,6 +78,11 @@ urlpatterns = [
     path("workspaces/", InstanceWorkSpaceEndpoint.as_view(), name="instance-workspace"),
     # Evolury: painel de assinaturas (ADR 0021)
     path("assinaturas/", InstanceAssinaturasEndpoint.as_view(), name="instance-assinaturas"),
+    path(
+        "assinaturas/resumo/",
+        InstanceResumoDoFaturamentoEndpoint.as_view(),
+        name="instance-assinaturas-resumo",
+    ),
     path(
         "assinaturas/saude/",
         InstanceSaudeDoFaturamentoEndpoint.as_view(),

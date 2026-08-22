@@ -6,7 +6,12 @@
 
 import { action, makeObservable, observable, runInAction } from "mobx";
 // plane internal packages
-import type { TAcaoDeAssinatura, TAssinaturaDaInstancia, TSaudeDoFaturamento } from "@plane/services";
+import type {
+  TAcaoDeAssinatura,
+  TAssinaturaDaInstancia,
+  TResumoDoFaturamento,
+  TSaudeDoFaturamento,
+} from "@plane/services";
 import { InstanceAssinaturaService } from "@plane/services";
 
 export type TFiltroDeAssinaturas = { status?: string; search?: string; excedentes?: boolean };
@@ -14,10 +19,12 @@ export type TFiltroDeAssinaturas = { status?: string; search?: string; excedente
 export interface IAssinaturaStore {
   assinaturas: TAssinaturaDaInstancia[];
   saude: TSaudeDoFaturamento | undefined;
+  resumo: TResumoDoFaturamento | undefined;
   carregando: boolean;
   filtro: TFiltroDeAssinaturas;
   buscar: (filtro?: TFiltroDeAssinaturas) => Promise<void>;
   buscarSaude: () => Promise<void>;
+  buscarResumo: () => Promise<void>;
   agir: (workspaceId: string, acao: TAcaoDeAssinatura) => Promise<void>;
   historico: (workspaceId: string) => Promise<any[]>;
 }
@@ -33,6 +40,7 @@ export interface IAssinaturaStore {
 export class AssinaturaStore implements IAssinaturaStore {
   assinaturas: TAssinaturaDaInstancia[] = [];
   saude: TSaudeDoFaturamento | undefined = undefined;
+  resumo: TResumoDoFaturamento | undefined = undefined;
   carregando = false;
   filtro: TFiltroDeAssinaturas = {};
   // services
@@ -42,10 +50,12 @@ export class AssinaturaStore implements IAssinaturaStore {
     makeObservable(this, {
       assinaturas: observable,
       saude: observable,
+      resumo: observable,
       carregando: observable.ref,
       filtro: observable,
       buscar: action,
       buscarSaude: action,
+      buscarResumo: action,
       agir: action,
     });
     this.service = new InstanceAssinaturaService();
@@ -80,10 +90,18 @@ export class AssinaturaStore implements IAssinaturaStore {
     });
   };
 
+  buscarResumo = async () => {
+    const resumo = await this.service.resumo();
+    runInAction(() => {
+      this.resumo = resumo;
+    });
+  };
+
   agir = async (workspaceId: string, acao: TAcaoDeAssinatura) => {
     await this.service.agir(workspaceId, acao);
     await this.buscar();
     await this.buscarSaude();
+    await this.buscarResumo();
   };
 
   historico = async (workspaceId: string) => this.service.historico(workspaceId);
