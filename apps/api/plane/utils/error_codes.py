@@ -20,4 +20,16 @@ ERROR_CODES = {
     "ESPACO_BLOQUEADO": 4804,
     "CUPOM_INVALIDO": 4805,
     "SEM_ASSINATURA": 4806,
+    # Contratação (E4). Erros de preenchimento e de escolha, separados do que é
+    # trava de plano: aqui a resposta é 400, e o que falta é dado, não dinheiro.
+    "DOCUMENTO_INVALIDO": 4807,
+    "DADOS_INCOMPLETOS": 4808,
+    "DADOS_DE_COBRANCA_FALTANDO": 4809,
+    "PLANO_INVALIDO": 4810,
+    "CICLO_INVALIDO": 4811,
+    "FORMA_INVALIDA": 4812,
+    "MESMO_PLANO": 4813,
+    "CUPOM_VENCIDO": 4814,
+    "CUPOM_ESGOTADO": 4815,
+    "ACIMA_DO_TETO": 4816,
 }

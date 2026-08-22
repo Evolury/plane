@@ -95,6 +95,17 @@ class Assinatura(BaseModel):
     valor_base = models.PositiveIntegerField(default=0)
     valor_por_assento = models.PositiveIntegerField(default=0)
 
+    # Dados de cobrança. Ficam aqui, e não no espaço, porque são do contrato:
+    # quem paga pode não ser quem administra, e trocar de responsável
+    # financeiro não pode mexer no nome do espaço.
+    #
+    # CPF ou CNPJ é obrigatório para o Asaas criar o cliente — e não existia em
+    # lugar nenhum do produto antes disto.
+    cpf_cnpj = models.CharField(max_length=14, blank=True, default="")
+    nome_de_cobranca = models.CharField(max_length=255, blank=True, default="")
+    email_de_cobranca = models.CharField(max_length=255, blank=True, default="")
+    telefone_de_cobranca = models.CharField(max_length=20, blank=True, default="")
+
     asaas_customer_id = models.CharField(max_length=64, blank=True, default="", db_index=True)
     asaas_subscription_id = models.CharField(max_length=64, blank=True, default="", db_index=True)
     asaas_checkout_id = models.CharField(max_length=64, blank=True, default="")
