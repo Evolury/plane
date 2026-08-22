@@ -1,26 +1,35 @@
+# Os upstreams são nomeáveis por ambiente (UPSTREAM_*), com o nome de serviço
+# do compose como padrão — o comportamento de quem não configura nada não muda.
+#
+# A opção existe porque nome genérico em rede compartilhada não é seguro: o
+# Compose publica o nome do serviço como apelido de rede, então dois projetos
+# na mesma rede disputam `web` e `api`. Em 22/08/2026 isso pôs a produção do
+# QooWork servindo o app de outro projeto — a raiz devolvia o título dele, e
+# `/api/*` batia na API dele. O DNS não errou: respondeu o que foi perguntado.
+
 (plane_proxy) {
 	request_body {
 		max_size {$FILE_SIZE_LIMIT}
 	}
 
   redir /spaces /spaces/ permanent
-	reverse_proxy /spaces/* space:3000
+	reverse_proxy /spaces/* {$UPSTREAM_SPACE:space}:3000
 
   redir /god-mode /god-mode/ permanent
-	reverse_proxy /god-mode/* admin:3000
+	reverse_proxy /god-mode/* {$UPSTREAM_ADMIN:admin}:3000
 	
-	reverse_proxy /live/* live:3000
+	reverse_proxy /live/* {$UPSTREAM_LIVE:live}:3000
 
-	reverse_proxy /api/* api:8000
+	reverse_proxy /api/* {$UPSTREAM_API:api}:8000
 
-	reverse_proxy /auth/* api:8000
+	reverse_proxy /auth/* {$UPSTREAM_API:api}:8000
 
-	reverse_proxy /static/* api:8000
+	reverse_proxy /static/* {$UPSTREAM_API:api}:8000
 
 	reverse_proxy /{$BUCKET_NAME}/* plane-minio:9000
 	reverse_proxy /{$BUCKET_NAME} plane-minio:9000
 
-	reverse_proxy /* web:3000
+	reverse_proxy /* {$UPSTREAM_WEB:web}:3000
 }
 
 {
