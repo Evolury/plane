@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from typing import Dict, Any
@@ -10,6 +11,8 @@ from django.http import HttpRequest
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta
+from plane.app.permissions import ExigePlanoCom
+from plane.utils.planos import RECURSO_ANALYTICS
 from plane.app.views.base import BaseAPIView
 from plane.app.permissions import ROLE, allow_permission
 from plane.db.models import (
@@ -30,6 +33,10 @@ from plane.utils.date_utils import (
 
 
 class ProjectAdvanceAnalyticsBaseView(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     def initialize_workspace(self, slug: str, type: str) -> None:
         self._workspace_slug = slug
         self.filters = get_analytics_filters(

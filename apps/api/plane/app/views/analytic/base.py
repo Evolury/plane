@@ -12,10 +12,11 @@ from django.db import models
 
 # Third party imports
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 # Module imports
-from plane.app.permissions import WorkSpaceAdminPermission
+from plane.app.permissions import ExigePlanoCom, WorkSpaceAdminPermission
 from plane.app.serializers import AnalyticViewSerializer
 from plane.app.views.base import BaseAPIView, BaseViewSet
 from plane.bgtasks.analytic_plot_export import analytic_export_task
@@ -30,11 +31,16 @@ from plane.db.models import (
 )
 
 from plane.utils.analytics_plot import build_graph_plot, VALID_ANALYTICS_FIELDS, VALID_YAXIS
+from plane.utils.planos import RECURSO_ANALYTICS
 from plane.utils.issue_filters import issue_filters
 from plane.app.permissions import allow_permission, ROLE
 
 
 class AnalyticsEndpoint(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def get(self, request, slug):
         x_axis = request.GET.get("x_axis", False)
@@ -174,7 +180,9 @@ class AnalyticsEndpoint(BaseAPIView):
 
 
 class AnalyticViewViewset(BaseViewSet):
-    permission_classes = [WorkSpaceAdminPermission]
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [WorkSpaceAdminPermission, ExigePlanoCom(RECURSO_ANALYTICS)]
     model = AnalyticView
     serializer_class = AnalyticViewSerializer
 
@@ -187,6 +195,10 @@ class AnalyticViewViewset(BaseViewSet):
 
 
 class SavedAnalyticEndpoint(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def get(self, request, slug, analytic_id):
         analytic_view = AnalyticView.objects.get(pk=analytic_id, workspace__slug=slug)
@@ -220,6 +232,10 @@ class SavedAnalyticEndpoint(BaseAPIView):
 
 
 class ExportAnalyticsEndpoint(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def post(self, request, slug):
         x_axis = request.data.get("x_axis", False)
@@ -249,6 +265,10 @@ class ExportAnalyticsEndpoint(BaseAPIView):
 
 
 class DefaultAnalyticsEndpoint(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
     def get(self, request, slug):
         filters = issue_filters(request.GET, "GET")
@@ -389,6 +409,10 @@ class DefaultAnalyticsEndpoint(BaseAPIView):
 
 
 class ProjectStatsEndpoint(BaseAPIView):
+    # Evolury: analytics é recurso de plano (ADR 0021). A permissão de papel
+    # continua valendo; esta só acrescenta a pergunta sobre o plano.
+    permission_classes = [IsAuthenticated, ExigePlanoCom(RECURSO_ANALYTICS)]
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
     def get(self, request, slug):
         fields = request.GET.get("fields", "").split(",")

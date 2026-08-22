@@ -15,6 +15,8 @@ from rest_framework.response import Response
 
 # Module imports
 from plane.app.permissions import ROLE, allow_permission
+from plane.utils import direitos
+from plane.utils.planos import LIMITE_AUTOMACOES
 from plane.app.serializers.automation import AutomationRunSerializer, AutomationSerializer
 from plane.app.views.base import BaseViewSet
 from plane.db.models import Automation, AutomationTrigger, Workspace
@@ -45,15 +47,36 @@ class AutomationViewSet(BaseViewSet):
         regras = self.get_queryset()
         return Response(AutomationSerializer(regras, many=True).data, status=status.HTTP_200_OK)
 
+    # Evolury: o teto de regras ativas vem do plano (ADR 0021), e conta o
+    # **espaço inteiro** — a assinatura é do espaço. Contar por projeto deixaria
+    # o teto de duas virar duas por projeto, que é outro produto.
+    def _recusa_por_teto(self, slug, workspace_id):
+        teto = direitos.limite(LIMITE_AUTOMACOES, slug=slug)
+        if teto is None:
+            return None
+        if direitos.uso_de_automacoes(workspace_id) < teto:
+            return None
+        return Response(
+            direitos.recusa_de_limite(LIMITE_AUTOMACOES, teto, direitos.plano_de(slug=slug)),
+            status=status.HTTP_402_PAYMENT_REQUIRED,
+        )
+
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def create(self, request, slug, project_id):
         serializer = AutomationSerializer(data=request.data, context={"project_id": project_id})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        regra = serializer.save(
-            project_id=project_id,
-            workspace_id=Workspace.objects.values_list("id", flat=True).get(slug=slug),
-        )
+        workspace_id = Workspace.objects.values_list("id", flat=True).get(slug=slug)
+        # A regra nasce ativa, então o teto vale já na criação. Conferido depois
+        # da validação de propósito: recusar um payload inválido por causa do
+        # plano mandaria o cliente comprar para descobrir que o corpo estava
+        # errado.
+        if request.data.get("is_active", True):
+            recusa = self._recusa_por_teto(slug, workspace_id)
+            if recusa is not None:
+                return recusa
+
+        regra = serializer.save(project_id=project_id, workspace_id=workspace_id)
         # Sem isto a regra agendada nasce sem relógio, e o job — que varre por
         # `next_run_at` — nunca a enxerga. Mesma armadilha das recorrentes.
         reagendar(regra)
@@ -69,6 +92,14 @@ class AutomationViewSet(BaseViewSet):
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Religar uma regra desligada consome vaga igual a criar uma. Sem esta
+        # conferência, desligar e religar seria o caminho de contorno do teto.
+        if request.data.get("is_active") and not regra.is_active:
+            recusa = self._recusa_por_teto(slug, regra.workspace_id)
+            if recusa is not None:
+                return recusa
+
         regra = serializer.save()
         # A agenda pode ter mudado — ou a regra pode ter deixado de ser
         # agendada, e aí o relógio antigo precisa sumir para o job não a pegar.

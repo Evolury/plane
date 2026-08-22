@@ -3,6 +3,7 @@
 # See the LICENSE file for details.
 
 import pytest
+from django.core.cache import cache
 from rest_framework.test import APIClient
 from pytest_django.fixtures import django_db_setup
 
@@ -14,6 +15,24 @@ from plane.db.models.api import APIToken
 def django_db_setup(django_db_setup):  # noqa: F811
     """Set up the Django database for the test session"""
     pass
+
+
+@pytest.fixture(autouse=True)
+def cache_limpo():
+    """Evolury: cada teste começa com o Redis vazio.
+
+    O cache da pilha de teste é o mesmo entre um teste e outro, e duas coisas
+    passaram a atravessar por ele: o balde do `AnonRateThrottle`, que é por IP e
+    por minuto, e o retrato de plano do faturamento, que é por slug — e todo
+    teste usa o mesmo `test-workspace`.
+
+    O sintoma foi este: acrescentar três requisições num arquivo novo derrubou
+    um teste de outro arquivo com 429. Teste que falha por causa do vizinho não
+    diz nada sobre o código.
+    """
+    cache.clear()
+    yield
+    cache.clear()
 
 
 @pytest.fixture

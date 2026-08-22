@@ -20,8 +20,8 @@ import { Tooltip } from "@plane/propel/tooltip";
 import { DragHandle, DropIndicator } from "@plane/ui";
 import { cn } from "@plane/utils";
 // components
+import { RECURSOS_DA_NAVEGACAO, RotuloDePlano } from "@/components/faturamento";
 import { SidebarNavItem } from "@/components/sidebar/sidebar-navigation";
-import { UpgradeBadge } from "@/components/workspace/upgrade-badge";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
@@ -201,11 +201,11 @@ export const ExtendedSidebarItem = observer(function ExtendedSidebarItem(props: 
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            {item.key === "active_cycles" && (
-              <div className="flex-shrink-0">
-                <UpgradeBadge />
-              </div>
-            )}
+            {/* Evolury (ADR 0021): era um selo "Pro" fixo em Ciclos ativos — de um
+                plano da nuvem do Plane que aqui nunca existiu, num recurso que
+                esta instância sempre teve. Agora o selo só aparece no que o
+                plano do espaço não inclui, e diz qual plano libera. */}
+            <RotuloDePlano recurso={RECURSOS_DA_NAVEGACAO[item.key]} />
             {isPinned ? (
               <Tooltip tooltipContent={t("unpin")}>
                 <PinOff

@@ -11,6 +11,7 @@ admin, e a exclusão que precisa dizer o tamanho do estrago em vez de bloquear.
 
 import pytest
 from rest_framework import status
+
 from rest_framework.test import APIClient
 
 from plane.db.models import (
@@ -21,10 +22,15 @@ from plane.db.models import (
     Project,
     ProjectMember,
     State,
-    TETO_DE_PROPRIEDADES,
     User,
     WorkspaceMember,
 )
+
+from plane.utils.planos import AVANCADO, LIMITE_PROPRIEDADES, plano
+
+# Evolury (ADR 0021): o teto virou do plano. O espaço de teste nasce na
+# cortesia, que carrega o plano maior — daí o número continuar trinta.
+TETO_DO_PLANO_MAIOR = plano(AVANCADO).teto(LIMITE_PROPRIEDADES)
 
 LISTA_URL = "/api/workspaces/{slug}/projects/{project_id}/issue-properties/"
 ITEM_URL = "/api/workspaces/{slug}/projects/{project_id}/issue-properties/{pk}/"
@@ -81,7 +87,7 @@ class TestConfiguracao:
 
         lista = session_client.get(url)
         assert [p["property_type"] for p in lista.data["properties"]] == tipos
-        assert lista.data["cap"] == TETO_DE_PROPRIEDADES
+        assert lista.data["cap"] == TETO_DO_PLANO_MAIOR
         selecao = next(p for p in lista.data["properties"] if p["property_type"] == "select")
         assert [o["name"] for o in selecao["options"]] == ["A", "B"]
 
@@ -144,8 +150,14 @@ class TestConfiguracao:
         assert resposta.data["currency"] is None
 
     def test_the_cap_holds(self, session_client, workspace, projeto):
-        """Trinta colunas já é mais do que cabe numa tela."""
-        for indice in range(TETO_DE_PROPRIEDADES):
+        """Trinta colunas já é mais do que cabe numa tela.
+
+        Evolury (ADR 0021): o teto virou do plano, e a recusa virou 402. O
+        número continua trinta porque o espaço de teste nasce na cortesia, que
+        carrega o plano maior — não porque o teto ainda seja único.
+        """
+        teto = TETO_DO_PLANO_MAIOR
+        for indice in range(teto):
             _propriedade(projeto, name=f"Campo {indice}", property_type="text")
 
         resposta = session_client.post(
@@ -154,7 +166,9 @@ class TestConfiguracao:
             format="json",
         )
 
-        assert resposta.status_code == status.HTTP_400_BAD_REQUEST
+        assert resposta.status_code == status.HTTP_402_PAYMENT_REQUIRED
+        assert resposta.data["error_message"] == "LIMITE_DO_PLANO"
+        assert resposta.data["teto"] == teto
 
     def test_two_properties_cannot_share_a_name(self, session_client, workspace, projeto):
         """Duas colunas indistinguíveis na tabela e na exportação."""

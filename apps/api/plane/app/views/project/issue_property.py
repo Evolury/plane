@@ -36,9 +36,10 @@ from plane.db.models import (
     IssueProperty,
     IssuePropertyOption,
     IssuePropertyValue,
-    TETO_DE_PROPRIEDADES,
     TIPOS_DE_SELECAO,
 )
+from plane.utils import direitos
+from plane.utils.planos import LIMITE_PROPRIEDADES
 
 
 class IssuePropertyViewSet(BaseViewSet):
@@ -86,19 +87,28 @@ class IssuePropertyViewSet(BaseViewSet):
             context={"valores_por_propriedade": self._contagem_de_valores(propriedades)},
         )
         return Response(
-            {"properties": serializer.data, "cap": TETO_DE_PROPRIEDADES},
+            {"properties": serializer.data, "cap": self._teto(slug)},
             status=status.HTTP_200_OK,
         )
+
+    # Evolury: o teto passa a vir do plano (ADR 0021). Era 30 para todo mundo;
+    # agora é 5 no Essencial e 30 nos outros dois. Quem cai de plano acima do
+    # teto **não perde** propriedade: para de criar. Apagar dado por mudança de
+    # contrato seria cobrar o cliente duas vezes pela mesma decisão.
+    def _teto(self, slug):
+        # `None` é sem teto, e é diferente de zero, que é 'nenhuma'.
+        return direitos.limite(LIMITE_PROPRIEDADES, slug=slug)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="PROJECT")
     def create(self, request, slug, project_id):
         # O teto conta as ativas e as desativadas: desativar preserva os
         # valores, então a linha continua existindo e continua custando.
+        teto = self._teto(slug)
         existentes = self.get_queryset().count()
-        if existentes >= TETO_DE_PROPRIEDADES:
+        if teto is not None and existentes >= teto:
             return Response(
-                {"error": f"Este projeto já tem {TETO_DE_PROPRIEDADES} propriedades."},
-                status=status.HTTP_400_BAD_REQUEST,
+                direitos.recusa_de_limite(LIMITE_PROPRIEDADES, teto, direitos.plano_de(slug=slug)),
+                status=status.HTTP_402_PAYMENT_REQUIRED,
             )
 
         serializer = IssuePropertySerializer(data=request.data, context={"project_id": project_id})

@@ -34,6 +34,7 @@ import {
   WORKSPACE_PROJECT_NAVIGATION_PREFERENCES,
 } from "@plane/constants";
 // hooks
+import { useFaturamento } from "@/hooks/store/use-faturamento";
 import { useFavorite } from "@/hooks/store/use-favorite";
 import { useMember } from "@/hooks/store/use-member";
 import { useProject } from "@/hooks/store/use-project";
@@ -64,6 +65,7 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
   const { loader, workspaceInfoBySlug, fetchUserWorkspaceInfo, fetchUserProjectPermissions, allowPermissions } =
     useUserPermissions();
   const { fetchWorkspaceStates } = useProjectState();
+  const { buscarRetrato } = useFaturamento();
   // derived values
   const canPerformWorkspaceMemberActions = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
@@ -83,6 +85,15 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
   useSWR(
     workspaceSlug && currentWorkspace ? WORKSPACE_PROJECTS_ROLES_INFORMATION(workspaceSlug.toString()) : null,
     workspaceSlug && currentWorkspace ? () => fetchUserProjectPermissions(workspaceSlug.toString()) : null,
+    { revalidateIfStale: false, revalidateOnFocus: false }
+  );
+
+  // Evolury: o plano do espaço (ADR 0021). Uma chamada, no mesmo lugar onde o
+  // resto do contexto do espaço é buscado — a tela precisa saber o que esconder
+  // antes de desenhar o menu.
+  useSWR(
+    workspaceSlug && currentWorkspace ? `FATURAMENTO_PLANO_${workspaceSlug.toString()}` : null,
+    workspaceSlug && currentWorkspace ? () => buscarRetrato(workspaceSlug.toString()) : null,
     { revalidateIfStale: false, revalidateOnFocus: false }
   );
 

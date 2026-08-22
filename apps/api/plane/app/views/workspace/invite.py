@@ -29,6 +29,7 @@ from plane.app.views.base import BaseAPIView
 from plane.bgtasks.event_tracking_task import track_event
 from plane.bgtasks.workspace_invitation_task import workspace_invitation
 from plane.db.models import User, Workspace, WorkspaceMember, WorkspaceMemberInvite
+from plane.utils import direitos
 from plane.utils.cache import invalidate_cache, invalidate_cache_directly
 from plane.utils.host import base_host
 from plane.utils.analytics_events import USER_JOINED_WORKSPACE, USER_INVITED_TO_WORKSPACE
@@ -49,6 +50,25 @@ class WorkspaceInvitationsViewset(BaseViewSet):
             .get_queryset()
             .filter(workspace__slug=self.kwargs.get("slug"))
             .select_related("workspace", "workspace__owner", "created_by")
+        )
+
+    def _recusa_por_cota_de_convidados(self, workspace, emails):
+        """Conta o que já existe, o que está pendente e o que está sendo pedido."""
+        cota = direitos.cota_de_convidados(workspace_id=workspace.id)
+        pedidos = len([email for email in emails if int(email.get("role", 5)) == 5])
+        if not pedidos:
+            return None
+
+        # Convite pendente ocupa vaga: aceitar depois não pode estourar a cota.
+        pendentes = WorkspaceMemberInvite.objects.filter(workspace_id=workspace.id, role=5).count()
+        atuais = direitos.uso_de_convidados(workspace.id)
+
+        if atuais + pendentes + pedidos <= cota:
+            return None
+
+        return Response(
+            direitos.recusa_de_cota_de_convidados(cota, direitos.plano_de(workspace_id=workspace.id)),
+            status=status.HTTP_402_PAYMENT_REQUIRED,
         )
 
     def create(self, request, slug):
@@ -85,6 +105,15 @@ class WorkspaceInvitationsViewset(BaseViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # Evolury: convidado tem cota por plano (ADR 0021). Assento de membro
+        # NÃO é conferido aqui de propósito: convidar membro nunca é bloqueado,
+        # o excedente entra no ciclo seguinte. Bloquear convite é atrito que
+        # gera suporte e não gera receita — convidado é o caso oposto, porque
+        # ele é grátis e sem cota vira porta lateral para o teto de assento.
+        recusa = self._recusa_por_cota_de_convidados(workspace, emails)
+        if recusa is not None:
+            return recusa
 
         workspace_invitations = []
         for email in emails:

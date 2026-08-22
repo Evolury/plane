@@ -14,6 +14,8 @@ import type { ISvgIcons } from "@plane/propel/icons";
 type Props = {
   isActive: boolean;
   label: string;
+  /** Evolury: selo do plano que libera o item, quando ele não estiver incluído. */
+  selo?: React.ReactNode;
 } & ({ as: "button"; onClick: () => void } | { as: "link"; href: string }) &
   (
     | {
@@ -23,7 +25,7 @@ type Props = {
   );
 
 export function SettingsSidebarItem(props: Props) {
-  const { as, isActive, label } = props;
+  const { as, isActive, label, selo } = props;
   // common class
   const className = cn(
     "flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-body-sm-medium text-secondary transition-colors",
@@ -41,6 +43,7 @@ export function SettingsSidebarItem(props: Props) {
         props.iconNode
       )}
       <span className="truncate">{label}</span>
+      {selo ? <span className="ml-auto shrink-0">{selo}</span> : null}
     </>
   );
 

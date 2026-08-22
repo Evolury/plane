@@ -20,3 +20,6 @@ from .project import (
 )
 from .base import allow_permission, ROLE
 from .page import ProjectPagePermission, PersonalPagePermission
+
+# Evolury: recusa por plano (ADR 0021)
+from .faturamento import ExigePlanoCom, ForaDoPlano

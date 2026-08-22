@@ -40,6 +40,9 @@ import type { IProjectInboxStore } from "./inbox/project-inbox.store";
 import { ProjectInboxStore } from "./inbox/project-inbox.store";
 import type { IInstanceStore } from "./instance.store";
 import { InstanceStore } from "./instance.store";
+// Evolury: faturamento (ADR 0021)
+import type { IFaturamentoStore } from "./faturamento.store";
+import { FaturamentoStore } from "./faturamento.store";
 import type { IIssueRootStore } from "./issue/root.store";
 import { IssueRootStore } from "./issue/root.store";
 import type { ILabelStore } from "./label.store";
@@ -98,6 +101,8 @@ export class CoreRootStore {
   commandPalette: ICommandPaletteStore;
   theme: IThemeStore;
   instance: IInstanceStore;
+  // Evolury: o plano do espaço (ADR 0021)
+  faturamento: IFaturamentoStore;
   user: IUserStore;
   projectInbox: IProjectInboxStore;
   projectEstimate: IProjectEstimateStore;
@@ -116,6 +121,7 @@ export class CoreRootStore {
     this.router = new RouterStore();
     this.commandPalette = new CommandPaletteStore();
     this.instance = new InstanceStore();
+    this.faturamento = new FaturamentoStore();
     this.user = new UserStore(this);
     this.theme = new ThemeStore();
     this.workspaceRoot = new WorkspaceRootStore(this);
@@ -155,6 +161,7 @@ export class CoreRootStore {
     this.router = new RouterStore();
     this.commandPalette = new CommandPaletteStore();
     this.instance = new InstanceStore();
+    this.faturamento = new FaturamentoStore();
     this.user = new UserStore(this);
     this.workspaceRoot = new WorkspaceRootStore(this);
     this.projectRoot = new ProjectRootStore(this);

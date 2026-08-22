@@ -14,6 +14,7 @@ import { EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { joinUrlPath } from "@plane/utils";
 // components
+import { RECURSOS_DA_NAVEGACAO, RotuloDePlano } from "@/components/faturamento";
 import { SidebarNavItem } from "@/components/sidebar/sidebar-navigation";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
@@ -74,6 +75,10 @@ export const SidebarItemBase = observer(function SidebarItemBase({
           {icon}
           <p className="text-13 leading-5 font-medium">{t(item.labelTranslationKey)}</p>
         </div>
+        {/* Evolury (ADR 0021): o item continua visível quando o plano não o
+            inclui, com o nome do plano que libera. Esconder o que se vende é
+            esconder a venda — e quem recusa é o servidor, com 402. */}
+        <RotuloDePlano recurso={RECURSOS_DA_NAVEGACAO[item.key]} className="ml-auto" />
         {additionalRender?.(item.key, slug)}
       </SidebarNavItem>
     </Link>

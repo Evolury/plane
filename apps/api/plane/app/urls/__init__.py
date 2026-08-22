@@ -23,8 +23,12 @@ from .workspace import urlpatterns as workspace_urls
 from .timezone import urlpatterns as timezone_urls
 from .exporter import urlpatterns as exporter_urls
 
+# Evolury: faturamento (ADR 0021)
+from .faturamento import urlpatterns as faturamento_urls
+
 urlpatterns = [
     *analytic_urls,
+    *faturamento_urls,
     *asset_urls,
     *cycle_urls,
     *estimate_urls,
