@@ -5,4 +5,11 @@
 from .core import core_config_variables
 from .extended import extended_config_variables
 
-instance_config_variables = [*core_config_variables, *extended_config_variables]
+# Evolury: faturamento (ADR 0021)
+from .faturamento import faturamento_config_variables
+
+instance_config_variables = [
+    *core_config_variables,
+    *extended_config_variables,
+    *faturamento_config_variables,
+]

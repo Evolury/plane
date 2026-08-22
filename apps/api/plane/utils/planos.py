@@ -18,7 +18,10 @@ a tabela não pode reescrever o que o cliente já contratou.
 """
 
 from dataclasses import dataclass
+from datetime import date
 from typing import Optional
+
+from dateutil.relativedelta import relativedelta
 
 # Ciclos aceitos. O anual custa dez mensalidades — dois meses grátis, que é a
 # âncora reconhecida no mercado brasileiro.
@@ -27,6 +30,28 @@ CICLO_ANUAL = "anual"
 CICLOS = (CICLO_MENSAL, CICLO_ANUAL)
 
 MESES_DO_CICLO_ANUAL = 10
+
+# Como cada ciclo se chama do lado do Asaas.
+CICLOS_DO_ASAAS = {CICLO_MENSAL: "MONTHLY", CICLO_ANUAL: "YEARLY"}
+
+
+def fim_do_ciclo(vencimento: date, ciclo: str) -> date:
+    """O vencimento seguinte, que é também o `pago_ate` do ciclo pago.
+
+    Uma data só para as duas coisas, de propósito: se a próxima cobrança vence
+    em 22/09, o cliente está em dia até 22/09 — vencer hoje ainda não é atraso
+    (a régua conta a partir do dia seguinte). Guardar "último dia coberto" e
+    "próximo vencimento" separados criaria um erro de um dia esperando
+    acontecer.
+
+    `relativedelta` e não trinta dias: 31/01 mais um mês é 28/02, e somar dias
+    faria a cobrança andar para trás no calendário a cada ano.
+    """
+    if ciclo == CICLO_ANUAL:
+        return vencimento + relativedelta(years=1)
+    if ciclo == CICLO_MENSAL:
+        return vencimento + relativedelta(months=1)
+    raise ValueError(f"Ciclo desconhecido: {ciclo!r}. Conhecidos: {', '.join(CICLOS)}")
 
 # Recursos são booleanos: o plano inclui ou não inclui.
 RECURSO_ANALYTICS = "analytics"
