@@ -3,6 +3,37 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/);
 versionamento descrito em [VERSIONING.md](VERSIONING.md).
 
+## [1.38.0] — 2026-08-22
+
+**Minor**: nenhum upload funcionava em produção, e o e-mail que saía daqui era
+de outro produto. Os dois vieram da verificação de ponta a ponta feita antes do
+primeiro cliente entrar.
+
+### Consertado
+
+- **Nenhum anexo subia.** Nem avatar, nem logo de espaço, nem capa de projeto,
+  nem anexo de tarefa. O produto pedia ao armazenamento um POST assinado, e o
+  Cloudflare R2 responde `501 NotImplemented` — não implementa essa forma. O
+  envio passa a ser por PUT assinado, que funciona nos dois provedores, então é
+  um caminho só. Nada disso aparecia em sonda de saúde: o servidor estava
+  sadio, quem recusava era o R2, no navegador do cliente.
+
+  A política do POST assinado carregava o limite de tamanho, e era o próprio
+  armazenamento que barrava arquivo maior que o declarado. O PUT não tem
+  equivalente, então a conferência passou a ser nossa, na confirmação do
+  upload — pelo tamanho real do que subiu, não pelo que foi prometido.
+
+- **O e-mail que saía daqui era do Plane.** O convite trazia "on Plane" no
+  assunto, o logotipo do Plane no cabeçalho e trinta e sete links para o X, o
+  LinkedIn, o GitHub e o fórum deles no rodapé. É a primeira coisa que um
+  cliente pagante lê. O nome passa a vir de um lugar só, e o logotipo virou o
+  wordmark em texto — que ainda aparece para quem bloqueia imagem, como a
+  maioria dos programas de e-mail faz por padrão.
+
+- **O proxy podia servir outro projeto.** Os endereços internos eram nomes
+  genéricos (`web`, `api`), e numa rede compartilhada esses apelidos pertencem
+  a quem subiu primeiro. Passam a ser nomeáveis por ambiente.
+
 ## [1.37.0] — 2026-08-22
 
 **Minor**: prepara o produto para a produção do QooWork — arquivos no Cloudflare
