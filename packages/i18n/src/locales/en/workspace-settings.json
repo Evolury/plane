@@ -72,11 +72,91 @@
       },
       "billing_and_plans": {
         "heading": "Billing & Plans",
-        "description": "This is a self-hosted QooWork instance. There is no plan to choose and no subscription to manage.",
+        "description": "This workspace's plan, what has been charged, and what changes when you switch.",
         "title": "Billing & Plans",
         "current_plan": "Current plan",
         "free_plan": "You are currently using the free plan",
-        "view_plans": "View plans"
+        "view_plans": "View plans",
+        "estado": {
+          "sem_assinatura": "No subscription",
+          "em_cortesia": "Complimentary",
+          "ativa": "Active",
+          "atrasada": "Payment overdue",
+          "restrita": "Read-only",
+          "bloqueada": "Blocked",
+          "cancelada": "Canceled",
+          "encerrada": "Ended",
+          "removida": "Data removed"
+        },
+        "uso": {
+          "titulo": "Plan usage",
+          "assentos": "Members",
+          "convidados": "Guests",
+          "propriedades": "Properties per project",
+          "automacoes": "Active automations",
+          "sem_teto": "no cap",
+          "de": "of"
+        },
+        "cobranca": {
+          "titulo": "Billing details",
+          "descricao": "Who pays for this workspace. A CPF or CNPJ is required to issue the charge.",
+          "nome": "Name or company name",
+          "documento": "CPF or CNPJ",
+          "email": "Email",
+          "telefone": "Phone",
+          "salvar": "Save details",
+          "salvo": "Billing details saved",
+          "documento_invalido": "Check the CPF or CNPJ: the digits do not add up.",
+          "incompleto": "Fill in name and email."
+        },
+        "planos": {
+          "titulo": "Plans",
+          "assentos_incluidos": "{quantidade} members included",
+          "adicional": "Extra member: {valor}",
+          "convidados": "{quantidade} guests per paid member",
+          "sem_convidados": "No external guests",
+          "por_mes": "per month",
+          "por_ano": "per year",
+          "mensal": "Monthly",
+          "anual": "Yearly",
+          "economia_anual": "2 months free",
+          "contratar": "Subscribe",
+          "trocar": "Switch to this plan",
+          "plano_atual": "Your plan"
+        },
+        "forma": {
+          "titulo": "Payment method",
+          "pix": "PIX",
+          "pix_ajuda": "QooWork sends the charge every cycle by email, SMS and WhatsApp.",
+          "cartao": "Credit card",
+          "cartao_ajuda": "Renews on its own. Card details stay with Asaas, never here."
+        },
+        "cupom": {
+          "titulo": "Coupon",
+          "campo": "Coupon code",
+          "aplicar": "Apply",
+          "aplicado": "Coupon {codigo} applied",
+          "invalido": "Invalid coupon.",
+          "vencido": "This coupon has expired.",
+          "esgotado": "This coupon has reached its usage limit."
+        },
+        "historico": {
+          "titulo": "Charges",
+          "vazio": "No charges yet.",
+          "vencimento": "Due date",
+          "valor": "Amount",
+          "situacao": "Status",
+          "abrir": "Open charge"
+        },
+        "proxima_cobranca": "Next charge on {data}",
+        "pago_ate": "Paid through {data}",
+        "promocao_termina": "The promotion ends on {data} and the full price returns.",
+        "acima_do_teto": "To move down a plan, the workspace has to fit in it. Remove: {itens}.",
+        "upgrade_imediato": "Plan switched. This cycle's difference is in the separate charge.",
+        "downgrade_agendado": "Plan switched. The new price applies from the next cycle.",
+        "aguardando_pagamento": "Charge created. Access is released as soon as payment is confirmed.",
+        "abrir_cobranca": "Open charge",
+        "erro_no_gateway": "Asaas refused: {detalhe}"
       },
       "exports": {
         "heading": "Exports",

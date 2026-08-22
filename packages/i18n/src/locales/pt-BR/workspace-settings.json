@@ -72,11 +72,91 @@
       },
       "billing_and_plans": {
         "heading": "Faturamento e planos",
-        "description": "Esta é uma instância própria da QooWork. Não há plano a escolher nem assinatura a gerenciar.",
+        "description": "O plano deste espaço de trabalho, o que já foi cobrado e o que muda ao trocar.",
         "title": "Faturamento e planos",
         "current_plan": "Plano atual",
         "free_plan": "Você está usando o plano gratuito atualmente",
-        "view_plans": "Ver planos"
+        "view_plans": "Ver planos",
+        "estado": {
+          "sem_assinatura": "Sem assinatura",
+          "em_cortesia": "Em cortesia",
+          "ativa": "Ativa",
+          "atrasada": "Pagamento em atraso",
+          "restrita": "Somente leitura",
+          "bloqueada": "Bloqueado",
+          "cancelada": "Cancelada",
+          "encerrada": "Encerrada",
+          "removida": "Dados removidos"
+        },
+        "uso": {
+          "titulo": "Uso do plano",
+          "assentos": "Membros",
+          "convidados": "Convidados",
+          "propriedades": "Propriedades por projeto",
+          "automacoes": "Automações ativas",
+          "sem_teto": "sem teto",
+          "de": "de"
+        },
+        "cobranca": {
+          "titulo": "Dados de cobrança",
+          "descricao": "Quem paga por este espaço. O CPF ou CNPJ é exigido para emitir a cobrança.",
+          "nome": "Nome ou razão social",
+          "documento": "CPF ou CNPJ",
+          "email": "E-mail",
+          "telefone": "Telefone",
+          "salvar": "Salvar dados",
+          "salvo": "Dados de cobrança salvos",
+          "documento_invalido": "Confira o CPF ou CNPJ: os dígitos não fecham.",
+          "incompleto": "Preencha nome e e-mail."
+        },
+        "planos": {
+          "titulo": "Planos",
+          "assentos_incluidos": "{quantidade} membros incluídos",
+          "adicional": "Membro adicional: {valor}",
+          "convidados": "{quantidade} convidados por membro pago",
+          "sem_convidados": "Sem convidados externos",
+          "por_mes": "por mês",
+          "por_ano": "por ano",
+          "mensal": "Mensal",
+          "anual": "Anual",
+          "economia_anual": "2 meses grátis",
+          "contratar": "Assinar",
+          "trocar": "Trocar para este plano",
+          "plano_atual": "Seu plano"
+        },
+        "forma": {
+          "titulo": "Forma de pagamento",
+          "pix": "PIX",
+          "pix_ajuda": "O QooWork envia a cobrança a cada ciclo por e-mail, SMS e WhatsApp.",
+          "cartao": "Cartão de crédito",
+          "cartao_ajuda": "Renova sozinho. Os dados do cartão ficam no Asaas, nunca aqui."
+        },
+        "cupom": {
+          "titulo": "Cupom",
+          "campo": "Código do cupom",
+          "aplicar": "Aplicar",
+          "aplicado": "Cupom {codigo} aplicado",
+          "invalido": "Cupom inválido.",
+          "vencido": "Este cupom venceu.",
+          "esgotado": "Este cupom já atingiu o limite de usos."
+        },
+        "historico": {
+          "titulo": "Cobranças",
+          "vazio": "Nenhuma cobrança ainda.",
+          "vencimento": "Vencimento",
+          "valor": "Valor",
+          "situacao": "Situação",
+          "abrir": "Abrir cobrança"
+        },
+        "proxima_cobranca": "Próxima cobrança em {data}",
+        "pago_ate": "Em dia até {data}",
+        "promocao_termina": "A promoção termina em {data} e o preço cheio volta.",
+        "acima_do_teto": "Para descer de plano, o espaço precisa caber nele. Saia de: {itens}.",
+        "upgrade_imediato": "Plano trocado. A diferença deste ciclo está na cobrança avulsa.",
+        "downgrade_agendado": "Plano trocado. O novo valor vale a partir do próximo ciclo.",
+        "aguardando_pagamento": "Cobrança gerada. O acesso é liberado assim que o pagamento for confirmado.",
+        "abrir_cobranca": "Abrir cobrança",
+        "erro_no_gateway": "O Asaas recusou: {detalhe}"
       },
       "exports": {
         "heading": "Exportações",
