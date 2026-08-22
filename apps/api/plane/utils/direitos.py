@@ -43,6 +43,7 @@ CAMPOS = (
     "status",
     "plano",
     "assentos_incluidos",
+    "assentos_extras",
     "convidados_por_assento",
     "existe_espaco",
 )
@@ -56,6 +57,7 @@ SEM_NADA = {
     "status": regua.SEM_ASSINATURA,
     "plano": "",
     "assentos_incluidos": 0,
+    "assentos_extras": 0,
     "convidados_por_assento": 0,
     # Espaço que não existe não é espaço sem plano. Sem esta diferença, um slug
     # digitado errado responderia "seu plano não inclui" em vez de "não existe"
@@ -79,7 +81,15 @@ def _do_banco(*, slug=None, workspace_id=None) -> Optional[dict]:
     filtro = {"workspace__slug": slug} if slug else {"workspace_id": workspace_id}
     assinatura = (
         Assinatura.objects.filter(**filtro)
-        .values("workspace_id", "workspace__slug", "status", "plano", "assentos_incluidos", "convidados_por_assento")
+        .values(
+            "workspace_id",
+            "workspace__slug",
+            "status",
+            "plano",
+            "assentos_incluidos",
+            "assentos_extras",
+            "convidados_por_assento",
+        )
         .first()
     )
     if assinatura is None:
@@ -180,13 +190,24 @@ def limite(nome: str, *, slug=None, workspace_id=None) -> Optional[int]:
 
 
 def cota_de_convidados(*, slug=None, workspace_id=None) -> int:
-    """Quantos convidados o espaço pode ter — múltiplo dos assentos pagos."""
+    """Quantos convidados o espaço pode ter — múltiplo dos assentos pagos.
+
+    **Pagos, não incluídos.** Até 22/08/2026 esta conta usava só
+    `assentos_incluidos` e ignorava os excedentes, contra o que o próprio nome
+    dizia: quem paga por 35 assentos recebia cota de convidado de 30. O modelo
+    já tinha a propriedade `assentos_pagos` com a soma certa; era só a leitura
+    aqui que ficara para trás.
+    """
     retrato = dados(slug=slug, workspace_id=workspace_id)
-    return retrato["convidados_por_assento"] * retrato["assentos_incluidos"]
+    return retrato["convidados_por_assento"] * (
+        retrato["assentos_incluidos"] + retrato["assentos_extras"]
+    )
 
 
 def assentos_contratados(*, slug=None, workspace_id=None) -> int:
-    return dados(slug=slug, workspace_id=workspace_id)["assentos_incluidos"]
+    """Os assentos que o espaço tem direito a ocupar: os do plano mais os extras."""
+    retrato = dados(slug=slug, workspace_id=workspace_id)
+    return retrato["assentos_incluidos"] + retrato["assentos_extras"]
 
 
 def uso_de_assentos(workspace_id) -> int:

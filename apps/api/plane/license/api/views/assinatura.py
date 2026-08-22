@@ -255,11 +255,32 @@ class InstanceAssinaturaEndpoint(BaseAPIView):
             dias = int(request.data.get("dias") or 0)
             if dias <= 0:
                 return Response({"error": "DIAS_INVALIDOS"}, status=status.HTTP_400_BAD_REQUEST)
+
             chave = request.data.get("plano") or assinatura.plano or planos.AVANCADO
-            for campo, valor in planos.copia_para_contrato(
-                chave, assinatura.ciclo or planos.CICLO_MENSAL, gratuita=True
-            ).items():
+            if not planos.existe(chave):
+                return Response(
+                    {"error": "PLANO_INVALIDO", "planos": list(planos.CHAVES)},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Assentos além do plano, de graça. Em cortesia o preço por assento
+            # é zero, então isto é capacidade pura — e capacidade é o que a
+            # conta interna precisa poder ajustar sem virar contrato.
+            extras = request.data.get("assentos_extras")
+            extras = assinatura.assentos_extras if extras is None else int(extras)
+            if extras < 0:
+                return Response({"error": "ASSENTOS_INVALIDOS"}, status=status.HTTP_400_BAD_REQUEST)
+
+            ciclo = request.data.get("ciclo") or assinatura.ciclo or planos.CICLO_MENSAL
+            if ciclo not in planos.CICLOS:
+                return Response(
+                    {"error": "CICLO_INVALIDO", "ciclos": list(planos.CICLOS)},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            for campo, valor in planos.copia_para_contrato(chave, ciclo, gratuita=True).items():
                 setattr(assinatura, campo, valor)
+            assinatura.assentos_extras = extras
             assinatura.status = regua.EM_CORTESIA
             # Cortesia sem data é assinatura grátis para sempre, em silêncio.
             assinatura.pago_ate = hoje + timedelta(days=dias)
