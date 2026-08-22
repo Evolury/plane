@@ -10,6 +10,7 @@ import type { IUser } from "@plane/types";
 // plane ui
 // hooks
 import { useCurrentTime } from "@/hooks/use-current-time";
+import { nomeCompleto } from "@plane/utils";
 
 export interface IUserGreetingsView {
   user: IUser;
@@ -50,7 +51,7 @@ export function UserGreetingsView(props: IUserGreetingsView) {
       <h2 className="text-center text-20 font-semibold">
         {/* Evolury: saudação por chave composta — "Bom"+"manhã" não concorda
             em português (nem em outras línguas com gênero) */}
-        {t(`home_greeting.${greeting}`)}, {user?.first_name} {user?.last_name}
+        {t(`home_greeting.${greeting}`)}, {nomeCompleto(user)}
       </h2>
       <h5 className="flex items-center gap-2 font-medium text-placeholder">
         <div>{greeting === "morning" ? "🌤️" : greeting === "afternoon" ? "🌥️" : "🌙️"}</div>

@@ -11,7 +11,7 @@ import { Link } from "react-router";
 import { ROLE } from "@plane/constants";
 import { Popover } from "@plane/propel/popover";
 import { Avatar } from "@plane/ui";
-import { cn, getFileURL } from "@plane/utils";
+import { cn, getFileURL, nomeCompleto } from "@plane/utils";
 // hooks
 import { useMember } from "@/hooks/store/use-member";
 import { useUser } from "@/hooks/store/user";
@@ -72,7 +72,7 @@ export const EditorUserMention = observer(function EditorUserMention(props: Prop
               </div>
               <div>
                 <Link to={profileLink} className="not-prose text-13 font-medium text-primary hover:underline">
-                  {userDetails?.first_name} {userDetails?.last_name}
+                  {nomeCompleto(userDetails)}
                 </Link>
                 {roleDetails && <p className="text-11 text-secondary">{ROLE[roleDetails]}</p>}
               </div>
