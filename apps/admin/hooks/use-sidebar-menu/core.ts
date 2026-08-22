@@ -4,14 +4,22 @@
  * See the LICENSE file for details.
  */
 
-import { Image, BrainCog, Cog, Mail } from "lucide-react";
+import { Image, BrainCog, Cog, CreditCard, Mail } from "lucide-react";
 // plane imports
 import { LockIcon, WorkspaceIcon } from "@plane/propel/icons";
 // types
 import type { TSidebarMenuItem } from "./types";
 import { translate } from "@plane/i18n";
 
-export type TCoreSidebarMenuKey = "general" | "email" | "workspace" | "authentication" | "ai" | "image";
+export type TCoreSidebarMenuKey =
+  | "general"
+  | "email"
+  | "workspace"
+  // Evolury: painel de assinaturas (ADR 0021)
+  | "assinaturas"
+  | "authentication"
+  | "ai"
+  | "image";
 
 export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem> = {
   general: {
@@ -31,6 +39,14 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
     name: "Workspaces",
     description: translate("instance_admin.manage_all_workspaces_on_this_instance"),
     href: `/workspace/`,
+  },
+  // Evolury: painel de assinaturas (ADR 0021). Fica ao lado de Workspaces
+  // porque é a mesma lista vista pelo outro lado — o do contrato.
+  assinaturas: {
+    Icon: CreditCard,
+    name: "Assinaturas",
+    description: translate("instance_admin.assinaturas_descricao"),
+    href: `/subscriptions/`,
   },
   authentication: {
     Icon: LockIcon,

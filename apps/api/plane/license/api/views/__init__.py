@@ -26,3 +26,10 @@ from .workspace import (
     InstanceWorkSpaceAvailabilityCheckEndpoint,
     InstanceWorkSpaceEndpoint,
 )
+
+# Evolury: painel de assinaturas (ADR 0021)
+from .assinatura import (
+    InstanceAssinaturaEndpoint,
+    InstanceAssinaturasEndpoint,
+    InstanceSaudeDoFaturamentoEndpoint,
+)

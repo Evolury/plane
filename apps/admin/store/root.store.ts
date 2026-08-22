@@ -12,6 +12,9 @@ import type { IThemeStore } from "./theme.store";
 import { ThemeStore } from "./theme.store";
 import type { IUserStore } from "./user.store";
 import { UserStore } from "./user.store";
+// Evolury: painel de assinaturas (ADR 0021)
+import type { IAssinaturaStore } from "./assinatura.store";
+import { AssinaturaStore } from "./assinatura.store";
 import type { IWorkspaceStore } from "./workspace.store";
 import { WorkspaceStore } from "./workspace.store";
 
@@ -22,12 +25,14 @@ export class RootStore {
   instance: IInstanceStore;
   user: IUserStore;
   workspace: IWorkspaceStore;
+  assinatura: IAssinaturaStore;
 
   constructor() {
     this.theme = new ThemeStore(this);
     this.instance = new InstanceStore(this);
     this.user = new UserStore(this);
     this.workspace = new WorkspaceStore(this);
+    this.assinatura = new AssinaturaStore();
   }
 
   hydrate(initialData: any) {
@@ -43,5 +48,6 @@ export class RootStore {
     this.user = new UserStore(this);
     this.theme = new ThemeStore(this);
     this.workspace = new WorkspaceStore(this);
+    this.assinatura = new AssinaturaStore();
   }
 }
