@@ -172,6 +172,11 @@ class EventoAsaas(BaseModel):
     processado_em = models.DateTimeField(null=True, blank=True, db_index=True)
     tentativas = models.PositiveIntegerField(default=0)
     erro = models.TextField(blank=True, default="")
+    # `aplicado`, `ignorado` ou `erro`. "Ignorado" não é falha: a conta do Asaas
+    # atende outros negócios da Evolury, e a maior parte do que chega não é
+    # nossa. Sem distinguir as duas coisas, um painel de erros mostraria
+    # centenas de linhas normais e ninguém olharia para ele.
+    resultado = models.CharField(max_length=16, blank=True, default="", db_index=True)
 
     class Meta:
         verbose_name = "Evento do Asaas"

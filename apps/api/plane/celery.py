@@ -61,6 +61,19 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.deletion_task.hard_delete",
         "schedule": crontab(hour=0, minute=0),  # UTC 00:00
     },
+    # Evolury: faturamento (ADR 0021). A conciliação roda depois da purga e
+    # antes do resto — se um evento se perdeu, o conserto acontece de
+    # madrugada, e não no dia em que o cliente reclama.
+    "evolury-conciliar-assinaturas": {
+        "task": "plane.bgtasks.faturamento_conciliacao.conciliar_assinaturas",
+        "schedule": crontab(hour=1, minute=15),  # UTC 01:15
+    },
+    # De hora em hora porque fila interrompida é silenciosa: o Asaas para
+    # depois de 15 falhas seguidas e ninguém avisa.
+    "evolury-alarme-de-silencio-do-asaas": {
+        "task": "plane.bgtasks.faturamento_conciliacao.alarme_de_silencio_do_asaas",
+        "schedule": crontab(minute=20),
+    },
     "check-every-day-to-archive-and-close": {
         "task": "plane.bgtasks.issue_automation_task.archive_and_close_old_issues",
         "schedule": crontab(hour=1, minute=0),  # UTC 01:00
