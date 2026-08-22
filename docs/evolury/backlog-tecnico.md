@@ -100,6 +100,47 @@ exige mínimo de R$ 5,00) e 98% → R$ 5,80. R$ 5,00 exigiria 98,27%.
 desconto em centavos. `valor_com_desconto` ganha um ramo; `fim_da_promocao` e
 `primeira_cobranca` não mudam.
 
+### O ambiente de desenvolvimento não entrega tempo real
+
+A API do `planedev` aponta `LIVE_BASE_URL` para `http://localhost:3100` — e,
+dentro do contêiner, `localhost` é o próprio contêiner. Ela nunca alcança o
+servidor de eventos, que roda no host. Resultado: **nenhum aviso de tempo real
+funciona localmente**.
+
+Não é incômodo de ambiente, é ponto cego de verificação. O repique do quadro
+(1.39.0) só apareceu porque um cliente usou o produto: aqui o defeito era
+invisível, porque a rebusca que o expunha nunca era disparada. Tentei
+reproduzi-lo três vezes no dev antes de descobrir o motivo.
+
+**Número medido:** 22/08/2026. `AWS_S3_ENDPOINT_URL` tinha exatamente o mesmo
+defeito e foi corrigido com o gateway do docker; `LIVE_BASE_URL` recebeu a
+mesma correção, mas a cadeia continua sem entregar — o canal conecta e o evento
+não chega.
+
+**Caminho provável:** seguir o aviso do lado da API. Ele sai por tarefa do
+Celery ou por chamada direta ao `live`; confirmar qual, e se a chave
+`LIVE_SERVER_SECRET_KEY` do contêiner bate com a do servidor (a do dev tem 10
+caracteres, o que sugere valor de exemplo).
+
+### O god-mode está em inglês, e uma entrada diz "Images in Plane"
+
+A barra lateral do painel administrativo mostra "General", "Email",
+"Authentication", "Workspaces", "Artificial intelligence" e — literalmente —
+**"Images in Plane"**. Só o miolo de Assinaturas está em português, porque foi
+o que nós escrevemos.
+
+São duas coisas na mesma tela: idioma e marca. A segunda é da mesma família dos
+e-mails corrigidos na 1.38.0, com a diferença de que aqui quem lê é a operação,
+não o cliente.
+
+**Número medido:** 6 entradas de menu em inglês, 1 delas citando o produto de
+origem pelo nome (22/08/2026).
+
+**Caminho provável:** as chaves existem em `packages/i18n`; o `apps/admin` é
+que não as usa nesses rótulos. A entrada da marca sai junto, com o mesmo
+critério do teste `test_marca_nos_emails` — se valer a pena, aquela guarda pode
+crescer para cobrir rótulo de tela, não só e-mail.
+
 ## Resolvido
 
 ### O `planedev` escrevia no MinIO de outro projeto — 22/08/2026
