@@ -7,7 +7,7 @@
 // external imports
 import { fileTypeFromBuffer } from "file-type";
 // plane imports
-import type { TFileMetaDataLite, TFileSignedURLResponse } from "@plane/types";
+import type { TFileMetaDataLite } from "@plane/types";
 import { DANGEROUS_EXTENSIONS } from "@plane/constants";
 
 /**
@@ -47,19 +47,6 @@ const validateFilename = (filename: string): string | null => {
   }
 
   return null;
-};
-
-/**
- * @description from the provided signed URL response, generate a payload to be used to upload the file
- * @param {TFileSignedURLResponse} signedURLResponse
- * @param {File} file
- * @returns {FormData} file upload request payload
- */
-export const generateFileUploadPayload = (signedURLResponse: TFileSignedURLResponse, file: File): FormData => {
-  const formData = new FormData();
-  Object.entries(signedURLResponse.upload_data.fields).forEach(([key, value]) => formData.append(key, value));
-  formData.append("file", file);
-  return formData;
 };
 
 /**

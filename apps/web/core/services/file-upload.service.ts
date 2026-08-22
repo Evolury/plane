@@ -6,6 +6,8 @@
 
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
+// plane imports
+import type { TFileSignedURLResponse } from "@plane/types";
 // services
 import { APIService } from "@/services/api.service";
 
@@ -16,16 +18,26 @@ export class FileUploadService extends APIService {
     super("");
   }
 
+  /**
+   * Envia o arquivo direto ao armazenamento, com PUT assinado.
+   *
+   * Era POST multipart até 22/08/2026, quando se mediu que o Cloudflare R2 não
+   * implementa POST assinado: devolve `501 NotImplemented`, e com isso nenhum
+   * upload funcionava — nem avatar, nem logo, nem anexo de tarefa. PUT funciona
+   * nos dois provedores.
+   *
+   * O corpo é o arquivo cru, sem `FormData`. Os cabeçalhos vão como vieram do
+   * servidor: o `Content-Type` faz parte da assinatura, e trocá-lo invalida a
+   * URL.
+   */
   async uploadFile(
-    url: string,
-    data: FormData,
+    uploadData: TFileSignedURLResponse["upload_data"],
+    file: File,
     uploadProgressHandler?: AxiosRequestConfig["onUploadProgress"]
   ): Promise<void> {
     this.cancelSource = axios.CancelToken.source();
-    return this.post(url, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    return this.put(uploadData.url, file, {
+      headers: uploadData.headers,
       cancelToken: this.cancelSource.token,
       withCredentials: false,
       onUploadProgress: uploadProgressHandler,

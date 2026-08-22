@@ -62,41 +62,44 @@ class S3Storage(S3Boto3Storage):
                 config=boto3.session.Config(signature_version="s3v4"),
             )
 
-    def generate_presigned_post(self, object_name, file_type, file_size, expiration=None):
-        """Generate a presigned URL to upload an S3 object"""
+    def generate_presigned_put(self, object_name, file_type, expiration=None):
+        """URL assinada para o cliente enviar o arquivo com PUT.
+
+        Era POST assinado até 22/08/2026. **O Cloudflare R2 não implementa POST
+        assinado** — devolve `501 NotImplemented` com "Presigned post requests
+        are not yet implemented", e com isso nenhum upload funcionava: nem
+        avatar, nem logo, nem anexo de tarefa. PUT assinado funciona nos dois
+        (medido contra o R2: envio, `head` e download, todos 200), então existe
+        um caminho só, sem bifurcação por provedor.
+
+        **O que se perdeu, e onde foi reposto.** A política do POST assinado
+        carregava `content-length-range`, e era o próprio S3 que recusava
+        arquivo maior que o declarado. PUT assinado não tem equivalente. A
+        conferência passou a ser nossa, em `get_asset_object_metadata`, que já
+        fazia `head_object` na confirmação do upload — lá o tamanho real é
+        comparado com o limite e o que passou é apagado. Vale para todos os
+        caminhos de upload, porque todos disparam essa tarefa.
+        """
         if expiration is None:
             expiration = self.signed_url_expiration
-        fields = {"Content-Type": file_type}
 
-        conditions = [
-            {"bucket": self.aws_storage_bucket_name},
-            ["content-length-range", 1, file_size],
-            {"Content-Type": file_type},
-        ]
-
-        # Add condition for the object name (key)
-        if object_name.startswith("${filename}"):
-            conditions.append(["starts-with", "$key", object_name[: -len("${filename}")]])
-        else:
-            fields["key"] = object_name
-            conditions.append({"key": object_name})
-
-        # Generate the presigned POST URL
         try:
-            # Generate a presigned URL for the S3 object
-            response = self.s3_client.generate_presigned_post(
-                Bucket=self.aws_storage_bucket_name,
-                Key=object_name,
-                Fields=fields,
-                Conditions=conditions,
+            url = self.s3_client.generate_presigned_url(
+                "put_object",
+                Params={
+                    "Bucket": self.aws_storage_bucket_name,
+                    "Key": object_name,
+                    "ContentType": file_type,
+                },
                 ExpiresIn=expiration,
             )
-        # Handle errors
         except ClientError as e:
-            print(f"Error generating presigned POST URL: {e}")
+            log_exception(e)
             return None
 
-        return response
+        # `headers` em vez de `fields`: quem envia precisa repetir o
+        # `Content-Type` que foi assinado, ou a assinatura não confere.
+        return {"url": url, "method": "PUT", "headers": {"Content-Type": file_type}}
 
     def _get_content_disposition(self, disposition, filename=None):
         """Helper method to generate Content-Disposition header value"""

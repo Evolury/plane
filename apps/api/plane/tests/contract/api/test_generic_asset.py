@@ -102,7 +102,11 @@ class TestGenericAssetCrossWorkspaceIDOR:
         payload = {"name": "evil.pdf", "type": "application/pdf", "size": 1024}
 
         with mock.patch("plane.api.views.asset.S3Storage") as mock_storage:
-            mock_storage.return_value.generate_presigned_post.return_value = {"url": "x", "fields": {}}
+            mock_storage.return_value.generate_presigned_put.return_value = {
+                "url": "x",
+                "method": "PUT",
+                "headers": {"Content-Type": "image/png"},
+            }
             response = api_key_client.post(url, payload, format="json")
 
         assert response.status_code == status.HTTP_403_FORBIDDEN, f"Got {response.status_code}: {response.data!r}"

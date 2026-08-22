@@ -23,17 +23,20 @@ export type TFileMetaData = TFileMetaDataLite & TFileEntityInfo;
 export type TFileSignedURLResponse = {
   asset_id: string;
   asset_url: string;
+  /**
+   * Envio direto ao armazenamento, com PUT assinado.
+   *
+   * Era POST assinado (com `fields` de política) até 22/08/2026. O Cloudflare
+   * R2 não implementa POST assinado — devolve 501 — e nenhum upload funcionava.
+   * PUT funciona no R2 e no S3, então é um caminho só.
+   *
+   * Os `headers` precisam ir na requisição exatamente como vieram: o
+   * `Content-Type` faz parte do que foi assinado.
+   */
   upload_data: {
     url: string;
-    fields: {
-      "Content-Type": string;
-      key: string;
-      "x-amz-algorithm": string;
-      "x-amz-credential": string;
-      "x-amz-date": string;
-      policy: string;
-      "x-amz-signature": string;
-    };
+    method: "PUT";
+    headers: Record<string, string>;
   };
 };
 
