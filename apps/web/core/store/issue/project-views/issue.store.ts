@@ -99,7 +99,9 @@ export class ProjectViewIssues extends BaseIssuesStore implements IProjectViewIs
       // set loader and clear store
       runInAction(() => {
         this.setLoader(loadType);
-        this.clear(!isExistingPaginationOptions); // clear while fetching from server.
+        // Evolury: o 2º argumento é o que impede o quadro de piscar na
+        // revalidação em segundo plano — ver `clear` na classe base.
+        this.clear(!isExistingPaginationOptions, !isExistingPaginationOptions);
       });
 
       // get params from pagination options

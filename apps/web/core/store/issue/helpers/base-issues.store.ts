@@ -95,7 +95,7 @@ export interface IBaseIssuesStore {
     shouldSync?: boolean
   ) => Promise<void>;
   removeIssue: (workspaceSlug: string, projectId: string, issueId: string) => Promise<void>;
-  clear(shouldClearPaginationOptions?: boolean): void;
+  clear(shouldClearPaginationOptions?: boolean, shouldClearGroupedIds?: boolean): void;
   // helper methods
   getIssueIds: (groupId?: string, subGroupId?: string) => string[] | undefined;
   issuesSortWithOrderBy(issueIds: string[], key: Partial<TIssueOrderByOptions>): string[];
@@ -1237,11 +1237,32 @@ export abstract class BaseIssuesStore implements IBaseIssuesStore {
   /**
    * Method called to clear out the current store
    */
-  clear(shouldClearPaginationOptions = true) {
+  /**
+   * @param shouldClearPaginationOptions esquece a paginação atual
+   * @param shouldClearGroupedIds esvazia a lista que está na tela
+   *
+   * Evolury: os dois eram um só, e o quadro piscava.
+   *
+   * Toda busca chama isto ANTES de ir ao servidor. Na primeira carga faz
+   * sentido: não há o que mostrar. Numa revalidação em segundo plano — a que o
+   * aviso de tempo real dispara quando alguém cria uma tarefa (ADR 0013) — o
+   * efeito era apagar o quadro inteiro e pôr esqueleto no lugar por meio
+   * segundo, com os cartões já na tela. Medido em produção em 22/08/2026:
+   * criar uma tarefa levava o quadro de 10 cartões a 0 cartões e 24
+   * esqueletos, e de volta.
+   *
+   * Esvaziar antes nunca foi necessário para a correção: `onfetchIssues` chama
+   * `clear` de novo e repõe a lista dentro da MESMA ação, então a troca é
+   * atômica na chegada. O `abort` continua acontecendo sempre — a requisição
+   * anterior deve mesmo ser cancelada.
+   */
+  clear(shouldClearPaginationOptions = true, shouldClearGroupedIds = true) {
     runInAction(() => {
-      this.groupedIssueIds = undefined;
-      this.issuePaginationData = {};
-      this.groupedIssueCount = {};
+      if (shouldClearGroupedIds) {
+        this.groupedIssueIds = undefined;
+        this.issuePaginationData = {};
+        this.groupedIssueCount = {};
+      }
       if (shouldClearPaginationOptions) {
         this.paginationOptions = undefined;
       }

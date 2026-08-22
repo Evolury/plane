@@ -159,14 +159,22 @@ export const KanBan = observer(function KanBan(props: IKanBan) {
           const groupHeight = issueLength * approximateCardHeight;
 
           return (
+            /* Evolury: a coluna precisa ter corpo.
+               Medido em produção em 22/08/2026: o quadro é `surface-2`
+               (oklch 0.9848) e o cartão é branco (1.0) — 1,5% de diferença de
+               luminosidade, e nenhuma borda de coluna. O resultado é um campo
+               chapado onde não se vê onde uma raia termina e a outra começa.
+               `layer-1` (0.9696) recua a coluna 1,5% abaixo do quadro e 3%
+               abaixo do cartão, e a borda fina fecha o desenho. Tokens, e não
+               cor crua, para o tema escuro seguir junto. */
             <div
               key={subList.id}
               className={`group relative flex flex-shrink-0 flex-col ${
-                groupByVisibilityToggle.showIssues ? `w-[350px]` : ``
+                groupByVisibilityToggle.showIssues ? `w-[350px] rounded-lg border border-subtle bg-layer-1` : ``
               } `}
             >
               {sub_group_by === null && (
-                <div className="sticky top-0 z-[2] w-full flex-shrink-0 bg-surface-2 py-1">
+                <div className="sticky top-0 z-[2] w-full flex-shrink-0 rounded-t-lg bg-layer-1 px-1 py-1">
                   <HeaderGroupByCard
                     sub_group_by={sub_group_by}
                     group_by={group_by}
