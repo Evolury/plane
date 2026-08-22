@@ -40,14 +40,22 @@ Esperar **não** é adiar o preparo: o código já sabe funcionar atrás de um
 agrupador de conexões, atrás de uma variável desligada. Ver "O que muda no
 código".
 
-**3. Backup do banco para o R2, no mesmo trilho da casa.** A VPS já empurra
-dumps para o bucket `evolury-backups-locked` com `restic`, a cada 12 horas,
-guardando 14 diários e 8 semanais. O QooWork entra nesse trilho com etiqueta
-própria e retenção mensal — dado de cliente pagante merece mais que quatorze
-dias de memória.
+**3. Backup do banco para o R2, no mesmo trilho da casa.** O bucket
+`evolury-backups-locked` já guarda o acervo `restic` dos outros projetos da
+casa. O QooWork entra nesse repositório com host e etiqueta próprios
+(`--host qoowork --tag qoowork-db`), dump a cada 6 horas, guardando 8 últimos,
+14 diários, 8 semanais e 6 mensais — dado de cliente pagante merece mais que
+quatorze dias de memória.
 
-Um backup que nunca foi restaurado é esperança, não backup: a restauração é
-ensaiada uma vez, antes de o primeiro cliente entrar.
+Duas regras que o repositório compartilhado impõe: `forget` sempre escopado por
+host e etiqueta, e **nunca `--prune` daqui** — prune tranca o repositório
+inteiro e apaga dado de todos.
+
+Um backup que nunca foi restaurado é esperança, não backup: a restauração foi
+ensaiada em 22/08/2026, antes do primeiro cliente entrar, plantando uma marca na
+produção e fazendo-a voltar do R2. O procedimento, o ensaio e a prova dos
+guardas estão em
+[backup e restauração](../processos/backup-e-restauracao.md).
 
 **4. Arquivos no Cloudflare R2, em balde privado.** O produto já servia arquivo
 por **URL assinada** — o `url()` do storage devolve a chave, e quem entrega é o
@@ -142,5 +150,10 @@ endereço público adivinhável.
   QooWork, limites de recurso, sem porta exposta). São dois arquivos, e vão
   divergir; o daqui continua sendo o de desenvolvimento e validação.
 - **O backup do banco passa a ser nosso problema**, e é o preço de manter o
-  Postgres em casa. Dump a cada 12 horas para o R2, retenção diária, semanal e
-  mensal, e um ensaio de restauração antes do primeiro cliente.
+  Postgres em casa. Dump a cada 6 horas para o R2, retenção diária, semanal e
+  mensal, e um ensaio de restauração antes do primeiro cliente — feito em
+  22/08/2026.
+- **A definição da pilha passa a ser versionada** no repositório `infra`, em
+  `qoowork/`. Backup de banco não é backup de sistema: com o dado no R2 e o
+  `docker-compose.yml` só na VPS, perder a VPS seria ter o dado e não ter como
+  servi-lo.
